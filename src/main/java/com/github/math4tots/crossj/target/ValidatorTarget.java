@@ -3,7 +3,6 @@ package com.github.math4tots.crossj.target;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -13,9 +12,12 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.CastExpr;
+import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -23,15 +25,14 @@ import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.type.WildcardType;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.resolution.types.ResolvedWildcard;
 import com.github.math4tots.crossj.Parser;
-
-import org.checkerframework.checker.units.qual.s;
 
 public class ValidatorTarget extends Target {
     public ValidatorTarget(Parser parser) {
@@ -102,6 +103,11 @@ public class ValidatorTarget extends Target {
         }
 
         @Override
+        public void visit(ReturnStmt n, Void arg) {
+            n.getExpression().ifPresent(e -> e.accept(this, arg));
+        }
+
+        @Override
         public void visit(ExpressionStmt n, Void arg) {
             ResolvedType type = n.getExpression().calculateResolvedType();
             checkIfAllowedType(type, n);
@@ -123,7 +129,16 @@ public class ValidatorTarget extends Target {
         }
 
         @Override
+        public void visit(CharLiteralExpr n, Void arg) {
+        }
+
+        @Override
         public void visit(IntegerLiteralExpr n, Void arg) {
+            checkIfAllowedType(n.calculateResolvedType(), n);
+        }
+
+        @Override
+        public void visit(LongLiteralExpr n, Void arg) {
             checkIfAllowedType(n.calculateResolvedType(), n);
         }
 
@@ -154,10 +169,26 @@ public class ValidatorTarget extends Target {
         }
 
         @Override
+        public void visit(CastExpr n, Void arg) {
+            checkIfAllowedType(n.getType().resolve(), n);
+            n.getExpression().accept(this, arg);
+        }
+
+        @Override
         public void visit(IfStmt n, Void arg) {
             n.getCondition().accept(this, arg);
             n.getThenStmt().accept(this, arg);
             n.getElseStmt().ifPresent(s -> s.accept(this, arg));
+        }
+
+        @Override
+        public void visit(ForStmt n, Void arg) {
+            if (n.getInitialization().size() > 1) {
+                throw err("for statements can only have at most one init part", n);
+            }
+            n.getInitialization().forEach(i -> i.accept(this, arg));
+            n.getCompare().ifPresent(c -> c.accept(this, arg));
+            n.getUpdate().forEach(upd -> upd.accept(this, arg));
         }
 
         @Override
