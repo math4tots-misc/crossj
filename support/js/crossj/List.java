@@ -9,4 +9,7 @@ public final class List<T> {
 
     @Override
     public native boolean equals(Object other);
+
+    @Override
+    public native String toString();
 }

@@ -32,6 +32,16 @@ Classes
 * A select number of classes from java.lang are made available,
     but not all their methods are available
 
+Methods
+* Method overloading is not allowed (not yet enforced)
+    When targeting languages that don't natively support this (e.g. javascript, objc)
+    the choices don't look great.
+    I don't want name mangling, because then calling the methods from the
+    host environment will feel awkward and clunky.
+    Having a stub method that will dispatch to the correctly overriden method
+    at runtime is a possible solution, but would mandate reflection in the target
+    language. Further, it would be a good bit of work t omaintain
+
 Native classes
 
 While in Java, you can mark just specific methods to be native,
