@@ -7,7 +7,6 @@ import java.util.Optional;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -109,9 +108,9 @@ public final class JavascriptTarget extends Target {
                 // if there are no constructors explicitly listed,
                 // just create a default one with fields explicitly set
                 sb.append("constructor(){\n");
-                for (FieldDeclaration field: n.getFields()) {
+                for (FieldDeclaration field : n.getFields()) {
                     if (!field.isStatic()) {
-                        for (VariableDeclarator fdecl: field.getVariables()) {
+                        for (VariableDeclarator fdecl : field.getVariables()) {
                             sb.append("this." + fdecl.getNameAsString() + "=null;\n");
                         }
                     }
@@ -126,9 +125,9 @@ public final class JavascriptTarget extends Target {
             for (MethodDeclaration method : n.getMethods()) {
                 handleMethod(method);
             }
-            for (FieldDeclaration field: n.getFields()) {
+            for (FieldDeclaration field : n.getFields()) {
                 if (field.isStatic()) {
-                    for (VariableDeclarator vdecl: field.getVariables()) {
+                    for (VariableDeclarator vdecl : field.getVariables()) {
                         handleStaticField(vdecl);
                     }
                 }
