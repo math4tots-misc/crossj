@@ -8,30 +8,40 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
+import com.github.javaparser.ast.expr.EnclosedExpr;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithType;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.resolution.types.ResolvedWildcard;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.math4tots.crossj.Parser;
 
 public class ValidatorTarget extends Target {
@@ -79,6 +89,16 @@ public class ValidatorTarget extends Target {
         }
 
         @Override
+        public void visit(FieldDeclaration n, Void arg) {
+            for (VariableDeclarator decl : n.getVariables()) {
+                decl.accept(this, arg);
+                if (!n.isStatic() && decl.getInitializer().isPresent()) {
+                    throw err("Initializers in non-static field declarations are not currently supported", decl);
+                }
+            }
+        }
+
+        @Override
         public void visit(MethodDeclaration n, Void arg) {
             if (n.isStatic() && !n.isNative()) {
                 if (!n.getBody().isPresent()) {
@@ -115,13 +135,32 @@ public class ValidatorTarget extends Target {
         }
 
         @Override
+        public void visit(FieldAccessExpr n, Void arg) {
+            n.getScope().accept(this, arg);
+        }
+
+        @Override
         public void visit(MethodCallExpr n, Void arg) {
             n.getScope().ifPresent(scope -> scope.accept(this, arg));
             n.getArguments().forEach(marg -> marg.accept(this, arg));
         }
 
         @Override
+        public void visit(ObjectCreationExpr n, Void arg) {
+            n.getArguments().forEach(marg -> marg.accept(this, arg));
+        }
+
+        @Override
+        public void visit(EnclosedExpr n, Void arg) {
+            n.getInner().accept(this, arg);
+        }
+
+        @Override
         public void visit(NameExpr n, Void arg) {
+        }
+
+        @Override
+        public void visit(ThisExpr n, Void arg) {
         }
 
         @Override
@@ -130,6 +169,10 @@ public class ValidatorTarget extends Target {
 
         @Override
         public void visit(CharLiteralExpr n, Void arg) {
+        }
+
+        @Override
+        public void visit(BooleanLiteralExpr n, Void arg) {
         }
 
         @Override
@@ -159,18 +202,24 @@ public class ValidatorTarget extends Target {
         }
 
         @Override
+        public void visit(AssignExpr n, Void arg) {
+            n.getTarget().accept(this, arg);
+            n.getValue().accept(this, arg);
+        }
+
+        @Override
         public void visit(VariableDeclarationExpr n, Void arg) {
             n.getVariables().forEach(v -> v.accept(this, arg));
         }
 
         @Override
         public void visit(VariableDeclarator n, Void arg) {
-            checkIfAllowedType(n.getType().resolve(), n);
+            checkIfAllowedType(getType(n), n);
         }
 
         @Override
         public void visit(CastExpr n, Void arg) {
-            checkIfAllowedType(n.getType().resolve(), n);
+            checkIfAllowedType(getType(n), n);
             n.getExpression().accept(this, arg);
         }
 
@@ -202,7 +251,7 @@ public class ValidatorTarget extends Target {
             // warnings.
             //
             n.getExpression().accept(this, arg);
-            ResolvedType rawType = n.getType().resolve();
+            ResolvedType rawType = getType(n);
             if (!rawType.isReferenceType()) {
                 throw err("instanceof checks are only allowed on reference types", n);
             }
@@ -218,6 +267,12 @@ public class ValidatorTarget extends Target {
         public void visit(ConstructorDeclaration n, Void arg) {
             n.getBody().accept(this, arg);
         }
+    }
+
+    private ResolvedType getType(NodeWithType<?, ?> node) {
+        JavaSymbolSolver solver = parser.getSymbolSolver();
+        Type type = node.getType();
+        return solver.toResolvedType(type, ResolvedType.class);
     }
 
     private void checkIfAllowedType(ResolvedType type, Node... nodes) {

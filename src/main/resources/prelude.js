@@ -40,6 +40,13 @@ function $STRCAST(value) {
         throw new Error("Could not cast " + value + " to a string");
     }
 }
+function $CAST(value, cls) {
+    if (value instanceof cls) {
+        return value;
+    } else {
+        throw new Error("Could not cast " + value + " to " + cls);
+    }
+}
 function repr(x) {
     return $CJ['crossj.Repr']().of(x);
 }

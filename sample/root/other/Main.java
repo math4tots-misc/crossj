@@ -22,5 +22,12 @@ public final class Main {
         Foo foo2 = new Foo();
         IO.println("foo2.hashCode() = " + foo2.hashCode());
         IO.println("repr(s) = " + Repr.of("hello"));
+        {
+            Pair<String, String> pair1 = Pair.of("abc", "xyz");
+            Pair<String, String> pair2 = Pair.of("ggg", "hhh");
+            IO.println("pair1 == pair1 = " + pair1.equals(pair1));
+            IO.println("pair1 == pair2 = " + pair1.equals(pair2));
+            IO.println("pair1 == <string> = " + pair1.equals("abcxyz"));
+        }
     }
 }

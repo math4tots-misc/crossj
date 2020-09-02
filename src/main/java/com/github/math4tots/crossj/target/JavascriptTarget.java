@@ -7,21 +7,29 @@ import java.util.Optional;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
+import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithArguments;
@@ -36,6 +44,7 @@ import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
 import com.github.javaparser.resolution.declarations.ResolvedConstructorDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
@@ -96,16 +105,58 @@ public final class JavascriptTarget extends Target {
         private void handleClass(ClassOrInterfaceDeclaration n) {
             String sname = n.getNameAsString();
             sb.append("class " + sname + " {\n");
+            if (n.getConstructors().isEmpty()) {
+                // if there are no constructors explicitly listed,
+                // just create a default one with fields explicitly set
+                sb.append("constructor(){\n");
+                for (FieldDeclaration field: n.getFields()) {
+                    if (!field.isStatic()) {
+                        for (VariableDeclarator fdecl: field.getVariables()) {
+                            sb.append("this." + fdecl.getNameAsString() + "=null;\n");
+                        }
+                    }
+                }
+                sb.append("}\n");
+            } else {
+                // there should only ever be at most 1 (checked in validator)
+                for (ConstructorDeclaration constructor : n.getConstructors()) {
+                    handleConstructor(constructor);
+                }
+            }
             for (MethodDeclaration method : n.getMethods()) {
-                if (method.isStatic()) {
-                    handleStaticMethod(method);
+                handleMethod(method);
+            }
+            for (FieldDeclaration field: n.getFields()) {
+                if (field.isStatic()) {
+                    for (VariableDeclarator vdecl: field.getVariables()) {
+                        handleStaticField(vdecl);
+                    }
                 }
             }
             sb.append("}\n");
         }
 
-        private void handleStaticMethod(MethodDeclaration method) {
-            sb.append("static " + method.getNameAsString() + "(");
+        private void handleConstructor(ConstructorDeclaration constructor) {
+            sb.append("constructor(");
+            boolean first = true;
+            for (Parameter parameter : constructor.getParameters()) {
+                if (!first) {
+                    sb.append(",");
+                }
+                sb.append(parameter.getNameAsString());
+                first = false;
+            }
+            sb.append(") {\n");
+            BlockStmt body = constructor.getBody();
+            body.accept(this, null);
+            sb.append("}");
+        }
+
+        private void handleMethod(MethodDeclaration method) {
+            if (method.isStatic()) {
+                sb.append("static ");
+            }
+            sb.append(method.getNameAsString() + "(");
             boolean first = true;
             for (Parameter parameter : method.getParameters()) {
                 if (!first) {
@@ -118,6 +169,14 @@ public final class JavascriptTarget extends Target {
             BlockStmt body = method.getBody().get();
             body.accept(this, null);
             sb.append("}");
+        }
+
+        private void handleStaticField(VariableDeclarator decl) {
+            decl.getInitializer().ifPresent(init -> {
+                sb.append("static " + decl.getNameAsString() + "=");
+                init.accept(this, null);
+                sb.append(";");
+            });
         }
 
         @Override
@@ -163,7 +222,9 @@ public final class JavascriptTarget extends Target {
             sb.append("for (");
             NodeList<Expression> initlist = n.getInitialization();
             switch (initlist.size()) {
-                case 0: sb.append(';'); break;
+                case 0:
+                    sb.append(';');
+                    break;
                 case 1: {
                     Expression init = initlist.get(0);
                     init.accept(this, arg);
@@ -198,19 +259,19 @@ public final class JavascriptTarget extends Target {
             Expression selector = n.getSelector();
             selector.accept(this, arg);
             sb.append(") {\n");
-            for (SwitchEntry entry: n.getEntries()) {
+            for (SwitchEntry entry : n.getEntries()) {
                 NodeList<Expression> labels = entry.getLabels();
                 if (labels.isEmpty()) {
                     sb.append("default:");
                 } else {
-                    for (Expression label: labels) {
+                    for (Expression label : labels) {
                         sb.append("case ");
                         label.accept(this, arg);
                         sb.append(":");
                     }
                 }
                 sb.append("{\n");
-                for (Statement stmt: entry.getStatements()) {
+                for (Statement stmt : entry.getStatements()) {
                     stmt.accept(this, arg);
                 }
                 sb.append("}\n");
@@ -254,7 +315,50 @@ public final class JavascriptTarget extends Target {
         @Override
         public void visit(NameExpr n, Void arg) {
             ResolvedValueDeclaration decl = n.resolve();
-            sb.append(decl.getName());
+            if (decl.isField()) {
+                ResolvedFieldDeclaration field = decl.asField();
+                if (field.isStatic()) {
+                    String qclsname = field.getType().asReferenceType().getQualifiedName();
+                    sb.append(getJSClassRef(qclsname) + "." + field.getName());
+                } else {
+                    sb.append("this." + field.getName());
+                }
+            } else {
+                sb.append(decl.getName());
+            }
+        }
+
+        @Override
+        public void visit(ThisExpr n, Void arg) {
+            sb.append("this");
+        }
+
+        @Override
+        public void visit(AssignExpr n, Void arg) {
+            n.getTarget().accept(this, arg);
+            switch (n.getOperator()) {
+                case ASSIGN:
+                case BINARY_AND:
+                case BINARY_OR:
+                case PLUS:
+                case MINUS:
+                case MULTIPLY:
+                case REMAINDER: {
+                    sb.append(n.getOperator().asString());
+                    break;
+                }
+                default: {
+                    throw err("Asissgn operator " + n.getOperator() + " not yet supported", n);
+                }
+            }
+            n.getValue().accept(this, arg);
+        }
+
+        @Override
+        public void visit(EnclosedExpr n, Void arg) {
+            sb.append('(');
+            n.getInner().accept(this, arg);
+            sb.append(')');
         }
 
         @Override
@@ -265,6 +369,12 @@ public final class JavascriptTarget extends Target {
             ResolvedConstructorDeclaration constructor = n.resolve();
             sb.append("new (" + getJSClassRef(constructor) + ")");
             emitArgs(constructor, n);
+        }
+
+        @Override
+        public void visit(FieldAccessExpr n, Void arg) {
+            n.getScope().accept(this, arg);
+            sb.append("." + n.getNameAsString());
         }
 
         @Override
@@ -364,6 +474,13 @@ public final class JavascriptTarget extends Target {
                     sb.append("==='string')");
                     return;
                 }
+
+                sb.append('(');
+                n.getExpression().accept(this, arg);
+                sb.append(" instanceof ");
+                sb.append(getJSClassRef(type));
+                sb.append(')');
+                return;
             }
             throw err("instanceof for type " + rawtype.describe() + " is not supported", n);
         }
@@ -379,6 +496,11 @@ public final class JavascriptTarget extends Target {
                     sb.append(")");
                     return;
                 }
+
+                sb.append("$CAST(");
+                n.getExpression().accept(this, arg);
+                sb.append("," + getJSClassRef(type) + ")");
+                return;
             }
             throw err("cast to type " + rawtype.describe() + " is not supported", n);
         }
@@ -475,6 +597,11 @@ public final class JavascriptTarget extends Target {
         }
 
         @Override
+        public void visit(BooleanLiteralExpr n, Void arg) {
+            sb.append(n.getValue() ? "true" : "false");
+        }
+
+        @Override
         public void visit(IntegerLiteralExpr n, Void arg) {
             sb.append(Integer.parseInt(n.getValue()));
         }
@@ -563,5 +690,9 @@ public final class JavascriptTarget extends Target {
 
     private static String getJSClassRef(ResolvedMethodLikeDeclaration method) {
         return getJSClassRef(method.getPackageName(), method.getClassName());
+    }
+
+    private static String getJSClassRef(ResolvedReferenceType type) {
+        return getJSClassRef(type.getQualifiedName());
     }
 }
