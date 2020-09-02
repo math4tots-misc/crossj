@@ -10,7 +10,7 @@ Code written for crossj should just work as is for Java with the support library
 
 ### Some (current) notes
 
-* import crossj.*;
+* `import crossj.*;`
     For including crossj equivalent for things that would be in java.lang
     (crossj.* includes some basic stuff like `IO`, `List`, `Eq<T>`)
     An explicit import is required so that pure Java crossj code can just
