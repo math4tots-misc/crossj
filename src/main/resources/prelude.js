@@ -17,18 +17,27 @@ $CJ['crossj.IO'] = $LAZY(function() {
         static println(x) {
             console.log(x);
         }
+        static eprintln(x) {
+            console.error(x);
+        }
     };
 });
 $CJ['crossj.List'] = $LAZY(function() {
     return class List {
-        constructor() {
-            this.arr = []
+        constructor(arr) {
+            this.arr = arr;
+        }
+        static of(...args) {
+            return new List(args);
         }
         get(i) {
             return this.arr[i];
         }
         size() {
             return this.arr.length;
+        }
+        toString() {
+            return '[' + this.arr.join(', ') + ']';
         }
     };
 });

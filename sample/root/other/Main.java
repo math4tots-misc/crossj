@@ -11,5 +11,6 @@ public final class Main {
         double x = 5;
         IO.println("x = " + x);
         IO.println("x / 2 = " + x / 2);
+        IO.println("list = " + List.of(1, 2, 3));
     }
 }

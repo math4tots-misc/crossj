@@ -45,7 +45,7 @@ public final class JavascriptTarget extends Target {
             sb.append(new Translator().translate(cu));
         }
         mainClass.ifPresent(mcls -> {
-            sb.append("$CLS('" + mcls + "').main()\n");
+            sb.append("$CLS('" + mcls + "').main([])\n");
         });
         File outfile = new File(out, "bundle.js");
         writeFile(outfile, sb.toString());
@@ -148,18 +148,56 @@ public final class JavascriptTarget extends Target {
             ResolvedMethodDeclaration method = n.resolve();
             if (method.isStatic()) {
                 String key = method.getPackageName() + "." + method.getClassName();
-                sb.append("$CLS('" + key + "')." + method.getName() + "(");
+                sb.append("$CLS('" + key + "')." + method.getName());
+            } else {
+                Optional<Expression> oscope = n.getScope();
+                if (oscope.isPresent()) {
+                    Expression scope = oscope.get();
+                    scope.accept(this, arg);
+                } else {
+                    // if a scope is not present on a non-static method,
+                    // an implicit 'this' is assumed
+                    sb.append("this");
+                }
+                sb.append("." + method.getName());
+            }
+
+            // arguments
+            sb.append("(");
+            if (shouldSplatLastArgument(method, n)) {
+                // apply a '...' to the last argument
+                // Being on this path means that:
+                // * the number of parameters and number of arguments match exactly, and
+                // * there's at least one parameter (the variadic one)
+                // (it follows that there's also at least one argument)
+                for (Expression argexpr : n.getArguments().subList(0, n.getArguments().size() - 1)) {
+                    argexpr.accept(this, arg);
+                    sb.append(',');
+                }
+                sb.append("...");
+                n.getArguments().getLast().get().accept(this, arg);
+            } else {
+                // normal function call application without '...'
                 boolean first = true;
                 for (Expression argexpr : n.getArguments()) {
                     if (!first) {
                         sb.append(",");
                     }
+                    first = false;
                     argexpr.accept(this, arg);
                 }
-                sb.append(")");
-            } else {
-                throw err("TODO: non-static method calls", n);
             }
+            sb.append(")");
+        }
+
+        private boolean shouldSplatLastArgument(ResolvedMethodDeclaration method, MethodCallExpr call) {
+            if (!method.hasVariadicParameter() || call.getArguments().isEmpty()
+                    || method.getNumberOfParams() != call.getArguments().size()) {
+                return false;
+            }
+            Expression lastArgument = call.getArguments().getLast().get();
+            ResolvedType lastArgumentType = lastArgument.calculateResolvedType();
+            return method.getLastParam().getType().equals(lastArgumentType);
         }
 
         @Override

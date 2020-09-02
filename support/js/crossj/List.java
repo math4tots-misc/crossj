@@ -1,6 +1,9 @@
 package crossj;
 
 public final class List<T> {
+    @SafeVarargs
+    public static native <T> List<T> of(T... args);
     public native int size();
     public native T get(int i);
+    public native void set(int i, T t);
 }
