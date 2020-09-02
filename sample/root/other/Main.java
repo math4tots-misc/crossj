@@ -3,6 +3,7 @@ import crossj.*;
 
 public final class Main {
     public static void main(String[] args) {
-        IO.print("Hello world!");
+        IO.println("Hello world!");
+        IO.println(123 + 24);
     }
 }

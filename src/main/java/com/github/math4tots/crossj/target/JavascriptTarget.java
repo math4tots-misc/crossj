@@ -9,7 +9,9 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -17,6 +19,8 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.types.ResolvedType;
+import com.github.math4tots.crossj.Args;
 import com.github.math4tots.crossj.Parser;
 
 public final class JavascriptTarget extends Target {
@@ -127,6 +131,21 @@ public final class JavascriptTarget extends Target {
             } else {
                 throw err("TODO: non-static method calls", n);
             }
+        }
+
+        @Override
+        public void visit(BinaryExpr n, Void arg) {
+            // when translating to Javascript, the operators mostly align
+            sb.append("(");
+            n.getLeft().accept(this, arg);
+            sb.append(n.getOperator().asString());
+            n.getRight().accept(this, arg);
+            sb.append(")");
+        }
+
+        @Override
+        public void visit(IntegerLiteralExpr n, Void arg) {
+            sb.append(Integer.parseInt(n.getValue()));
         }
 
         @Override

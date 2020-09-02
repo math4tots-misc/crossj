@@ -14,7 +14,7 @@ function $CLS(className) {
 }
 $CJ['crossj.IO'] = $LAZY(function() {
     return class IO {
-        static print(x) {
+        static println(x) {
             console.log(x);
         }
     };
