@@ -9,18 +9,24 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.UnaryExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
+import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
 import com.github.javaparser.resolution.types.ResolvedType;
-import com.github.math4tots.crossj.Args;
 import com.github.math4tots.crossj.Parser;
 
 public final class JavascriptTarget extends Target {
@@ -102,7 +108,7 @@ public final class JavascriptTarget extends Target {
         @Override
         public void visit(BlockStmt n, Void arg) {
             sb.append("{\n");
-            for (Statement stmt: n.getStatements()) {
+            for (Statement stmt : n.getStatements()) {
                 stmt.accept(this, arg);
             }
             sb.append("}\n");
@@ -115,13 +121,36 @@ public final class JavascriptTarget extends Target {
         }
 
         @Override
+        public void visit(VariableDeclarationExpr n, Void arg) {
+            n.getVariables().forEach(v -> v.accept(this, arg));
+        }
+
+        @Override
+        public void visit(VariableDeclarator n, Void arg) {
+            Optional<Expression> oinit = n.getInitializer();
+            sb.append("let " + n.getNameAsString());
+            if (oinit.isPresent()) {
+                sb.append("=");
+                oinit.get().accept(this, arg);
+            }
+            sb.append(';');
+        }
+
+        @Override
+        public void visit(NameExpr n, Void arg) {
+            ResolvedValueDeclaration decl = n.resolve();
+            sb.append(decl.getName());
+        }
+
+        @Override
         public void visit(MethodCallExpr n, Void arg) {
+            n.calculateResolvedType();
             ResolvedMethodDeclaration method = n.resolve();
             if (method.isStatic()) {
                 String key = method.getPackageName() + "." + method.getClassName();
                 sb.append("$CLS('" + key + "')." + method.getName() + "(");
                 boolean first = true;
-                for (Expression argexpr: n.getArguments()) {
+                for (Expression argexpr : n.getArguments()) {
                     if (!first) {
                         sb.append(",");
                     }
@@ -134,18 +163,104 @@ public final class JavascriptTarget extends Target {
         }
 
         @Override
+        public void visit(UnaryExpr n, Void arg) {
+            n.calculateResolvedType();
+            switch (n.getOperator()) {
+                case BITWISE_COMPLEMENT:
+                case MINUS:
+                case PLUS:
+                case PREFIX_DECREMENT:
+                case PREFIX_INCREMENT:
+                case LOGICAL_COMPLEMENT: {
+                    sb.append("(");
+                    sb.append(n.getOperator().asString());
+                    n.getExpression().accept(this, arg);
+                    sb.append(")");
+                    break;
+                }
+                case POSTFIX_INCREMENT:
+                case POSTFIX_DECREMENT: {
+                    sb.append("(");
+                    n.getExpression().accept(this, arg);
+                    sb.append(n.getOperator().asString());
+                    sb.append(")");
+                    break;
+                }
+            }
+        }
+
+        @Override
         public void visit(BinaryExpr n, Void arg) {
             // when translating to Javascript, the operators mostly align
-            sb.append("(");
-            n.getLeft().accept(this, arg);
-            sb.append(n.getOperator().asString());
-            n.getRight().accept(this, arg);
-            sb.append(")");
+            ResolvedType restype = n.calculateResolvedType();
+
+            switch (n.getOperator()) {
+                case AND:
+                case BINARY_AND:
+                case BINARY_OR:
+                case GREATER_EQUALS:
+                case GREATER:
+                case LEFT_SHIFT:
+                case LESS_EQUALS:
+                case LESS:
+                case MINUS:
+                case MULTIPLY:
+                case OR:
+                case PLUS:
+                case REMAINDER:
+                case SIGNED_RIGHT_SHIFT:
+                case UNSIGNED_RIGHT_SHIFT:
+                case XOR: {
+                    sb.append("(");
+                    n.getLeft().accept(this, arg);
+                    sb.append(n.getOperator().asString());
+                    n.getRight().accept(this, arg);
+                    sb.append(")");
+                    break;
+                }
+                case EQUALS: {
+                    sb.append("(");
+                    n.getLeft().accept(this, arg);
+                    sb.append("===");
+                    n.getRight().accept(this, arg);
+                    sb.append(")");
+                    break;
+                }
+                case NOT_EQUALS: {
+                    sb.append("(");
+                    n.getLeft().accept(this, arg);
+                    sb.append("!==");
+                    n.getRight().accept(this, arg);
+                    sb.append(")");
+                    break;
+                }
+                case DIVIDE: {
+                    if (restype.equals(ResolvedPrimitiveType.INT)) {
+                        sb.append("((");
+                        n.getLeft().accept(this, arg);
+                        sb.append("/");
+                        n.getRight().accept(this, arg);
+                        sb.append(")|0)");
+                    } else {
+                        sb.append("(");
+                        n.getLeft().accept(this, arg);
+                        sb.append("/");
+                        n.getRight().accept(this, arg);
+                        sb.append(")");
+                    }
+                    break;
+                }
+            }
         }
 
         @Override
         public void visit(IntegerLiteralExpr n, Void arg) {
             sb.append(Integer.parseInt(n.getValue()));
+        }
+
+        @Override
+        public void visit(DoubleLiteralExpr n, Void arg) {
+            sb.append(Double.parseDouble(n.getValue()));
         }
 
         @Override

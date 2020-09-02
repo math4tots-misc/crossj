@@ -10,6 +10,7 @@ import java.util.List;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
+import com.github.javaparser.ParserConfiguration.LanguageLevel;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
@@ -43,6 +44,7 @@ public final class Parser {
         this.typeSolver = typeSolver;
         this.symbolSolver = new JavaSymbolSolver(typeSolver);
         this.parserConfiguration = new ParserConfiguration();
+        parserConfiguration.setLanguageLevel(LanguageLevel.JAVA_8);
         parserConfiguration.setSymbolResolver(symbolSolver);
         this.javaParser = new JavaParser(parserConfiguration);
     }

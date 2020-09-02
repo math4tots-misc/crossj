@@ -1,0 +1,5 @@
+#!/bin/bash
+javac \
+    $(find sample/root/ -type f | grep '\.java') \
+    $(find support/java -type f | grep '\.java') \
+    -Xlint:unchecked -d sample/out && java -cp sample/out other.Main
