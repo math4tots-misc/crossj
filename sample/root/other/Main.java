@@ -15,5 +15,7 @@ public final class Main {
         IO.println("strlist = " + List.of("hello", "world"));
         IO.println("strlist = " + List.of("hello\n", "\tworld"));
         IO.println("\thello\n");
+        IO.println("list1.equals(list2) = " + List.of("hello").equals(List.of("hi")));
+        IO.println("list1.equals(list2) = " + List.of("hello").equals(List.of("hello")));
     }
 }

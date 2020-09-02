@@ -12,6 +12,20 @@ function $LAZY(f) {
 function $CLS(className) {
     return $CJ[className]();
 }
+function $EQ(a, b) {
+    if (a.equals === undefined) {
+        return a === b;
+    } else {
+        return a.equals(b);
+    }
+}
+function $HASH(x) {
+    if (a.hashCode === undefined) {
+        return 0;
+    } else {
+        return a.hashCode();
+    }
+}
 function $STRCAST(value) {
     if (typeof value === 'string') {
         return value;
@@ -33,7 +47,7 @@ $CJ['crossj.IO'] = $LAZY(function() {
     };
 });
 $CJ['crossj.List'] = $LAZY(function() {
-    return class List {
+    class List {
         constructor(arr) {
             this.arr = arr;
         }
@@ -46,10 +60,25 @@ $CJ['crossj.List'] = $LAZY(function() {
         size() {
             return this.arr.length;
         }
+        equals(other) {
+            if (!(other instanceof List)) {
+                return false;
+            }
+            if (this.arr.length !== other.arr.length) {
+                return false;
+            }
+            for (let i = 0; i < this.arr.length; i++) {
+                if (!$EQ(this.arr[i], other.arr[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
         toString() {
             return '[' + this.arr.map(repr).join(', ') + ']';
         }
     };
+    return List;
 });
 $CJ['java.lang.StringBuilder'] = $LAZY(function() {
     return class StringBuilder {

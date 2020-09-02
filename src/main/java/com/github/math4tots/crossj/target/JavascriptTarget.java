@@ -274,11 +274,29 @@ public final class JavascriptTarget extends Target {
             ResolvedMethodDeclaration method = n.resolve();
 
             // Handle some special cases
-            if (method.getQualifiedName().equals("java.lang.String.length")) {
-                // For string length, we access the field 'length' instead
-                n.getScope().get().accept(this, arg);
-                sb.append(".length");
-                return;
+            switch (method.getQualifiedName()) {
+                case "java.lang.String.length": {
+                    // For string length, we access the field 'length' instead
+                    n.getScope().get().accept(this, arg);
+                    sb.append(".length");
+                    return;
+                }
+                case "java.lang.Object.equals": {
+                    // We can't be sure whether or not there is an override.
+                    sb.append("$EQ(");
+                    n.getScope().get().accept(this, arg);
+                    sb.append(",");
+                    n.getArgument(0).accept(this, arg);
+                    sb.append(")");
+                    return;
+                }
+                case "java.lang.Object.hashCode": {
+                    // We can't be sure whether or not there is an override.
+                    sb.append("$HASH(");
+                    n.getScope().get().accept(this, arg);
+                    sb.append(")");
+                    return;
+                }
             }
 
             if (method.isStatic()) {

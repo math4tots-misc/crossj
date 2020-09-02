@@ -6,4 +6,7 @@ public final class List<T> {
     public native int size();
     public native T get(int i);
     public native void set(int i, T t);
+
+    @Override
+    public native boolean equals(Object other);
 }

@@ -20,6 +20,15 @@ public final class List<T> {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof List<?>)) {
+            return false;
+        }
+        List<?> olist = (List<?>) other;
+        return list.equals(olist.list);
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
