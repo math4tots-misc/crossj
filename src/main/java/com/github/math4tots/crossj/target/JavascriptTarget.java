@@ -60,7 +60,7 @@ public final class JavascriptTarget extends Target {
             sb.append(new Translator().translate(cu));
         }
         mainClass.ifPresent(mcls -> {
-            sb.append("$CLS('" + mcls + "').main([])\n");
+            sb.append(getJSClassRef(mcls) + ".main([])\n");
         });
         File outfile = new File(out, "bundle.js");
         writeFile(outfile, sb.toString());
@@ -85,7 +85,7 @@ public final class JavascriptTarget extends Target {
                 // In this case, assume that an implementation is already
                 // provided
             } else {
-                sb.append("$CJ['" + getFullClassName(n) + "'] = $LAZY(function() {\n");
+                sb.append("$CJ['" + getClassKey(getFullClassName(n)) + "'] = $LAZY(function() {\n");
                 ClassOrInterfaceDeclaration cls = (ClassOrInterfaceDeclaration) n.getPrimaryType().get();
                 handleClass(cls);
                 sb.append("return " + cls.getNameAsString() + ";\n");
@@ -263,8 +263,7 @@ public final class JavascriptTarget extends Target {
                 throw err("Anonymous classes are not supported", n);
             }
             ResolvedConstructorDeclaration constructor = n.resolve();
-            String key = constructor.getPackageName() + "." + constructor.getClassName();
-            sb.append("new ($CLS('" + key + "'))");
+            sb.append("new (" + getJSClassRef(constructor) + ")");
             emitArgs(constructor, n);
         }
 
@@ -300,8 +299,7 @@ public final class JavascriptTarget extends Target {
             }
 
             if (method.isStatic()) {
-                String key = method.getPackageName() + "." + method.getClassName();
-                sb.append("$CLS('" + key + "')." + method.getName());
+                sb.append(getJSClassRef(method) + "." + method.getName());
             } else {
                 Optional<Expression> oscope = n.getScope();
                 if (oscope.isPresent()) {
@@ -541,5 +539,29 @@ public final class JavascriptTarget extends Target {
             }
             return sb.toString();
         }
+    }
+
+    private static String getClassKey(String qualifiedClassName) {
+        return qualifiedClassName;
+    }
+
+    private static String getClassKey(String packageName, String className) {
+        return getClassKey(packageName + "." + className);
+    }
+
+    private static String getJSClassRefFromKey(String key) {
+        return "$CJ['" + key + "']()";
+    }
+
+    private static String getJSClassRef(String packageName, String className) {
+        return getJSClassRefFromKey(getClassKey(packageName, className));
+    }
+
+    private static String getJSClassRef(String qualifiedClassName) {
+        return getJSClassRefFromKey(getClassKey(qualifiedClassName));
+    }
+
+    private static String getJSClassRef(ResolvedMethodLikeDeclaration method) {
+        return getJSClassRef(method.getPackageName(), method.getClassName());
     }
 }

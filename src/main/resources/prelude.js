@@ -34,7 +34,7 @@ function $STRCAST(value) {
     }
 }
 function repr(x) {
-    return $CLS('crossj.Repr').of(x);
+    return $CJ['crossj.Repr']().of(x);
 }
 $CJ['crossj.IO'] = $LAZY(function() {
     return class IO {
