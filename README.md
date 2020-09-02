@@ -2,9 +2,9 @@
 
 Java-like language that can be easily embedded in various environments.
 
-crossj uses a Java parser and typesolver, but uses a different set of standard library
+crossj uses a Java parser and typesolver, but uses a different standard library
 and a subset of Java language features so that code written for it can be 'naturally'
-transformed to other languages (currently just Javascript, but objc is also on my mind).
+transformed to other languages (currently just Javascript, but objc is also kept mind).
 
 Code written for crossj should just work as is for Java with the support library.
 
