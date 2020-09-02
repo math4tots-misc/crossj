@@ -17,5 +17,10 @@ public final class Main {
         IO.println("\thello\n");
         IO.println("list1.equals(list2) = " + List.of("hello").equals(List.of("hi")));
         IO.println("list1.equals(list2) = " + List.of("hello").equals(List.of("hello")));
+        Foo foo1 = new Foo();
+        IO.println("foo1.hashCode() = " + foo1.hashCode());
+        Foo foo2 = new Foo();
+        IO.println("foo2.hashCode() = " + foo2.hashCode());
+        IO.println("repr(s) = " + Repr.of("hello"));
     }
 }

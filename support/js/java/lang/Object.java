@@ -13,8 +13,6 @@ public abstract class Object {
     /**
      * Also like equals, will not actually exist on any class that doesn't explicitly override
      * it.
-     * I also couldn't think of a good way to implement this in JS, the default implementation
-     * will always just return 0.
      */
     public native int hashCode();
 }

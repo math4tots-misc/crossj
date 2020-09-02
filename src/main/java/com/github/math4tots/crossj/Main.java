@@ -1,5 +1,7 @@
 package com.github.math4tots.crossj;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -10,7 +12,9 @@ import com.github.math4tots.crossj.target.ValidatorTarget;
 public final class Main {
     public static void main(String[] args) {
         Args xargs = Args.fromStrings(args);
-        Parser parser = Parser.fromSourceRoots(xargs.classPaths);
+        List<File> allClassPaths = new ArrayList<>(xargs.classPaths);
+        allClassPaths.addAll(xargs.roots);
+        Parser parser = Parser.fromSourceRoots(allClassPaths);
         List<CompilationUnit> compilationUnits = parser.parseAllRoots(xargs.roots);
         new ValidatorTarget(parser).emit(compilationUnits, xargs.mainClass, null);
         Target target;

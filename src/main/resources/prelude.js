@@ -9,9 +9,6 @@ function $LAZY(f) {
         return result;
     };
 }
-function $CLS(className) {
-    return $CJ[className]();
-}
 function $EQ(a, b) {
     if (a.equals === undefined) {
         return a === b;
@@ -19,11 +16,21 @@ function $EQ(a, b) {
         return a.equals(b);
     }
 }
+let $NEXT_ID = 1;
+const $IDMAP = new WeakMap();
 function $HASH(x) {
-    if (a.hashCode === undefined) {
+    if (x.hashCode === undefined) {
+        switch (typeof x) {
+            case 'object': {
+                if (!$IDMAP.has(x)) {
+                    $IDMAP.set(x, $NEXT_ID++);
+                }
+                return $IDMAP.get(x);
+            }
+        }
         return 0;
     } else {
-        return a.hashCode();
+        return x.hashCode();
     }
 }
 function $STRCAST(value) {
