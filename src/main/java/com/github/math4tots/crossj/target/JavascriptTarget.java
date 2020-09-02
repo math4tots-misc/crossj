@@ -6,26 +6,41 @@ import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.CastExpr;
+import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithArguments;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.SwitchEntry;
+import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
+import com.github.javaparser.resolution.declarations.ResolvedConstructorDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
+import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.math4tots.crossj.Parser;
 
@@ -117,11 +132,111 @@ public final class JavascriptTarget extends Target {
         @Override
         public void visit(ExpressionStmt n, Void arg) {
             n.getExpression().accept(this, arg);
+            if (n.getExpression() instanceof VariableDeclarationExpr) {
+                sb.append('\n');
+            } else {
+                sb.append(";\n");
+            }
+        }
+
+        @Override
+        public void visit(IfStmt n, Void arg) {
+            sb.append("if (");
+            n.getCondition().accept(this, arg);
+            sb.append(") {\n");
+            n.getThenStmt().accept(this, arg);
+            sb.append("}\n");
+            n.getElseStmt().ifPresent(estmt -> {
+                if (estmt instanceof IfStmt) {
+                    sb.append("else ");
+                    estmt.accept(this, arg);
+                } else {
+                    sb.append("else {");
+                    estmt.accept(this, arg);
+                    sb.append("}\n");
+                }
+            });
+        }
+
+        @Override
+        public void visit(ForStmt n, Void arg) {
+            sb.append("for (");
+            NodeList<Expression> initlist = n.getInitialization();
+            switch (initlist.size()) {
+                case 0: sb.append(';'); break;
+                case 1: {
+                    Expression init = initlist.get(0);
+                    init.accept(this, arg);
+                    if (!(init instanceof VariableDeclarationExpr)) {
+                        sb.append(';');
+                    }
+                    break;
+                }
+                default: {
+                    throw err("Multi-init list in for loops not supported", n);
+                }
+            }
+            n.getCompare().ifPresent(cmp -> cmp.accept(this, arg));
+            sb.append(';');
+            {
+                NodeList<Expression> updatelist = n.getUpdate();
+                for (int i = 0; i < updatelist.size(); i++) {
+                    if (i > 0) {
+                        sb.append(',');
+                    }
+                    updatelist.get(i).accept(this, arg);
+                }
+            }
+            sb.append(") {\n");
+            n.getBody().accept(this, arg);
+            sb.append("}\n");
+        }
+
+        @Override
+        public void visit(SwitchStmt n, Void arg) {
+            sb.append("switch (");
+            Expression selector = n.getSelector();
+            selector.accept(this, arg);
+            sb.append(") {\n");
+            for (SwitchEntry entry: n.getEntries()) {
+                NodeList<Expression> labels = entry.getLabels();
+                if (labels.isEmpty()) {
+                    sb.append("default:");
+                } else {
+                    for (Expression label: labels) {
+                        sb.append("case ");
+                        label.accept(this, arg);
+                        sb.append(":");
+                    }
+                }
+                sb.append("{\n");
+                for (Statement stmt: entry.getStatements()) {
+                    stmt.accept(this, arg);
+                }
+                sb.append("}\n");
+            }
+            sb.append("}\n");
+        }
+
+        @Override
+        public void visit(BreakStmt n, Void arg) {
+            sb.append("break;\n");
+        }
+
+        @Override
+        public void visit(ReturnStmt n, Void arg) {
+            sb.append("return ");
+            n.getExpression().ifPresent(expr -> {
+                expr.accept(this, arg);
+            });
             sb.append(";\n");
         }
 
         @Override
         public void visit(VariableDeclarationExpr n, Void arg) {
+            if (n.getVariables().size() > 1) {
+                throw err("Multiple variable definitions on one statement not supported", n);
+            }
             n.getVariables().forEach(v -> v.accept(this, arg));
         }
 
@@ -143,9 +258,29 @@ public final class JavascriptTarget extends Target {
         }
 
         @Override
+        public void visit(ObjectCreationExpr n, Void arg) {
+            if (n.getAnonymousClassBody().isPresent()) {
+                throw err("Anonymous classes are not supported", n);
+            }
+            ResolvedConstructorDeclaration constructor = n.resolve();
+            String key = constructor.getPackageName() + "." + constructor.getClassName();
+            sb.append("new ($CLS('" + key + "'))");
+            emitArgs(constructor, n);
+        }
+
+        @Override
         public void visit(MethodCallExpr n, Void arg) {
             n.calculateResolvedType();
             ResolvedMethodDeclaration method = n.resolve();
+
+            // Handle some special cases
+            if (method.getQualifiedName().equals("java.lang.String.length")) {
+                // For string length, we access the field 'length' instead
+                n.getScope().get().accept(this, arg);
+                sb.append(".length");
+                return;
+            }
+
             if (method.isStatic()) {
                 String key = method.getPackageName() + "." + method.getClassName();
                 sb.append("$CLS('" + key + "')." + method.getName());
@@ -161,36 +296,38 @@ public final class JavascriptTarget extends Target {
                 }
                 sb.append("." + method.getName());
             }
+            emitArgs(method, n);
+        }
 
-            // arguments
+        private void emitArgs(ResolvedMethodLikeDeclaration method, NodeWithArguments<?> call) {
             sb.append("(");
-            if (shouldSplatLastArgument(method, n)) {
+            if (shouldSplatLastArgument(method, call)) {
                 // apply a '...' to the last argument
                 // Being on this path means that:
                 // * the number of parameters and number of arguments match exactly, and
                 // * there's at least one parameter (the variadic one)
                 // (it follows that there's also at least one argument)
-                for (Expression argexpr : n.getArguments().subList(0, n.getArguments().size() - 1)) {
-                    argexpr.accept(this, arg);
+                for (Expression argexpr : call.getArguments().subList(0, call.getArguments().size() - 1)) {
+                    argexpr.accept(this, null);
                     sb.append(',');
                 }
                 sb.append("...");
-                n.getArguments().getLast().get().accept(this, arg);
+                call.getArguments().getLast().get().accept(this, null);
             } else {
                 // normal function call application without '...'
                 boolean first = true;
-                for (Expression argexpr : n.getArguments()) {
+                for (Expression argexpr : call.getArguments()) {
                     if (!first) {
                         sb.append(",");
                     }
                     first = false;
-                    argexpr.accept(this, arg);
+                    argexpr.accept(this, null);
                 }
             }
             sb.append(")");
         }
 
-        private boolean shouldSplatLastArgument(ResolvedMethodDeclaration method, MethodCallExpr call) {
+        private boolean shouldSplatLastArgument(ResolvedMethodLikeDeclaration method, NodeWithArguments<?> call) {
             if (!method.hasVariadicParameter() || call.getArguments().isEmpty()
                     || method.getNumberOfParams() != call.getArguments().size()) {
                 return false;
@@ -198,6 +335,36 @@ public final class JavascriptTarget extends Target {
             Expression lastArgument = call.getArguments().getLast().get();
             ResolvedType lastArgumentType = lastArgument.calculateResolvedType();
             return method.getLastParam().getType().equals(lastArgumentType);
+        }
+
+        @Override
+        public void visit(InstanceOfExpr n, Void arg) {
+            ResolvedType rawtype = n.getType().resolve();
+            if (rawtype.isReferenceType()) {
+                ResolvedReferenceType type = rawtype.asReferenceType();
+                if (type.getQualifiedName().equals("java.lang.String")) {
+                    sb.append("(typeof ");
+                    n.getExpression().accept(this, arg);
+                    sb.append("==='string')");
+                    return;
+                }
+            }
+            throw err("instanceof for type " + rawtype.describe() + " is not supported", n);
+        }
+
+        @Override
+        public void visit(CastExpr n, Void arg) {
+            ResolvedType rawtype = n.getType().resolve();
+            if (rawtype.isReferenceType()) {
+                ResolvedReferenceType type = rawtype.asReferenceType();
+                if (type.getQualifiedName().equals("java.lang.String")) {
+                    sb.append("$STRCAST(");
+                    n.getExpression().accept(this, arg);
+                    sb.append(")");
+                    return;
+                }
+            }
+            throw err("cast to type " + rawtype.describe() + " is not supported", n);
         }
 
         @Override
@@ -302,9 +469,21 @@ public final class JavascriptTarget extends Target {
         }
 
         @Override
+        public void visit(CharLiteralExpr n, Void arg) {
+            // sb.append("'" + reprstrbody(n.getValue()) + "'");
+            sb.append("'" + n.getValue() + "'");
+        }
+
+        @Override
         public void visit(StringLiteralExpr n, Void arg) {
-            String value = n.getValue();
-            sb.append('"');
+            // String value = n.getValue();
+            // sb.append('"'+ reprstrbody(value) + '"');
+            sb.append('"' + n.getValue() + '"');
+        }
+
+        @SuppressWarnings("unused")
+        private String reprstrbody(String value) {
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < value.length(); i++) {
                 char c = value.charAt(i);
                 switch (c) {
@@ -342,7 +521,7 @@ public final class JavascriptTarget extends Target {
                     }
                 }
             }
-            sb.append('"');
+            return sb.toString();
         }
     }
 }

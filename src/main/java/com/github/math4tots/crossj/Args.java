@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Optional;
 
 public final class Args {
-    public final File root;
+    public final List<File> roots;
     public final File out;
     public final String target;
     public final List<File> classPaths;
     public final Optional<String> mainClass;
 
-    private Args(File root, Optional<String> mainClass, File out, String target, List<File> classPaths) {
-        this.root = root;
+    private Args(List<File> roots, Optional<String> mainClass, File out, String target, List<File> classPaths) {
+        this.roots = roots;
         this.out = out;
         this.target = target;
         this.classPaths = classPaths;
@@ -28,7 +28,7 @@ public final class Args {
     public static Args fromStrings(List<String> args) {
         Mode mode = Mode.Default;
         String target = "js";
-        File root = null;
+        List<File> root = new ArrayList<>();
         File out = null;
         List<File> classPaths = new ArrayList<>();
         Optional<String> mainClass = Optional.empty();
@@ -68,7 +68,7 @@ public final class Args {
                     break;
                 }
                 case Root: {
-                    root = new File(arg);
+                    root.add(new File(arg));
                     mode = Mode.Default;
                     break;
                 }
@@ -89,8 +89,8 @@ public final class Args {
                 }
             }
         }
-        if (root == null) {
-            throw new RuntimeException("A '-r/--root' directory must be specified");
+        if (root.isEmpty()) {
+            throw new RuntimeException("At least one '-r/--root' directory must be specified");
         }
         if (out == null) {
             throw new RuntimeException("A '-o/--out' directory must be specified");

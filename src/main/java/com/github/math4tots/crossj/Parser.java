@@ -76,7 +76,7 @@ public final class Parser {
         }
     }
 
-    public List<CompilationUnit> parseAll(List<File> files) {
+    public List<CompilationUnit> parseAllFiles(List<File> files) {
         List<CompilationUnit> compilationUnits = new ArrayList<>();
         for (File file: files) {
             compilationUnits.add(parseFile(file));
@@ -84,11 +84,19 @@ public final class Parser {
         return compilationUnits;
     }
 
+    public List<CompilationUnit> parseAllRoots(List<File> roots) {
+        List<File> files = new ArrayList<>();
+        for (File root: roots) {
+            files.addAll(findAllFiles(root));
+        }
+        return parseAllFiles(files);
+    }
+
     /**
      * Recursively find and parse all files in a directory
      */
     public List<CompilationUnit> parseAll(File directory) {
-        return parseAll(findAllFiles(directory));
+        return parseAllFiles(findAllFiles(directory));
     }
 
     private static List<File> findAllFiles(File directory) {

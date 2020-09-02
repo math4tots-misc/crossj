@@ -12,6 +12,16 @@ function $LAZY(f) {
 function $CLS(className) {
     return $CJ[className]();
 }
+function $STRCAST(value) {
+    if (typeof value === 'string') {
+        return value;
+    } else {
+        throw new Error("Could not cast " + value + " to a string");
+    }
+}
+function repr(x) {
+    return $CLS('crossj.Repr').of(x);
+}
 $CJ['crossj.IO'] = $LAZY(function() {
     return class IO {
         static println(x) {
@@ -37,7 +47,20 @@ $CJ['crossj.List'] = $LAZY(function() {
             return this.arr.length;
         }
         toString() {
-            return '[' + this.arr.join(', ') + ']';
+            return '[' + this.arr.map(repr).join(', ') + ']';
+        }
+    };
+});
+$CJ['java.lang.StringBuilder'] = $LAZY(function() {
+    return class StringBuilder {
+        constructor() {
+            this.arr = [];
+        }
+        append(part) {
+            this.arr.push(part.toString());
+        }
+        toString() {
+            return this.arr.join('');
         }
     };
 });

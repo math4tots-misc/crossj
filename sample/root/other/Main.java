@@ -12,5 +12,8 @@ public final class Main {
         IO.println("x = " + x);
         IO.println("x / 2 = " + x / 2);
         IO.println("list = " + List.of(1, 2, 3));
+        IO.println("strlist = " + List.of("hello", "world"));
+        IO.println("strlist = " + List.of("hello\n", "\tworld"));
+        IO.println("\thello\n");
     }
 }

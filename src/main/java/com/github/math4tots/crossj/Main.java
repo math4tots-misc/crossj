@@ -11,7 +11,7 @@ public final class Main {
     public static void main(String[] args) {
         Args xargs = Args.fromStrings(args);
         Parser parser = Parser.fromSourceRoots(xargs.classPaths);
-        List<CompilationUnit> compilationUnits = parser.parseAll(xargs.root);
+        List<CompilationUnit> compilationUnits = parser.parseAllRoots(xargs.roots);
         new ValidatorTarget(parser).emit(compilationUnits, xargs.mainClass, null);
         Target target;
         switch (xargs.target) {

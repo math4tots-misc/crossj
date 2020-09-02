@@ -18,4 +18,20 @@ public final class List<T> {
     public int size() {
         return list.size();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        boolean first = true;
+        for (T t: list) {
+            if (!first) {
+                sb.append(", ");
+            }
+            first = false;
+            sb.append(Repr.of(t));
+        }
+        sb.append(']');
+        return sb.toString();
+    }
 }

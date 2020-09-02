@@ -1,4 +1,5 @@
 package java.lang;
 
-public final class Object {
+public abstract class Object {
+    public native String toString();
 }
