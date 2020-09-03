@@ -18,19 +18,38 @@ function $EQ(a, b) {
 }
 let $NEXT_ID = 1;
 const $IDMAP = new WeakMap();
+function $IDHASH(x) {
+    if (!$IDMAP.has(x)) {
+        $IDMAP.set(x, $NEXT_ID++);
+    }
+    return $IDMAP.get(x);
+}
 function $HASH(x) {
     if (x.hashCode === undefined) {
         switch (typeof x) {
-            case 'object': {
-                if (!$IDMAP.has(x)) {
-                    $IDMAP.set(x, $NEXT_ID++);
-                }
-                return $IDMAP.get(x);
-            }
+            case 'number': return $NUMHASH(x);
+            case 'string': return $STRHASH(x);
+            case 'object': return $IDHASH(x);
         }
         return 0;
     } else {
         return x.hashCode();
+    }
+}
+function $STRHASH(value) {
+    // Basically follows openjdk7 String.hashCode()
+    let h = 0;
+    for (let i = 0; i < value.length; i++) {
+        h = (31 * h + value.charCodeAt(i))|0;
+    }
+    return h;
+}
+function $NUMHASH(value) {
+    if (value === (value|0)) {
+        return value;
+    } else {
+        // TODO: think of something better
+        return (value * 1000)|0;
     }
 }
 function $STRCAST(value) {
@@ -93,6 +112,14 @@ $CJ['crossj.List'] = $LAZY(function() {
         }
         map(f) {
             return new List(this.arr.map(f));
+        }
+        hashCode() {
+            // More or less follows openjdk7 AbstractList.hashCode()
+            let h = 1;
+            for (let x of this.arr) {
+                h = 31 * h + $HASH(x);
+            }
+            return h;
         }
     };
     return List;

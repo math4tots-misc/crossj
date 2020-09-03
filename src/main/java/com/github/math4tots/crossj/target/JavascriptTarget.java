@@ -411,6 +411,19 @@ public final class JavascriptTarget extends Target {
                     sb.append(")");
                     return;
                 }
+                case "java.lang.Double.hashCode":
+                case "java.lang.Integer.hashCode": {
+                    sb.append("$NUMHASH(");
+                    n.getScope().get().accept(this, arg);
+                    sb.append(")");
+                    return;
+                }
+                case "java.lang.String.hashCode": {
+                    sb.append("$STRHASH(");
+                    n.getScope().get().accept(this, arg);
+                    sb.append(")");
+                    return;
+                }
                 case "crossj.Func0.apply":
                 case "crossj.Func1.apply":
                 case "crossj.Func2.apply":
