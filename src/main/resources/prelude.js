@@ -91,6 +91,9 @@ $CJ['crossj.List'] = $LAZY(function() {
         toString() {
             return '[' + this.arr.map(repr).join(', ') + ']';
         }
+        map(f) {
+            return new List(this.arr.map(f));
+        }
     };
     return List;
 });

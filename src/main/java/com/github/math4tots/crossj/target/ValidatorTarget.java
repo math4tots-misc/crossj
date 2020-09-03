@@ -22,6 +22,7 @@ import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -30,18 +31,15 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.nodeTypes.NodeWithType;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.resolution.types.ResolvedWildcard;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.math4tots.crossj.Parser;
 
 public class ValidatorTarget extends Target {
@@ -224,6 +222,36 @@ public class ValidatorTarget extends Target {
         }
 
         @Override
+        public void visit(LambdaExpr n, Void arg) {
+            ResolvedType type = getExpressionType(n);
+            if (!type.isReferenceType()) {
+                throw lambdaTypeError(n);
+            }
+            switch (type.asReferenceType().getQualifiedName()) {
+                case "crossj.Func0":
+                case "crossj.Func1":
+                case "crossj.Func2":
+                case "crossj.Func3":
+                case "crossj.Func4":
+                case "crossj.Func5":
+                case "crossj.Func6":
+                case "crossj.Func7":
+                case "crossj.Func8":
+                    break;
+                default: {
+                    throw lambdaTypeError(n);
+                }
+            }
+            n.getBody().accept(this, arg);
+        }
+
+        private RuntimeException lambdaTypeError(LambdaExpr n) {
+            ResolvedType type = getExpressionType(n);
+            return err("Unsupported lambda expression type (" + type.describe() + ") "
+                    + "only crossj.Func* types are supported for lambda expressions", n);
+        }
+
+        @Override
         public void visit(IfStmt n, Void arg) {
             n.getCondition().accept(this, arg);
             n.getThenStmt().accept(this, arg);
@@ -267,12 +295,6 @@ public class ValidatorTarget extends Target {
         public void visit(ConstructorDeclaration n, Void arg) {
             n.getBody().accept(this, arg);
         }
-    }
-
-    private ResolvedType getType(NodeWithType<?, ?> node) {
-        JavaSymbolSolver solver = parser.getSymbolSolver();
-        Type type = node.getType();
-        return solver.toResolvedType(type, ResolvedType.class);
     }
 
     private void checkIfAllowedType(ResolvedType type, Node... nodes) {

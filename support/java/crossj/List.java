@@ -43,4 +43,12 @@ public final class List<T> {
         sb.append(']');
         return sb.toString();
     }
+    
+    public <R> List<R> map(Func1<R, T> f) {
+        ArrayList<R> ret = new ArrayList<>();
+        for (T t: list) {
+            ret.add(f.apply(t));
+        }
+        return new List<>(ret);
+    }
 }

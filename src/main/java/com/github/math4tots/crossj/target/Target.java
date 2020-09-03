@@ -17,6 +17,11 @@ import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.nodeTypes.NodeWithType;
+import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.resolution.types.ResolvedType;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.math4tots.crossj.Parser;
 
 public abstract class Target {
@@ -132,5 +137,15 @@ public abstract class Target {
         } else {
             throw err("A class cannot mix native and non-native methods and fields", node);
         }
+    }
+
+    protected ResolvedType getExpressionType(Expression node) {
+        return parser.getSymbolSolver().calculateType(node);
+    }
+
+    protected ResolvedType getType(NodeWithType<?, ?> node) {
+        JavaSymbolSolver solver = parser.getSymbolSolver();
+        Type type = node.getType();
+        return solver.toResolvedType(type, ResolvedType.class);
     }
 }

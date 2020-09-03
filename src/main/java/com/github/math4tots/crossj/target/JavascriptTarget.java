@@ -24,6 +24,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.InstanceOfExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
@@ -152,6 +153,9 @@ public final class JavascriptTarget extends Target {
         }
 
         private void handleMethod(MethodDeclaration method) {
+            if (!method.getBody().isPresent()) {
+                return;
+            }
             if (method.isStatic()) {
                 sb.append("static ");
             }
@@ -378,7 +382,6 @@ public final class JavascriptTarget extends Target {
 
         @Override
         public void visit(MethodCallExpr n, Void arg) {
-            n.calculateResolvedType();
             ResolvedMethodDeclaration method = n.resolve();
 
             // Handle some special cases
@@ -403,6 +406,21 @@ public final class JavascriptTarget extends Target {
                     sb.append("$HASH(");
                     n.getScope().get().accept(this, arg);
                     sb.append(")");
+                    return;
+                }
+                case "crossj.Func0.apply":
+                case "crossj.Func1.apply":
+                case "crossj.Func2.apply":
+                case "crossj.Func3.apply":
+                case "crossj.Func4.apply":
+                case "crossj.Func5.apply":
+                case "crossj.Func6.apply":
+                case "crossj.Func7.apply":
+                case "crossj.Func8.apply": {
+                    // These are actual javascript functions,
+                    // so we need to call them like functions
+                    n.getScope().get().accept(this, arg);
+                    emitArgs(method, n);
                     return;
                 }
             }
@@ -460,6 +478,47 @@ public final class JavascriptTarget extends Target {
             Expression lastArgument = call.getArguments().getLast().get();
             ResolvedType lastArgumentType = lastArgument.calculateResolvedType();
             return method.getLastParam().getType().equals(lastArgumentType);
+        }
+
+        @Override
+        public void visit(LambdaExpr n, Void arg) {
+            ResolvedType type = getExpressionType(n);
+            switch (type.asReferenceType().getQualifiedName()) {
+                case "crossj.Func0":
+                case "crossj.Func1":
+                case "crossj.Func2":
+                case "crossj.Func3":
+                case "crossj.Func4":
+                case "crossj.Func5":
+                case "crossj.Func6":
+                case "crossj.Func7":
+                case "crossj.Func8": {
+                    sb.append("((");
+                    for (int i = 0; i < n.getParameters().size(); i++) {
+                        if (i > 0) {
+                            sb.append(',');
+                        }
+                        Parameter parameter = n.getParameter(i);
+                        sb.append(parameter.getNameAsString());
+                    }
+                    sb.append(")=>");
+                    Statement body = n.getBody();
+                    if (body.isExpressionStmt()) {
+                        Expression expr = body.asExpressionStmt().getExpression();
+                        expr.accept(this, arg);
+                    } else {
+                        sb.append("{\n");
+                        n.getBody().accept(this, arg);
+                        sb.append("}");
+                    }
+                    sb.append(')');
+                    break;
+                }
+                default: {
+                    // This should already have been caught by ValidatorTarget
+                    throw err("Invalid lambda type: " + type.asReferenceType().getQualifiedName(), n);
+                }
+            }
         }
 
         @Override

@@ -12,4 +12,6 @@ public final class List<T> {
 
     @Override
     public native String toString();
+
+    public native <R> List<R> map(Func1<R, T> f);
 }

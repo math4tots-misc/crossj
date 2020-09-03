@@ -45,6 +45,7 @@ public final class Parser {
         this.symbolSolver = new JavaSymbolSolver(typeSolver);
         this.parserConfiguration = new ParserConfiguration();
         parserConfiguration.setLanguageLevel(LanguageLevel.JAVA_8);
+        // parserConfiguration.setLanguageLevel(LanguageLevel.JAVA_14);
         parserConfiguration.setSymbolResolver(symbolSolver);
         this.javaParser = new JavaParser(parserConfiguration);
     }
