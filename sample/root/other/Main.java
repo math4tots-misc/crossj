@@ -40,5 +40,13 @@ public final class Main {
             Func1<Integer, Integer> f = Func1.of(x -> x + 2);
             IO.println("f.apply(Integer) = " + f.apply(24));
         }
+        {
+            for (int x: List.of(1, 2, 3)) {
+                IO.println("x -> " + x);
+            }
+            IO.println("list.fold -> " + List.of(1, 2, 3).fold(0, (a, b) -> a + b));
+            IO.println("list.iter.reduce -> " + List.of(1, 2, 3).iter().reduce((a, b) -> a + b));
+            IO.println("list.reduce -> " + List.of(1, 2, 3).reduce((a, b) -> a + b));
+        }
     }
 }
