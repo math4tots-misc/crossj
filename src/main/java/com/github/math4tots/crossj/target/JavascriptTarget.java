@@ -64,13 +64,16 @@ public final class JavascriptTarget extends Target {
     @Override
     public void emit(List<CompilationUnit> compilationUnits, Optional<String> mainClass, File out) {
         StringBuilder sb = new StringBuilder();
+        sb.append("const $CJ = (function(){\n");
         sb.append(prelude);
         for (CompilationUnit cu : compilationUnits) {
             sb.append(new Translator().translate(cu));
         }
         mainClass.ifPresent(mcls -> {
-            sb.append(getJSClassRef(mcls) + ".main([])\n");
+            sb.append(getJSClassRef(mcls) + ".main([]);\n");
         });
+        sb.append("return $CJ;\n");
+        sb.append("})();");
         File outfile = new File(out, "bundle.js");
         writeFile(outfile, sb.toString());
     }
