@@ -99,8 +99,9 @@ public final class JavascriptTarget extends Target {
             } else {
                 sb.append("$CJ['" + getClassKey(getFullClassName(n)) + "'] = $LAZY(function() {\n");
                 ClassOrInterfaceDeclaration cls = (ClassOrInterfaceDeclaration) n.getPrimaryType().get();
+                sb.append("return ");
                 handleClass(cls);
-                sb.append("return " + cls.getNameAsString() + ";\n");
+                sb.append(";\n");
                 sb.append("});\n");
             }
         }
