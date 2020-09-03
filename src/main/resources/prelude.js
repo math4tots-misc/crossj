@@ -124,6 +124,26 @@ $CJ['crossj.List'] = $LAZY(function() {
     };
     return List;
 });
+$CJ['java.lang.Integer'] = $LAZY(function() {
+    return class Integer {
+        static valueOf(x) {
+            return x;
+        }
+        static parseInt(s) {
+            return parseInt(s);
+        }
+    };
+});
+$CJ['lava.lang.Double'] = $LAZY(function() {
+    return class Double {
+        static valueOf(x) {
+            return x;
+        }
+        static parseDouble(s) {
+            return parseFloat(s);
+        }
+    };
+});
 $CJ['java.lang.StringBuilder'] = $LAZY(function() {
     return class StringBuilder {
         constructor() {

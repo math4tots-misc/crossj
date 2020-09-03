@@ -5,6 +5,10 @@ public final class Integer {
     // this way
     private Integer() {}
 
+    public native static Integer valueOf(int i);
+
+    public native static int parseInt(String s);
+
     @Override
     public native int hashCode();
 }

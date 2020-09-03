@@ -5,6 +5,10 @@ public final class Double {
     // this way
     private Double() {}
 
+    public native static Double valueOf(double x);
+
+    public native static double parseDouble(String s);
+
     @Override
     public native int hashCode();
 }
