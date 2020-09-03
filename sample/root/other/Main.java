@@ -36,5 +36,9 @@ public final class Main {
             Func1<String, String> f = Func1.of(x -> x + "hi");
             IO.println("f.apply = " + f.apply("asdf"));
         }
+        {
+            Func1<Integer, Integer> f = Func1.of(x -> x + 2);
+            IO.println("f.apply(Integer) = " + f.apply(24));
+        }
     }
 }
