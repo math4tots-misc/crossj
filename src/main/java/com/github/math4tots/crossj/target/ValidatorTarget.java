@@ -32,11 +32,14 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -274,6 +277,32 @@ public class ValidatorTarget extends Target {
             n.getVariable().accept(this, arg);
             n.getIterable().accept(this, arg);
             n.getBody().accept(this, arg);
+        }
+
+        @Override
+        public void visit(ThrowStmt n, Void arg) {
+            n.getExpression().accept(this, arg);
+        }
+
+        @Override
+        public void visit(TryStmt n, Void arg) {
+            n.getTryBlock().accept(this, arg);
+            if (n.getCatchClauses().size() > 1) {
+                throw err("Only one catch clause is allowed", n);
+            }
+            n.getCatchClauses().forEach(clause -> clause.accept(this, arg));
+            n.getFinallyBlock().ifPresent(block -> block.accept(this, arg));
+        }
+
+        @Override
+        public void visit(CatchClause n, Void arg) {
+            ResolvedType type = getType(n.getParameter());
+            if (type.isReferenceType() && type.asReferenceType().getQualifiedName().equals("crossj.XError")) {
+                n.getBody().accept(this, arg);
+            } else {
+                throw err("Only crossj.XError errors are allowed to be caught, but tried to throw " + type.describe(),
+                        n);
+            }
         }
 
         @Override

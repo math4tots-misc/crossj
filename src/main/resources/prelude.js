@@ -69,6 +69,35 @@ function $CAST(value, cls) {
 function repr(x) {
     return $CJ['crossj.Repr']().of(x);
 }
+function* $ITERmap(items, f) {
+    for (let item of items) {
+        yield f(item);
+    }
+}
+function* $ITERfilter(items, f) {
+    for (let item of items) {
+        if (f(item)) {
+            yield item;
+        }
+    }
+}
+function $ITERreduce(items, f) {
+    let first = items.next();
+    if (first.done) {
+        throw new Error("Reduce on empty iterator");
+    }
+    let ret = first.value;
+    for (let item of items) {
+        ret = f(ret, item);
+    }
+    return ret;
+}
+function $ITERfold(items, init, f) {
+    for (let item of items) {
+        init = f(init, item);
+    }
+    return init;
+}
 $CJ['crossj.IO'] = $LAZY(function() {
     return class IO {
         static println(x) {
@@ -113,6 +142,15 @@ $CJ['crossj.List'] = $LAZY(function() {
         map(f) {
             return new List(this.arr.map(f));
         }
+        filter(f) {
+            return new List(this.arr.filter(f));
+        }
+        fold(init, f) {
+            return this.arr.reduce(f, init);
+        }
+        reduce(f) {
+            return this.arr.reduce(f);
+        }
         hashCode() {
             // More or less follows openjdk7 AbstractList.hashCode()
             let h = 1;
@@ -120,6 +158,12 @@ $CJ['crossj.List'] = $LAZY(function() {
                 h = 31 * h + $HASH(x);
             }
             return h;
+        }
+        [Symbol.iterator]() {
+            return this.arr.values();
+        }
+        iter() {
+            return this.arr.values();
         }
     };
     return List;

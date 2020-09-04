@@ -81,4 +81,12 @@ public final class List<T> implements XIterable<T> {
     public XIterator<T> iter() {
         return XIterator.fromIterator(list.iterator());
     }
+
+    public boolean contains(T t) {
+        return list.contains(t);
+    }
+
+    public void add(T t) {
+        list.add(t);
+    }
 }

@@ -24,6 +24,11 @@
             <version>3.16.1</version>
         </dependency>
         <!-- JavaParser itself is not a dependency here. It gets included indirectly through java-symbol-solver-core -->
+        <dependency>
+            <groupId>com.github.olivergondza</groupId>
+            <artifactId>maven-jdk-tools-wrapper</artifactId>
+            <version>0.1</version>
+        </dependency>
     </dependencies>
 
     <!-- This blob of configuration tells Maven to make the jar executable. You can run it with:

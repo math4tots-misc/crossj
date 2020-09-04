@@ -5,13 +5,13 @@ public final class Assert {
 
     public static void that(boolean cond) {
         if (!cond) {
-            throw Error.withMessage("Assertion failed");
+            throw XError.withMessage("Assertion failed");
         }
     }
 
     public static <T> void equals(T a, T b) {
         if (!a.equals(b)) {
-            throw Error.withMessage("Assertion failed, expected " + a + " to equal " + b);
+            throw XError.withMessage("Assertion failed, expected " + a + " to equal " + b);
         }
     }
 
@@ -19,11 +19,11 @@ public final class Assert {
         boolean thrown = false;
         try {
             f.apply();
-        } catch (Error e) {
+        } catch (XError e) {
             thrown = true;
         }
         if (!thrown) {
-            throw Error.withMessage("Assertion failed, expected exception not raised");
+            throw XError.withMessage("Assertion failed, expected exception not raised");
         }
     }
 }

@@ -36,12 +36,15 @@ import com.github.javaparser.ast.nodeTypes.NodeWithArguments;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
+import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
 import com.github.javaparser.resolution.declarations.ResolvedConstructorDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
@@ -261,6 +264,15 @@ public final class JavascriptTarget extends Target {
         }
 
         @Override
+        public void visit(ForEachStmt n, Void arg) {
+            sb.append("for (let " + n.getVariableDeclarator().getNameAsString() + " of ");
+            n.getIterable().accept(this, arg);
+            sb.append("){\n");
+            n.getBody().accept(this, arg);
+            sb.append("}\n");
+        }
+
+        @Override
         public void visit(SwitchStmt n, Void arg) {
             sb.append("switch (");
             Expression selector = n.getSelector();
@@ -298,6 +310,29 @@ public final class JavascriptTarget extends Target {
                 expr.accept(this, arg);
             });
             sb.append(";\n");
+        }
+
+        @Override
+        public void visit(ThrowStmt n, Void arg) {
+            sb.append("throw ");
+            n.getExpression().accept(this, arg);
+            sb.append(";\n");
+        }
+
+        @Override
+        public void visit(TryStmt n, Void arg) {
+            sb.append("try ");
+            n.getTryBlock().accept(this, arg);
+            n.getCatchClauses().forEach(clause -> {
+                sb.append("catch($e){\n");
+                sb.append("if(!($e instanceof $CJ['crossj.XError']()))throw $e;");
+                sb.append("}\n");
+            });
+            n.getFinallyBlock().ifPresent(fin -> {
+                sb.append("finally{\n");
+                fin.accept(this, arg);
+                sb.append("}\n");
+            });
         }
 
         @Override
@@ -440,6 +475,16 @@ public final class JavascriptTarget extends Target {
                     emitArgs(method, n);
                     return;
                 }
+            }
+            if (method.getQualifiedName().startsWith("crossj.XIterator.")) {
+                sb.append("$ITER" + method.getName() + "(");
+                n.getScope().get().accept(this, arg);
+                for (Expression marg: n.getArguments()) {
+                    sb.append(',');
+                    marg.accept(this, arg);
+                }
+                sb.append(')');
+                return;
             }
 
             if (method.isStatic()) {
