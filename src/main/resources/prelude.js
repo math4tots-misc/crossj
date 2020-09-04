@@ -98,6 +98,25 @@ function $ITERfold(items, init, f) {
     }
     return init;
 }
+$CJ['crossj.TestFinder'] = $LAZY(function() {
+    return class TestFinder {
+        static run(packageName) {
+            let testCount = 0;
+            for (let [className, methodName] of $listTests()) {
+                if (packageName) {
+                    if (!className.startsWith(packageName + '.')) {
+                        continue;
+                    }
+                }
+                testCount++;
+                process.stdout.write("Running test " + className + "." + methodName + "... ");
+                $CJ[className]()[methodName]();
+                console.log("OK");
+            }
+            console.log(testCount + " tests pass");
+        }
+    }
+});
 $CJ['crossj.IO'] = $LAZY(function() {
     return class IO {
         static println(x) {

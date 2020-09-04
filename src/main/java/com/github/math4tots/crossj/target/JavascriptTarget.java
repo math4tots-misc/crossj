@@ -1,18 +1,22 @@
 package com.github.math4tots.crossj.target;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
@@ -46,6 +50,7 @@ import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
+import com.github.javaparser.resolution.declarations.ResolvedAnnotationDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedConstructorDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
@@ -58,6 +63,7 @@ import com.github.math4tots.crossj.Parser;
 
 public final class JavascriptTarget extends Target {
     private final String prelude;
+    private final List<TestEntry> tests = new ArrayList<>();
 
     public JavascriptTarget(Parser parser) {
         super(parser);
@@ -72,6 +78,11 @@ public final class JavascriptTarget extends Target {
         for (CompilationUnit cu : compilationUnits) {
             sb.append(new Translator().translate(cu));
         }
+        sb.append("function $listTests(){ return [\n");
+        for (TestEntry entry: tests) {
+            sb.append("['" + entry.className + "','" + entry.methodName + "'],\n");
+        }
+        sb.append("];}\n");
         mainClass.ifPresent(mcls -> {
             sb.append(getJSClassRef(mcls) + ".main([]);\n");
         });
@@ -79,6 +90,16 @@ public final class JavascriptTarget extends Target {
         sb.append("})();");
         File outfile = new File(out, "bundle.js");
         writeFile(outfile, sb.toString());
+    }
+
+    private final class TestEntry {
+        public final String className;
+        public final String methodName;
+
+        public TestEntry(String className, String methodName) {
+            this.className = className;
+            this.methodName = methodName;
+        }
     }
 
     private final class Translator extends VoidVisitorWithDefaults<Void> {
@@ -100,6 +121,10 @@ public final class JavascriptTarget extends Target {
                 // In this case, assume that an implementation is already
                 // provided
             } else {
+                TypeDeclaration<?> decl = n.getPrimaryType().get();
+                if (decl instanceof AnnotationDeclaration) {
+                    return;
+                }
                 sb.append("$CJ['" + getClassKey(getFullClassName(n)) + "'] = $LAZY(function() {\n");
                 ClassOrInterfaceDeclaration cls = (ClassOrInterfaceDeclaration) n.getPrimaryType().get();
                 sb.append("return ");
@@ -165,6 +190,18 @@ public final class JavascriptTarget extends Target {
             }
             if (method.isStatic()) {
                 sb.append("static ");
+            }
+            for (AnnotationExpr aexpr: method.getAnnotations()) {
+                ResolvedAnnotationDeclaration annotation = aexpr.resolve();
+                if (annotation.getQualifiedName().equals("crossj.Test")) {
+                    if (!method.isStatic()) {
+                        throw err("non-static methods cannot be a test", aexpr);
+                    }
+                    ClassOrInterfaceDeclaration cls = (ClassOrInterfaceDeclaration) method.getParentNode().get();
+                    String className = cls.getFullyQualifiedName().get();
+                    String methodName = method.getNameAsString();
+                    tests.add(new TestEntry(className, methodName));
+                }
             }
             sb.append(method.getNameAsString() + "(");
             boolean first = true;

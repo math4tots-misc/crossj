@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -79,6 +80,11 @@ public class ValidatorTarget extends Target {
         }
 
         @Override
+        public void visit(AnnotationDeclaration n, Void arg) {
+            // TODO
+        }
+
+        @Override
         public void visit(ClassOrInterfaceDeclaration n, Void arg) {
             if (!n.isInterface() && !n.isFinal()) {
                 throw err("All classes must be final", n);
@@ -131,9 +137,13 @@ public class ValidatorTarget extends Target {
 
         @Override
         public void visit(ExpressionStmt n, Void arg) {
-            ResolvedType type = n.getExpression().calculateResolvedType();
-            checkIfAllowedType(type, n);
-            n.getExpression().accept(this, arg);
+            try {
+                ResolvedType type = getExpressionType(n.getExpression());
+                checkIfAllowedType(type, n);
+                n.getExpression().accept(this, arg);
+            } catch (RuntimeException e) {
+                throw err(e.toString(), n);
+            }
         }
 
         @Override

@@ -17,6 +17,10 @@ public final class List<T> implements XIterable<T> {
         return new List<>(list);
     }
 
+    public static <T> List<T> fromIterable(Iterable<T> iterable) {
+        return fromIterator(iterable.iterator());
+    }
+
     @SafeVarargs
     public static <T> List<T> of(T... args) {
         return new List<T>(new ArrayList<>(Arrays.asList(args)));
