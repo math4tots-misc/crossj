@@ -33,6 +33,7 @@ import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
@@ -266,6 +267,13 @@ public class ValidatorTarget extends Target {
             n.getInitialization().forEach(i -> i.accept(this, arg));
             n.getCompare().ifPresent(c -> c.accept(this, arg));
             n.getUpdate().forEach(upd -> upd.accept(this, arg));
+        }
+
+        @Override
+        public void visit(ForEachStmt n, Void arg) {
+            n.getVariable().accept(this, arg);
+            n.getIterable().accept(this, arg);
+            n.getBody().accept(this, arg);
         }
 
         @Override
