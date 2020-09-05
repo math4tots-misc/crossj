@@ -6,6 +6,6 @@ public final class MapTest {
 
     @Test
     public static void foo() {
-        Assert.equals(1, 2);
+        Assert.equals(1, 1);
     }
 }

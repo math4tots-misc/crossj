@@ -93,4 +93,12 @@ public final class List<T> implements XIterable<T> {
     public void add(T t) {
         list.add(t);
     }
+
+    public T removeIndex(int i) {
+        return list.remove(i);
+    }
+
+    public void removeValue(T t) {
+        list.remove(t);
+    }
 }

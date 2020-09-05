@@ -18,6 +18,8 @@ public final class List<T> implements XIterable<T> {
     public native T reduce(Func2<T, T, T> f);
     public native boolean contains(T t);
     public native void add(T t);
+    public native T removeIndex(int i);
+    public native void removeValue(T t);
 
     @Override
     public native XIterator<T> iter();

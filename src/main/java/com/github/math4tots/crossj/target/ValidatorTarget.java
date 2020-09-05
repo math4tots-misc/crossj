@@ -18,6 +18,7 @@ import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.CharLiteralExpr;
+import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
@@ -161,6 +162,11 @@ public class ValidatorTarget extends Target {
         @Override
         public void visit(EnclosedExpr n, Void arg) {
             n.getInner().accept(this, arg);
+        }
+
+        @Override
+        public void visit(ClassExpr n, Void arg) {
+            // TODO
         }
 
         @Override

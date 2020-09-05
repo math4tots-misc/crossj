@@ -12,8 +12,10 @@ import java.util.Scanner;
 
 import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.DataKey;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.Node.TreeTraversal;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
@@ -144,13 +146,34 @@ public abstract class Target {
     }
 
     protected ResolvedType getExpressionType(Expression node) {
-        if (node instanceof MethodCallExpr) {
-            MethodCallExpr methodCall = (MethodCallExpr) node;
-            if (methodCall.getScope().isPresent() && methodCall.getScope().get() instanceof NameExpr) {
-                return getExpresionTypeForSpecialCase(methodCall);
-            }
+        try {
+            return parser.getSymbolSolver().calculateType(node);
+        } catch (RuntimeException e) {
+            // we need to potentially modify the expression, to apply a hack
+            // to deal with a bug in javaparser
+            prepareExpressionForResolution(node);
+            return parser.getSymbolSolver().calculateType(node);
         }
-        return parser.getSymbolSolver().calculateType(node);
+    }
+
+    private DataKey<Boolean> PREPARED = new DataKey<Boolean>(){};
+
+    protected void prepareExpressionForResolution(Expression node) {
+        if (node.containsData(PREPARED)) {
+            // node is already prepared
+            return;
+        }
+        node.walk(TreeTraversal.POSTORDER, child -> {
+            if (child instanceof MethodCallExpr) {
+                MethodCallExpr methodCall = (MethodCallExpr) child;
+                if (methodCall.getScope().isPresent() && methodCall.getScope().get() instanceof NameExpr) {
+                    getExpresionTypeForSpecialCase(methodCall);
+                }
+            }
+            if (child instanceof Expression) {
+                child.setData(PREPARED, true);
+            }
+        });
     }
 
     // Hack for dealing with a bug in javaparser. For more info, See:
@@ -158,7 +181,7 @@ public abstract class Target {
     private ResolvedType getExpresionTypeForSpecialCase(MethodCallExpr node) {
         try {
             return parser.getSymbolSolver().calculateType(node);
-        } catch (UnsupportedOperationException e) {
+        } catch (RuntimeException e) {
             NameExpr scope = node.getScope().get().asNameExpr();
             ResolvedType scopeType = getExpressionType(scope);
             String name = scopeType.asReferenceType().getQualifiedName();

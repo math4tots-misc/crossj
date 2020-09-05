@@ -9,6 +9,9 @@ function $LAZY(f) {
         return result;
     };
 }
+function $CLS2STR(cls) {
+    return "<class " + cls.name + ">";
+}
 function $EQ(a, b) {
     if (a.equals === undefined) {
         return a === b;
@@ -177,6 +180,17 @@ $CJ['crossj.List'] = $LAZY(function() {
         }
         reduce(f) {
             return this.arr.reduce(f);
+        }
+        removeIndex(index) {
+            let value = this.arr[index];
+            this.arr.splice(index, 1);
+            return value;
+        }
+        removeValue(value) {
+            let index = this.arr.indexOf(value);
+            if (index !== -1) {
+                this.removeIndex(index);
+            }
         }
         hashCode() {
             // More or less follows openjdk7 AbstractList.hashCode()

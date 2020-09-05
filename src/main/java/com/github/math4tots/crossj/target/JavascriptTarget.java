@@ -22,6 +22,7 @@ import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.CharLiteralExpr;
+import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -413,6 +414,11 @@ public final class JavascriptTarget extends Target {
         }
 
         @Override
+        public void visit(ClassExpr n, Void arg) {
+            sb.append(getJSClassRef(n.getType().resolve().asReferenceType().getQualifiedName()));
+        }
+
+        @Override
         public void visit(AssignExpr n, Void arg) {
             n.getTarget().accept(this, arg);
             switch (n.getOperator()) {
@@ -493,6 +499,12 @@ public final class JavascriptTarget extends Target {
                 }
                 case "java.lang.String.hashCode": {
                     sb.append("$STRHASH(");
+                    n.getScope().get().accept(this, arg);
+                    sb.append(")");
+                    return;
+                }
+                case "java.lang.Class.toString": {
+                    sb.append("$CLS2STR(");
                     n.getScope().get().accept(this, arg);
                     sb.append(")");
                     return;
