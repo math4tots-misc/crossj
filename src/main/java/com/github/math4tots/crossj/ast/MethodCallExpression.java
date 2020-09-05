@@ -22,8 +22,10 @@ public final class MethodCallExpression implements Expression {
         if (scope != null) {
             scope.setParent(this);
         }
-        for (TypeExpression type: typeArguments) {
-            type.setParent(this);
+        if (typeArguments != null) {
+            for (TypeExpression type: typeArguments) {
+                type.setParent(this);
+            }
         }
         for (Expression argument: arguments) {
             argument.setParent(this);

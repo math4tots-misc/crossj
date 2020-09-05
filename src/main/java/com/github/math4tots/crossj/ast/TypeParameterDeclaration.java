@@ -2,7 +2,7 @@ package com.github.math4tots.crossj.ast;
 
 import com.github.math4tots.crossj.parser.Mark;
 
-public final class TypeParameterDeclaration implements TypeInfo {
+public final class TypeParameterDeclaration implements TypeDeclaration {
     private Node parent = null;
     private final Mark mark;
     private final String name;
@@ -12,6 +12,9 @@ public final class TypeParameterDeclaration implements TypeInfo {
         this.mark = mark;
         this.name = name;
         this.bound = bound;
+        if (bound != null) {
+            bound.setParent(this);
+        }
     }
 
     @Override

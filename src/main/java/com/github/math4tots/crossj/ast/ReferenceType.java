@@ -3,15 +3,15 @@ package com.github.math4tots.crossj.ast;
 import crossj.List;
 
 public final class ReferenceType implements Type {
-    private final TypeDeclaration declaration;
+    private final ClassOrInterfaceDeclaration declaration;
     private final List<Type> arguments; // nullable
 
-    public ReferenceType(TypeDeclaration declaration, List<Type> arguments) {
+    public ReferenceType(ClassOrInterfaceDeclaration declaration, List<Type> arguments) {
         this.declaration = declaration;
         this.arguments = arguments;
     }
 
-    public TypeDeclaration getDeclaration() {
+    public ClassOrInterfaceDeclaration getDeclaration() {
         return declaration;
     }
 

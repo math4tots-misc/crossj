@@ -10,6 +10,7 @@ public final class ExpressionStatement implements Statement {
     public ExpressionStatement(Mark mark, Expression expression) {
         this.mark = mark;
         this.expression = expression;
+        expression.setParent(this);
     }
 
     @Override

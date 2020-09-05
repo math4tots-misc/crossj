@@ -5,7 +5,7 @@ import com.github.math4tots.crossj.parser.Mark;
 import crossj.List;
 
 public final class MethodDeclaration implements MemberDeclaration {
-    private final TypeDeclaration parent;
+    private final ClassOrInterfaceDeclaration parent;
     private final Mark mark;
     private final List<String> modifiers;
     private final TypeExpression returnType;
@@ -15,7 +15,7 @@ public final class MethodDeclaration implements MemberDeclaration {
     private final boolean isVariadic;
     private final BlockStatement body; // nullable
 
-    public MethodDeclaration(TypeDeclaration parent, Mark mark, List<String> modifiers, TypeExpression returnType,
+    public MethodDeclaration(ClassOrInterfaceDeclaration parent, Mark mark, List<String> modifiers, TypeExpression returnType,
             String name, List<TypeParameterDeclaration> typeParameters, List<VariableDeclaration> parameters,
             boolean isVariadic, BlockStatement body) {
         this.parent = parent;
@@ -30,8 +30,10 @@ public final class MethodDeclaration implements MemberDeclaration {
         parent.getMembers().add(this);
 
         returnType.setParent(this);
-        for (TypeParameterDeclaration declaration: typeParameters) {
-            declaration.setParent(this);
+        if (typeParameters != null) {
+            for (TypeParameterDeclaration declaration: typeParameters) {
+                declaration.setParent(this);
+            }
         }
         for (VariableDeclaration parameter: parameters) {
             parameter.setParent(this);

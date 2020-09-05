@@ -12,6 +12,9 @@ public final class BlockStatement implements Statement {
     public BlockStatement(Mark mark, List<Statement> statements) {
         this.mark = mark;
         this.statements = statements;
+        for (Statement statement: statements) {
+            statement.setParent(this);
+        }
     }
 
     @Override
