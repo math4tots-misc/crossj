@@ -98,6 +98,14 @@ function $ITERfold(items, init, f) {
     }
     return init;
 }
+$CJ['crossj.XError'] = $LAZY(function() {
+    class XError extends Error {
+        static withMessage(message) {
+            return new XError(message);
+        }
+    }
+    return XError;
+});
 $CJ['crossj.TestFinder'] = $LAZY(function() {
     return class TestFinder {
         static run(packageName) {
