@@ -55,6 +55,14 @@ public final class List<T> implements XIterable<T> {
         return sb.toString();
     }
 
+    public List<T> repeat(int n) {
+        List<T> ret = List.of();
+        for (int i = 0; i < n; i++) {
+            ret.addAll(this);
+        }
+        return ret;
+    }
+
     public <R> List<R> map(Func1<R, T> f) {
         ArrayList<R> ret = new ArrayList<>();
         for (T t: list) {
@@ -92,6 +100,10 @@ public final class List<T> implements XIterable<T> {
 
     public void add(T t) {
         list.add(t);
+    }
+
+    public void addAll(XIterable<T> ts) {
+        ts.forEach(list::add);
     }
 
     public T removeIndex(int i) {

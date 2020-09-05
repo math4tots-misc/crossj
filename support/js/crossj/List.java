@@ -23,4 +23,6 @@ public final class List<T> implements XIterable<T> {
 
     @Override
     public native XIterator<T> iter();
+
+    public native List<T> repeat(int n);
 }

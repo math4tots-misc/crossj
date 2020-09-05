@@ -9,6 +9,7 @@ public final class Main {
     public static void main(String[] args) {
         // Unfortunately, the java version still needs some help
         // ensuring that the annotated classes are laoded
+        IterTest.class.toString();
         ListTest.class.toString();
         MapTest.class.toString();
         TestFinder.run("sanity");

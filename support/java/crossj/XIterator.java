@@ -11,7 +11,7 @@ import java.util.Iterator;
  * cause strange behavior.
  *
  */
-public final class XIterator<T> implements Iterator<T> {
+public final class XIterator<T> implements Iterator<T>, XIterable<T> {
     private final Iterator<T> iter;
 
     private XIterator(Iterator<T> iter) {
@@ -32,12 +32,53 @@ public final class XIterator<T> implements Iterator<T> {
         return iter.next();
     }
 
+    @Override
+    public XIterator<T> iter() {
+        return this;
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return iter;
     }
 
     public List<T> list() {
         return List.fromIterator(this);
+    }
+
+    public <R> XIterator<R> flatMap(Func1<XIterable<R>, T> f) {
+        return new XIterator<>(new Iterator<R>() {
+            boolean done = false;
+            Iterator<R> current = null;
+
+            @Override
+            public boolean hasNext() {
+                if (done) {
+                    return false;
+                }
+                while (true) {
+                    if (current == null || !current.hasNext()) {
+                        if (!iter.hasNext()) {
+                            done = true;
+                            return false;
+                        }
+                        current = f.apply(iter.next()).iterator();
+                    }
+                    if (current.hasNext()) {
+                        return true;
+                    }
+                }
+            }
+
+            @Override
+            public R next() {
+                if (hasNext()) {
+                    return current.next();
+                } else {
+                    throw XError.withMessage("next on empty iterator");
+                }
+            }
+        });
     }
 
     public <R> XIterator<R> map(Func1<R, T> f) {

@@ -72,6 +72,13 @@ function $CAST(value, cls) {
 function repr(x) {
     return $CJ['crossj.Repr']().of(x);
 }
+function* $ITERflatMap(items, f) {
+    for (let item of items) {
+        for (subitem of f(item)) {
+            yield subitem;
+        }
+    }
+}
 function* $ITERmap(items, f) {
     for (let item of items) {
         yield f(item);
@@ -100,6 +107,9 @@ function $ITERfold(items, init, f) {
         init = f(init, item);
     }
     return init;
+}
+function $ITERiter(iterator) {
+    return iterator;
 }
 $CJ['crossj.XError'] = $LAZY(function() {
     class XError extends Error {

@@ -49,6 +49,7 @@
                         </goals>
                         <configuration>
                             <sources>
+                                <source>sample/root</source>
                                 <source>support/java</source>
                                 <source>support/shared</source>
                             </sources>
