@@ -15,6 +15,6 @@ public final class Main {
 
     @Test
     public static void foo() {
-        Assert.<Integer>equals(1, 1);
+        Assert.equals(1, 1);
     }
 }

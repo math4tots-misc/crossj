@@ -18,6 +18,10 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.nodeTypes.NodeWithType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -140,7 +144,48 @@ public abstract class Target {
     }
 
     protected ResolvedType getExpressionType(Expression node) {
+        if (node instanceof MethodCallExpr) {
+            MethodCallExpr methodCall = (MethodCallExpr) node;
+            if (methodCall.getScope().isPresent() && methodCall.getScope().get() instanceof NameExpr) {
+                return getExpresionTypeForSpecialCase(methodCall);
+            }
+        }
         return parser.getSymbolSolver().calculateType(node);
+    }
+
+    // Hack for dealing with a bug in javaparser. For more info, See:
+    // https://github.com/javaparser/javaparser/issues/2283
+    private ResolvedType getExpresionTypeForSpecialCase(MethodCallExpr node) {
+        try {
+            return parser.getSymbolSolver().calculateType(node);
+        } catch (UnsupportedOperationException e) {
+            NameExpr scope = node.getScope().get().asNameExpr();
+            ResolvedType scopeType = getExpressionType(scope);
+            String name = scopeType.asReferenceType().getQualifiedName();
+            Expression qualifiedScope = new NameExpr(
+                scope.getTokenRange().get(),
+                new SimpleName(name.substring(0, name.indexOf(".")))
+            );
+            name = name.substring(name.indexOf(".") + 1);
+            while (name.length() > 0) {
+                int cut = name.indexOf(".");
+                String part;
+                if (cut == -1) {
+                    part = name;
+                    name = "";
+                } else {
+                    part = name.substring(0, cut);
+                    name = name.substring(cut + 1);
+                }
+                qualifiedScope = new FieldAccessExpr(
+                    scope.getTokenRange().get(),
+                    qualifiedScope,
+                    null,
+                    new SimpleName(part));
+            }
+            node.setScope(qualifiedScope);
+            return parser.getSymbolSolver().calculateType(node);
+        }
     }
 
     protected ResolvedType getType(NodeWithType<?, ?> node) {
