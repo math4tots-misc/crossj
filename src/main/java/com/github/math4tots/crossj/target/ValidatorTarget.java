@@ -137,13 +137,9 @@ public class ValidatorTarget extends Target {
 
         @Override
         public void visit(ExpressionStmt n, Void arg) {
-            try {
-                ResolvedType type = getExpressionType(n.getExpression());
-                checkIfAllowedType(type, n);
-                n.getExpression().accept(this, arg);
-            } catch (RuntimeException e) {
-                throw err(e.toString(), n);
-            }
+            ResolvedType type = getExpressionType(n.getExpression());
+            checkIfAllowedType(type, n);
+            n.getExpression().accept(this, arg);
         }
 
         @Override
