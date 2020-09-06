@@ -5,7 +5,7 @@ import com.github.math4tots.crossj.parser.Mark;
 import crossj.List;
 
 public final class MethodDeclaration implements MemberDeclaration {
-    private final ClassOrInterfaceDeclaration parent;
+    private ClassOrInterfaceDeclaration parent = null;
     private final Mark mark;
     private final List<String> modifiers;
     private final TypeExpression returnType;
@@ -15,10 +15,9 @@ public final class MethodDeclaration implements MemberDeclaration {
     private final boolean isVariadic;
     private final BlockStatement body; // nullable
 
-    public MethodDeclaration(ClassOrInterfaceDeclaration parent, Mark mark, List<String> modifiers, TypeExpression returnType,
-            String name, List<TypeParameterDeclaration> typeParameters, List<VariableDeclaration> parameters,
-            boolean isVariadic, BlockStatement body) {
-        this.parent = parent;
+    public MethodDeclaration(Mark mark, List<String> modifiers, TypeExpression returnType, String name,
+            List<TypeParameterDeclaration> typeParameters, List<VariableDeclaration> parameters, boolean isVariadic,
+            BlockStatement body) {
         this.mark = mark;
         this.modifiers = modifiers;
         this.returnType = returnType;
@@ -27,15 +26,13 @@ public final class MethodDeclaration implements MemberDeclaration {
         this.parameters = parameters;
         this.isVariadic = isVariadic;
         this.body = body;
-        parent.getMembers().add(this);
-
         returnType.setParent(this);
         if (typeParameters != null) {
-            for (TypeParameterDeclaration declaration: typeParameters) {
+            for (TypeParameterDeclaration declaration : typeParameters) {
                 declaration.setParent(this);
             }
         }
-        for (VariableDeclaration parameter: parameters) {
+        for (VariableDeclaration parameter : parameters) {
             parameter.setParent(this);
         }
         if (body != null) {
@@ -46,6 +43,11 @@ public final class MethodDeclaration implements MemberDeclaration {
     @Override
     public Node getParent() {
         return parent;
+    }
+
+    @Override
+    public void setParent(ClassOrInterfaceDeclaration parent) {
+        this.parent = parent;
     }
 
     @Override
@@ -93,7 +95,7 @@ public final class MethodDeclaration implements MemberDeclaration {
 
     @Override
     public TypeDeclaration lookupTypeDeclaration(String name) {
-        for (TypeParameterDeclaration declaration: typeParameters) {
+        for (TypeParameterDeclaration declaration : typeParameters) {
             if (declaration.getName().equals(name)) {
                 return declaration;
             }

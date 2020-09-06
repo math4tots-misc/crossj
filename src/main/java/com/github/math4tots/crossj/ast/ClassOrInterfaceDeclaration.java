@@ -21,11 +21,11 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
     private final String name;
     private final List<TypeParameterDeclaration> typeParameters; // nullable
     private final List<TypeExpression> interfaces;
-    private final List<MemberDeclaration> members = List.of();
+    private final List<MemberDeclaration> members;
 
     public ClassOrInterfaceDeclaration(World parent, Mark mark, String packageName, List<String> imports,
             List<String> modifiers, boolean isInterface, String name, List<TypeParameterDeclaration> typeParameters,
-            List<TypeExpression> interfaces) {
+            List<TypeExpression> interfaces, List<MemberDeclaration> members) {
         this.parent = parent;
         this.mark = mark;
         this.packageName = packageName;
@@ -35,7 +35,8 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
         this.name = name;
         this.typeParameters = typeParameters;
         this.interfaces = interfaces;
-        parent.addTypeDeclaration(packageName + "." + name, this);
+        this.members = members;
+        parent.addTypeDeclaration(this);
         if (typeParameters != null) {
             for (TypeParameterDeclaration declaration : typeParameters) {
                 declaration.setParent(this);
@@ -43,6 +44,15 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
         }
         for (TypeExpression expression : interfaces) {
             expression.setParent(this);
+        }
+        for (MemberDeclaration member : members) {
+            member.setParent(this);
+        }
+
+        // for the most part, I don't want to do any validation with crossj itself right now,
+        // but this one is so easy to miss and really easy to check, so I do it here.
+        if (!isInterface && !getQualifiedName().equals("java.lang.Object") && !isFinal()) {
+            throw err("All crossj classes must be final");
         }
     }
 
@@ -54,6 +64,10 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
     @Override
     public Mark getMark() {
         return mark;
+    }
+
+    public String getQualifiedName() {
+        return packageName + "." + name;
     }
 
     public String getPackageName() {
@@ -70,6 +84,10 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
 
     public boolean isInterface() {
         return isInterface;
+    }
+
+    public boolean isFinal() {
+        return modifiers.contains("final");
     }
 
     public String getName() {
@@ -100,8 +118,19 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
         }
         for (String qualifiedName: imports) {
             String shortName = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
-            if (shortName.equals(name)) {
-                return getParent().lookupTypeDeclaration(qualifiedName);
+            if (shortName.equals("*")) {
+                // this is a wildcard import
+                // we check all classes in the specified package.
+                String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
+                for (ClassOrInterfaceDeclaration declaration : parent.getAllDeclarationsInPackage(packageName)) {
+                    if (declaration.getName().equals(name)) {
+                        return declaration;
+                    }
+                }
+            } else {
+                if (shortName.equals(name)) {
+                    return getParent().lookupTypeDeclaration(qualifiedName);
+                }
             }
         }
         return getParent().lookupTypeDeclaration(name);

@@ -21,7 +21,7 @@ public final class TypeExpression implements Node {
     private Node parent;
     private final Mark mark;
     private final String name;
-    private final List<TypeExpression> arguments;
+    private final List<TypeExpression> arguments; // nullable
     private Type cache = null;
 
     public TypeExpression(Mark mark, String name, List<TypeExpression> arguments) {
@@ -29,8 +29,10 @@ public final class TypeExpression implements Node {
         this.mark = mark;
         this.name = name;
         this.arguments = arguments;
-        for (TypeExpression argument : arguments) {
-            argument.setParent(this);
+        if (arguments != null) {
+            for (TypeExpression argument : arguments) {
+                argument.setParent(this);
+            }
         }
     }
 
@@ -69,6 +71,8 @@ public final class TypeExpression implements Node {
 
     private Type solveTypeNoCache() {
         switch (name) {
+            case "[]":
+                throw err("TODO: solveType array type expressions");
             case "?":
                 return WildcardType.INSTANCE;
             case "void":

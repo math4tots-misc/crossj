@@ -37,4 +37,22 @@ public final class Map<K, V> {
     public XIterator<K> keys() {
         return XIterator.fromIterator(map.keySet().iterator());
     }
+
+    public XIterator<V> values() {
+        return XIterator.fromIterator(map.values().iterator());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for (K key: keys()) {
+            sb.append(Repr.of(key));
+            sb.append(": ");
+            sb.append(Repr.of(get(key)));
+            sb.append(", ");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 }

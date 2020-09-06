@@ -43,6 +43,14 @@ public final class List<T> implements XIterable<T> {
         return list.size();
     }
 
+    public T get(int i) {
+        return list.get(i);
+    }
+
+    public void set(int i, T t) {
+        list.set(i, t);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof List<?>)) {

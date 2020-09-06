@@ -9,4 +9,6 @@ public interface MemberDeclaration extends Node {
     default boolean isStatic() {
         return getModifiers().contains("static");
     }
+
+    void setParent(ClassOrInterfaceDeclaration parent);
 }

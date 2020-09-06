@@ -9,8 +9,7 @@ public final class VariableDeclaration implements Node {
     private final String name;
     private final Expression initializer;
 
-    public VariableDeclaration(Node parent, Mark mark, TypeExpression type, String name, Expression initializer) {
-        this.parent = parent;
+    public VariableDeclaration(Mark mark, TypeExpression type, String name, Expression initializer) {
         this.mark = mark;
         this.type = type;
         this.name = name;

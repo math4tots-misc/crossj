@@ -2,15 +2,14 @@ package com.github.math4tots.crossj.ast;
 
 import com.github.math4tots.crossj.parser.Mark;
 
-public final class ExpressionStatement implements Statement {
+public final class DoubleLiteralExpression implements Expression {
     private Node parent = null;
     private final Mark mark;
-    private final Expression expression;
+    private final double value;
 
-    public ExpressionStatement(Mark mark, Expression expression) {
+    public DoubleLiteralExpression(Mark mark, double value) {
         this.mark = mark;
-        this.expression = expression;
-        expression.setParent(this);
+        this.value = value;
     }
 
     @Override
@@ -18,6 +17,7 @@ public final class ExpressionStatement implements Statement {
         return parent;
     }
 
+    @Override
     public void setParent(Node parent) {
         this.parent = parent;
     }
@@ -27,12 +27,12 @@ public final class ExpressionStatement implements Statement {
         return mark;
     }
 
-    public Expression getExpression() {
-        return expression;
+    public double getValue() {
+        return value;
     }
 
     @Override
-    public <R, A> R accept(StatementVisitor<R, A> visitor, A a) {
+    public <R, A> R accpet(ExpressionVisitor<R, A> visitor, A a) {
         return visitor.visit(this, a);
     }
 }

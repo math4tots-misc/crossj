@@ -13,6 +13,7 @@ public final class Main {
         ListTest.class.toString();
         MapTest.class.toString();
         LexerTest.class.toString();
+        ParserTest.class.toString();
         TestFinder.run("sanity");
     }
 

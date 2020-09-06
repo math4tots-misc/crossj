@@ -2,14 +2,19 @@ package com.github.math4tots.crossj.ast;
 
 import com.github.math4tots.crossj.parser.Mark;
 
-public final class StringLiteralExpression implements Expression {
+public final class FieldAccessExpression implements Expression {
     private Node parent = null;
     private final Mark mark;
-    private final String value;
+    private final Expression scope; // nullable
+    private final String name;
 
-    public StringLiteralExpression(Mark mark, String value) {
+    public FieldAccessExpression(Mark mark, Expression scope, String name) {
         this.mark = mark;
-        this.value = value;
+        this.scope = scope;
+        this.name = name;
+        if (scope != null) {
+            scope.setParent(this);
+        }
     }
 
     @Override
@@ -27,8 +32,12 @@ public final class StringLiteralExpression implements Expression {
         return mark;
     }
 
-    public String getValue() {
-        return value;
+    public Expression getScope() {
+        return scope;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

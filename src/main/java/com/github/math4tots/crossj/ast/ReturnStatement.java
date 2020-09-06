@@ -30,4 +30,9 @@ public final class ReturnStatement implements Statement {
     public Expression getExpression() {
         return expression;
     }
+
+    @Override
+    public <R, A> R accept(StatementVisitor<R, A> visitor, A a) {
+        return visitor.visit(this, a);
+    }
 }

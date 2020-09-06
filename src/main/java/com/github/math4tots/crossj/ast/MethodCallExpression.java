@@ -70,4 +70,9 @@ public final class MethodCallExpression implements Expression {
     public List<Expression> getArguments() {
         return arguments;
     }
+
+    @Override
+    public <R, A> R accpet(ExpressionVisitor<R, A> visitor, A a) {
+        return visitor.visit(this, a);
+    }
 }

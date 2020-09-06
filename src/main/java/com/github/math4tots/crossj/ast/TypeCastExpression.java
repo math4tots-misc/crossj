@@ -2,15 +2,16 @@ package com.github.math4tots.crossj.ast;
 
 import com.github.math4tots.crossj.parser.Mark;
 
-public final class ExpressionStatement implements Statement {
+public final class TypeCastExpression implements Expression {
     private Node parent = null;
     private final Mark mark;
+    private final TypeExpression type;
     private final Expression expression;
 
-    public ExpressionStatement(Mark mark, Expression expression) {
+    public TypeCastExpression(Mark mark, TypeExpression type, Expression expression) {
         this.mark = mark;
+        this.type = type;
         this.expression = expression;
-        expression.setParent(this);
     }
 
     @Override
@@ -18,6 +19,7 @@ public final class ExpressionStatement implements Statement {
         return parent;
     }
 
+    @Override
     public void setParent(Node parent) {
         this.parent = parent;
     }
@@ -27,12 +29,16 @@ public final class ExpressionStatement implements Statement {
         return mark;
     }
 
+    public TypeExpression getType() {
+        return type;
+    }
+
     public Expression getExpression() {
         return expression;
     }
 
     @Override
-    public <R, A> R accept(StatementVisitor<R, A> visitor, A a) {
+    public <R, A> R accpet(ExpressionVisitor<R, A> visitor, A a) {
         return visitor.visit(this, a);
     }
 }
