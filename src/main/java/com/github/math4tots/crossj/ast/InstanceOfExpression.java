@@ -38,7 +38,7 @@ public final class InstanceOfExpression implements Expression {
     }
 
     @Override
-    public <R, A> R accpet(ExpressionVisitor<R, A> visitor, A a) {
-        return visitor.visit(this, a);
+    public <R, A> R accept(ExpressionVisitor<R, A> visitor, A a) {
+        return visitor.visitInstanceOfExpression(this, a);
     }
 }

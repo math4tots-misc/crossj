@@ -33,6 +33,6 @@ public final class ReturnStatement implements Statement {
 
     @Override
     public <R, A> R accept(StatementVisitor<R, A> visitor, A a) {
-        return visitor.visit(this, a);
+        return visitor.visitReturnStatement(this, a);
     }
 }

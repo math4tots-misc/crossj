@@ -42,7 +42,6 @@ public class World implements Node {
     }
 
     public ClassOrInterfaceDeclaration getTypeDeclaration(String qualifiedName) {
-        System.out.println("map = " + map);
         return map.get(qualifiedName);
     }
 
@@ -51,6 +50,10 @@ public class World implements Node {
         if (map == null) {
             throw err("Package " + packageName + " not found");
         }
+        return map.values().list();
+    }
+
+    public List<ClassOrInterfaceDeclaration> getAllDeclarations() {
         return map.values().list();
     }
 

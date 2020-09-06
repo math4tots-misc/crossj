@@ -37,6 +37,6 @@ public final class BlockStatement implements Statement {
 
     @Override
     public <R, A> R accept(StatementVisitor<R, A> visitor, A a) {
-        return visitor.visit(this, a);
+        return visitor.visitBlockStatement(this, a);
     }
 }
