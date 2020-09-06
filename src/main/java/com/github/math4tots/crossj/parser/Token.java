@@ -31,6 +31,10 @@ public final class Token {
         return (String) value;
     }
 
+    public Object getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return "Token(" + type + ", " + value + ")";

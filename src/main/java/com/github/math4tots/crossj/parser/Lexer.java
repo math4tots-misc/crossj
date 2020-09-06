@@ -130,9 +130,9 @@ public final class Lexer {
             }
 
             // identifiers and keywords
-            if (Character.isJavaIdentifierStart(ch)) {
+            if (isWordChar(ch)) {
                 incr();
-                while (more() && Character.isJavaIdentifierPart(ch)) {
+                while (more() && isWordChar(peek())) {
                     incr();
                 }
                 String name = s.substring(start, i);
@@ -191,6 +191,12 @@ public final class Lexer {
                     throw err("Unterminated string literal");
                 }
                 incr();
+                String type = quote == '"' ? "string" : "char";
+                String value = sb.toString();
+                if (type.equals("char") && value.length() != 1) {
+                    throw err("Char literals must have length 1, but got " + value.length());
+                }
+                ret.add(newToken(type, value));
                 continue;
             }
 
@@ -213,7 +219,12 @@ public final class Lexer {
             // unrecognized...
             throw err("Unrecognized token starting " + ch);
         }
+        ret.add(newToken("EOF", null));
         return ret;
+    }
+
+    private boolean isWordChar(char ch) {
+        return ch == '_' || ch == '$' || Character.isLetterOrDigit(ch);
     }
 
     private XError err(String message) {
