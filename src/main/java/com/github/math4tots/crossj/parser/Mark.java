@@ -10,4 +10,8 @@ public final class Mark {
         this.line = line;
         this.column = column;
     }
+
+    public String format() {
+        return "in " + source.name + " on line " + line + " on column " + column + "\n";
+    }
 }

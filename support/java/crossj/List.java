@@ -2,6 +2,7 @@ package crossj;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 public final class List<T> implements XIterable<T> {
@@ -24,6 +25,18 @@ public final class List<T> implements XIterable<T> {
     @SafeVarargs
     public static <T> List<T> of(T... args) {
         return new List<T>(new ArrayList<>(Arrays.asList(args)));
+    }
+
+    public static <T> List<T> reversed(Iterable<T> iterable) {
+        List<T> ret = List.fromIterable(iterable);
+        Collections.reverse(ret.list);
+        return ret;
+    }
+
+    public static <T extends Comparable<T>> List<T> sorted(Iterable<T> iterable) {
+        List<T> ret = List.fromIterable(iterable);
+        Collections.sort(ret.list);
+        return ret;
     }
 
     public int size() {
@@ -61,6 +74,16 @@ public final class List<T> implements XIterable<T> {
             ret.addAll(this);
         }
         return ret;
+    }
+
+    public <R> List<R> flatMap(Func1<Iterable<R>, T> f) {
+        ArrayList<R> ret = new ArrayList<>();
+        for (T t: list) {
+            for (R r: f.apply(t)) {
+                ret.add(r);
+            }
+        }
+        return new List<>(ret);
     }
 
     public <R> List<R> map(Func1<R, T> f) {
