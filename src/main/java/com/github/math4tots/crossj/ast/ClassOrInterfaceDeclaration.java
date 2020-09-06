@@ -87,4 +87,23 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
     public List<MemberDeclaration> getMembers() {
         return members;
     }
+
+    @Override
+    public TypeDeclaration lookupTypeDeclaration(String name) {
+        if (this.name.equals(name)) {
+            return this;
+        }
+        for (TypeParameterDeclaration declaration: typeParameters) {
+            if (declaration.getName().equals(name)) {
+                return declaration;
+            }
+        }
+        for (String qualifiedName: imports) {
+            String shortName = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
+            if (shortName.equals(name)) {
+                return getParent().lookupTypeDeclaration(qualifiedName);
+            }
+        }
+        return getParent().lookupTypeDeclaration(name);
+    }
 }

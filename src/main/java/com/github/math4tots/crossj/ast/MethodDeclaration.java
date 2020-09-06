@@ -90,4 +90,14 @@ public final class MethodDeclaration implements MemberDeclaration {
     public BlockStatement getBody() {
         return body;
     }
+
+    @Override
+    public TypeDeclaration lookupTypeDeclaration(String name) {
+        for (TypeParameterDeclaration declaration: typeParameters) {
+            if (declaration.getName().equals(name)) {
+                return declaration;
+            }
+        }
+        return getParent().lookupTypeDeclaration(name);
+    }
 }

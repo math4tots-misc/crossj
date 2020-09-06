@@ -8,6 +8,9 @@ import crossj.Map;
 public class World implements Node {
     private static final Mark MARK = new Mark(new Source("<world>", ""), 1, 1);
 
+    /**
+     * Maps fully qualified type names to their class-or-interface declarations
+     */
     private final Map<String, ClassOrInterfaceDeclaration> map = Map.of();
 
     @Override
@@ -31,5 +34,10 @@ public class World implements Node {
 
     void addTypeDeclaration(String qualifiedName, ClassOrInterfaceDeclaration declaration) {
         map.put(qualifiedName, declaration);
+    }
+
+    @Override
+    public TypeDeclaration lookupTypeDeclaration(String name) {
+        return map.get(name);
     }
 }
