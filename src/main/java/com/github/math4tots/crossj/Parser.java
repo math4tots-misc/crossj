@@ -11,11 +11,21 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ParserConfiguration.LanguageLevel;
+import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.LambdaExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
+
+import crossj.XError;
 
 public final class Parser {
     private final TypeSolver typeSolver;
@@ -26,7 +36,7 @@ public final class Parser {
 
     public static Parser fromSourceRootStrings(List<String> roots) {
         List<File> files = new ArrayList<>();
-        for (String root: roots) {
+        for (String root : roots) {
             files.add(new File(root));
         }
         return fromSourceRoots(files);
@@ -34,7 +44,7 @@ public final class Parser {
 
     public static Parser fromSourceRoots(List<File> roots) {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-        for (File root: roots) {
+        for (File root : roots) {
             combinedTypeSolver.add(new JavaParserTypeSolver(root));
         }
         return new Parser(combinedTypeSolver);
@@ -62,11 +72,45 @@ public final class Parser {
         return symbolSolver;
     }
 
+    /**
+     * Make some modifications to the tree to make type inference a bit easier for
+     * javaparser.
+     *
+     * <li>Wrap all lambda expressions in Func*.of(..)</li>
+     */
+    public void prepareTree(CompilationUnit compilationUnit) {
+        compilationUnit.findAll(LambdaExpr.class).forEach(lexpr -> {
+            Node originalParent = lexpr.getParentNode().get();
+
+            int argc = lexpr.getParameters().size();
+
+            TokenRange tokenRange = lexpr.getTokenRange().get();
+            NameExpr crossjName = new NameExpr(tokenRange, new SimpleName("crossj"));
+
+            FieldAccessExpr funcClassName = new FieldAccessExpr(tokenRange, crossjName, null,
+                    new SimpleName("Func" + argc));
+            crossjName.setParentNode(funcClassName);
+
+            MethodCallExpr wrappedLambda = new MethodCallExpr(tokenRange, funcClassName, null, new SimpleName("of"),
+                    new NodeList<>());
+            funcClassName.setParentNode(wrappedLambda);
+
+            if (!lexpr.replace(wrappedLambda)) {
+                throw XError.withMessage("Failed to replace lambda expression");
+            }
+
+            wrappedLambda.getArguments().add(lexpr);
+            lexpr.setParentNode(wrappedLambda);
+            // wrappedLambda.setParentNode(originalParent);
+        });
+    }
+
     public CompilationUnit parseFile(File file) {
         try {
             ParseResult<CompilationUnit> result = javaParser.parse(file);
             if (result.isSuccessful()) {
                 CompilationUnit compilationUnit = result.getResult().get();
+                // prepareTree(compilationUnit);
                 originalFiles.put(compilationUnit, file);
                 return compilationUnit;
             } else {
@@ -79,7 +123,7 @@ public final class Parser {
 
     public List<CompilationUnit> parseAllFiles(List<File> files) {
         List<CompilationUnit> compilationUnits = new ArrayList<>();
-        for (File file: files) {
+        for (File file : files) {
             compilationUnits.add(parseFile(file));
         }
         return compilationUnits;
@@ -87,7 +131,7 @@ public final class Parser {
 
     public List<CompilationUnit> parseAllRoots(List<File> roots) {
         List<File> files = new ArrayList<>();
-        for (File root: roots) {
+        for (File root : roots) {
             files.addAll(findAllFiles(root));
         }
         return parseAllFiles(files);

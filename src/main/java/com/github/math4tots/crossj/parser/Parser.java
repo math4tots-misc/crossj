@@ -20,7 +20,7 @@ import com.github.math4tots.crossj.ast.StringLiteralExpression;
 import com.github.math4tots.crossj.ast.TypeCastExpression;
 import com.github.math4tots.crossj.ast.TypeExpression;
 import com.github.math4tots.crossj.ast.TypeParameterDeclaration;
-import com.github.math4tots.crossj.ast.VariableDeclaration;
+import com.github.math4tots.crossj.ast.LocalVariableDeclaration;
 import com.github.math4tots.crossj.ast.World;
 
 import crossj.*;
@@ -290,8 +290,8 @@ public final class Parser {
         String name = parseName();
         if (typeParameters != null || at("(")) {
             // method
-            Pair<List<VariableDeclaration>, Boolean> pair = parseParameters();
-            List<VariableDeclaration> parameters = pair.get1();
+            Pair<List<LocalVariableDeclaration>, Boolean> pair = parseParameters();
+            List<LocalVariableDeclaration> parameters = pair.get1();
             boolean isVariadic = pair.get2();
             BlockStatement body = null;
             if (!consume(";")) {
@@ -309,9 +309,9 @@ public final class Parser {
         }
     }
 
-    private Pair<List<VariableDeclaration>, Boolean> parseParameters() {
+    private Pair<List<LocalVariableDeclaration>, Boolean> parseParameters() {
         expect("(");
-        List<VariableDeclaration> list = List.of();
+        List<LocalVariableDeclaration> list = List.of();
         boolean isVariadic = false;
         while (!consume(")")) {
             Mark mark = getMark();
@@ -321,12 +321,12 @@ public final class Parser {
                 String name = parseName();
                 isVariadic = true;
                 type = new TypeExpression(mark, "[]", List.of(type));
-                list.add(new VariableDeclaration(mark, type, name, null));
+                list.add(new LocalVariableDeclaration(mark, type, name, null));
                 expect(")");
                 break;
             } else {
                 String name = parseName();
-                list.add(new VariableDeclaration(mark, type, name, null));
+                list.add(new LocalVariableDeclaration(mark, type, name, null));
                 if (!consume(",")) {
                     expect(")");
                     break;

@@ -4,7 +4,7 @@ import com.github.math4tots.crossj.parser.Mark;
 
 import crossj.List;
 
-public final class FieldDeclaration implements MemberDeclaration {
+public final class FieldDeclaration implements MemberDeclaration, VariableDeclaration {
     private ClassOrInterfaceDeclaration parent = null;
     private final Mark mark;
     private final List<String> modifiers;

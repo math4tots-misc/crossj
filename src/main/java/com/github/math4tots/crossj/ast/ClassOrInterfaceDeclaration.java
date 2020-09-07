@@ -135,4 +135,17 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
         }
         return getParent().lookupTypeDeclaration(name);
     }
+
+    @Override
+    public VariableDeclaration lookupVariableDeclaration(String name) {
+        for (MemberDeclaration member : members) {
+            if (member instanceof FieldDeclaration) {
+                FieldDeclaration field = (FieldDeclaration) member;
+                if (field.getName().equals(name)) {
+                    return field;
+                }
+            }
+        }
+        return getParent().lookupVariableDeclaration(name);
+    }
 }

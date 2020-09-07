@@ -1,11 +1,13 @@
 package com.github.math4tots.crossj.ast;
 
+import com.github.math4tots.crossj.TypeSolver;
 import com.github.math4tots.crossj.parser.Mark;
 import com.github.math4tots.crossj.parser.Parser;
 import com.github.math4tots.crossj.parser.Source;
 
 import crossj.List;
 import crossj.Map;
+import crossj.Set;
 
 public class World implements Node {
     private static final Mark MARK = new Mark(new Source("<world>", ""), 1, 1);
@@ -25,6 +27,10 @@ public class World implements Node {
      * is required.
      */
     private final Map<String, Map<String, ClassOrInterfaceDeclaration>> packageMap = Map.of();
+
+    private final Set<String> packageNames = Set.of();
+
+    private final TypeSolver typeSolver = new TypeSolver(this);
 
     @Override
     public Mark getMark() {
@@ -66,10 +72,33 @@ public class World implements Node {
             packageMap.put(packageName, Map.of());
         }
         packageMap.get(packageName).put(declaration.getName(), declaration);
+
+        while (true) {
+            packageNames.add(packageName);
+            if (packageName.contains(".")) {
+                packageName = packageName.substring(0, packageName.lastIndexOf("."));
+            } else {
+                break;
+            }
+        }
+    }
+
+    public boolean hasPackageWithName(String packageName) {
+        return packageNames.contains(packageName);
     }
 
     @Override
     public TypeDeclaration lookupTypeDeclaration(String name) {
+        return lookupClassOrInterfaceDeclaration(name);
+    }
+
+    @Override
+    public VariableDeclaration lookupVariableDeclaration(String name) {
+        // at this scope, there are no variables
+        return null;
+    }
+
+    public ClassOrInterfaceDeclaration lookupClassOrInterfaceDeclaration(String name) {
         return map.get(name);
     }
 

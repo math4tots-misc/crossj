@@ -11,13 +11,13 @@ public final class MethodDeclaration implements MemberDeclaration {
     private final TypeExpression returnType;
     private final String name;
     private final List<TypeParameterDeclaration> typeParameters; // nullable
-    private final List<VariableDeclaration> parameters;
+    private final List<LocalVariableDeclaration> parameters;
     private final boolean isVariadic;
     private final BlockStatement body; // nullable
 
     public MethodDeclaration(Mark mark, List<String> modifiers, TypeExpression returnType, String name,
-            List<TypeParameterDeclaration> typeParameters, List<VariableDeclaration> parameters, boolean isVariadic,
-            BlockStatement body) {
+            List<TypeParameterDeclaration> typeParameters, List<LocalVariableDeclaration> parameters,
+            boolean isVariadic, BlockStatement body) {
         this.mark = mark;
         this.modifiers = modifiers;
         this.returnType = returnType;
@@ -32,7 +32,7 @@ public final class MethodDeclaration implements MemberDeclaration {
                 declaration.setParent(this);
             }
         }
-        for (VariableDeclaration parameter : parameters) {
+        for (LocalVariableDeclaration parameter : parameters) {
             parameter.setParent(this);
         }
         if (body != null) {
@@ -77,7 +77,7 @@ public final class MethodDeclaration implements MemberDeclaration {
         return typeParameters;
     }
 
-    public List<VariableDeclaration> getParameters() {
+    public List<LocalVariableDeclaration> getParameters() {
         return parameters;
     }
 
@@ -95,11 +95,23 @@ public final class MethodDeclaration implements MemberDeclaration {
 
     @Override
     public TypeDeclaration lookupTypeDeclaration(String name) {
-        for (TypeParameterDeclaration declaration : typeParameters) {
+        if (typeParameters != null) {
+            for (TypeParameterDeclaration declaration : typeParameters) {
+                if (declaration.getName().equals(name)) {
+                    return declaration;
+                }
+            }
+        }
+        return getParent().lookupTypeDeclaration(name);
+    }
+
+    @Override
+    public VariableDeclaration lookupVariableDeclaration(String name) {
+        for (LocalVariableDeclaration declaration : parameters) {
             if (declaration.getName().equals(name)) {
                 return declaration;
             }
         }
-        return getParent().lookupTypeDeclaration(name);
+        return null;
     }
 }

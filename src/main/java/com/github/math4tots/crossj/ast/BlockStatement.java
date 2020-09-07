@@ -39,4 +39,17 @@ public final class BlockStatement implements Statement {
     public <R, A> R accept(StatementVisitor<R, A> visitor, A a) {
         return visitor.visitBlockStatement(this, a);
     }
+
+    @Override
+    public VariableDeclaration lookupVariableDeclaration(String name) {
+        for (Statement statement: statements) {
+            if (statement instanceof LocalVariableDeclaration) {
+                LocalVariableDeclaration declaration = (LocalVariableDeclaration) statement;
+                if (declaration.getName().equals(name)) {
+                    return declaration;
+                }
+            }
+        }
+        return null;
+    }
 }
