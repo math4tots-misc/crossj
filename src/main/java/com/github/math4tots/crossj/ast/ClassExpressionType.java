@@ -1,5 +1,8 @@
 package com.github.math4tots.crossj.ast;
 
+import crossj.Map;
+import crossj.XError;
+
 /**
  * The type of the class part of an expression.
  *
@@ -18,5 +21,10 @@ public final class ClassExpressionType implements PseudoType {
 
     public ClassOrInterfaceDeclaration getDeclaration() {
         return declaration;
+    }
+
+    @Override
+    public Type applyBinding(Map<String, Type> binding) {
+        throw XError.withMessage("Cannot apply binding to ClassExpressionType");
     }
 }

@@ -86,12 +86,13 @@ public final class TypeExpression implements Node {
         }
         TypeDeclaration declaration = lookupTypeDeclarationOrThrow(name);
         if (declaration instanceof ClassOrInterfaceDeclaration) {
-            return new ReferenceType((ClassOrInterfaceDeclaration) declaration, arguments.map(arg -> arg.solveType()));
+            return new ReferenceType(this, (ClassOrInterfaceDeclaration) declaration,
+                    arguments.map(arg -> arg.solveType()));
         } else if (declaration instanceof TypeParameterDeclaration) {
             if (hasArguments()) {
                 throw err("Type variables may not have arguments");
             }
-            return new VariableType((TypeParameterDeclaration) declaration);
+            return new VariableType(this, (TypeParameterDeclaration) declaration);
         }
         throw err("Unrecognized type declaration: " + declaration);
     }

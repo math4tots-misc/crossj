@@ -14,6 +14,10 @@ public interface Node {
         return getParent().getWorld();
     }
 
+    default ClassOrInterfaceDeclaration getDeclaringClassOrInterfaceDeclaration() {
+        return getParent().getDeclaringClassOrInterfaceDeclaration();
+    }
+
     default TypeSolver getTypeSolver() {
         return getParent().getTypeSolver();
     }

@@ -32,6 +32,7 @@ import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
@@ -763,6 +764,11 @@ public final class JavascriptTarget extends Target {
                     break;
                 }
             }
+        }
+
+        @Override
+        public void visit(NullLiteralExpr n, Void arg) {
+            sb.append("null");
         }
 
         @Override

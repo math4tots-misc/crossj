@@ -101,7 +101,7 @@ public final class Parser {
 
             wrappedLambda.getArguments().add(lexpr);
             lexpr.setParentNode(wrappedLambda);
-            // wrappedLambda.setParentNode(originalParent);
+            wrappedLambda.setParentNode(originalParent);
         });
     }
 

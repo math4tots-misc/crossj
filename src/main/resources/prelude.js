@@ -72,9 +72,12 @@ function $CAST(value, cls) {
 function repr(x) {
     return $CJ['crossj.Repr']().of(x);
 }
+function $ITERlist(items) {
+    return $CJ['crossj.List']().of(...items);
+}
 function* $ITERflatMap(items, f) {
     for (let item of items) {
-        for (subitem of f(item)) {
+        for (let subitem of f(item)) {
             yield subitem;
         }
     }
@@ -215,6 +218,13 @@ $CJ['crossj.List'] = $LAZY(function() {
         }
         iter() {
             return this.arr.values();
+        }
+        repeat(n) {
+            let ret = [];
+            for (let i = 0; i < n; i++) {
+                ret.push(...this.arr);
+            }
+            return new List(ret);
         }
     };
     return List;

@@ -63,6 +63,11 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
     }
 
     @Override
+    public ClassOrInterfaceDeclaration getDeclaringClassOrInterfaceDeclaration() {
+        return this;
+    }
+
+    @Override
     public Mark getMark() {
         return mark;
     }
@@ -97,6 +102,10 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
 
     public List<TypeParameterDeclaration> getTypeParameters() {
         return typeParameters;
+    }
+
+    public boolean hasTypeParameters() {
+        return typeParameters != null && typeParameters.size() > 0;
     }
 
     public List<TypeExpression> getInterfaces() {
@@ -156,6 +165,23 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
             }
         }
         return getParent().lookupVariableDeclaration(name);
+    }
+
+    public FieldDeclaration lookupFieldDeclaration(String name) {
+        for (FieldDeclaration declaration : getFields()) {
+            if (declaration.getName().equals(name)) {
+                return declaration;
+            }
+        }
+        return null;
+    }
+
+    public FieldDeclaration lookupFieldDeclarationOrThrow(String name) {
+        FieldDeclaration declaration = lookupFieldDeclaration(name);
+        if (declaration == null) {
+            throw err("Field " + name + " not found for " + getQualifiedName());
+        }
+        return declaration;
     }
 
     @Override
