@@ -16,6 +16,7 @@ import com.github.math4tots.crossj.ast.PrimitiveType;
 import com.github.math4tots.crossj.ast.StringLiteralExpression;
 import com.github.math4tots.crossj.ast.Type;
 import com.github.math4tots.crossj.ast.TypeCastExpression;
+import com.github.math4tots.crossj.ast.TypeExpression;
 import com.github.math4tots.crossj.ast.World;
 
 import crossj.Map;

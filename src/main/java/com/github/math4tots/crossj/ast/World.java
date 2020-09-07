@@ -47,6 +47,11 @@ public class World implements Node {
         return this;
     }
 
+    @Override
+    public TypeSolver getTypeSolver() {
+        return typeSolver;
+    }
+
     public ClassOrInterfaceDeclaration getTypeDeclaration(String qualifiedName) {
         return map.get(qualifiedName);
     }

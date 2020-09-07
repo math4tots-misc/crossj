@@ -102,6 +102,16 @@ public final class List<T> implements XIterable<T> {
         return new List<>(ret);
     }
 
+    public List<T> filter(Func1<Boolean, T> f) {
+        ArrayList<T> ret = new ArrayList<>();
+        for (T t: list) {
+            if (f.apply(t)) {
+                ret.add(t);
+            }
+        }
+        return new List<>(ret);
+    }
+
     public <R> R fold(R start, Func2<R, R, T> f) {
         for (T t: list) {
             start = f.apply(start, t);

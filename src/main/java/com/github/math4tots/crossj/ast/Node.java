@@ -1,5 +1,6 @@
 package com.github.math4tots.crossj.ast;
 
+import com.github.math4tots.crossj.TypeSolver;
 import com.github.math4tots.crossj.parser.Mark;
 
 import crossj.XError;
@@ -11,6 +12,10 @@ public interface Node {
 
     default World getWorld() {
         return getParent().getWorld();
+    }
+
+    default TypeSolver getTypeSolver() {
+        return getParent().getTypeSolver();
     }
 
     /**
@@ -60,6 +65,14 @@ public interface Node {
      */
     default MethodDeclaration lookupMethodDeclaration(String name) {
         return getParent().lookupMethodDeclaration(name);
+    }
+
+    default MethodDeclaration lookupMethodDeclarationOrThrow(String name) {
+        MethodDeclaration declaration = lookupMethodDeclaration(name);
+        if (declaration == null) {
+            throw err("Method " + name + " not found");
+        }
+        return declaration;
     }
 
     default XError err(String message) {

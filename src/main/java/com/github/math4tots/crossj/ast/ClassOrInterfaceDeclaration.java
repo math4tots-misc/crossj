@@ -49,8 +49,9 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
             member.setParent(this);
         }
 
-        // for the most part, I don't want to do any validation with crossj itself right now,
-        // but this one is so easy to miss and really easy to check, so I do it here.
+        // for the most part, I don't want to do any validation with crossj itself right
+        // now, but this one is so easy to miss and really easy to check, so I do it
+        // here.
         if (!isInterface && !getQualifiedName().equals("java.lang.Object") && !isFinal()) {
             throw err("All crossj classes must be final");
         }
@@ -106,17 +107,25 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
         return members;
     }
 
+    public List<FieldDeclaration> getFields() {
+        return members.filter(m -> m instanceof FieldDeclaration).map(m -> (FieldDeclaration) m);
+    }
+
+    public List<MethodDeclaration> getMethods() {
+        return members.filter(m -> m instanceof MethodDeclaration).map(m -> (MethodDeclaration) m);
+    }
+
     @Override
     public TypeDeclaration lookupTypeDeclaration(String name) {
         if (this.name.equals(name)) {
             return this;
         }
-        for (TypeParameterDeclaration declaration: typeParameters) {
+        for (TypeParameterDeclaration declaration : typeParameters) {
             if (declaration.getName().equals(name)) {
                 return declaration;
             }
         }
-        for (String qualifiedName: imports) {
+        for (String qualifiedName : imports) {
             String shortName = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
             if (shortName.equals("*")) {
                 // this is a wildcard import
@@ -147,5 +156,18 @@ public final class ClassOrInterfaceDeclaration implements TypeDeclaration {
             }
         }
         return getParent().lookupVariableDeclaration(name);
+    }
+
+    @Override
+    public MethodDeclaration lookupMethodDeclaration(String name) {
+        for (MemberDeclaration member : members) {
+            if (member instanceof MethodDeclaration) {
+                MethodDeclaration method = (MethodDeclaration) member;
+                if (method.getName().equals(name)) {
+                    return method;
+                }
+            }
+        }
+        return getParent().lookupMethodDeclaration(name);
     }
 }
