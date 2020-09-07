@@ -13,19 +13,16 @@ import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ParserConfiguration.LanguageLevel;
 import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
-
-import crossj.XError;
 
 public final class Parser {
     private final TypeSolver typeSolver;
@@ -76,32 +73,23 @@ public final class Parser {
      * Make some modifications to the tree to make type inference a bit easier for
      * javaparser.
      *
-     * <li>Wrap all lambda expressions in Func*.of(..)</li>
+     * <li>For expression-style lambda expressions, replace them with explicit 'returns'.
+     * This seems to work better with javaparser's type solver.
+     * </li>
      */
     public void prepareTree(CompilationUnit compilationUnit) {
         compilationUnit.findAll(LambdaExpr.class).forEach(lexpr -> {
-            Node originalParent = lexpr.getParentNode().get();
-
-            int argc = lexpr.getParameters().size();
-
-            TokenRange tokenRange = lexpr.getTokenRange().get();
-            NameExpr crossjName = new NameExpr(tokenRange, new SimpleName("crossj"));
-
-            FieldAccessExpr funcClassName = new FieldAccessExpr(tokenRange, crossjName, null,
-                    new SimpleName("Func" + argc));
-            crossjName.setParentNode(funcClassName);
-
-            MethodCallExpr wrappedLambda = new MethodCallExpr(tokenRange, funcClassName, null, new SimpleName("of"),
-                    new NodeList<>());
-            funcClassName.setParentNode(wrappedLambda);
-
-            if (!lexpr.replace(wrappedLambda)) {
-                throw XError.withMessage("Failed to replace lambda expression");
+            Statement body = lexpr.getBody();
+            if (body.isExpressionStmt()) {
+                // swap it out for a return statement.
+                TokenRange tokenRange = body.getTokenRange().get();
+                Expression expression = body.asExpressionStmt().getExpression();
+                ReturnStmt returnStmt = new ReturnStmt(tokenRange, expression);
+                expression.setParentNode(returnStmt);
+                BlockStmt blockStmt = new BlockStmt(tokenRange, new NodeList<>(returnStmt));
+                returnStmt.setParentNode(blockStmt);
+                lexpr.setBody(blockStmt);
             }
-
-            wrappedLambda.getArguments().add(lexpr);
-            lexpr.setParentNode(wrappedLambda);
-            wrappedLambda.setParentNode(originalParent);
         });
     }
 
@@ -110,7 +98,7 @@ public final class Parser {
             ParseResult<CompilationUnit> result = javaParser.parse(file);
             if (result.isSuccessful()) {
                 CompilationUnit compilationUnit = result.getResult().get();
-                // prepareTree(compilationUnit);
+                prepareTree(compilationUnit);
                 originalFiles.put(compilationUnit, file);
                 return compilationUnit;
             } else {

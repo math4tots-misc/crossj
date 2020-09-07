@@ -51,3 +51,9 @@ as being native
 * A class that has only native methods and no fields is considered native
 * A class with a native method should not have any fields (static or otherwise)
     or any non-native methods (static or otherwise)
+
+Lambda expressions
+
+Many lambda expressions whose argument types can normally be omitted will need to
+be explicitly specified. This is just due to the limitations of javaparser's
+symbol solver. I'd like to remove this constraint at some point in the future.
