@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ContinueStatement;
+import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
@@ -156,7 +157,9 @@ public final class JavascriptTranslator implements ITranslator {
     public void translateTypeDeclaration(TypeDeclaration declaration) {
         setCurrentTypeDeclaration(declaration);
         if (!declaration.isInterface() && !ITranslator.isFinal(declaration)
-                && !ITranslator.getQualifiedName(declaration).equals("java.lang.Object")) {
+                && !ITranslator.getQualifiedName(declaration).equals("java.lang.Object")
+                && !ITranslator.getQualifiedName(declaration).equals("java.lang.Throwable")
+                && !ITranslator.getQualifiedName(declaration).equals("java.lang.RuntimeException")) {
             throw err("All crossj classes must be final", declaration);
         }
         if (isNative(declaration)) {
@@ -347,6 +350,16 @@ public final class JavascriptTranslator implements ITranslator {
             }
 
             @Override
+            public boolean visit(EnhancedForStatement node) {
+                sb.append("for(let " + node.getParameter().getName() + " of ");
+                translateExpression(node.getExpression());
+                sb.append("){\n");
+                translateStatement(node.getBody());
+                sb.append("}\n");
+                return false;
+            }
+
+            @Override
             public boolean visit(VariableDeclarationStatement node) {
                 for (Object obj : node.fragments()) {
                     VariableDeclarationFragment fragment = (VariableDeclarationFragment) obj;
@@ -433,6 +446,14 @@ public final class JavascriptTranslator implements ITranslator {
                         sb.append(")");
                     } else {
                         switch (qualifiedName) {
+                            case "java.lang.Object.equals": {
+                                sb.append("$EQ(");
+                                translateExpression(owner);
+                                sb.append(',');
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
                             case "java.lang.String.length": {
                                 translateExpression(owner);
                                 sb.append(".length");

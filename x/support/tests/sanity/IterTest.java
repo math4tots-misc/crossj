@@ -15,4 +15,13 @@ public final class IterTest {
             List.of("a", "a", "a", "a", "a", "a")
         );
     }
+
+    @Test
+    public static void forEach() {
+        int total = 0;
+        for (int i : List.of(1, 2, 3)) {
+            total += i;
+        }
+        Assert.equals(total, 6);
+    }
 }

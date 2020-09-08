@@ -33,7 +33,7 @@ public final class Parser {
         for (int i = 0; i < sources.length; i++) {
             sources[i] = this.sources.get(i);
         }
-        parser.setEnvironment(classpath, sources, getEncodings(sources.length), true);
+        parser.setEnvironment(classpath, sources, getEncodings(sources.length), false);
 
         parser.setUnitName(path);
         parser.setSource(readFile(path).toCharArray());
