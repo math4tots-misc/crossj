@@ -206,8 +206,10 @@ public final class JavascriptTranslator implements ITranslator {
                 ITranslator.getExtendedModifiers(declaration).forEach(modifier -> {
                     if (modifier instanceof Annotation) {
                         IAnnotationBinding binding = ((Annotation) modifier).resolveAnnotationBinding();
-                        if (binding.getAnnotationType().getQualifiedName().equals("crossj.Test")) {
-                            tests.add(Pair.of(currentTypeDeclarationBinding.getQualifiedName(), name));
+                        if (binding != null) {
+                            if (binding.getAnnotationType().getQualifiedName().equals("crossj.Test")) {
+                                tests.add(Pair.of(currentTypeDeclarationBinding.getQualifiedName(), name));
+                            }
                         }
                     }
                 });
