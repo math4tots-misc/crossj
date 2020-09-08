@@ -1,0 +1,8 @@
+#!/bin/bash
+mkdir -p out && \
+javac -d out \
+    $(find support/java -type f | grep '\.java$') \
+    $(find support/shared -type f | grep '\.java$') \
+    $(find support/tests -type f | grep '\.java$') \
+    && \
+java -cp out crossj.misc.RunTests

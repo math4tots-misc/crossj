@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
@@ -21,6 +22,7 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -28,6 +30,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.InstanceofExpression;
+import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -47,6 +50,7 @@ import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -59,10 +63,11 @@ public final class JavascriptTranslator implements ITranslator {
     private StringBuilder sb = new StringBuilder();
     private String filepath;
     private TypeDeclaration currentTypeDeclaration = null;
+    private ITypeBinding currentTypeDeclarationBinding = null;
+    private List<Pair<String, String>> tests = List.of();
 
     public JavascriptTranslator() {
         sb.append("const $CJ=(function(){\n");
-        sb.append("const $CJ = Object.create(null);\n");
         sb.append(IO.readResource("prelude.js"));
     }
 
@@ -121,6 +126,11 @@ public final class JavascriptTranslator implements ITranslator {
 
     @Override
     public void commit() {
+        sb.append("const $TESTS=[\n");
+        for (Pair<String, String> test : tests) {
+            sb.append("['" + test.get1() + "','" + test.get2() + "'],\n");
+        }
+        sb.append("];\n");
         if (main.isPresent()) {
             String m = main.get();
             sb.append("$CJ['" + m + "']().main([]);\n");
@@ -138,8 +148,13 @@ public final class JavascriptTranslator implements ITranslator {
         IO.writeFile(outputFile, sb.toString());
     }
 
+    private void setCurrentTypeDeclaration(TypeDeclaration currentTypeDeclaration) {
+        this.currentTypeDeclaration = currentTypeDeclaration;
+        this.currentTypeDeclarationBinding = currentTypeDeclaration.resolveBinding();
+    }
+
     public void translateTypeDeclaration(TypeDeclaration declaration) {
-        currentTypeDeclaration = declaration;
+        setCurrentTypeDeclaration(declaration);
         if (!declaration.isInterface() && !ITranslator.isFinal(declaration)
                 && !ITranslator.getQualifiedName(declaration).equals("java.lang.Object")) {
             throw err("All crossj classes must be final", declaration);
@@ -158,7 +173,6 @@ public final class JavascriptTranslator implements ITranslator {
         sb.append("}\n");
         sb.append("return " + name + ";\n");
         sb.append("});\n");
-        System.out.println("declname = " + declaration.getName().toString());
     }
 
     public String getClassReference(String qualifiedClassName) {
@@ -184,6 +198,16 @@ public final class JavascriptTranslator implements ITranslator {
             String name = declaration.getName().toString();
             if (ITranslator.isStatic(declaration)) {
                 sb.append("static ");
+
+                // check if this static method is a test
+                ITranslator.getExtendedModifiers(declaration).forEach(modifier -> {
+                    if (modifier instanceof Annotation) {
+                        IAnnotationBinding binding = ((Annotation) modifier).resolveAnnotationBinding();
+                        if (binding.getAnnotationType().getQualifiedName().equals("crossj.Test")) {
+                            tests.add(Pair.of(currentTypeDeclarationBinding.getQualifiedName(), name));
+                        }
+                    }
+                });
             }
             sb.append(name);
         }
@@ -257,7 +281,7 @@ public final class JavascriptTranslator implements ITranslator {
                 sb.append("switch(");
                 translateExpression(node.getExpression());
                 sb.append("){\n");
-                for (Object obj: node.statements()) {
+                for (Object obj : node.statements()) {
                     translateStatement((Statement) obj);
                 }
                 sb.append("}\n");
@@ -266,10 +290,13 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(SwitchCase node) {
-                for (Object expr: node.expressions()) {
+                for (Object expr : node.expressions()) {
                     sb.append("case ");
                     translateExpression((Expression) expr);
                     sb.append(":\n");
+                }
+                if (node.isDefault()) {
+                    sb.append("default:\n");
                 }
                 return false;
             }
@@ -371,7 +398,7 @@ public final class JavascriptTranslator implements ITranslator {
                 IMethodBinding method = node.resolveMethodBinding();
                 if (Modifier.isStatic(method.getModifiers())) {
                     // static method call
-                    ITypeBinding cls = method.getDeclaringClass();
+                    ITypeBinding cls = method.getDeclaringClass().getErasure();
                     String qualifiedClassName = cls.getQualifiedName();
                     sb.append(getClassReference(qualifiedClassName) + "." + method.getName() + "(");
                     boolean first = true;
@@ -386,23 +413,52 @@ public final class JavascriptTranslator implements ITranslator {
                     sb.append(")");
                 } else {
                     // instance method call
+                    String qualifiedClassName = method.getDeclaringClass().getErasure().getQualifiedName();
+                    String qualifiedName = qualifiedClassName + "." + method.getName();
                     Expression owner = node.getExpression();
-                    if (owner == null) {
-                        sb.append("this");
-                    } else {
-                        owner.accept(this);
-                    }
-                    sb.append("." + node.getName().toString() + "(");
-                    boolean first = true;
-                    for (Object argobj : node.arguments()) {
-                        if (!first) {
-                            sb.append(',');
+
+                    if (qualifiedClassName.equals("crossj.XIterator")) {
+                        String funcName = "$ITER" + method.getName();
+                        sb.append(funcName + "(");
+                        if (owner == null) {
+                            sb.append("this");
+                        } else {
+                            translateExpression(owner);
                         }
-                        first = false;
-                        Expression arg = (Expression) argobj;
-                        arg.accept(this);
+                        for (int i = 0; i < node.arguments().size(); i++) {
+                            sb.append(',');
+                            Expression argument = (Expression) node.arguments().get(i);
+                            translateExpression(argument);
+                        }
+                        sb.append(")");
+                    } else {
+                        switch (qualifiedName) {
+                            case "java.lang.String.length": {
+                                translateExpression(owner);
+                                sb.append(".length");
+                                break;
+                            }
+                            default: {
+                                // map to a corresponding javascript method call
+                                if (owner == null) {
+                                    sb.append("this");
+                                } else {
+                                    translateExpression(owner);
+                                }
+                                sb.append("." + node.getName().toString() + "(");
+                                boolean first = true;
+                                for (Object argobj : node.arguments()) {
+                                    if (!first) {
+                                        sb.append(',');
+                                    }
+                                    first = false;
+                                    Expression arg = (Expression) argobj;
+                                    arg.accept(this);
+                                }
+                                sb.append(")");
+                            }
+                        }
                     }
-                    sb.append(")");
                 }
                 return false;
             }
@@ -410,7 +466,7 @@ public final class JavascriptTranslator implements ITranslator {
             @Override
             public boolean visit(ClassInstanceCreation node) {
                 IMethodBinding method = node.resolveConstructorBinding();
-                String qualifiedClassName = method.getDeclaringClass().getQualifiedName();
+                String qualifiedClassName = method.getDeclaringClass().getErasure().getQualifiedName();
                 sb.append("(new (" + getClassReference(qualifiedClassName) + ")(");
                 boolean first = true;
                 for (Object argobj : node.arguments()) {
@@ -422,6 +478,34 @@ public final class JavascriptTranslator implements ITranslator {
                     arg.accept(this);
                 }
                 sb.append("))");
+                return false;
+            }
+
+            @Override
+            public boolean visit(LambdaExpression node) {
+                String expectedTypeName = "crossj.Func" + node.parameters().size();
+                ITypeBinding type = node.resolveTypeBinding().getErasure();
+                if (!type.getQualifiedName().equals(expectedTypeName)) {
+                    throw err("Expected lambda expression to have type " + expectedTypeName + " but got type "
+                            + type.getQualifiedName(), node);
+                }
+                sb.append("(");
+                for (int i = 0; i < node.parameters().size(); i++) {
+                    if (i > 0) {
+                        sb.append(',');
+                    }
+                    VariableDeclaration parameter = (VariableDeclaration) node.parameters().get(i);
+                    sb.append(parameter.getName());
+                }
+                sb.append(")=>");
+                if (node.getBody() instanceof Expression) {
+                    sb.append("{return ");
+                    translateExpression((Expression) node.getBody());
+                    sb.append(";}");
+                } else {
+                    Block body = (Block) node.getBody();
+                    translateStatement(body);
+                }
                 return false;
             }
 
@@ -538,9 +622,9 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(CastExpression node) {
-                ITypeBinding type = node.resolveTypeBinding();
+                ITypeBinding type = node.resolveTypeBinding().getErasure();
                 if (type.getQualifiedName().equals("java.lang.String")) {
-                    sb.append("$CASTSTR(");
+                    sb.append("$STRCAST(");
                     node.getExpression().accept(this);
                     sb.append(")");
                 } else {
@@ -555,7 +639,7 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(InstanceofExpression node) {
-                ITypeBinding type = node.getRightOperand().resolveBinding();
+                ITypeBinding type = node.getRightOperand().resolveBinding().getErasure();
                 if (type.getQualifiedName().equals("java.lang.String")) {
                     sb.append("$INSTOFSTR(");
                     translateExpression(node.getLeftOperand());
@@ -587,7 +671,17 @@ public final class JavascriptTranslator implements ITranslator {
             @Override
             public boolean visit(InfixExpression node) {
                 translateExpression(node.getLeftOperand());
-                switch (node.getOperator().toString()) {
+                handleInfixOperator(node.getOperator());
+                translateExpression(node.getRightOperand());
+                for (Object operand : node.extendedOperands()) {
+                    handleInfixOperator(node.getOperator());
+                    translateExpression((Expression) operand);
+                }
+                return false;
+            }
+
+            private void handleInfixOperator(InfixExpression.Operator operator) {
+                switch (operator.toString()) {
                     case "==": {
                         sb.append("===");
                         break;
@@ -597,11 +691,9 @@ public final class JavascriptTranslator implements ITranslator {
                         break;
                     }
                     default: {
-                        sb.append(node.getOperator());
+                        sb.append(operator);
                     }
                 }
-                translateExpression(node.getRightOperand());
-                return false;
             }
         });
     }

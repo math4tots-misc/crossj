@@ -44,6 +44,7 @@
                             <sources>
                                 <source>support/java</source>
                                 <source>support/shared</source>
+                                <source>support/tests</source>
                             </sources>
                         </configuration>
                     </execution>
