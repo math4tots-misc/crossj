@@ -63,6 +63,7 @@ import crossj.IO;
 import crossj.List;
 import crossj.Optional;
 import crossj.Pair;
+import crossj.Set;
 import crossj.XError;
 
 public final class JavascriptTranslator implements ITranslator {
@@ -173,10 +174,31 @@ public final class JavascriptTranslator implements ITranslator {
             // don't translate native classes.
             return;
         }
+
+        ITypeBinding typeBinding = declaration.resolveBinding();
+
+        // find all the super interfaces of this type
+        Set<String> superInterfaces = Set.of();
+        {
+            List<ITypeBinding> stack = List.of(typeBinding);
+            while (stack.size() > 0) {
+                ITypeBinding nextInterface = stack.pop();
+                for (ITypeBinding parentInterface : nextInterface.getInterfaces()) {
+                    String qualifiedInterfaceName = parentInterface.getErasure().getQualifiedName();
+                    if (!superInterfaces.contains(qualifiedInterfaceName)) {
+                        superInterfaces.add(qualifiedInterfaceName);
+                        stack.add(parentInterface);
+                    }
+                }
+            }
+        }
+
         String name = declaration.getName().toString();
-        String qualifiedName = ITranslator.getQualifiedName(declaration);
+        String qualifiedName = typeBinding.getQualifiedName();
         sb.append("$CJ['" + qualifiedName + "']=$LAZY(function(){\n");
         sb.append("class " + name + "{\n");
+
+        // initialize a default constructor, if one is needed
         boolean hasConstructor = false;
         for (MethodDeclaration method : declaration.getMethods()) {
             hasConstructor = hasConstructor || method.isConstructor();
@@ -187,13 +209,31 @@ public final class JavascriptTranslator implements ITranslator {
             initInstanceFields(declaration);
             sb.append("}\n");
         }
+
+        // define methods
         for (MethodDeclaration method : declaration.getMethods()) {
             translateMethod(method);
         }
+
+        // if this class implements 'XIterable', it needs to implement the
+        // [Symbol.iterator] method
+        if (superInterfaces.contains("crossj.XIterable")) {
+            sb.append("[Symbol.iterator](){return this.iter();}");
+        }
+
         sb.append("}\n");
+
+        // add a marker for all the types that this type is a subtype of.
+        for (String qualifiedInterfaceName : superInterfaces) {
+            String tag = "I$" + qualifiedInterfaceName.replace(".", "$");
+            sb.append(name + ".prototype." + tag + "=true;\n");
+        }
+
+        // initialize static fields
         for (FieldDeclaration field : declaration.getFields()) {
             translateField(field);
         }
+
         sb.append("return " + name + ";\n");
         sb.append("});\n");
     }
@@ -787,11 +827,28 @@ public final class JavascriptTranslator implements ITranslator {
             @Override
             public boolean visit(InstanceofExpression node) {
                 ITypeBinding type = node.getRightOperand().resolveBinding().getErasure();
-                if (type.getQualifiedName().equals("java.lang.String")) {
+                String qualifiedName = type.getQualifiedName();
+                if (qualifiedName.equals("java.lang.String")) {
                     sb.append("$INSTOFSTR(");
                     translateExpression(node.getLeftOperand());
                     sb.append(")");
+                } else if (qualifiedName.equals("java.lang.Object")) {
+                    // must always be true
+                    sb.append("(");
+                    translateExpression(node.getLeftOperand());
+                    sb.append("&&0||true)");
+                } else if (qualifiedName.startsWith("crossj.Func")) {
+                    int argc = Integer.parseInt(qualifiedName.substring("crossj.Func".length()));
+                    sb.append("$INSTOFFN(");
+                    translateExpression(node.getLeftOperand());
+                    sb.append("," + argc + ")");
+                } else if (type.isInterface()) {
+                    // for interface types, we check the tag
+                    String tag = "I$" + type.getQualifiedName().replace(".", "$");
+                    translateExpression(node.getLeftOperand());
+                    sb.append("." + tag);
                 } else {
+                    // for class types, we use Javascript's own 'instanceof'
                     sb.append("(");
                     translateExpression(node.getLeftOperand());
                     sb.append(" instanceof ");

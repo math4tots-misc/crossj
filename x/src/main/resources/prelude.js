@@ -58,6 +58,9 @@ function $NUMHASH(value) {
 function $INSTOFSTR(value) {
     return typeof value === 'string';
 }
+function $INSTOFFN(f, argc) {
+    return typeof f === 'function' && f.length === argc;
+}
 function $STRCAST(value) {
     if (typeof value === 'string') {
         return value;

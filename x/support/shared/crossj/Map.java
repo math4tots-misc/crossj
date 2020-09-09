@@ -14,6 +14,14 @@ public final class Map<K, V> {
         return map;
     }
 
+    public static <K, V> Map<K, V> fromIterable(Iterable<Pair<K, V>> pairs) {
+        Map<K, V> map = new Map<>();
+        for (Pair<K, V> pair : pairs) {
+            map.put(pair.get1(), pair.get2());
+        }
+        return map;
+    }
+
     private void rehash(int newCap) {
         if (list == null || list.size() < newCap) {
             List<List<Tuple3<Integer, K, V>>> oldList = list;
@@ -32,7 +40,7 @@ public final class Map<K, V> {
     private void insertNoRehash(Tuple3<Integer, K, V> triple) {
         int hash = triple.get1();
         K key = triple.get2();
-        int index = hash % list.size();
+        int index = getIndex(hash, list.size());
         List<Tuple3<Integer, K, V>> bucket = list.get(index);
         for (int i = 0; i < bucket.size(); i++) {
             Tuple3<Integer, K, V> entry = bucket.get(i);
@@ -58,12 +66,24 @@ public final class Map<K, V> {
     }
 
     public void put(K key, V value) {
-        if (value == null) {
-            throw XError.withMessage("Maps cannot have null values");
-        }
         checkForRehashBeforeInsert();
         int hash = key.hashCode();
         insertNoRehash(Tuple3.of(hash, key, value));
+    }
+
+    private Tuple3<Integer, K, V> getTripleOrNull(K key) {
+        if (list == null) {
+            return null;
+        }
+        int hash = key.hashCode();
+        int index = getIndex(hash, list.size());
+        List<Tuple3<Integer, K, V>> bucket = list.get(index);
+        for (Tuple3<Integer, K, V> triple : bucket) {
+            if (triple.get1().equals(hash) && triple.get2().equals(key)) {
+                return triple;
+            }
+        }
+        return null;
     }
 
     public V getOrNull(K key) {
@@ -71,7 +91,7 @@ public final class Map<K, V> {
             return null;
         }
         int hash = key.hashCode();
-        int index = hash % list.size();
+        int index = getIndex(hash, list.size());
         List<Tuple3<Integer, K, V>> bucket = list.get(index);
         for (Tuple3<Integer, K, V> triple : bucket) {
             if (triple.get1().equals(hash) && triple.get2().equals(key)) {
@@ -82,36 +102,50 @@ public final class Map<K, V> {
     }
 
     public boolean containsKey(K key) {
-        return getOrNull(key) != null;
+        return getTripleOrNull(key) != null;
     }
 
     public V get(K key) {
-        V value = getOrNull(key);
-        if (value == null) {
+        Tuple3<Integer, K, V> triple = getTripleOrNull(key);
+        if (triple == null) {
             throw XError.withMessage("Key " + Repr.of(key) + " not found in this map");
         }
-        return value;
+        return triple.get3();
     }
 
-    public V removeOrNull(K key) {
+    public V getOrElse(K key, Func0<V> f) {
+        Tuple3<Integer, K, V> triple = getTripleOrNull(key);
+        return triple == null ? f.apply() : triple.get3();
+    }
+
+    private Tuple3<Integer, K, V> removeTripleOrNull(K key) {
         if (list == null) {
             return null;
         }
         int hash = key.hashCode();
-        int index = hash % list.size();
+        int index = getIndex(hash, list.size());
         List<Tuple3<Integer, K, V>> bucket = list.get(index);
         for (int i = 0; i < bucket.size(); i++) {
             Tuple3<Integer, K, V> triple = bucket.get(i);
             if (triple.get1().equals(hash) && triple.get2().equals(key)) {
                 siz--;
-                return bucket.removeIndex(i).get3();
+                return bucket.removeIndex(i);
             }
         }
         return null;
     }
 
+    public boolean removeOrFalse(K key) {
+        Tuple3<Integer, K, V> triple = removeTripleOrNull(key);
+        if (triple == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public void remove(K key) {
-        if (removeOrNull(key) == null) {
+        if (removeTripleOrNull(key) == null) {
             throw XError.withMessage("Key " + Repr.of(key) + " not found in this map");
         }
     }
@@ -122,5 +156,9 @@ public final class Map<K, V> {
         } else {
             return list.iter().flatMap(bucket -> bucket.map(triple -> triple.get2()));
         }
+    }
+
+    private static int getIndex(int hash, int size) {
+        return (hash % size + size) % size;
     }
 }

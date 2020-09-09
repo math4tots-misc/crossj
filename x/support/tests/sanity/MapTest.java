@@ -23,8 +23,8 @@ public final class MapTest {
         Assert.equals(map.getOrNull("a"), 123);
         Assert.equals(map.getOrNull("b"), 234);
         Assert.equals(map.getOrNull("c"), 345);
-        Assert.equals(map.removeOrNull("bb"), null);
-        Assert.equals(map.removeOrNull("b"), 234);
+        Assert.equals(map.removeOrFalse("bb"), false);
+        Assert.equals(map.removeOrFalse("b"), true);
         Assert.equals(map.size(), 2);
         Assert.equals(map.getOrNull("a"), 123);
     }

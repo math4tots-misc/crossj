@@ -16,6 +16,14 @@ public final class Set<T> implements XIterable<T> {
         return new Set<>(map);
     }
 
+    public static <T> Set<T> fromIterable(Iterable<T> args) {
+        Set<T> set = Set.of();
+        for (T arg: args) {
+            set.add(arg);
+        }
+        return set;
+    }
+
     public int size() {
         return map.size();
     }
@@ -29,7 +37,7 @@ public final class Set<T> implements XIterable<T> {
     }
 
     public boolean removeOrFalse(T key) {
-        return map.removeOrNull(key) != null;
+        return map.removeOrFalse(key);
     }
 
     public void remove(T key) {

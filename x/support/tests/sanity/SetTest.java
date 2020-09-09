@@ -11,4 +11,14 @@ public final class SetTest {
         Assert.equals(set.size(), 3);
         Assert.equals(set.iter().fold("x", (a, b) -> a + b), "xabc");
     }
+
+    @Test
+    public static void iter() {
+        Set<String> set = Set.of("a", "b", "c");
+        String out = "";
+        for (String s : set) {
+            out += s;
+        }
+        Assert.equals(out, "abc");
+    }
 }
