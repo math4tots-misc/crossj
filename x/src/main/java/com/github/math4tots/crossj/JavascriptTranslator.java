@@ -58,6 +58,7 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.WhileStatement;
 
 import crossj.IO;
 import crossj.List;
@@ -462,6 +463,16 @@ public final class JavascriptTranslator implements ITranslator {
             @Override
             public boolean visit(ContinueStatement node) {
                 sb.append("continue;\n");
+                return false;
+            }
+
+            @Override
+            public boolean visit(WhileStatement node) {
+                sb.append("while(");
+                translateExpression(node.getExpression());
+                sb.append("){\n");
+                translateStatement(node.getBody());
+                sb.append("}\n");
                 return false;
             }
 

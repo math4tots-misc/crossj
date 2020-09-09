@@ -15,6 +15,7 @@ public final class Basics {
         Assert.that(!(false && true));
     }
 
+    @Test
     public static void arithmetic() {
         Assert.equals(1 + 2, 3);
     }

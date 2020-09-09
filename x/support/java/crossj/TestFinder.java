@@ -17,7 +17,7 @@ public final class TestFinder {
         int testCount = 0;
         for (Method method : findAllTests(packageName)) {
             testCount++;
-            System.out.print("Running test " + method.getDeclaringClass().getName() + "." + method.getName() + "... ");
+            System.out.print("Running test " + method.getDeclaringClass().getName() + " " + method.getName() + " ... ");
             try {
                 method.invoke(null, new Object[0]);
             } catch (Exception e) {
