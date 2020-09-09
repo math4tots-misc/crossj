@@ -24,4 +24,12 @@ public final class IterTest {
         }
         Assert.equals(total, 6);
     }
+
+    @Test
+    public static void fold() {
+        {
+            String s = List.of("a", "bb", "ccc").fold("", (a, b) -> a + b);
+            Assert.equals(s, "abbccc");
+        }
+    }
 }

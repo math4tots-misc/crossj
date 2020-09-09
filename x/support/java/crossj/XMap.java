@@ -2,20 +2,20 @@ package crossj;
 
 import java.util.HashMap;
 
-public final class Map<K, V> {
+public final class XMap<K, V> {
     private final HashMap<K, V> map;
 
-    private Map(HashMap<K, V> map) {
+    private XMap(HashMap<K, V> map) {
         this.map = map;
     }
 
     @SafeVarargs
-    public static <K, V> Map<K, V> of(Pair<K, V>... pairs) {
+    public static <K, V> XMap<K, V> of(Pair<K, V>... pairs) {
         HashMap<K, V> map = new HashMap<>();
         for (Pair<K, V> pair: pairs) {
             map.put(pair.get1(), pair.get2());
         }
-        return new Map<>(map);
+        return new XMap<>(map);
     }
 
     public int size() {

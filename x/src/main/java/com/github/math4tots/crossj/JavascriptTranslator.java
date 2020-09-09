@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CharacterLiteral;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.ContinueStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
@@ -253,8 +254,11 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(ReturnStatement node) {
-                sb.append("return ");
-                translateExpression(node.getExpression());
+                sb.append("return");
+                if (node.getExpression() != null) {
+                    sb.append(" ");
+                    translateExpression(node.getExpression());
+                }
                 sb.append(";\n");
                 return false;
             }
@@ -739,6 +743,18 @@ public final class JavascriptTranslator implements ITranslator {
                         sb.append(operator);
                     }
                 }
+            }
+
+            @Override
+            public boolean visit(ConditionalExpression node) {
+                sb.append("(");
+                translateExpression(node.getExpression());
+                sb.append("?");
+                translateExpression(node.getThenExpression());
+                sb.append(":");
+                translateExpression(node.getElseExpression());
+                sb.append(")");
+                return false;
             }
         });
     }

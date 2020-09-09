@@ -143,6 +143,13 @@ $CJ['crossj.List'] = $LAZY(function() {
         static of(...args) {
             return new List(args);
         }
+        static ofSize(n, f) {
+            const arr = [];
+            for (let i = 0; i < n; i++) {
+                arr.push(f());
+            }
+            return new List(arr);
+        }
         get(i) {
             return this.arr[i];
         }

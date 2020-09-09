@@ -27,6 +27,14 @@ public final class List<T> implements XIterable<T> {
         return new List<T>(new ArrayList<>(Arrays.asList(args)));
     }
 
+    public static <T> List<T> ofSize(int n, Func0<T> f) {
+        List<T> ret = List.of();
+        for (int i = 0; i < n; i++) {
+            ret.add(f.apply());
+        }
+        return ret;
+    }
+
     public static <T> List<T> reversed(Iterable<T> iterable) {
         List<T> ret = List.fromIterable(iterable);
         Collections.reverse(ret.list);

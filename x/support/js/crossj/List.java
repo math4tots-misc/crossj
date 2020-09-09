@@ -3,6 +3,9 @@ package crossj;
 public final class List<T> implements XIterable<T> {
     @SafeVarargs
     public static native <T> List<T> of(T... args);
+
+    public static native <T> List<T> ofSize(int n, Func0<T> f);
+
     public native int size();
     public native T get(int i);
     public native void set(int i, T t);
