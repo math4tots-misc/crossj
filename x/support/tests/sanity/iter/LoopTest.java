@@ -47,4 +47,24 @@ public final class LoopTest {
             Assert.equals(sb.toString(), "9876");
         }
     }
+
+    // labeled statements are not (yet?) supported.
+    // while for JS targets it would be simple to do,
+    // It's not an essential a feature, and at the same
+    // time, it's also not supported on some targets I
+    // care about (e.g. Objective-C).
+    //
+    // @Test
+    // public static void labelBreak() {
+    //     int x = -123;
+    //     out: for (int i = 0; i < 10; i++) {
+    //         for (int j = 0; j < 10; j++) {
+    //             if (i + j >= 15) {
+    //                 x = i * j;
+    //                 break out;
+    //             }
+    //         }
+    //     }
+    //     Assert.equals(x, 0);
+    // }
 }
