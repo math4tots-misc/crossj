@@ -82,4 +82,20 @@ public final class ClassTest {
         Assert.that(!(g instanceof ClassForTest));
         Assert.that(!(g instanceof InterfaceForTest));
     }
+
+    @Test
+    public static void defaultMethods() {
+        {
+            ClassForTest x = new ClassForTest();
+            Assert.equals(x.foo(), "default foo() result");
+            AnotherClassForTest y = new AnotherClassForTest();
+            Assert.equals(y.foo(), "overriden foo() return value");
+        }
+        {
+            AnotherInterfaceForTest x = new ClassForTest();
+            Assert.equals(x.foo(), "default foo() result");
+            AnotherInterfaceForTest y = new AnotherClassForTest();
+            Assert.equals(y.foo(), "overriden foo() return value");
+        }
+    }
 }

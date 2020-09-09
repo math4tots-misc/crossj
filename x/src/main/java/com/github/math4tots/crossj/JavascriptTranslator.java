@@ -176,17 +176,20 @@ public final class JavascriptTranslator implements ITranslator {
         }
 
         ITypeBinding typeBinding = declaration.resolveBinding();
+        Set<String> foundMethodNames = Set.of();
 
         // find all the super interfaces of this type
-        Set<String> superInterfaces = Set.of();
+        List<ITypeBinding> superInterfaces = List.of();
+        Set<String> superInterfaceNames = Set.of();
         {
             List<ITypeBinding> stack = List.of(typeBinding);
             while (stack.size() > 0) {
                 ITypeBinding nextInterface = stack.pop();
                 for (ITypeBinding parentInterface : nextInterface.getInterfaces()) {
                     String qualifiedInterfaceName = parentInterface.getErasure().getQualifiedName();
-                    if (!superInterfaces.contains(qualifiedInterfaceName)) {
-                        superInterfaces.add(qualifiedInterfaceName);
+                    if (!superInterfaceNames.contains(qualifiedInterfaceName)) {
+                        superInterfaceNames.add(qualifiedInterfaceName);
+                        superInterfaces.add(parentInterface);
                         stack.add(parentInterface);
                     }
                 }
@@ -212,19 +215,37 @@ public final class JavascriptTranslator implements ITranslator {
 
         // define methods
         for (MethodDeclaration method : declaration.getMethods()) {
+            foundMethodNames.add(method.getName().toString());
             translateMethod(method);
         }
 
         // if this class implements 'XIterable', it needs to implement the
         // [Symbol.iterator] method
-        if (superInterfaces.contains("crossj.XIterable")) {
+        if (superInterfaceNames.contains("crossj.XIterable")) {
             sb.append("[Symbol.iterator](){return this.iter();}");
         }
 
         sb.append("}\n");
 
+        // add all the inherited default methods for this class
+        for (ITypeBinding superInterface : superInterfaces) {
+            for (IMethodBinding method : superInterface.getDeclaredMethods()) {
+                // check all default non-static methods for inheritance
+                int modifiers = method.getModifiers();
+                if (Modifier.isDefault(modifiers) && !Modifier.isStatic(modifiers)) {
+                    String methodName = method.getName();
+                    if (!foundMethodNames.contains(methodName)) {
+                        foundMethodNames.add(methodName);
+                        sb.append(name + ".prototype." + methodName + "="
+                                + getClassReference(superInterface.getQualifiedName()) + ".prototype." + methodName
+                                + ";\n");
+                    }
+                }
+            }
+        }
+
         // add a marker for all the types that this type is a subtype of.
-        for (String qualifiedInterfaceName : superInterfaces) {
+        for (String qualifiedInterfaceName : superInterfaceNames) {
             String tag = "I$" + qualifiedInterfaceName.replace(".", "$");
             sb.append(name + ".prototype." + tag + "=true;\n");
         }
