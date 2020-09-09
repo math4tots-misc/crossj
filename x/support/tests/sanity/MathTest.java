@@ -1,4 +1,4 @@
-package sanity.iter;
+package sanity;
 
 import crossj.*;
 
