@@ -13,7 +13,7 @@ function $CLS2STR(cls) {
     return "<class " + cls.name + ">";
 }
 function $EQ(a, b) {
-    if (a.equals === undefined) {
+    if (!a || a.equals === undefined) {
         return a === b;
     } else {
         return a.equals(b);
@@ -254,6 +254,48 @@ $CJ['java.lang.StringBuilder'] = $LAZY(function() {
             return this.arr.join('');
         }
     };
+});
+$CJ['crossj.M'] = $LAZY(function() {
+    // the 'Math' class but renamed 'M' due to conflict with
+    // java.lang.Math
+    class M {
+        static E = Math.E;
+        static PI = Math.PI;
+        static TAU = Math.PI * 2;
+
+        static abs(x) {
+            return Math.abs(x);
+        }
+
+        static floor(x) {
+            return Math.floor(x);
+        }
+
+        static sin(x) {
+            return Math.sin(x);
+        }
+
+        static cos(x) {
+            return Math.cos(x);
+        }
+
+        static tan(x) {
+            return Math.tan(x);
+        }
+
+        static atan(x) {
+            return Math.atan(x);
+        }
+
+        static asin(x) {
+            return Math.asin(x);
+        }
+
+        static acos(x) {
+            return Math.acos(x);
+        }
+    };
+    return M;
 });
 $CJ['crossj.TestFinder'] = $LAZY(function() {
     class TestFinder {

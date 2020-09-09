@@ -40,6 +40,7 @@ import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -616,6 +617,27 @@ public final class JavascriptTranslator implements ITranslator {
                     // instance field
                     node.getExpression().accept(this);
                     sb.append("." + varb.getName());
+                }
+                return false;
+            }
+
+            @Override
+            public boolean visit(QualifiedName node) {
+                IBinding binding = node.resolveBinding();
+                if (binding instanceof IVariableBinding) {
+                    IVariableBinding varb = (IVariableBinding) binding;
+                    if (Modifier.isStatic(varb.getModifiers())) {
+                        // static field
+                        ITypeBinding cls = varb.getDeclaringClass();
+                        sb.append(getClassReference(cls.getQualifiedName()));
+                        sb.append("." + varb.getName());
+                    } else {
+                        // instance field
+                        translateExpression(node.getQualifier());
+                        sb.append("." + varb.getName());
+                    }
+                } else {
+                    throw err("Unrecognized QualfiedName type: " + node.getClass(), node);
                 }
                 return false;
             }
