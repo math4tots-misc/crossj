@@ -1,6 +1,7 @@
 package sanity.cls;
 
 import crossj.Assert;
+import crossj.Func1;
 import crossj.Func2;
 import crossj.List;
 import crossj.Pair;
@@ -78,6 +79,7 @@ public final class ClassTest {
         Assert.that(f instanceof Object);
         Object g = f;
         Assert.that(g instanceof Func2<?, ?, ?>);
+        Assert.that(!(g instanceof Func1<?, ?>));
         Assert.that(g instanceof Object);
         Assert.that(!(g instanceof ClassForTest));
         Assert.that(!(g instanceof InterfaceForTest));
