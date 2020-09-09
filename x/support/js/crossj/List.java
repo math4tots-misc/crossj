@@ -8,6 +8,7 @@ public final class List<T> implements XIterable<T> {
 
     public native int size();
     public native T get(int i);
+    public native T last();
     public native void set(int i, T t);
 
     @Override

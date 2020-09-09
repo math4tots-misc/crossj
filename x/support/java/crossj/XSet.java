@@ -3,16 +3,16 @@ package crossj;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class Set<T> implements XIterable<T> {
+public class XSet<T> implements XIterable<T> {
     private final HashSet<T> set;
 
-    private Set(HashSet<T> set) {
+    private XSet(HashSet<T> set) {
         this.set = set;
     }
 
     @SafeVarargs
-    public static <T> Set<T> of(T... args) {
-        return new Set<>(new HashSet<>(Arrays.asList(args)));
+    public static <T> XSet<T> of(T... args) {
+        return new XSet<>(new HashSet<>(Arrays.asList(args)));
     }
 
     public int size() {

@@ -55,6 +55,10 @@ public final class List<T> implements XIterable<T> {
         return list.get(i);
     }
 
+    public T last() {
+        return list.get(list.size() - 1);
+    }
+
     public void set(int i, T t) {
         list.set(i, t);
     }

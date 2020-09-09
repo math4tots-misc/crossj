@@ -494,6 +494,33 @@ public final class JavascriptTranslator implements ITranslator {
 
     public void translateExpression(Expression expression) {
         expression.accept(new DefaultVisitor() {
+
+            private void emitArgs(Iterable<?> iterable, int argc, boolean variadic) {
+                List<Expression> args = List.fromIterable(iterable).map(a -> (Expression) a);
+
+                int len = args.size();
+                if (variadic && args.size() == argc && args.last().resolveTypeBinding().isArray()) {
+                    len--;
+                }
+
+                boolean first = true;
+                for (int i = 0; i < len; i++) {
+                    if (!first) {
+                        sb.append(',');
+                    }
+                    first = false;
+                    args.get(i).accept(this);
+                }
+
+                if (variadic && args.size() == argc && args.last().resolveTypeBinding().isArray()) {
+                    if (!first) {
+                        sb.append(",");
+                    }
+                    sb.append("...");
+                    args.get(argc - 1).accept(this);
+                }
+            }
+
             @Override
             public boolean visit(MethodInvocation node) {
                 IMethodBinding method = node.resolveMethodBinding();
@@ -502,15 +529,7 @@ public final class JavascriptTranslator implements ITranslator {
                     ITypeBinding cls = method.getDeclaringClass().getErasure();
                     String qualifiedClassName = cls.getQualifiedName();
                     sb.append(getClassReference(qualifiedClassName) + "." + method.getName() + "(");
-                    boolean first = true;
-                    for (Object argobj : node.arguments()) {
-                        if (!first) {
-                            sb.append(',');
-                        }
-                        first = false;
-                        Expression arg = (Expression) argobj;
-                        arg.accept(this);
-                    }
+                    emitArgs(node.arguments(), method.getParameterTypes().length, method.isVarargs());
                     sb.append(")");
                 } else {
                     // instance method call
@@ -561,15 +580,7 @@ public final class JavascriptTranslator implements ITranslator {
                                     translateExpression(owner);
                                 }
                                 sb.append("." + node.getName().toString() + "(");
-                                boolean first = true;
-                                for (Object argobj : node.arguments()) {
-                                    if (!first) {
-                                        sb.append(',');
-                                    }
-                                    first = false;
-                                    Expression arg = (Expression) argobj;
-                                    arg.accept(this);
-                                }
+                                emitArgs(node.arguments(), method.getParameterTypes().length, method.isVarargs());
                                 sb.append(")");
                             }
                         }

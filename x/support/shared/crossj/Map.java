@@ -115,4 +115,12 @@ public final class Map<K, V> {
             throw XError.withMessage("Key " + Repr.of(key) + " not found in this map");
         }
     }
+
+    public XIterator<K> keys() {
+        if (list == null) {
+            return List.<K>of().iter();
+        } else {
+            return list.iter().flatMap(bucket -> bucket.map(triple -> triple.get2()));
+        }
+    }
 }
