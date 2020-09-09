@@ -542,6 +542,12 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
+                            case "java.lang.Object.hashCode": {
+                                sb.append("$HASH(");
+                                translateExpression(owner);
+                                sb.append(")");
+                                break;
+                            }
                             case "java.lang.String.length": {
                                 translateExpression(owner);
                                 sb.append(".length");
