@@ -10,7 +10,7 @@ public final class Assert {
     }
 
     public static <T> void equals(T a, T b) {
-        if (!a.equals(b)) {
+        if (a == null ? b != null : !a.equals(b)) {
             throw XError.withMessage("Assertion failed, expected " + a + " to equal " + b);
         }
     }

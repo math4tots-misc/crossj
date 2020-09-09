@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
@@ -58,7 +59,11 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
-import crossj.*;
+import crossj.IO;
+import crossj.List;
+import crossj.Optional;
+import crossj.Pair;
+import crossj.XError;
 
 public final class JavascriptTranslator implements ITranslator {
     private String outputDirectory;
@@ -172,12 +177,83 @@ public final class JavascriptTranslator implements ITranslator {
         String qualifiedName = ITranslator.getQualifiedName(declaration);
         sb.append("$CJ['" + qualifiedName + "']=$LAZY(function(){\n");
         sb.append("class " + name + "{\n");
+        boolean hasConstructor = false;
+        for (MethodDeclaration method : declaration.getMethods()) {
+            hasConstructor = hasConstructor || method.isConstructor();
+        }
+        if (!hasConstructor) {
+            // If a constructor is not explicitly provided, create a default one
+            sb.append("constructor(){\n");
+            initInstanceFields(declaration);
+            sb.append("}\n");
+        }
         for (MethodDeclaration method : declaration.getMethods()) {
             translateMethod(method);
         }
         sb.append("}\n");
+        for (FieldDeclaration field : declaration.getFields()) {
+            translateField(field);
+        }
         sb.append("return " + name + ";\n");
         sb.append("});\n");
+    }
+
+    private void initInstanceFields(TypeDeclaration declaration) {
+        for (FieldDeclaration field : declaration.getFields()) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+            for (Object obj : field.fragments()) {
+                VariableDeclarationFragment fragment = (VariableDeclarationFragment) obj;
+                sb.append("this.F$" + fragment.getName() + "=");
+                if (fragment.getInitializer() != null) {
+                    translateExpression(fragment.getInitializer());
+                } else {
+                    ITypeBinding type = field.getType().resolveBinding().getErasure();
+                    sb.append(getDefaultValueForType(type, declaration));
+                }
+                sb.append(";\n");
+            }
+        }
+    }
+
+    private String getDefaultValueForType(ITypeBinding type, ASTNode... nodes) {
+        if (type.isPrimitive()) {
+            switch (type.getQualifiedName()) {
+                case "int":
+                case "long":
+                case "float":
+                case "double":
+                    return "0";
+                case "char":
+                    return "'\\0'";
+                default:
+                    throw err("Unrecognized primitive type: " + type.getQualifiedName(), nodes);
+            }
+        } else {
+            return "null";
+        }
+    }
+
+    public void translateField(FieldDeclaration declaration) {
+        String shortClassName = currentTypeDeclaration.getName().toString();
+        for (Object obj : declaration.fragments()) {
+            VariableDeclarationFragment fragment = (VariableDeclarationFragment) obj;
+            if (Modifier.isStatic(declaration.getModifiers())) {
+                // static field
+                Expression init = fragment.getInitializer();
+                sb.append(shortClassName + ".F$" + fragment.getName() + "=");
+                if (init != null) {
+                    translateExpression(init);
+                } else {
+                    sb.append(getDefaultValueForType(declaration.getType().resolveBinding(), fragment));
+                }
+                sb.append(";\n");
+            } else {
+                // instance field
+                // do nothing here -- this is handled in the constructor
+            }
+        }
     }
 
     public String getClassReference(String qualifiedClassName) {
@@ -235,8 +311,13 @@ public final class JavascriptTranslator implements ITranslator {
             sb.append("...");
             sb.append(parameters.get(len).getName().toString());
         }
-        sb.append(")\n");
+        sb.append("){\n");
+        if (declaration.isConstructor()) {
+            // constructors should initialize its fields first
+            initInstanceFields(currentTypeDeclaration);
+        }
         translateStatement(body);
+        sb.append("}\n");
     }
 
     public void translateStatement(Statement statement) {
@@ -585,11 +666,11 @@ public final class JavascriptTranslator implements ITranslator {
                             // static field
                             ITypeBinding cls = varb.getDeclaringClass();
                             sb.append(getClassReference(cls.getQualifiedName()));
-                            sb.append("." + varb.getName());
+                            sb.append(".F$" + varb.getName());
                         } else {
                             // instance field
                             // since it's unqualified, 'this' is implied
-                            sb.append("this." + varb.getName());
+                            sb.append("this.F$" + varb.getName());
                         }
                     } else {
                         // local variable
@@ -616,11 +697,11 @@ public final class JavascriptTranslator implements ITranslator {
                     // static field
                     ITypeBinding cls = varb.getDeclaringClass();
                     sb.append(getClassReference(cls.getQualifiedName()));
-                    sb.append("." + varb.getName());
+                    sb.append(".F$" + varb.getName());
                 } else {
                     // instance field
                     node.getExpression().accept(this);
-                    sb.append("." + varb.getName());
+                    sb.append(".F$" + varb.getName());
                 }
                 return false;
             }
@@ -634,11 +715,11 @@ public final class JavascriptTranslator implements ITranslator {
                         // static field
                         ITypeBinding cls = varb.getDeclaringClass();
                         sb.append(getClassReference(cls.getQualifiedName()));
-                        sb.append("." + varb.getName());
+                        sb.append(".F$" + varb.getName());
                     } else {
                         // instance field
                         translateExpression(node.getQualifier());
-                        sb.append("." + varb.getName());
+                        sb.append(".F$" + varb.getName());
                     }
                 } else {
                     throw err("Unrecognized QualfiedName type: " + node.getClass(), node);

@@ -266,9 +266,9 @@ $CJ['crossj.M'] = $LAZY(function() {
     // the 'Math' class but renamed 'M' due to conflict with
     // java.lang.Math
     class M {
-        static E = Math.E;
-        static PI = Math.PI;
-        static TAU = Math.PI * 2;
+        static F$E = Math.E;
+        static F$PI = Math.PI;
+        static F$TAU = Math.PI * 2;
 
         static abs(x) {
             return Math.abs(x);
