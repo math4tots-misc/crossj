@@ -1,11 +1,13 @@
 package crossj;
 
-public final class Repr {
-    private Repr() {}
+public interface Repr {
+    String repr();
 
     public static String of(Object x) {
         if (x instanceof String) {
             return reprstr((String) x);
+        } else if (x instanceof Repr) {
+            return ((Repr) x).repr();
         } else {
             return x.toString();
         }

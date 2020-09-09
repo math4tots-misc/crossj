@@ -68,11 +68,18 @@ function $STRCAST(value) {
         throw new Error("Could not cast " + value + " to a string");
     }
 }
-function $CAST(value, cls) {
+function $CASTCLS(value, cls) {
     if (value instanceof cls) {
         return value;
     } else {
         throw new Error("Could not cast " + value + " to " + cls);
+    }
+}
+function $CASTIF(value, ifaceTag) {
+    if (value[ifaceTag]) {
+        return value;
+    } else {
+        throw new Error("Could not cast " + value + " to " + ifaceTag.substring(2).replace('$', '.'));
     }
 }
 function repr(x) {

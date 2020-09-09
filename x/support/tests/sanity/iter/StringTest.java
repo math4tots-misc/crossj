@@ -1,6 +1,7 @@
 package sanity.iter;
 
 import crossj.Assert;
+import crossj.Repr;
 import crossj.Test;
 
 public final class StringTest {
@@ -11,5 +12,11 @@ public final class StringTest {
             sb.append(i);
         }
         Assert.equals(sb.toString(), "0123456789");
+    }
+
+    @Test
+    public static void customRepr() {
+        Repr x = new ClassWithCustomRepr(194);
+        Assert.equals(Repr.of(x), "<ClassWithCustomRepr data=194>");
     }
 }

@@ -846,8 +846,16 @@ public final class JavascriptTranslator implements ITranslator {
                     sb.append("$STRCAST(");
                     node.getExpression().accept(this);
                     sb.append(")");
+                } else if (type.isInterface()) {
+                    // cast to an interface type
+                    sb.append("$CASTIF(");
+                    node.getExpression().accept(this);
+                    sb.append(',');
+                    sb.append("'I$" + type.getQualifiedName().replace(".", "$") + "'");
+                    sb.append(")");
                 } else {
-                    sb.append("$CAST(");
+                    // cast to a class type
+                    sb.append("$CASTCLS(");
                     node.getExpression().accept(this);
                     sb.append(',');
                     sb.append(getClassReference(type.getQualifiedName()));
