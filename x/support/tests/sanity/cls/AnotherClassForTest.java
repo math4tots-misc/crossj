@@ -1,4 +1,4 @@
-package sanity;
+package sanity.cls;
 
 public final class AnotherClassForTest implements InterfaceForTest {
     @Override

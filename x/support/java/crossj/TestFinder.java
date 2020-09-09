@@ -49,13 +49,15 @@ public final class TestFinder {
         // TODO: automate this...
         List<Class<?>> classes = List.of();
         try {
-            List<Pair<Path, String>> basePaths = List.of(Pair.of(Paths.get("support", "tests", "sanity"), "sanity."));
+            List<Pair<Path, String>> basePaths = List.of(
+                    Pair.of(Paths.get("support", "tests", "sanity", "cls"), "sanity.cls."),
+                    Pair.of(Paths.get("support", "tests", "sanity", "iter"), "sanity.iter."),
+                    Pair.of(Paths.get("support", "tests", "sanity"), "sanity."));
             for (Pair<Path, String> pair : basePaths) {
                 Path path = pair.get1();
                 String prefix = pair.get2();
                 List<String> baseNames = List.fromIterable(Files.list(path).collect(Collectors.toList()))
-                        .map(p -> p.getFileName().toString())
-                        .filter(name -> name.endsWith(".java"))
+                        .map(p -> p.getFileName().toString()).filter(name -> name.endsWith(".java"))
                         .map(name -> name.substring(0, name.length() - ".java".length()));
                 List<String> classNames = baseNames.map(basename -> prefix + basename);
                 for (String className : classNames) {

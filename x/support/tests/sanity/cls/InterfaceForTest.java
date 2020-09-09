@@ -1,4 +1,4 @@
-package sanity;
+package sanity.cls;
 
 public interface InterfaceForTest extends AnotherInterfaceForTest {
 }

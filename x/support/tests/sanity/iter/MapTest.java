@@ -1,4 +1,4 @@
-package sanity;
+package sanity.iter;
 
 import crossj.Assert;
 import crossj.Map;

@@ -1,4 +1,4 @@
-package sanity;
+package sanity.cls;
 
 import crossj.Assert;
 import crossj.Func2;
