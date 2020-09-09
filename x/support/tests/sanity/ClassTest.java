@@ -11,6 +11,14 @@ public final class ClassTest {
     public int uninitializedInstanceField;
     public ClassTest uninitObjectInstanceField;
 
+    private double foo(double x) {
+        return x + instanceField;
+    }
+
+    private static String staticFoo(String x) {
+        return x + x;
+    }
+
     @Test
     public static void testFields() {
         Assert.equals(ClassTest.staticField, 123);
@@ -19,5 +27,19 @@ public final class ClassTest {
         Assert.equals(new ClassTest().instanceField, 994);
         Assert.equals(new ClassTest().uninitializedInstanceField, 0);
         Assert.equals(new ClassTest().uninitObjectInstanceField, null);
+
+        Assert.equals(ClassTest.staticField = 77, 77);
+        Assert.equals(ClassTest.staticField, 77);
+
+        ClassTest x = new ClassTest();
+        Assert.equals(x.instanceField = 49, 49);
+        Assert.equals(x.instanceField, 49);
+    }
+
+    @Test
+    public static void testMethods() {
+        ClassTest x = new ClassTest();
+        Assert.equals(x.foo(6), 1000.0);
+        Assert.equals(ClassTest.staticFoo("hi"), "hihi");
     }
 }
