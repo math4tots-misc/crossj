@@ -11,6 +11,11 @@ public final class ClassWithCustomRepr implements Repr {
 
     @Override
     public String repr() {
-        return "<ClassWithCustomRepr data=" + data +">";
+        return "<ClassWithCustomRepr data=" + data + ">";
+    }
+
+    @Override
+    public String toString() {
+        return "<ClassWithCustomRepr xx custom toString xx >";
     }
 }

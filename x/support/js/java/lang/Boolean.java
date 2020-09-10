@@ -6,7 +6,4 @@ public final class Boolean {
     private Boolean() {}
 
     public native static Boolean valueOf(boolean i);
-
-    @Override
-    public native int hashCode();
 }

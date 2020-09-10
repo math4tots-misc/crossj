@@ -8,7 +8,4 @@ public final class Integer {
     public native static Integer valueOf(int i);
 
     public native static int parseInt(String s);
-
-    @Override
-    public native int hashCode();
 }

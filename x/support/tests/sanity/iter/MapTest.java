@@ -28,4 +28,25 @@ public final class MapTest {
         Assert.equals(map.size(), 2);
         Assert.equals(map.getOrNull("a"), 123);
     }
+
+    @Test
+    public static void primitiveTypeHashCodes() {
+        // sometimes the translation might not handle these correctly
+        {
+            int hash = "hello".hashCode();
+            Assert.equals(hash - hash, 0);
+        }
+        {
+            int hash = Boolean.valueOf(true).hashCode();
+            Assert.equals(hash, Boolean.valueOf(true).hashCode());
+        }
+        {
+            int hash = Double.valueOf(12).hashCode();
+            Assert.equals(hash, Double.valueOf(12).hashCode());
+        }
+        {
+            int hash = Integer.valueOf(12).hashCode();
+            Assert.equals(hash, Integer.valueOf(12).hashCode());
+        }
+    }
 }

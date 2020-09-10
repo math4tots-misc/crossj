@@ -143,7 +143,7 @@ public final class JavascriptTranslator implements ITranslator {
         sb.append("];\n");
         if (main.isPresent()) {
             String m = main.get();
-            sb.append("$CJ['" + m + "']().main([]);\n");
+            sb.append("$CJ['" + m + "']().M$main([]);\n");
         }
         sb.append("return $CJ;\n");
         sb.append("})();\n");
@@ -223,7 +223,7 @@ public final class JavascriptTranslator implements ITranslator {
         // if this class implements 'XIterable', it needs to implement the
         // [Symbol.iterator] method
         if (superInterfaceNames.contains("crossj.XIterable")) {
-            sb.append("[Symbol.iterator](){return this.iter();}");
+            sb.append("[Symbol.iterator](){return this.M$iter();}");
         }
 
         sb.append("}\n");
@@ -237,12 +237,17 @@ public final class JavascriptTranslator implements ITranslator {
                     String methodName = method.getName();
                     if (!foundMethodNames.contains(methodName)) {
                         foundMethodNames.add(methodName);
-                        sb.append(name + ".prototype." + methodName + "="
-                                + getClassReference(superInterface.getQualifiedName()) + ".prototype." + methodName
+                        sb.append(name + ".prototype.M$" + methodName + "="
+                                + getClassReference(superInterface.getQualifiedName()) + ".prototype.M$" + methodName
                                 + ";\n");
                     }
                 }
             }
+        }
+
+        // define toString
+        if (foundMethodNames.contains("toString")) {
+            sb.append(name + ".prototype.toString=function(){return this.M$toString();};\n");
         }
 
         // add a marker for all the types that this type is a subtype of.
@@ -354,7 +359,7 @@ public final class JavascriptTranslator implements ITranslator {
                     }
                 });
             }
-            sb.append(name);
+            sb.append("M$" + name);
         }
         sb.append("(");
         List<SingleVariableDeclaration> parameters = ITranslator.getParameters(declaration);
@@ -611,8 +616,15 @@ public final class JavascriptTranslator implements ITranslator {
                             sb.append(")");
                             break;
                         }
+                        case "java.lang.Boolean.valueOf":
+                        case "java.lang.Double.valueOf":
+                        case "java.lang.Integer.valueOf": {
+                            // these are basically no-ops (in JS, we don't do this boxing explicitly)
+                            translateExpression((Expression) node.arguments().get(0));
+                            break;
+                        }
                         default: {
-                            sb.append(getClassReference(qualifiedClassName) + "." + method.getName() + "(");
+                            sb.append(getClassReference(qualifiedClassName) + ".M$" + method.getName() + "(");
                             emitArgs(node.arguments(), method.getParameterTypes().length, method.isVarargs());
                             sb.append(")");
                         }
@@ -658,6 +670,19 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(".length");
                                 break;
                             }
+                            case "java.lang.String.hashCode": {
+                                sb.append("$STRHASH(");
+                                translateExpression(owner);
+                                sb.append(")");
+                                break;
+                            }
+                            case "java.lang.String.charAt": {
+                                translateExpression(owner);
+                                sb.append(".charAt(");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
                             default: {
                                 // map to a corresponding javascript method call
                                 if (owner == null) {
@@ -665,7 +690,7 @@ public final class JavascriptTranslator implements ITranslator {
                                 } else {
                                     translateExpression(owner);
                                 }
-                                sb.append("." + node.getName().toString() + "(");
+                                sb.append(".M$" + node.getName().toString() + "(");
                                 emitArgs(node.arguments(), method.getParameterTypes().length, method.isVarargs());
                                 sb.append(")");
                             }

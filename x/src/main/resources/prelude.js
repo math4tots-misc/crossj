@@ -13,10 +13,10 @@ function $CLS2STR(cls) {
     return "<class " + cls.name + ">";
 }
 function $EQ(a, b) {
-    if (!a || a.equals === undefined) {
+    if (!a || a.M$equals === undefined) {
         return a === b;
     } else {
-        return a.equals(b);
+        return a.M$equals(b);
     }
 }
 let $NEXT_ID = 1;
@@ -28,7 +28,7 @@ function $IDHASH(x) {
     return $IDMAP.get(x);
 }
 function $HASH(x) {
-    if (x.hashCode === undefined) {
+    if (!x || x.M$hashCode === undefined) {
         switch (typeof x) {
             case 'number': return $NUMHASH(x);
             case 'string': return $STRHASH(x);
@@ -36,7 +36,7 @@ function $HASH(x) {
         }
         return 0;
     } else {
-        return x.hashCode();
+        return x.M$hashCode();
     }
 }
 function $STRHASH(value) {
@@ -83,10 +83,10 @@ function $CASTIF(value, ifaceTag) {
     }
 }
 function repr(x) {
-    return $CJ['crossj.Repr']().of(x);
+    return $CJ['crossj.Repr']().M$of(x);
 }
 function $ITERlist(items) {
-    return $CJ['crossj.List']().of(...items);
+    return $CJ['crossj.List']().M$of(...items);
 }
 function* $ITERflatMap(items, f) {
     for (let item of items) {
@@ -129,7 +129,7 @@ function $ITERiter(iterator) {
 }
 $CJ['crossj.XError'] = $LAZY(function () {
     class XError extends Error {
-        static withMessage(message) {
+        static M$withMessage(message) {
             return new XError(message);
         }
     }
@@ -137,31 +137,31 @@ $CJ['crossj.XError'] = $LAZY(function () {
 });
 $CJ['crossj.IO'] = $LAZY(function () {
     return class IO {
-        static println(x) {
+        static M$println(x) {
             console.log(x);
         }
-        static eprintln(x) {
+        static M$eprintln(x) {
             console.error(x);
         }
-        static separator() {
+        static M$separator() {
             return require('path').sep;
         }
-        static pathSeparator() {
+        static M$pathSeparator() {
             return require('path').delimiter;
         }
-        static join(...paths) {
+        static M$join(...paths) {
             return require('path').join(...paths);
         }
-        static writeFile(filepath, data) {
+        static M$writeFile(filepath, data) {
             require('fs').writeFileSync(filepath, data);
         }
-        static writeFileBytes(filepath, bytes) {
-            require('fs').writeFileSync(filepath, bytes.asU8s());
+        static M$writeFileBytes(filepath, bytes) {
+            require('fs').writeFileSync(filepath, bytes.M$asU8s());
         }
-        static readFile(filepath) {
+        static M$readFile(filepath) {
             return require('fs').readFileSync(filepath, 'utf-8');
         }
-        static readFileBytes(filepath) {
+        static M$readFileBytes(filepath) {
             const b = require('fs').readFileSync(filepath);
             const arraybuffer = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
             return new ($CJ['crossj.Bytes']())(arraybuffer, b.byteLength);
@@ -173,29 +173,29 @@ $CJ['crossj.List'] = $LAZY(function () {
         constructor(arr) {
             this.arr = arr;
         }
-        static of(...args) {
+        static M$of(...args) {
             return new List(args);
         }
-        static ofSize(n, f) {
+        static M$ofSize(n, f) {
             const arr = [];
             for (let i = 0; i < n; i++) {
                 arr.push(f());
             }
             return new List(arr);
         }
-        add(x) {
+        M$add(x) {
             this.arr.push(x);
         }
-        get(i) {
+        M$get(i) {
             return this.arr[i];
         }
-        last() {
+        M$last() {
             return this.arr[this.arr.length - 1];
         }
-        size() {
+        M$size() {
             return this.arr.length;
         }
-        equals(other) {
+        M$equals(other) {
             if (!(other instanceof List)) {
                 return false;
             }
@@ -209,10 +209,10 @@ $CJ['crossj.List'] = $LAZY(function () {
             }
             return true;
         }
-        toString() {
+        M$toString() {
             return '[' + this.arr.map(repr).join(', ') + ']';
         }
-        flatMap(f) {
+        M$flatMap(f) {
             let arr = [];
             for (let item of this.arr) {
                 for (let subitem of f(item)) {
@@ -221,30 +221,30 @@ $CJ['crossj.List'] = $LAZY(function () {
             }
             return new List(arr);
         }
-        map(f) {
+        M$map(f) {
             return new List(this.arr.map(f));
         }
-        filter(f) {
+        M$filter(f) {
             return new List(this.arr.filter(f));
         }
-        fold(init, f) {
+        M$fold(init, f) {
             return this.arr.reduce(f, init);
         }
-        reduce(f) {
+        M$reduce(f) {
             return this.arr.reduce(f);
         }
-        removeIndex(index) {
+        M$removeIndex(index) {
             let value = this.arr[index];
             this.arr.splice(index, 1);
             return value;
         }
-        removeValue(value) {
+        M$removeValue(value) {
             let index = this.arr.indexOf(value);
             if (index !== -1) {
                 this.removeIndex(index);
             }
         }
-        hashCode() {
+        M$hashCode() {
             // More or less follows openjdk7 AbstractList.hashCode()
             let h = 1;
             for (let x of this.arr) {
@@ -255,10 +255,10 @@ $CJ['crossj.List'] = $LAZY(function () {
         [Symbol.iterator]() {
             return this.arr.values();
         }
-        iter() {
+        M$iter() {
             return this.arr.values();
         }
-        repeat(n) {
+        M$repeat(n) {
             let ret = [];
             for (let i = 0; i < n; i++) {
                 ret.push(...this.arr);
@@ -281,53 +281,53 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
             this.endian = true // little endian
         }
 
-        static withCapacity(capacity) {
+        static M$withCapacity(capacity) {
             capacity = capacity < 16 ? 16 : capacity;
             return new Bytes(new ArrayBuffer(capacity), 0);
         }
 
-        static withSize(size) {
+        static M$withSize(size) {
             let ret = new Bytes(new ArrayBuffer(size), size);
             return ret;
         }
 
-        static ofU8s(...u8s) {
-            let ret = Bytes.withCapacity(u8s.length);
+        static M$ofU8s(...u8s) {
+            let ret = Bytes.M$withCapacity(u8s.length);
             for (let b of u8s) {
-                ret.addU8(b);
+                ret.M$addU8(b);
             }
             return ret;
         }
 
-        static ofI8s(...i8s) {
-            let ret = Bytes.withCapacity(i8s.length);
+        static M$ofI8s(...i8s) {
+            let ret = Bytes.M$withCapacity(i8s.length);
             for (let b of i8s) {
-                ret.addI8(b);
+                ret.M$addI8(b);
             }
             return ret;
         }
 
-        static fromI8s(i8s) {
-            return Bytes.ofI8s(...i8s);
+        static M$fromI8s(i8s) {
+            return Bytes.M$ofI8s(...i8s);
         }
 
-        static fromU8s(u8s) {
-            return Bytes.ofU8s(...u8s);
+        static M$fromU8s(u8s) {
+            return Bytes.M$ofU8s(...u8s);
         }
 
         cap() {
             return this.buffer.byteLength;
         }
 
-        size() {
+        M$size() {
             return this.siz;
         }
 
-        useLittleEndian(littleEndian) {
+        M$useLittleEndian(littleEndian) {
             this.endian = littleEndian;
         }
 
-        usingLittleEndian() {
+        M$usingLittleEndian() {
             return this.endian;
         }
 
@@ -343,158 +343,158 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
             this.siz = newSize;
         }
 
-        addF64(value) {
+        M$addF64(value) {
             let pos = this.siz;
             this.setNewSize(pos + 8);
-            this.setF64(pos, value);
+            this.M$setF64(pos, value);
         }
 
-        addF32(value) {
+        M$addF32(value) {
             let pos = this.siz;
             this.setNewSize(pos + 4);
-            this.setF32(pos, value);
+            this.M$setF32(pos, value);
         }
 
-        addU8(value) {
+        M$addU8(value) {
             let pos = this.siz;
             this.setNewSize(pos + 1);
-            this.setU8(pos, value);
+            this.M$setU8(pos, value);
         }
 
-        addU16(value) {
+        M$addU16(value) {
             let pos = this.siz;
             this.setNewSize(pos + 2);
-            this.setU16(pos, value);
+            this.M$setU16(pos, value);
         }
 
-        addU32(value) {
+        M$addU32(value) {
             let pos = this.siz;
             this.setNewSize(pos + 4);
-            this.setU32(pos, value);
+            this.M$setU32(pos, value);
         }
 
-        addI8(value) {
+        M$addI8(value) {
             let pos = this.siz;
             this.setNewSize(pos + 1);
-            this.setI8(pos, value);
+            this.M$setI8(pos, value);
         }
 
-        addI16(value) {
+        M$addI16(value) {
             let pos = this.siz;
             this.setNewSize(pos + 2);
-            this.setI16(pos, value);
+            this.M$setI16(pos, value);
         }
 
-        addI32(value) {
+        M$addI32(value) {
             let pos = this.siz;
             this.setNewSize(pos + 4);
-            this.setI32(pos, value);
+            this.M$setI32(pos, value);
         }
 
         /**
          * @param {Bytes} bytes
          */
-        addBytes(bytes) {
+        M$addBytes(bytes) {
             let pos = this.siz;
             this.setNewSize(pos + bytes.siz);
-            this.setBytes(pos, bytes);
+            this.M$setBytes(pos, bytes);
         }
 
-        setF64(index, value) {
+        M$setF64(index, value) {
             this.view.setFloat64(index, value, this.endian);
         }
 
-        setF32(index, value) {
+        M$setF32(index, value) {
             this.view.setFloat32(index, value, this.endian);
         }
 
-        setI8(index, value) {
+        M$setI8(index, value) {
             this.view.setInt8(index, value);
         }
 
-        setI16(index, value) {
+        M$setI16(index, value) {
             this.view.setInt16(index, value, this.endian);
         }
 
-        setI32(index, value) {
+        M$setI32(index, value) {
             this.view.setInt16(index, value, this.endian);
         }
 
-        setU8(index, value) {
+        M$setU8(index, value) {
             this.view.setUint8(index, value);
         }
 
-        setU16(index, value) {
+        M$setU16(index, value) {
             this.view.setUint16(index, value, this.endian);
         }
 
-        setU32(index, value) {
+        M$setU32(index, value) {
             this.view.setUint32(index, value, this.endian);
         }
 
-        setU32AsDouble(index, value) {
-            this.setU32(index, value);
+        M$setU32AsDouble(index, value) {
+            this.M$setU32(index, value);
         }
 
         /**
          * @param {number} index
          * @param {Bytes} value
          */
-        setBytes(index, value) {
+        M$setBytes(index, value) {
             let src = new Uint8Array(value.buffer, 0, value.siz);
             let dst = new Uint8Array(this.buffer, index);
             dst.set(src);
         }
 
-        getI8(index) {
+        M$getI8(index) {
             return this.view.getInt8(index);
         }
 
-        getI16(index) {
+        M$getI16(index) {
             return this.view.getInt16(index, this.endian);
         }
 
-        getI32(index) {
+        M$getI32(index) {
             return this.view.getInt32(index, this.endian);
         }
 
-        getU8(index) {
+        M$getU8(index) {
             return this.view.getUint8(index);
         }
 
-        getU16(index) {
+        M$getU16(index) {
             return this.view.getUint16(index, this.endian);
         }
 
-        getU32(index) {
+        M$getU32(index) {
             return this.view.getUint32(index, this.endian);
         }
 
-        getU32AsDouble(index) {
-            return this.getU32(index);
+        M$getU32AsDouble(index) {
+            return this.M$getU32(index);
         }
 
-        getBytes(start, end) {
+        M$getBytes(start, end) {
             return new Bytes(this.buffer.slice(start, end), end - start);
         }
 
-        list() {
+        M$list() {
             return new ($CJ['crossj.List']())([...new Uint8Array(this.buffer, 0, this.siz)]);
         }
 
-        asU8s() {
+        M$asU8s() {
             return new Uint8Array(this.buffer, 0, this.siz);
         }
 
-        asI8s() {
+        M$asI8s() {
             return new Int8Array(this.buffer, 0, this.siz);
         }
 
-        toString() {
-            return 'Bytes.ofU8s(' + this.asU8s().join(', ') + ')';
+        M$toString() {
+            return 'Bytes.ofU8s(' + this.M$asU8s().join(', ') + ')';
         }
 
-        equals(other) {
+        M$equals(other) {
             if (!(other instanceof Bytes)) {
                 return false;
             }
@@ -502,8 +502,8 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
             if (len !== other.siz) {
                 return false;
             }
-            let a = this.asU8s();
-            let b = other.asU8s();
+            let a = this.M$asU8s();
+            let b = other.M$asU8s();
             for (let i = 0; i < len; i++) {
                 if (a[i] !== b[i]) {
                     return false;
@@ -516,20 +516,20 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
 });
 $CJ['java.lang.Integer'] = $LAZY(function () {
     return class Integer {
-        static valueOf(x) {
+        static M$valueOf(x) {
             return x;
         }
-        static parseInt(s) {
+        static M$parseInt(s) {
             return parseInt(s);
         }
     };
 });
 $CJ['lava.lang.Double'] = $LAZY(function () {
     return class Double {
-        static valueOf(x) {
+        static M$valueOf(x) {
             return x;
         }
-        static parseDouble(s) {
+        static M$parseDouble(s) {
             return parseFloat(s);
         }
     };
@@ -539,10 +539,10 @@ $CJ['java.lang.StringBuilder'] = $LAZY(function () {
         constructor() {
             this.arr = [];
         }
-        append(part) {
+        M$append(part) {
             this.arr.push(part.toString());
         }
-        toString() {
+        M$toString() {
             return this.arr.join('');
         }
     };
@@ -555,35 +555,35 @@ $CJ['crossj.M'] = $LAZY(function () {
         static F$PI = Math.PI;
         static F$TAU = Math.PI * 2;
 
-        static abs(x) {
+        static M$abs(x) {
             return Math.abs(x);
         }
 
-        static floor(x) {
+        static M$floor(x) {
             return Math.floor(x);
         }
 
-        static sin(x) {
+        static M$sin(x) {
             return Math.sin(x);
         }
 
-        static cos(x) {
+        static M$cos(x) {
             return Math.cos(x);
         }
 
-        static tan(x) {
+        static M$tan(x) {
             return Math.tan(x);
         }
 
-        static atan(x) {
+        static M$atan(x) {
             return Math.atan(x);
         }
 
-        static asin(x) {
+        static M$asin(x) {
             return Math.asin(x);
         }
 
-        static acos(x) {
+        static M$acos(x) {
             return Math.acos(x);
         }
     };
@@ -591,12 +591,12 @@ $CJ['crossj.M'] = $LAZY(function () {
 });
 $CJ['crossj.TestFinder'] = $LAZY(function () {
     class TestFinder {
-        static run(packageName) {
+        static M$run(packageName) {
             let testCount = 0;
             const prefix = packageName.length ? packageName + '.' : '';
             for (let [clsname, methodname] of $TESTS) {
                 process.stdout.write('Running test ' + clsname + ' ' + methodname + ' ... ');
-                $CJ[clsname]()[methodname]();
+                $CJ[clsname]()['M$' + methodname]();
                 console.log('OK');
                 testCount++;
             }

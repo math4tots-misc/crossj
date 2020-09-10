@@ -12,7 +12,8 @@ Rules:
 
 Javascript translator:
 
-* field names are prefixed with `F$` to keep them from conflicting with
-    method names.
+* method names are prefixed with `M$` and field names are prefixed with
+    `F$` to keep them from conflicting with each other and special
+    javascript names.
 * interface marker fields exist that start with `I$` to allow quickly
     doing `instanceof` checks with interfaces
