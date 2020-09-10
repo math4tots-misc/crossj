@@ -31,6 +31,7 @@ function $HASH(x) {
     if (!x || x.M$hashCode === undefined) {
         switch (typeof x) {
             case 'number': return $NUMHASH(x);
+            case 'bigint': return $BIGINTHASH(x);
             case 'string': return $STRHASH(x);
             case 'object': return $IDHASH(x);
         }
@@ -38,6 +39,9 @@ function $HASH(x) {
     } else {
         return x.M$hashCode();
     }
+}
+function $BIGINTHASH(value) {
+    return $NUMHASH(Number(value));
 }
 function $STRHASH(value) {
     // Basically follows openjdk7 String.hashCode()

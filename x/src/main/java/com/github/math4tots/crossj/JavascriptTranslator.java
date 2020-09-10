@@ -616,6 +616,21 @@ public final class JavascriptTranslator implements ITranslator {
                             sb.append(")");
                             break;
                         }
+                        case "crossj.BigInt.fromInt":
+                        case "crossj.BigInt.fromDouble": {
+                            sb.append("BigInt(");
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(")");
+                            break;
+                        }
+                        case "crossj.BigInt.one": {
+                            sb.append("1n");
+                            break;
+                        }
+                        case "crossj.BigInt.zero": {
+                            sb.append("0n");
+                            break;
+                        }
                         case "java.lang.Boolean.valueOf":
                         case "java.lang.Double.valueOf":
                         case "java.lang.Integer.valueOf": {
@@ -679,6 +694,60 @@ public final class JavascriptTranslator implements ITranslator {
                             case "java.lang.String.charAt": {
                                 translateExpression(owner);
                                 sb.append(".charAt(");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "crossj.BigInt.toString": {
+                                sb.append("(''+");
+                                translateExpression(owner);
+                                sb.append(")");
+                                break;
+                            }
+                            case "crossj.BigInt.add": {
+                                sb.append("(");
+                                translateExpression(owner);
+                                sb.append('+');
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "crossj.BigInt.subtract": {
+                                sb.append("(");
+                                translateExpression(owner);
+                                sb.append('-');
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "crossj.BigInt.multiply": {
+                                sb.append("(");
+                                translateExpression(owner);
+                                sb.append('*');
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "crossj.BigInt.divide": {
+                                sb.append("(");
+                                translateExpression(owner);
+                                sb.append('/');
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "crossj.BigInt.remainder": {
+                                sb.append("(");
+                                translateExpression(owner);
+                                sb.append('%');
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "crossj.BigInt.pow": {
+                                sb.append("(");
+                                translateExpression(owner);
+                                sb.append("**");
                                 translateExpression((Expression) node.arguments().get(0));
                                 sb.append(")");
                                 break;
