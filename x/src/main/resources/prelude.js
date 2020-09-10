@@ -143,6 +143,29 @@ $CJ['crossj.IO'] = $LAZY(function () {
         static eprintln(x) {
             console.error(x);
         }
+        static separator() {
+            return require('path').sep;
+        }
+        static pathSeparator() {
+            return require('path').delimiter;
+        }
+        static join(...paths) {
+            return require('path').join(...paths);
+        }
+        static writeFile(filepath, data) {
+            require('fs').writeFileSync(filepath, data);
+        }
+        static writeFileBytes(filepath, bytes) {
+            require('fs').writeFileSync(filepath, bytes.asU8s());
+        }
+        static readFile(filepath) {
+            return require('fs').readFileSync(filepath, 'utf-8');
+        }
+        static readFileBytes(filepath) {
+            const b = require('fs').readFileSync(filepath);
+            const arraybuffer = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+            return new ($CJ['crossj.Bytes']())(arraybuffer, b.byteLength);
+        }
     };
 });
 $CJ['crossj.List'] = $LAZY(function () {

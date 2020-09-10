@@ -62,6 +62,10 @@ public final class Bytes {
         return bytes;
     }
 
+    public static Bytes wrapByteArray(byte[] array) {
+        return new Bytes(ByteBuffer.wrap(array), array.length);
+    }
+
     public static Bytes fromI8s(List<Integer> i8s) {
         Bytes bytes = withCapacity(i8s.size());
         for (int b : i8s) {
@@ -295,5 +299,12 @@ public final class Bytes {
         }
         sb.append(")");
         return sb.toString();
+    }
+
+    byte[] getByteArray() {
+        byte[] array = new byte[size()];
+        buffer.rewind();
+        buffer.get(array);
+        return array;
     }
 }
