@@ -1,6 +1,6 @@
 package crossj;
 
-public final class List<T> implements XIterable<T> {
+public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     @SafeVarargs
     public static native <T> List<T> of(T... args);
 
@@ -34,4 +34,7 @@ public final class List<T> implements XIterable<T> {
     public native XIterator<T> iter();
 
     public native List<T> repeat(int n);
+
+    @Override
+    public native int compareTo(List<T> o);
 }

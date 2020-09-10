@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
-public final class List<T> implements XIterable<T> {
+public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     private final ArrayList<T> list;
 
     private List(ArrayList<T> list) {
@@ -169,5 +169,20 @@ public final class List<T> implements XIterable<T> {
 
     public void removeValue(T t) {
         list.remove(t);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public int compareTo(List<T> o) {
+        int len = Math.min(size(), o.size());
+        for (int i = 0; i < len; i++) {
+            T a = list.get(i);
+            T b = o.list.get(i);
+            int cmp = ((Comparable<T>) a).compareTo(b);
+            if (cmp != 0) {
+                return cmp;
+            }
+        }
+        return Integer.compare(len, o.size());
     }
 }

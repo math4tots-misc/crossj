@@ -19,7 +19,11 @@ public final class CompTest {
 
     @Test
     public static void list() {
-        List<Integer> list = List.of(333, 22, 1);
-        Assert.equals(List.sorted(list), List.of(1, 22, 333));
+        List<Integer> list1 = List.of(333, 22, 1);
+        Assert.equals(List.sorted(list1), List.of(1, 22, 333));
+        Assert.equals(list1, List.of(333, 22, 1));
+        List<Integer> list2 = List.of(333, 22, 1);
+        Assert.notLess(list1, list2);
+        Assert.less(List.sorted(list1), list2);
     }
 }

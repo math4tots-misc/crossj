@@ -61,11 +61,14 @@ function $NUMHASH(value) {
 }
 function $CMP(a, b) {
     switch (typeof a) {
-        case 'number': return a - b;
-        case 'bigint': return Number(a - b);
+        case 'number':
+        case 'bigint': return $NCMP(a, b);
         case 'string': return $STRCMP(a, b);
         default: return a.M$compareTo(b);
     }
+}
+function $NCMP(a, b) {
+    return a < b ? -1 : a === b ? 0 : 1;
 }
 function $STRCMP(a, b) {
     return a < b ? -1 : a === b ? 0 : 1;
@@ -237,6 +240,9 @@ $CJ['crossj.List'] = $LAZY(function () {
         M$toString() {
             return '[' + this.arr.map(repr).join(', ') + ']';
         }
+        toString() {
+            return this.M$toString();
+        }
         M$flatMap(f) {
             let arr = [];
             for (let item of this.arr) {
@@ -290,8 +296,19 @@ $CJ['crossj.List'] = $LAZY(function () {
             }
             return new List(ret);
         }
-        toString() {
-            return this.M$toString();
+        M$compareTo(otherList) {
+            const aarr = this.arr;
+            const barr = otherList.arr;
+            const alen = aarr.length;
+            const blen = barr.length;
+            const len = Math.min(alen, blen);
+            for (let i = 0; i < len; i++) {
+                const cmp = $CMP(aarr[i], barr[i]);
+                if (cmp !== 0) {
+                    return cmp;
+                }
+            }
+            return $CMP(alen, blen);
         }
     };
     return List;
