@@ -2,12 +2,13 @@ package crossj;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Iterator;
 
 /**
  * Container for playing with raw bytes
  *
- * By default, assumes little endian for all operations,
- * but will flip to big endian if 'setBigEndian(true)' is called.
+ * By default, assumes little endian for all operations, but will flip to big
+ * endian if 'setBigEndian(true)' is called.
  */
 public final class Bytes {
     private ByteBuffer buffer;
@@ -233,6 +234,7 @@ public final class Bytes {
 
     /**
      * Returns a list of integers representing the unsigned byte values
+     *
      * @return
      */
     public List<Integer> list() {
@@ -242,5 +244,56 @@ public final class Bytes {
             ret.add(i8ToU8(buffer.get()));
         }
         return ret;
+    }
+
+    private ByteBuffer view() {
+        buffer.position(0);
+        return buffer.slice();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Bytes)) {
+            return false;
+        }
+        Bytes other = (Bytes) obj;
+        return view().equals(other.view());
+    }
+
+    public XIterator<Integer> asI8s() {
+        int len = buffer.limit();
+        return XIterator.fromIterator(new Iterator<Integer>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < len;
+            }
+
+            @Override
+            public Integer next() {
+                return (int) buffer.get(i++);
+            }
+        });
+    }
+
+    public XIterator<Integer> asU8s() {
+        return asI8s().map(i8 -> i8ToU8(i8));
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Bytes.ofU8s(");
+        boolean first = true;
+        for (int u8 : asU8s()) {
+            if (!first) {
+                sb.append(", ");
+            }
+            first = false;
+            sb.append("" + u8);
+        }
+        sb.append(")");
+        return sb.toString();
     }
 }

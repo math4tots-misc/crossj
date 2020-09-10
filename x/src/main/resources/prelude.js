@@ -458,6 +458,36 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
         list() {
             return new ($CJ['crossj.List']())([...new Uint8Array(this.buffer, 0, this.siz)]);
         }
+
+        asU8s() {
+            return new Uint8Array(this.buffer, 0, this.siz);
+        }
+
+        asI8s() {
+            return new Int8Array(this.buffer, 0, this.siz);
+        }
+
+        toString() {
+            return 'Bytes.ofU8s(' + this.asU8s().join(', ') + ')';
+        }
+
+        equals(other) {
+            if (!(other instanceof Bytes)) {
+                return false;
+            }
+            let len = this.siz;
+            if (len !== other.siz) {
+                return false;
+            }
+            let a = this.asU8s();
+            let b = other.asU8s();
+            for (let i = 0; i < len; i++) {
+                if (a[i] !== b[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
     return Bytes;
 });

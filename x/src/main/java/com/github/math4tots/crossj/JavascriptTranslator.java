@@ -600,9 +600,23 @@ public final class JavascriptTranslator implements ITranslator {
                     // static method call
                     ITypeBinding cls = method.getDeclaringClass().getErasure();
                     String qualifiedClassName = cls.getQualifiedName();
-                    sb.append(getClassReference(qualifiedClassName) + "." + method.getName() + "(");
-                    emitArgs(node.arguments(), method.getParameterTypes().length, method.isVarargs());
-                    sb.append(")");
+                    switch (qualifiedClassName + "." + method.getName()) {
+                        case "crossj.Eq.of": {
+                            // Equality check is a common operation, so it seems like a good idea to
+                            // not require a class lookup for this
+                            sb.append("$EQ(");
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(',');
+                            translateExpression((Expression) node.arguments().get(1));
+                            sb.append(")");
+                            break;
+                        }
+                        default: {
+                            sb.append(getClassReference(qualifiedClassName) + "." + method.getName() + "(");
+                            emitArgs(node.arguments(), method.getParameterTypes().length, method.isVarargs());
+                            sb.append(")");
+                        }
+                    }
                 } else {
                     // instance method call
                     String qualifiedClassName = method.getDeclaringClass().getErasure().getQualifiedName();

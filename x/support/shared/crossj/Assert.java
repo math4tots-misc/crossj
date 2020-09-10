@@ -11,8 +11,14 @@ public final class Assert {
     }
 
     public static <T> void equals(T a, T b) {
-        if (a == null ? b != null : !a.equals(b)) {
+        if (!Eq.of(a, b)) {
             throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to equal " + Repr.of(b));
+        }
+    }
+
+    public static <T> void notEquals(T a, T b) {
+        if (Eq.of(a, b)) {
+            throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to NOT equal " + Repr.of(b));
         }
     }
 

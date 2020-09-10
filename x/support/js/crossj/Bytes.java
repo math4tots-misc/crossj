@@ -88,4 +88,10 @@ public final class Bytes {
     public native Bytes getBytes(int start, int end);
 
     public native List<Integer> list();
+
+    @Override
+    public native String toString();
+
+    @Override
+    public native boolean equals(Object other);
 }
