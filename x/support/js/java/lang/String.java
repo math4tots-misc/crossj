@@ -1,6 +1,6 @@
 package java.lang;
 
-public final class String {
+public final class String implements Comparable<String> {
     // We don't want to allow String instances to be instantiated
     // this way
     private String() {}
@@ -10,4 +10,7 @@ public final class String {
 
     @Override
     public native int hashCode();
+
+    @Override
+    public native int compareTo(String o);
 }

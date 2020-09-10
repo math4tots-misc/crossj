@@ -59,6 +59,17 @@ function $NUMHASH(value) {
         return (value * 1000) | 0;
     }
 }
+function $CMP(a, b) {
+    switch (typeof a) {
+        case 'number': return a - b;
+        case 'bigint': return Number(a - b);
+        case 'string': return $STRCMP(a, b);
+        default: return a.M$compareTo(b);
+    }
+}
+function $STRCMP(a, b) {
+    return a < b ? -1 : a === b ? 0 : 1;
+}
 function $INSTOFSTR(value) {
     return typeof value === 'string';
 }
@@ -187,6 +198,16 @@ $CJ['crossj.List'] = $LAZY(function () {
             }
             return new List(arr);
         }
+        static M$reversed(iterable) {
+            const arr = Array.from(iterable);
+            arr.reverse();
+            return new List(arr);
+        }
+        static M$sorted(iterable) {
+            const arr = Array.from(iterable);
+            arr.sort($CMP);
+            return new List(arr);
+        }
         M$add(x) {
             this.arr.push(x);
         }
@@ -268,6 +289,9 @@ $CJ['crossj.List'] = $LAZY(function () {
                 ret.push(...this.arr);
             }
             return new List(ret);
+        }
+        toString() {
+            return this.M$toString();
         }
     };
     return List;

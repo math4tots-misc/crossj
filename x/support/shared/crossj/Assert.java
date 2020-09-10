@@ -22,6 +22,18 @@ public final class Assert {
         }
     }
 
+    public static <A extends Comparable<B>, B> void less(A a, B b) {
+        if (a.compareTo(b) >= 0) {
+            throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to be less than " + Repr.of(b));
+        }
+    }
+
+    public static <A extends Comparable<B>, B> void notLess(A a, B b) {
+        if (a.compareTo(b) < 0) {
+            throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to be NOT less than " + Repr.of(b));
+        }
+    }
+
     public static void raise(Func0<Void> f) {
         boolean thrown = false;
         try {

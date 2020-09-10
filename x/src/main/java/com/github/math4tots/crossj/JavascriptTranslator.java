@@ -698,6 +698,35 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
+                            case "java.lang.Double.compareTo":
+                            case "java.lang.Comparable.compareTo": {
+                                sb.append("$CMP(");
+                                translateExpression(owner);
+                                sb.append(",");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "java.lang.Integer.compareTo": {
+                                sb.append("(");
+                                translateExpression(owner);
+                                sb.append("-");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "java.lang.String.compareTo": {
+                                sb.append("$STRCMP(");
+                                translateExpression(owner);
+                                sb.append(",");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "java.lang.String.toString":
+                            case "java.lang.Integer.toString":
+                            case "java.lang.Double.toString":
+                            case "java.lang.Object.toString":
                             case "crossj.BigInt.toString": {
                                 sb.append("(''+");
                                 translateExpression(owner);

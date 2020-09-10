@@ -6,6 +6,10 @@ public final class List<T> implements XIterable<T> {
 
     public static native <T> List<T> ofSize(int n, Func0<T> f);
 
+    public static native <T> List<T> reversed(XIterable<T> iterable);
+
+    public static native <T extends Comparable<T>> List<T> sorted(Iterable<T> iterable);
+
     public native int size();
     public native T get(int i);
     public native T last();

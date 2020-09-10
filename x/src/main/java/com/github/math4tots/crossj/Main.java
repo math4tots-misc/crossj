@@ -94,10 +94,14 @@ public final class Main {
 
         for (String filepath : findAllFilesInMultipleDirectories(sourceRoots)) {
             CompilationUnit compilationUnit = parser.parseFile(filepath);
+            StringBuilder sb = new StringBuilder();
             for (IProblem problem : compilationUnit.getProblems()) {
                 String filename = new String(problem.getOriginatingFileName());
-                throw XError.withMessage(
-                        "PROBLEM in " + filename + " on line " + problem.getSourceLineNumber() + ": " + problem);
+                sb.append("in " + filename + " on line " + problem.getSourceLineNumber() + ": " + problem);
+            }
+            String message = sb.toString();
+            if (!message.isEmpty()) {
+                throw XError.withMessage("\n" + message);
             }
             tr.translate(filepath, compilationUnit);
         }
