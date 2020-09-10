@@ -1,6 +1,6 @@
 package crossj;
 
-public final class Tuple4<A1, A2, A3, A4> {
+public final class Tuple4<A1, A2, A3, A4> implements Comparable<Tuple4<A1, A2, A3, A4>> {
     private final A1 a1;
     private final A2 a2;
     private final A3 a3;
@@ -48,5 +48,10 @@ public final class Tuple4<A1, A2, A3, A4> {
     @Override
     public int hashCode() {
         return toList().hashCode();
+    }
+
+    @Override
+    public int compareTo(Tuple4<A1, A2, A3, A4> o) {
+        return toList().compareTo(o.toList());
     }
 }

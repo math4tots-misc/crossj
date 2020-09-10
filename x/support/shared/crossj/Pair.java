@@ -1,6 +1,6 @@
 package crossj;
 
-public final class Pair<A1, A2> {
+public final class Pair<A1, A2> implements Comparable<Pair<A1, A2>> {
     private final A1 a1;
     private final A2 a2;
 
@@ -36,5 +36,10 @@ public final class Pair<A1, A2> {
     @Override
     public int hashCode() {
         return toList().hashCode();
+    }
+
+    @Override
+    public int compareTo(Pair<A1, A2> o) {
+        return toList().compareTo(o.toList());
     }
 }
