@@ -10,4 +10,23 @@ public final class ListTest {
     public static void last() {
         Assert.equals(List.of(1, 2, 3).last(), 3);
     }
+
+    @Test
+    public static void pop() {
+        List<Integer> list = List.of(1, 2, 3);
+        Assert.equals(list.pop(), 3);
+        Assert.equals(list.pop(), 2);
+        Assert.equals(list.pop(), 1);
+    }
+
+    @Test
+    public static void sortAndReverse() {
+        List<Integer> list = List.of(1, 2, 3, -3, -2, -1);
+        list.reverse();
+        Assert.equals(list, List.of(-1, -2, -3, 3, 2, 1));
+        list.reverse();
+        Assert.equals(list, List.of(1, 2, 3, -3, -2, -1));
+        list.sort();
+        Assert.equals(list, List.of(-3, -2, -1, 1, 2, 3));
+    }
 }

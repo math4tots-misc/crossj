@@ -14,6 +14,10 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     public native T get(int i);
     public native T last();
     public native void set(int i, T t);
+    public native T pop();
+
+    public native void reverse();
+    public native void sort();
 
     @Override
     public native boolean equals(Object other);

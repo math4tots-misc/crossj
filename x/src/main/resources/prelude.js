@@ -220,6 +220,15 @@ $CJ['crossj.List'] = $LAZY(function () {
         M$last() {
             return this.arr[this.arr.length - 1];
         }
+        M$reverse() {
+            this.arr.reverse();
+        }
+        M$sort() {
+            this.arr.sort($CMP);
+        }
+        M$pop() {
+            return this.arr.pop();
+        }
         M$size() {
             return this.arr.length;
         }

@@ -67,6 +67,15 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         return list.remove(list.size() - 1);
     }
 
+    public void reverse() {
+        Collections.reverse(list);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void sort() {
+        Collections.sort(list, (a, b) -> ((Comparable<T>) a).compareTo(b));
+    }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof List<?>)) {
