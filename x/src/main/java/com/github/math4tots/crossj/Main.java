@@ -94,12 +94,12 @@ public final class Main {
 
         for (String filepath : findAllFilesInMultipleDirectories(sourceRoots)) {
             CompilationUnit compilationUnit = parser.parseFile(filepath);
-            tr.translate(filepath, compilationUnit);
             for (IProblem problem : compilationUnit.getProblems()) {
                 String filename = new String(problem.getOriginatingFileName());
                 throw XError.withMessage(
                         "PROBLEM in " + filename + " on line " + problem.getSourceLineNumber() + ": " + problem);
             }
+            tr.translate(filepath, compilationUnit);
         }
         tr.commit();
     }

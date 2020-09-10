@@ -2,7 +2,7 @@
 const $CJ = Object.create(null);
 function $LAZY(f) {
     var result = undefined;
-    return function() {
+    return function () {
         if (result === undefined) {
             result = f();
         }
@@ -43,16 +43,16 @@ function $STRHASH(value) {
     // Basically follows openjdk7 String.hashCode()
     let h = 0;
     for (let i = 0; i < value.length; i++) {
-        h = (31 * h + value.charCodeAt(i))|0;
+        h = (31 * h + value.charCodeAt(i)) | 0;
     }
     return h;
 }
 function $NUMHASH(value) {
-    if (value === (value|0)) {
+    if (value === (value | 0)) {
         return value;
     } else {
         // TODO: think of something better
-        return (value * 1000)|0;
+        return (value * 1000) | 0;
     }
 }
 function $INSTOFSTR(value) {
@@ -127,7 +127,7 @@ function $ITERfold(items, init, f) {
 function $ITERiter(iterator) {
     return iterator;
 }
-$CJ['crossj.XError'] = $LAZY(function() {
+$CJ['crossj.XError'] = $LAZY(function () {
     class XError extends Error {
         static withMessage(message) {
             return new XError(message);
@@ -135,7 +135,7 @@ $CJ['crossj.XError'] = $LAZY(function() {
     }
     return XError;
 });
-$CJ['crossj.IO'] = $LAZY(function() {
+$CJ['crossj.IO'] = $LAZY(function () {
     return class IO {
         static println(x) {
             console.log(x);
@@ -145,7 +145,7 @@ $CJ['crossj.IO'] = $LAZY(function() {
         }
     };
 });
-$CJ['crossj.List'] = $LAZY(function() {
+$CJ['crossj.List'] = $LAZY(function () {
     class List {
         constructor(arr) {
             this.arr = arr;
@@ -245,7 +245,223 @@ $CJ['crossj.List'] = $LAZY(function() {
     };
     return List;
 });
-$CJ['java.lang.Integer'] = $LAZY(function() {
+$CJ['crossj.Bytes'] = $LAZY(function () {
+    // TODO: use BigInt for the 64-bit int ops
+    class Bytes {
+        /**
+         * @param {ArrayBuffer} buffer
+         */
+        constructor(buffer, siz) {
+            this.siz = Math.max(0, siz);
+            this.buffer = buffer;
+            this.view = new DataView(buffer);
+            this.endian = true // little endian
+        }
+
+        static withCapacity(capacity) {
+            capacity = capacity < 16 ? 16 : capacity;
+            return new Bytes(new ArrayBuffer(capacity), 0);
+        }
+
+        static withSize(size) {
+            let ret = new Bytes(new ArrayBuffer(size), size);
+            return ret;
+        }
+
+        static ofU8s(...u8s) {
+            let ret = Bytes.withCapacity(u8s.length);
+            for (let b of u8s) {
+                ret.addU8(b);
+            }
+            return ret;
+        }
+
+        static ofI8s(...i8s) {
+            let ret = Bytes.withCapacity(i8s.length);
+            for (let b of i8s) {
+                ret.addI8(b);
+            }
+            return ret;
+        }
+
+        static fromI8s(i8s) {
+            return Bytes.ofI8s(...i8s);
+        }
+
+        static fromU8s(u8s) {
+            return Bytes.ofU8s(...u8s);
+        }
+
+        cap() {
+            return this.buffer.byteLength;
+        }
+
+        size() {
+            return this.siz;
+        }
+
+        useLittleEndian(littleEndian) {
+            this.endian = littleEndian;
+        }
+
+        usingLittleEndian() {
+            return this.endian;
+        }
+
+        setNewSize(newSize) {
+            if (this.cap() < newSize) {
+                let newCap = newSize * 2;
+                let src = new Uint8Array(this.buffer, 0, this.siz);
+                let newBuffer = new ArrayBuffer(newCap);
+                new Uint8Array(newBuffer).set(src);
+                this.buffer = newBuffer;
+                this.view = new DataView(this.buffer);
+            }
+            this.siz = newSize;
+        }
+
+        addF64(value) {
+            let pos = this.siz;
+            this.setNewSize(pos + 8);
+            this.setF64(pos, value);
+        }
+
+        addF32(value) {
+            let pos = this.siz;
+            this.setNewSize(pos + 4);
+            this.setF32(pos, value);
+        }
+
+        addU8(value) {
+            let pos = this.siz;
+            this.setNewSize(pos + 1);
+            this.setU8(pos, value);
+        }
+
+        addU16(value) {
+            let pos = this.siz;
+            this.setNewSize(pos + 2);
+            this.setU16(pos, value);
+        }
+
+        addU32(value) {
+            let pos = this.siz;
+            this.setNewSize(pos + 4);
+            this.setU32(pos, value);
+        }
+
+        addI8(value) {
+            let pos = this.siz;
+            this.setNewSize(pos + 1);
+            this.setI8(pos, value);
+        }
+
+        addI16(value) {
+            let pos = this.siz;
+            this.setNewSize(pos + 2);
+            this.setI16(pos, value);
+        }
+
+        addI32(value) {
+            let pos = this.siz;
+            this.setNewSize(pos + 4);
+            this.setI32(pos, value);
+        }
+
+        /**
+         * @param {Bytes} bytes
+         */
+        addBytes(bytes) {
+            let pos = this.siz;
+            this.setNewSize(pos + bytes.siz);
+            this.setBytes(pos, bytes);
+        }
+
+        setF64(index, value) {
+            this.view.setFloat64(index, value, this.endian);
+        }
+
+        setF32(index, value) {
+            this.view.setFloat32(index, value, this.endian);
+        }
+
+        setI8(index, value) {
+            this.view.setInt8(index, value);
+        }
+
+        setI16(index, value) {
+            this.view.setInt16(index, value, this.endian);
+        }
+
+        setI32(index, value) {
+            this.view.setInt16(index, value, this.endian);
+        }
+
+        setU8(index, value) {
+            this.view.setUint8(index, value);
+        }
+
+        setU16(index, value) {
+            this.view.setUint16(index, value, this.endian);
+        }
+
+        setU32(index, value) {
+            this.view.setUint32(index, value, this.endian);
+        }
+
+        setU32AsDouble(index, value) {
+            this.setU32(index, value);
+        }
+
+        /**
+         * @param {number} index
+         * @param {Bytes} value
+         */
+        setBytes(index, value) {
+            let src = new Uint8Array(value.buffer, 0, value.siz);
+            let dst = new Uint8Array(this.buffer, index);
+            dst.set(src);
+        }
+
+        getI8(index) {
+            return this.view.getInt8(index);
+        }
+
+        getI16(index) {
+            return this.view.getInt16(index, this.endian);
+        }
+
+        getI32(index) {
+            return this.view.getInt32(index, this.endian);
+        }
+
+        getU8(index) {
+            return this.view.getUint8(index);
+        }
+
+        getU16(index) {
+            return this.view.getUint16(index, this.endian);
+        }
+
+        getU32(index) {
+            return this.view.getUint32(index, this.endian);
+        }
+
+        getU32AsDouble(index) {
+            return this.getU32(index);
+        }
+
+        getBytes(start, end) {
+            return new Bytes(this.buffer.slice(start, end), end - start);
+        }
+
+        list() {
+            return new ($CJ['crossj.List']())([...new Uint8Array(this.buffer, 0, this.siz)]);
+        }
+    }
+    return Bytes;
+});
+$CJ['java.lang.Integer'] = $LAZY(function () {
     return class Integer {
         static valueOf(x) {
             return x;
@@ -255,7 +471,7 @@ $CJ['java.lang.Integer'] = $LAZY(function() {
         }
     };
 });
-$CJ['lava.lang.Double'] = $LAZY(function() {
+$CJ['lava.lang.Double'] = $LAZY(function () {
     return class Double {
         static valueOf(x) {
             return x;
@@ -265,7 +481,7 @@ $CJ['lava.lang.Double'] = $LAZY(function() {
         }
     };
 });
-$CJ['java.lang.StringBuilder'] = $LAZY(function() {
+$CJ['java.lang.StringBuilder'] = $LAZY(function () {
     return class StringBuilder {
         constructor() {
             this.arr = [];
@@ -278,7 +494,7 @@ $CJ['java.lang.StringBuilder'] = $LAZY(function() {
         }
     };
 });
-$CJ['crossj.M'] = $LAZY(function() {
+$CJ['crossj.M'] = $LAZY(function () {
     // the 'Math' class but renamed 'M' due to conflict with
     // java.lang.Math
     class M {
@@ -320,7 +536,7 @@ $CJ['crossj.M'] = $LAZY(function() {
     };
     return M;
 });
-$CJ['crossj.TestFinder'] = $LAZY(function() {
+$CJ['crossj.TestFinder'] = $LAZY(function () {
     class TestFinder {
         static run(packageName) {
             let testCount = 0;
