@@ -369,6 +369,14 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
             return Bytes.M$ofU8s(...u8s);
         }
 
+        static M$fromASCII(string) {
+            let ret = Bytes.M$withCapacity(string.length);
+            for (let i = 0; i < string.length; i++) {
+                ret.M$addU8(string.charCodeAt(i));
+            }
+            return ret;
+        }
+
         cap() {
             return this.buffer.byteLength;
         }
@@ -546,6 +554,9 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
 
         M$toString() {
             return 'Bytes.ofU8s(' + this.M$asU8s().join(', ') + ')';
+        }
+        toString() {
+            return this.M$toString();
         }
 
         M$equals(other) {

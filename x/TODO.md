@@ -25,3 +25,17 @@ this is invalid.
 
 Sure if you (ab)use reflection you could potentially call a method that should not
 be there, but that's a sort of issue you can hit with generics in general.
+
+---
+
+`char`, `long`, `float` and other 'not yet supported' primitive types
+
+Clarify what their representations should be in the target languages
+
+In particular, for `char`, should it be treated like an integer value
+or as a string with a single character?
+
+For `long` should it be a `BigInt` or mostly faked with just `Number`?
+
+For `float`, is it ok to just have same representation as `double`?
+(this one is probably easiest, I think it's yes)

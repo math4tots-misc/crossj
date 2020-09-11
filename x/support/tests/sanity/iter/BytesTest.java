@@ -44,5 +44,12 @@ public final class BytesTest {
     public static void str() {
         Bytes bytes = Bytes.ofI8s(1, -2, 3, -4);
         Assert.equals(bytes.toString(), "Bytes.ofU8s(1, 254, 3, 252)");
+        Assert.equals("" + bytes, "Bytes.ofU8s(1, 254, 3, 252)");
+    }
+
+    @Test
+    public static void ascii() {
+        Bytes bytes = Bytes.fromASCII("hello");
+        Assert.equals(bytes, Bytes.ofU8s(104, 101, 108, 108, 111));
     }
 }

@@ -5,6 +5,12 @@ package crossj;
  *
  * By default, assumes little endian for all operations, but will flip to big
  * endian if 'setBigEndian(true)' is called.
+ *
+ * Most of these methods have implied assumptions (e.g. addU8 assumes the given value
+ * fits in an unsigned byte; fromASCII assumes that the given string only contains
+ * ASCII characters), but they don't check these assumptions.
+ * In such cases where these assumptions are broken, weird things might happen
+ * (for the most part, values are truncated).
  */
 public final class Bytes {
     public native static Bytes withCapacity(int capacity);
@@ -22,6 +28,8 @@ public final class Bytes {
     public native static Bytes fromLEI32s(List<Integer> i32s);
 
     public native static Bytes fromBEI32s(List<Integer> i32s);
+
+    public native static Bytes fromASCII(String data);
 
     public native static Bytes from(List<Integer> u8s);
 

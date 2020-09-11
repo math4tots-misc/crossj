@@ -82,6 +82,14 @@ public final class Bytes {
         return bytes;
     }
 
+    public static Bytes fromASCII(String data) {
+        Bytes bytes = withCapacity(data.length());
+        for (int i = 0; i < data.length(); i++) {
+            bytes.addI8(data.charAt(i));
+        }
+        return bytes;
+    }
+
     public int size() {
         return buffer.limit();
     }
