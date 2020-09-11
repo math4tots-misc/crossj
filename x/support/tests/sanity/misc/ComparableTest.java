@@ -8,7 +8,7 @@ import crossj.Test;
  * See that java.lang.Comparable and implementations of it work
  * as expected
  */
-public final class CompTest {
+public final class ComparableTest {
 
     @Test
     public static void string() {
