@@ -12,4 +12,13 @@ public final class MathTest {
     public static void abs() {
         Assert.equals(M.abs(-12), 12.0);
     }
+
+    @Test
+    public static void intDivision() {
+        Assert.equals(5 / 2, 2);
+        Assert.equals(5 / 2.0, 2.5);
+        Assert.equals(5.0 / 2, 2.5);
+
+        Assert.equals(7 / 2 + 1.0, 4.0);
+    }
 }

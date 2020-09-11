@@ -1052,6 +1052,47 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(InfixExpression node) {
+                ITypeBinding type = node.getLeftOperand().resolveTypeBinding();
+                if (type.getQualifiedName().equals("int")) {
+                    switch (node.getOperator().toString()) {
+                        case "+":
+                        case "-":
+                        case "*":
+                        case "/":
+                        case "%": {
+                            // if we're doing int arithmetic, we need to make sure the results turn out
+                            // integers
+                            List<Expression> operands = List.of(node.getLeftOperand(), node.getRightOperand());
+                            for (Object operand : node.extendedOperands()) {
+                                operands.add((Expression) operand);
+                            }
+                            int intCount = 0;
+                            for (int i = 1; i < operands.size(); i++) {
+                                if (operands.get(i).resolveTypeBinding().getQualifiedName().equals("int")) {
+                                    intCount++;
+                                } else {
+                                    break;
+                                }
+                            }
+                            sb.append("(");
+                            for (int i = 0; i < intCount; i++) {
+                                sb.append("((");
+                            }
+                            translateExpression(operands.get(0));
+                            for (int i = 1; i < operands.size(); i++) {
+                                handleInfixOperator(node.getOperator());
+                                translateExpression(operands.get(i));
+                                if (intCount > 0) {
+                                    intCount--;
+                                    sb.append(")|0)");
+                                }
+                            }
+                            sb.append(")");
+                            return false;
+                        }
+                    }
+                }
+                sb.append("(");
                 translateExpression(node.getLeftOperand());
                 handleInfixOperator(node.getOperator());
                 translateExpression(node.getRightOperand());
@@ -1059,6 +1100,7 @@ public final class JavascriptTranslator implements ITranslator {
                     handleInfixOperator(node.getOperator());
                     translateExpression((Expression) operand);
                 }
+                sb.append(")");
                 return false;
             }
 
