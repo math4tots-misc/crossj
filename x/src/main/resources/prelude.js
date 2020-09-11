@@ -568,6 +568,73 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
     }
     return Bytes;
 });
+$CJ['crossj.IntArray'] = $LAZY(function() {
+    class IntArray {
+        /**
+         * @param {Int32Array} arr
+         */
+        constructor(arr) {
+            this.arr = arr;
+        }
+        static fromJSArray(arr) {
+            return new IntArray(Int32Array.from(arr))
+        }
+        static M$of(...args) {
+            return IntArray.fromJSArray(args);
+        }
+        static M$withSize(size) {
+            return new IntArray(new Int32Array(size));
+        }
+        static M$fromList(list) {
+            return IntArray.fromJSArray(list.arr);
+        }
+        static M$fromIterable(iterable) {
+            const values = [];
+            for (const value of iterable) {
+                values.push(value);
+            }
+            return IntArray.fromJSArray(values);
+        }
+        M$size() {
+            return this.arr.length;
+        }
+        M$get(i) {
+            return this.arr[i];
+        }
+        M$set(i, x) {
+            this.arr[i] = x;
+        }
+        M$iter() {
+            return this.arr[Symbol.iterator]();
+        }
+        [Symbol.iterator]() {
+            return this.M$iter();
+        }
+        M$toString() {
+            return 'IntArray.of(' + this.arr.join(', ') + ')';
+        }
+        toString() {
+            return this.M$toString();
+        }
+        M$equals(other) {
+            if (!(other instanceof IntArray)) {
+                return false;
+            }
+            const a = this.arr;
+            const b = other.arr;
+            if (a.length !== b.length) {
+                return false;
+            }
+            for (let i = 0; i < a.length; i++) {
+                if (a[i] !== b[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    return IntArray;
+})
 $CJ['java.lang.Integer'] = $LAZY(function () {
     return class Integer {
         static M$valueOf(x) {

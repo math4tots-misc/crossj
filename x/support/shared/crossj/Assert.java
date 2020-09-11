@@ -34,6 +34,12 @@ public final class Assert {
         }
     }
 
+    public static void divides(int divisor, int dividend) {
+        if (dividend % divisor != 0) {
+            throw XError.withMessage("Assertion failed, expected " + Repr.of(divisor) + " to divide " + Repr.of(dividend));
+        }
+    }
+
     public static void raise(Func0<Void> f) {
         boolean thrown = false;
         try {
