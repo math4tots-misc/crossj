@@ -97,7 +97,7 @@ public final class Main {
             StringBuilder sb = new StringBuilder();
             for (IProblem problem : compilationUnit.getProblems()) {
                 String filename = new String(problem.getOriginatingFileName());
-                sb.append("in " + filename + " on line " + problem.getSourceLineNumber() + ": " + problem);
+                sb.append("\nin " + filename + " on line " + problem.getSourceLineNumber() + ": " + problem);
             }
             String message = sb.toString();
             if (!message.isEmpty()) {

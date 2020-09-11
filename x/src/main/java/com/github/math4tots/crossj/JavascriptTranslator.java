@@ -980,24 +980,43 @@ public final class JavascriptTranslator implements ITranslator {
             @Override
             public boolean visit(CastExpression node) {
                 ITypeBinding type = node.resolveTypeBinding().getErasure();
-                if (type.getQualifiedName().equals("java.lang.String")) {
-                    sb.append("$STRCAST(");
-                    node.getExpression().accept(this);
-                    sb.append(")");
-                } else if (type.isInterface()) {
-                    // cast to an interface type
-                    sb.append("$CASTIF(");
-                    node.getExpression().accept(this);
-                    sb.append(',');
-                    sb.append("'I$" + type.getQualifiedName().replace(".", "$") + "'");
-                    sb.append(")");
-                } else {
-                    // cast to a class type
-                    sb.append("$CASTCLS(");
-                    node.getExpression().accept(this);
-                    sb.append(',');
-                    sb.append(getClassReference(type.getQualifiedName()));
-                    sb.append(")");
+                switch (type.getQualifiedName()) {
+                    case "java.lang.String": {
+                        sb.append("$STRCAST(");
+                        node.getExpression().accept(this);
+                        sb.append(")");
+                        break;
+                    }
+                    case "int": {
+                        sb.append("$INTCAST(");
+                        node.getExpression().accept(this);
+                        sb.append(")");
+                        break;
+                    }
+                    case "double": {
+                        sb.append("$NUMCAST(");
+                        node.getExpression().accept(this);
+                        sb.append(")");
+                        break;
+                    }
+                    default: {
+                        if (type.isInterface()) {
+                            // cast to an interface type
+                            sb.append("$CASTIF(");
+                            node.getExpression().accept(this);
+                            sb.append(',');
+                            sb.append("'I$" + type.getQualifiedName().replace(".", "$") + "'");
+                            sb.append(")");
+                        } else {
+                            // cast to a class type
+                            sb.append("$CASTCLS(");
+                            node.getExpression().accept(this);
+                            sb.append(',');
+                            sb.append(getClassReference(type.getQualifiedName()));
+                            sb.append(")");
+                        }
+                        break;
+                    }
                 }
                 return false;
             }

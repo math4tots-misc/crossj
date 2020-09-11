@@ -21,6 +21,10 @@ public final class Bytes {
 
     public native static Bytes ofI8s(int... i8s);
 
+    public native static Bytes ofI32LEs(int... i8s);
+
+    public native static Bytes ofI32BEs(int... i8s);
+
     public native static Bytes fromU8s(List<Integer> u8s);
 
     public native static Bytes fromI8s(List<Integer> i8s);

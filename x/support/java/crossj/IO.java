@@ -35,7 +35,7 @@ public final class IO {
     private static void writeFileByteArray(String filepath, byte[] data) {
         try {
             File file = new File(filepath);
-            File parent = file.getParentFile();
+            File parent = new File(file.getAbsolutePath()).getParentFile();
             parent.mkdirs();
             Files.write(file.toPath(), data, StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);

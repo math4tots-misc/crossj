@@ -79,6 +79,20 @@ function $INSTOFSTR(value) {
 function $INSTOFFN(f, argc) {
     return typeof f === 'function' && f.length === argc;
 }
+function $NUMCAST(value) {
+    if (typeof value === 'number') {
+        return value;
+    } else {
+        throw new Error("Could not cast " + value + " to a double");
+    }
+}
+function $INTCAST(value) {
+    if (typeof value === 'number') {
+        return value|0;
+    } else {
+        throw new Error("Could not cast " + value + " to an int");
+    }
+}
 function $STRCAST(value) {
     if (typeof value === 'string') {
         return value;
@@ -361,12 +375,37 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
             return ret;
         }
 
+        static M$ofI32LEs(...i32les) {
+            let ret = Bytes.M$withCapacity(i32les.length * 4);
+            for (let b of i32les) {
+                ret.M$addI32(b);
+            }
+            return ret;
+        }
+
+        static M$ofI32BEs(...i32bes) {
+            let ret = Bytes.M$withCapacity(i32bes.length * 4);
+            ret.M$useLittleEndian(false);
+            for (let b of i32bes) {
+                ret.M$addI32(b);
+            }
+            return ret;
+        }
+
         static M$fromI8s(i8s) {
             return Bytes.M$ofI8s(...i8s);
         }
 
         static M$fromU8s(u8s) {
             return Bytes.M$ofU8s(...u8s);
+        }
+
+        static M$fromI32LEs(i32les) {
+            return Bytes.M$ofI32LEs(...i32les);
+        }
+
+        static M$fromI32BEs(i32bes) {
+            return Bytes.M$ofI32BEs(...i32bes);
         }
 
         static M$fromASCII(string) {
@@ -479,7 +518,7 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
         }
 
         M$setI32(index, value) {
-            this.view.setInt16(index, value, this.endian);
+            this.view.setInt32(index, value, this.endian);
         }
 
         M$setU8(index, value) {

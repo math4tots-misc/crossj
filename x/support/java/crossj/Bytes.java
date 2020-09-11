@@ -62,6 +62,23 @@ public final class Bytes {
         return bytes;
     }
 
+    public static Bytes ofI32LEs(int... i32les) {
+        Bytes bytes = withCapacity(i32les.length * 4);
+        for (int b : i32les) {
+            bytes.addI32(b);
+        }
+        return bytes;
+    }
+
+    public static Bytes ofI32BEs(int... i32bes) {
+        Bytes bytes = withCapacity(i32bes.length * 4);
+        bytes.useLittleEndian(false);
+        for (int b : i32bes) {
+            bytes.addI32(b);
+        }
+        return bytes;
+    }
+
     public static Bytes wrapByteArray(byte[] array) {
         return new Bytes(ByteBuffer.wrap(array), array.length);
     }
@@ -78,6 +95,23 @@ public final class Bytes {
         Bytes bytes = withCapacity(u8s.size());
         for (int b : u8s) {
             bytes.addU8(b);
+        }
+        return bytes;
+    }
+
+    public static Bytes fromI32LEs(List<Integer> i32les) {
+        Bytes bytes = withCapacity(i32les.size() * 4);
+        for (int i32le : i32les) {
+            bytes.addI32(i32le);
+        }
+        return bytes;
+    }
+
+    public static Bytes fromI32BEs(List<Integer> i32bes) {
+        Bytes bytes = withCapacity(i32bes.size() * 4);
+        bytes.useLittleEndian(false);
+        for (int i32be : i32bes) {
+            bytes.addI32(i32be);
         }
         return bytes;
     }

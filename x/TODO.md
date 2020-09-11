@@ -39,3 +39,11 @@ For `long` should it be a `BigInt` or mostly faked with just `Number`?
 
 For `float`, is it ok to just have same representation as `double`?
 (this one is probably easiest, I think it's yes)
+But actually, I'm also afraid allowing `float` types to exist
+might make some things error prone. Like with:
+```
+float f = 1.0;
+double d = 1.0;
+Asert.equals(f, d);
+```
+Will it fail to compile, or compile but fail at runtime, or something else?

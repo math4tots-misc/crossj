@@ -52,4 +52,18 @@ public final class BytesTest {
         Bytes bytes = Bytes.fromASCII("hello");
         Assert.equals(bytes, Bytes.ofU8s(104, 101, 108, 108, 111));
     }
+
+    @Test
+    public static void addI32() {
+        Bytes bytes = Bytes.withCapacity(24);
+        int x = 2000, y = 3000, z = 1000000;
+        bytes.addI32(x);
+        bytes.addI32(y);
+        bytes.addI32(z);
+        Assert.equals(bytes, Bytes.ofU8s(
+            x % 256, x / 256, 0, 0,
+            y % 256, y / 256, 0, 0,
+            z % 256, (z / 256) % 256, (z / 256 / 256) % 256, z / 256 / 256 / 256
+        ));
+    }
 }
