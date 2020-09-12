@@ -1,0 +1,51 @@
+package crossj.hacks;
+
+import crossj.Bytes;
+import crossj.Int;
+import crossj.IntArray;
+
+/**
+ * Basic CRC32 implementation
+ *
+ * More or less based on: http://home.thep.lu.se/~bjorn/crc/
+ *
+ * References:<br/>
+ * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.112.1537&rep=rep1&type=pdf
+ * Annex D of https://www.w3.org/TR/PNG/
+ */
+public final class CRC32 {
+    private static final IntArray table = makeTable();
+
+    private static int crc32ForByte(int r) {
+        for (int j = 0; j < 8; j++) {
+            // 0xEDB88320 = (unsigned) -306674912
+            r = (((r & 1) != 0) ? 0 : -306674912) ^ r >>> 1;
+        }
+        // 0xFF000000 = (unsigned) -16777216
+        return r ^ -16777216;
+    }
+
+    private static IntArray makeTable() {
+        IntArray table = IntArray.withSize(0x100);
+        for (int i = 0; i < 0x100; i++) {
+            table.set(i, crc32ForByte(i));
+        }
+        return table;
+    }
+
+    private static int crc32(Bytes data) {
+        int crc = 0;
+        for (int b : data.asU8s()) {
+            crc = table.get((crc & 0xFF) ^ b) ^ crc >>> 8;
+        }
+        return crc;
+    }
+
+    public static int signed(Bytes data) {
+        return crc32(data);
+    }
+
+    public static double unsigned(Bytes data) {
+        return Int.toUnsigned(signed(data));
+    }
+}

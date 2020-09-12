@@ -22,4 +22,15 @@ public final class IntTest {
         Assert.equals(Int.toI8(123), 123);
         Assert.equals(Int.toI8(200), -56);
     }
+
+    @Test
+    public static void hexLiteralOverflow() {
+        // Potential issue here -- in Java, (positive) values you provide in hex that don't fit in
+        // signed 32-bit int, will automatically return their negative value counterpart.
+        // In some target languages (e.g. JS), if this isn't handled carefully, it may just result in
+        // an invalid value that is outside the expected range (since a JS number can fit all unsinged
+        // 32-bit int values).
+        // We check that this is properly handled.
+        Assert.equals(0xe8b7be43, -390611389);
+    }
 }

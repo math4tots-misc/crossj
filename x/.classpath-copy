@@ -9,13 +9,13 @@
 	<classpathentry kind="src" output="target/classes" path="support/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.pomderived" value="false"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" output="target/classes" path="support/shared">
 		<attributes>
 			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.pomderived" value="false"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
@@ -28,7 +28,7 @@
 	<classpathentry kind="src" output="target/test-classes" path="support/tests">
 		<attributes>
 			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.pomderived" value="false"/>
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>

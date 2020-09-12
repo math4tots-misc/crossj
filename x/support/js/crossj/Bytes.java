@@ -106,4 +106,8 @@ public final class Bytes {
 
     @Override
     public native boolean equals(Object other);
+
+    public native XIterator<Integer> asI8s();
+
+    public native XIterator<Integer> asU8s();
 }

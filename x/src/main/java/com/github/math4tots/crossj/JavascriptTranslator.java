@@ -867,7 +867,7 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(NumberLiteral node) {
-                sb.append(node.getToken());
+                sb.append(node.resolveConstantExpressionValue().toString());
                 return false;
             }
 
