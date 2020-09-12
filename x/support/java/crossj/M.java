@@ -14,4 +14,8 @@ public final class M {
     public static double abs(double value) {
         return Math.abs(value);
     }
+
+    public static double pow(double a, double b) {
+        return Math.pow(a, b);
+    }
 }

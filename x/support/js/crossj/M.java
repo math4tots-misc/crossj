@@ -12,4 +12,6 @@ public final class M {
     public static final double TAU = PI * 2;
 
     public static native double abs(double value);
+
+    public static native double pow(double a, double b);
 }

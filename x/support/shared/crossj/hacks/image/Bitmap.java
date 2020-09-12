@@ -50,7 +50,7 @@ public final class Bitmap {
      * Converts out the bitmap data into 32bpp BMP data, and returns
      * the contents as a Bytes value.
      * This Bytes object can be directly written out to a file and
-     * be a valid *.bmp file.
+     * be a valid *.bmp.
      *
      * Reference:
      * https://en.wikipedia.org/wiki/BMP_file_format

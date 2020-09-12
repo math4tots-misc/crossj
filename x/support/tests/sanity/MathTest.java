@@ -20,5 +20,13 @@ public final class MathTest {
         Assert.equals(5.0 / 2, 2.5);
 
         Assert.equals(7 / 2 + 1.0, 4.0);
+
+        Assert.equals(1234 / 10 / 10.0 * 100, 1230.0);
+        Assert.equals(1234 / 10.0 / 10 * 100, 1234.0);
+    }
+
+    @Test
+    public static void pow() {
+        Assert.equals(M.pow(2, 3), 8.0);
     }
 }

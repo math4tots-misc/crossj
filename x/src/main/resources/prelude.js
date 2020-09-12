@@ -730,6 +730,10 @@ $CJ['crossj.M'] = $LAZY(function () {
             return Math.abs(x);
         }
 
+        static M$pow(a, b) {
+            return a ** b;
+        }
+
         static M$floor(x) {
             return Math.floor(x);
         }
