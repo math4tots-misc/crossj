@@ -10,7 +10,8 @@ I'm thinking of adding to `support/shared` (heh, you know, the fun stuff)
             Maybe I want to allow alternatively return a `double` so that I
             can return an unsigned version?
             (or maybe even just support `long`).
-* `Bitmap.toPNGBytes`. Seems pretty simple, I just need crc32
+* `Bitmap.toPNGBytes`. ~~Seems pretty simple, I just need crc32~~ I have crc32 now, but I also
+    need DEFLATE. For filtering, I can prepend each scanline with a 0 byte to mostly ignore it for now.
 
 * Little ray tracer by working through the "The Ray Tracer Challenge" book.
     * Maybe under `crossj.hacks.ray` package?

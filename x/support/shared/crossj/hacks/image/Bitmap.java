@@ -47,20 +47,18 @@ public final class Bitmap {
     }
 
     /**
-     * Converts out the bitmap data into 32bpp BMP data, and returns
-     * the contents as a Bytes value.
-     * This Bytes object can be directly written out to a file and
-     * be a valid *.bmp.
+     * Converts out the bitmap data into 32bpp BMP data, and returns the contents as
+     * a Bytes value. This Bytes object can be directly written out to a file and be
+     * a valid *.bmp.
      *
-     * Reference:
-     * https://en.wikipedia.org/wiki/BMP_file_format
+     * Reference: https://en.wikipedia.org/wiki/BMP_file_format
      *
      * @return
      */
     public Bytes toBMPBytes() {
-        // 14                (file header)
-        // 40                (dib header (Windows BITMAPINFOHEADER))
-        // 4 * data.size()   (pixel data)
+        // 14 (file header)
+        // 40 (dib header (Windows BITMAPINFOHEADER))
+        // 4 * data.size() (pixel data)
         int bytesize = 14 + 40 + 4 * data.size();
         int width = getWidth();
         int height = getHeight();
@@ -68,7 +66,7 @@ public final class Bitmap {
         Bytes out = Bytes.withCapacity(bytesize);
 
         // -- file header --
-        out.addBytes(Bytes.fromASCII("BM")); // magic
+        out.addASCII("BM"); // magic
         out.addI32(bytesize); // size of BMP file in bytes
         out.addU16(0); // reserved
         out.addU16(0); // reserved

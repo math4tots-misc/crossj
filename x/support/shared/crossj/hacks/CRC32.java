@@ -14,6 +14,11 @@ import crossj.IntArray;
  * Annex D of https://www.w3.org/TR/PNG/
  */
 public final class CRC32 {
+    private CRC32() {
+    }
+
+    private int state = 0;
+
     private static final IntArray table = makeTable();
 
     private static int crc32ForByte(int r) {
@@ -34,11 +39,9 @@ public final class CRC32 {
     }
 
     private static int crc32(Bytes data) {
-        int crc = 0;
-        for (int b : data.asU8s()) {
-            crc = table.get((crc & 0xFF) ^ b) ^ crc >>> 8;
-        }
-        return crc;
+        CRC32 stream = newStream();
+        stream.acceptBytes(data);
+        return stream.signed();
     }
 
     public static int signed(Bytes data) {
@@ -47,5 +50,27 @@ public final class CRC32 {
 
     public static double unsigned(Bytes data) {
         return Int.toUnsigned(signed(data));
+    }
+
+    public static CRC32 newStream() {
+        return new CRC32();
+    }
+
+    public void acceptByte(int b) {
+        state = table.get((state & 0xFF) ^ b) ^ state >>> 8;
+    }
+
+    public void acceptBytes(Bytes data) {
+        for (int b : data.asU8s()) {
+            acceptByte(b);
+        }
+    }
+
+    public int signed() {
+        return state;
+    }
+
+    public double unsigned() {
+        return Int.toUnsigned(signed());
     }
 }

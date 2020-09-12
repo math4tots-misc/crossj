@@ -501,6 +501,10 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
             this.M$setBytes(pos, bytes);
         }
 
+        M$addASCII(ascii) {
+            this.M$addBytes(Bytes.M$fromASCII(ascii));
+        }
+
         M$setF64(index, value) {
             this.view.setFloat64(index, value, this.endian);
         }

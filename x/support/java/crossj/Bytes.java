@@ -198,6 +198,10 @@ public final class Bytes {
         buffer.put(bytes.buffer);
     }
 
+    public void addASCII(String ascii) {
+        addBytes(Bytes.fromASCII(ascii));
+    }
+
     public void addU8(int u8) {
         addI8(u8ToI8(u8));
     }

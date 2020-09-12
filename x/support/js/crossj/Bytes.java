@@ -59,6 +59,8 @@ public final class Bytes {
 
     public native void addBytes(Bytes bytes);
 
+    public native void addASCII(String ascii);
+
     public native void setF64(int index, double value);
 
     public native double getF64(int index);
