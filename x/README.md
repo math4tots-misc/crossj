@@ -10,6 +10,16 @@ Rules:
     the resulting program will not work properly, since the method names
     will overwrite each other
 
+* Only properly supported numeric types are `int` and `double`. Use of `float`, `short`,
+    `char`, `byte`, and `long` are undefined, and weird things might happen if you use them.
+
+* Unlike in real Java, `int` int is not guaranteed to be a 32-bit 2s complement int.
+    The only guarantee is that type will be able to hold all values that you can fit in
+    what you would expect to fit in a signed 32-bit 2s complement integer, and also
+    that all operation that do not overflow behave more or less as you would expect.
+    In particular, for the javascript target, `int` is effectively backed by a `double`.
+    So e.g. arithmetic that overflows will lead to unexpected behavior.
+
 Javascript translator:
 
 * method names are prefixed with `M$` and field names are prefixed with

@@ -793,11 +793,35 @@ $CJ['crossj.M'] = $LAZY(function () {
         static F$PI = Math.PI;
         static F$TAU = Math.PI * 2;
 
+        static M$max(...values) {
+            return Math.max(...values);
+        }
+
+        static M$imax(...values) {
+            return Math.max(...values);
+        }
+
+        static M$min(...values) {
+            return Math.min(...values);
+        }
+
+        static M$imin(...values) {
+            return Math.min(...values);
+        }
+
         static M$abs(x) {
             return Math.abs(x);
         }
 
+        static M$iabs(x) {
+            return Math.abs(x);
+        }
+
         static M$pow(a, b) {
+            return a ** b;
+        }
+
+        static M$ipow(a, b) {
             return a ** b;
         }
 

@@ -14,19 +14,19 @@ public final class Bytes {
     private ByteBuffer buffer;
 
     private static int u8ToI8(int u8) {
-        return u8 > Byte.MAX_VALUE ? u8 + 2 * (int) Byte.MIN_VALUE : u8;
+        return Int.toI8(u8);
     }
 
     private static int i8ToU8(int i8) {
-        return i8 < 0 ? i8 - 2 * (int) Byte.MIN_VALUE : i8;
+        return Int.toU8(i8);
     }
 
     private static int u16ToI16(int u16) {
-        return u16 > Short.MAX_VALUE ? u16 + 2 * (int) Short.MIN_VALUE : u16;
+        return Int.toI16(u16);
     }
 
     private static int i16ToU16(int i16) {
-        return i16 < 0 ? i16 - 2 * (int) Short.MIN_VALUE : i16;
+        return Int.toU16(i16);
     }
 
     private Bytes(ByteBuffer buffer, int size) {

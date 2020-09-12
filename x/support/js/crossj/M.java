@@ -11,7 +11,19 @@ public final class M {
     public static final double PI = 3.14159265358979323846;
     public static final double TAU = PI * 2;
 
+    public static native double max(double value, double... values);
+
+    public static native int imax(int value, int... values);
+
+    public static native double min(double value, double... values);
+
+    public static native int imin(int value, int... values);
+
     public static native double abs(double value);
 
+    public static native int iabs(int x);
+
     public static native double pow(double a, double b);
+
+    public static native int ipow(int a, int b);
 }

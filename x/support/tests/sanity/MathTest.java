@@ -29,4 +29,16 @@ public final class MathTest {
     public static void pow() {
         Assert.equals(M.pow(2, 3), 8.0);
     }
+
+    @Test
+    public static void extrema() {
+        Assert.equals(M.max(1, 2, 3), 3.0);
+        Assert.equals(M.max(1, 2, -13), 2.0);
+        Assert.equals(M.min(1, 2, 3), 1.0);
+        Assert.equals(M.min(1, 2, -13), -13.0);
+        Assert.equals(M.imax(1, 2, 3), 3);
+        Assert.equals(M.imax(1, 2, -13), 2);
+        Assert.equals(M.imin(1, 2, 3), 1);
+        Assert.equals(M.imin(1, 2, -13), -13);
+    }
 }
