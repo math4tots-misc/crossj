@@ -684,7 +684,74 @@ $CJ['crossj.IntArray'] = $LAZY(function() {
         }
     }
     return IntArray;
-})
+});
+$CJ['crossj.DoubleArray'] = $LAZY(function() {
+    class DoubleArray {
+        /**
+         * @param {Float64Array} arr
+         */
+        constructor(arr) {
+            this.arr = arr;
+        }
+        static fromJSArray(arr) {
+            return new DoubleArray(Float64Array.from(arr))
+        }
+        static M$of(...args) {
+            return DoubleArray.fromJSArray(args);
+        }
+        static M$withSize(size) {
+            return new DoubleArray(new Float64Array(size));
+        }
+        static M$fromList(list) {
+            return DoubleArray.fromJSArray(list.arr);
+        }
+        static M$fromIterable(iterable) {
+            const values = [];
+            for (const value of iterable) {
+                values.push(value);
+            }
+            return DoubleArray.fromJSArray(values);
+        }
+        M$size() {
+            return this.arr.length;
+        }
+        M$get(i) {
+            return this.arr[i];
+        }
+        M$set(i, x) {
+            this.arr[i] = x;
+        }
+        M$iter() {
+            return this.arr[Symbol.iterator]();
+        }
+        [Symbol.iterator]() {
+            return this.M$iter();
+        }
+        M$toString() {
+            return 'DoubleArray.of(' + this.arr.join(', ') + ')';
+        }
+        toString() {
+            return this.M$toString();
+        }
+        M$equals(other) {
+            if (!(other instanceof DoubleArray)) {
+                return false;
+            }
+            const a = this.arr;
+            const b = other.arr;
+            if (a.length !== b.length) {
+                return false;
+            }
+            for (let i = 0; i < a.length; i++) {
+                if (a[i] !== b[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    return DoubleArray;
+});
 $CJ['java.lang.Integer'] = $LAZY(function () {
     return class Integer {
         static M$valueOf(x) {
