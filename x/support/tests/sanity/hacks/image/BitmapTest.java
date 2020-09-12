@@ -10,7 +10,9 @@ import crossj.hacks.image.Pixel;
 public final class BitmapTest {
 
     /**
-     * This test really needs to be checked manually to see if it works
+     * This test really needs to be checked manually to see if it ran correctly
+     * the smallSample test is very similar except uses much fewer pixels so that
+     * the values can be checked pixel by pixel here.
      *
      * This test writes out a file to out/sample.bmp
      *
@@ -46,9 +48,42 @@ public final class BitmapTest {
         Bytes bytes = bmp.toBMPBytes();
         Assert.equals(bytes.size(), 14 + 40 + width * height * 4);
         Bytes data = bytes.getBytes(14 + 40, bytes.size());
-        Assert.equals(data,
-                Bytes.ofU8s(0, 192, 0, 255, 0, 192, 64, 255, 0, 192, 128, 255, 0, 192, 192, 255, 0, 128, 0, 255, 0, 128,
-                        64, 255, 0, 128, 128, 255, 0, 128, 192, 255, 0, 64, 0, 255, 0, 64, 64, 255, 0, 64, 128, 255, 0,
-                        64, 192, 255, 0, 0, 0, 255, 0, 0, 64, 255, 0, 0, 128, 255, 0, 0, 192, 255));
+        Assert.equals(data, Bytes.ofU8s(
+                // NOTE: pixel channels appear in BGRA order when
+                // written out in little endian.
+                // NOTE: BMP expects pixel data to start from the lower left corner
+                // moving up and to the right
+                // (0, 3)
+                0, 192, 0, 255,
+                // (1, 3)
+                0, 192, 64, 255,
+                // (2, 3)
+                0, 192, 128, 255,
+                // (3, 3)
+                0, 192, 192, 255,
+                // (0, 2)
+                0, 128, 0, 255,
+                // (1, 2)
+                0, 128, 64, 255,
+                // (2, 2)
+                0, 128, 128, 255,
+                // (3, 2)
+                0, 128, 192, 255,
+                // (0, 1)
+                0, 64, 0, 255,
+                // (1, 1)
+                0, 64, 64, 255,
+                // (2, 1)
+                0, 64, 128, 255,
+                // (3, 1)
+                0, 64, 192, 255,
+                // (0, 0)
+                0, 0, 0, 255,
+                // (1, 0)
+                0, 0, 64, 255,
+                // (2, 0)
+                0, 0, 128, 255,
+                // (3, 0)
+                0, 0, 192, 255));
     }
 }
