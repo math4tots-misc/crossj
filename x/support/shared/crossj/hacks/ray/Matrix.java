@@ -9,7 +9,7 @@ import crossj.M;
 import crossj.Repr;
 
 /**
- * Conceptually immutable Matrix
+ * Conceptually immutable Matrix.
  *
  * tuples, vectors and points are represented as column vectors.
  *
