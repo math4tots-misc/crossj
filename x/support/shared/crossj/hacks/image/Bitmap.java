@@ -36,14 +36,14 @@ public final class Bitmap {
         return data.size() / width;
     }
 
-    public void setPixel(int x, int y, Pixel pixel) {
+    public void setColor(int x, int y, Color pixel) {
         int i = y * width + x;
         data.set(i, pixel.toI32RGBA());
     }
 
-    public Pixel getPixel(int x, int y) {
+    public Color getColor(int x, int y) {
         int i = y * width + x;
-        return Pixel.fromI32RGBA(data.get(i));
+        return Color.fromI32RGBA(data.get(i));
     }
 
     /**
@@ -90,7 +90,7 @@ public final class Bitmap {
         // -- pixel data --
         for (int y = height - 1; y >= 0; y--) {
             for (int x = 0; x < width; x++) {
-                out.addI32(getPixel(x, y).toI32ARGB());
+                out.addI32(getColor(x, y).toI32ARGB());
             }
         }
         Assert.equals(out.size(), bytesize);

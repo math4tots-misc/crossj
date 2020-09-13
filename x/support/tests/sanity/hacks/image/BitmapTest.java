@@ -5,7 +5,7 @@ import crossj.Bytes;
 import crossj.IO;
 import crossj.Test;
 import crossj.hacks.image.Bitmap;
-import crossj.hacks.image.Pixel;
+import crossj.hacks.image.Color;
 
 public final class BitmapTest {
 
@@ -29,7 +29,7 @@ public final class BitmapTest {
         Bitmap bmp = Bitmap.withDimensions(width, height);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                bmp.setPixel(x, y, Pixel.of(((double) x) / width, ((double) y) / height, 0, 1));
+                bmp.setColor(x, y, Color.of(((double) x) / width, ((double) y) / height, 0, 1));
             }
         }
         IO.writeFileBytes("out/sample.bmp", bmp.toBMPBytes());
@@ -41,8 +41,8 @@ public final class BitmapTest {
         Bitmap bmp = Bitmap.withDimensions(width, height);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                Pixel pixel = Pixel.of(((double) x) / width, ((double) y) / height, 0, 1);
-                bmp.setPixel(x, y, pixel);
+                Color pixel = Color.of(((double) x) / width, ((double) y) / height, 0, 1);
+                bmp.setColor(x, y, pixel);
             }
         }
         Bytes bytes = bmp.toBMPBytes();

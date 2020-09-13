@@ -10,7 +10,7 @@ public final class Demo {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                bmp.setPixel(x, y, Pixel.of(0.2, 0.2, 0.2, 1));
+                bmp.setColor(x, y, Color.of(0.2, 0.2, 0.2, 1));
             }
         }
 
@@ -20,7 +20,7 @@ public final class Demo {
                 double normDist = dist / radius;
                 double lumen = 1 - normDist;
                 if (lumen >= 0 && lumen <= 1) {
-                    bmp.setPixel(x, y, Pixel.of(0.3, lumen, lumen, 1));
+                    bmp.setColor(x, y, Color.of(0.3, lumen, lumen, 1));
                 }
             }
         }
