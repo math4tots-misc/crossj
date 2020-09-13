@@ -5,8 +5,11 @@ import java.io.File;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
+import crossj.IO;
 import crossj.List;
+import crossj.M;
 import crossj.Optional;
+import crossj.Time;
 import crossj.XError;
 
 public final class Main {
@@ -16,6 +19,7 @@ public final class Main {
         Optional<ITranslator> translator = Optional.empty();
         Optional<String> main = Optional.empty();
         Optional<String> outdir = Optional.empty();
+        boolean verbose = false;
 
         for (String arg : args) {
             switch (mode) {
@@ -39,6 +43,11 @@ public final class Main {
                         case "-o":
                         case "--out": {
                             mode = Mode.Out;
+                            break;
+                        }
+                        case "-v":
+                        case "--verbose": {
+                            verbose = true;
                             break;
                         }
                         default: {
@@ -92,7 +101,16 @@ public final class Main {
             parser.addSourceRoot(root);
         }
 
-        for (String filepath : findAllFilesInMultipleDirectories(sourceRoots)) {
+        List<String> filepaths = findAllFilesInMultipleDirectories(sourceRoots);
+        if (verbose) {
+            IO.println("Found " + filepaths.size() + " files");
+        }
+        for (int i = 0; i < filepaths.size(); i++) {
+            double start = Time.now();
+            String filepath = filepaths.get(i);
+            if (verbose) {
+                IO.print("Translating " + filepath + " (" + (i + 1) + "/" + filepaths.size() + ") ... ");
+            }
             CompilationUnit compilationUnit = parser.parseFile(filepath);
             StringBuilder sb = new StringBuilder();
             for (IProblem problem : compilationUnit.getProblems()) {
@@ -104,6 +122,11 @@ public final class Main {
                 throw XError.withMessage("\n" + message);
             }
             tr.translate(filepath, compilationUnit);
+            if (verbose) {
+                double end = Time.now();
+                double rounded = M.round(10000 * (end - start)) / 10000.0;
+                IO.println("DONE (in " + rounded + "s)");
+            }
         }
         tr.commit();
     }

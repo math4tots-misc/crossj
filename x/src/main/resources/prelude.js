@@ -860,6 +860,10 @@ $CJ['crossj.M'] = $LAZY(function () {
             return Math.min(...values);
         }
 
+        static M$round(x) {
+            return Math.round(x);
+        }
+
         static M$abs(x) {
             return Math.abs(x);
         }
@@ -906,6 +910,14 @@ $CJ['crossj.M'] = $LAZY(function () {
     };
     return M;
 });
+$CJ['crossj.Time'] = $LAZY(function() {
+    class Time {
+        static now() {
+            return Date.now() / 1000 | 0;
+        }
+    }
+    return Time;
+})
 $CJ['crossj.TestFinder'] = $LAZY(function () {
     class TestFinder {
         static M$run(packageName) {

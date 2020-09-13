@@ -41,4 +41,11 @@ public final class MathTest {
         Assert.equals(M.imin(1, 2, 3), 1);
         Assert.equals(M.imin(1, 2, -13), -13);
     }
+
+    @Test
+    public static void round() {
+        Assert.equals(M.round(3), 3.0);
+        Assert.equals(M.round(3.5), 4.0);
+        Assert.equals(M.round(3.4), 3.0);
+    }
 }

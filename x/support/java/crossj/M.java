@@ -39,6 +39,10 @@ public final class M {
         return value;
     }
 
+    public static double round(double value) {
+        return Math.round(value);
+    }
+
     public static double abs(double value) {
         return Math.abs(value);
     }

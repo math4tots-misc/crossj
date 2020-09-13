@@ -17,6 +17,12 @@ public final class IO {
     public static void eprintln(Object object) {
         System.err.println(object.toString());
     }
+    public static void print(Object object) {
+        System.out.print(object.toString());
+    }
+    public static void eprint(Object object) {
+        System.err.print(object.toString());
+    }
     public static String join(String... parts) {
         return String.join(File.separator, parts);
     }

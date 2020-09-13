@@ -19,6 +19,8 @@ public final class M {
 
     public static native int imin(int value, int... values);
 
+    public static native double round(double value);
+
     public static native double abs(double value);
 
     public static native int iabs(int x);
