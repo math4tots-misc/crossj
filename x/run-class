@@ -1,0 +1,6 @@
+#!/bin/bash
+# mvn -q clean package && \
+java -jar target/crossj-1.0-SNAPSHOT-jar-with-dependencies.jar \
+    -r support/js -r support/shared \
+    -m "$1" && \
+node out/bundle.js
