@@ -29,4 +29,24 @@ public final class ListTest {
         list.sort();
         Assert.equals(list, List.of(-3, -2, -1, 1, 2, 3));
     }
+
+    @Test
+    public static void construction() {
+        List<String> list = List.of("a", "b", "c", "d");
+        List<String> clone = list.clone();
+        Assert.that(list != clone);
+        Assert.equals(list, clone);
+        list.set(0, "hi");
+        Assert.notEquals(list, clone);
+        Assert.equals(list, List.of("hi", "b", "c", "d"));
+        Assert.equals(clone, List.of("a", "b", "c", "d"));
+    }
+
+    @Test
+    public static void fromIterable() {
+        List<Integer> a = List.of(1, 2, 3);
+        List<Integer> b = List.fromIterable(a);
+        Assert.that(a != b);
+        Assert.equals(a, b);
+    }
 }

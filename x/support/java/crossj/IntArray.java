@@ -84,4 +84,8 @@ public final class IntArray implements XIterable<Integer> {
         IntArray arr = (IntArray) obj;
         return Arrays.equals(buffer, arr.buffer);
     }
+
+    public IntArray clone() {
+        return new IntArray(buffer.clone());
+    }
 }

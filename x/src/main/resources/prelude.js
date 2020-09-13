@@ -215,6 +215,9 @@ $CJ['crossj.List'] = $LAZY(function () {
             }
             return new List(arr);
         }
+        static M$fromIterable(iterable) {
+            return new List(Array.from(iterable));
+        }
         static M$reversed(iterable) {
             const arr = Array.from(iterable);
             arr.reverse();
@@ -230,6 +233,9 @@ $CJ['crossj.List'] = $LAZY(function () {
         }
         M$get(i) {
             return this.arr[i];
+        }
+        M$set(i, value) {
+            this.arr[i] = value;
         }
         M$last() {
             return this.arr[this.arr.length - 1];
@@ -332,6 +338,9 @@ $CJ['crossj.List'] = $LAZY(function () {
                 }
             }
             return $CMP(alen, blen);
+        }
+        M$clone() {
+            return new List([...this.arr]);
         }
     };
     return List;
@@ -619,6 +628,12 @@ $CJ['crossj.Bytes'] = $LAZY(function () {
             }
             return true;
         }
+
+        M$clone() {
+            const buf = new ArrayBuffer(this.siz);
+            new Uint8Array(buf).set(this.M$asU8s());
+            return new Bytes(buf, this.siz);
+        }
     }
     return Bytes;
 });
@@ -686,6 +701,9 @@ $CJ['crossj.IntArray'] = $LAZY(function() {
             }
             return true;
         }
+        M$clone() {
+            return new IntArray(new Int32Array(this.arr));
+        }
     }
     return IntArray;
 });
@@ -752,6 +770,9 @@ $CJ['crossj.DoubleArray'] = $LAZY(function() {
                 }
             }
             return true;
+        }
+        M$clone() {
+            return new DoubleArray(new Float64Array(this.arr));
         }
     }
     return DoubleArray;

@@ -194,4 +194,8 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         }
         return Integer.compare(len, o.size());
     }
+
+    public List<T> clone() {
+        return new List<>(new ArrayList<>(list));
+    }
 }

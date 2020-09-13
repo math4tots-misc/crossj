@@ -112,4 +112,6 @@ public final class Bytes {
     public native XIterator<Integer> asI8s();
 
     public native XIterator<Integer> asU8s();
+
+    public native Bytes clone();
 }

@@ -84,4 +84,8 @@ public final class DoubleArray implements XIterable<Double> {
         DoubleArray arr = (DoubleArray) obj;
         return Arrays.equals(buffer, arr.buffer);
     }
+
+    public DoubleArray clone() {
+        return new DoubleArray(buffer.clone());
+    }
 }

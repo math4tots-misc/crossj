@@ -26,4 +26,6 @@ public final class IntArray implements XIterable<Integer> {
 
     @Override
     public native boolean equals(Object obj);
+
+    public native IntArray clone();
 }

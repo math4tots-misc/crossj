@@ -33,4 +33,15 @@ public final class IntArrayTest {
         Assert.equals("" + arr, "IntArray.of(100, 6, 7, 8)");
         Assert.equals(arr.toString(), "IntArray.of(100, 6, 7, 8)");
     }
+
+    @Test
+    public static void copy() {
+        IntArray bytes = IntArray.of(1, 2, 3, 4, 5);
+        IntArray clone = bytes.clone();
+        Assert.that(bytes != clone);
+        Assert.equals(bytes, clone);
+        clone.set(0, 500);
+        Assert.equals(bytes, IntArray.of(1, 2, 3, 4, 5));
+        Assert.equals(clone, IntArray.of(500, 2, 3, 4, 5));
+    }
 }

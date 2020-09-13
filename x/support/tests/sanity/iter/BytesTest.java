@@ -66,4 +66,15 @@ public final class BytesTest {
             z % 256, (z / 256) % 256, (z / 256 / 256) % 256, z / 256 / 256 / 256
         ));
     }
+
+    @Test
+    public static void copy() {
+        Bytes bytes = Bytes.ofU8s(1, 2, 3, 4, 5);
+        Bytes clone = bytes.clone();
+        Assert.that(bytes != clone);
+        Assert.equals(bytes, clone);
+        clone.setU16(0, 1000);
+        Assert.equals(bytes, Bytes.ofU8s(1, 2, 3, 4, 5));
+        Assert.equals(clone, Bytes.ofU8s(232, 3, 3, 4, 5));
+    }
 }

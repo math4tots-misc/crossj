@@ -353,4 +353,8 @@ public final class Bytes {
         buffer.get(array);
         return array;
     }
+
+    public Bytes clone() {
+        return getBytes(0, size());
+    }
 }

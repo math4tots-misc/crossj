@@ -26,4 +26,6 @@ public final class DoubleArray implements XIterable<Double> {
 
     @Override
     public native boolean equals(Object obj);
+
+    public native DoubleArray clone();
 }

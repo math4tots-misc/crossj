@@ -6,6 +6,8 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
 
     public static native <T> List<T> ofSize(int n, Func0<T> f);
 
+    public static native <T> List<T> fromIterable(XIterable<T> iterable);
+
     public static native <T> List<T> reversed(XIterable<T> iterable);
 
     public static native <T extends Comparable<T>> List<T> sorted(Iterable<T> iterable);
@@ -41,4 +43,6 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
 
     @Override
     public native int compareTo(List<T> o);
+
+    public native List<T> clone();
 }

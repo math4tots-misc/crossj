@@ -33,4 +33,15 @@ public final class DoubleArrayTest {
         Assert.equals("" + arr, "DoubleArray.of(100.1, 6.2, 7.3, 8.4)");
         Assert.equals(arr.toString(), "DoubleArray.of(100.1, 6.2, 7.3, 8.4)");
     }
+
+    @Test
+    public static void copy() {
+        DoubleArray bytes = DoubleArray.of(1, 2, 3, 4, 5);
+        DoubleArray clone = bytes.clone();
+        Assert.that(bytes != clone);
+        Assert.equals(bytes, clone);
+        clone.set(0, 500);
+        Assert.equals(bytes, DoubleArray.of(1, 2, 3, 4, 5));
+        Assert.equals(clone, DoubleArray.of(500, 2, 3, 4, 5));
+    }
 }
