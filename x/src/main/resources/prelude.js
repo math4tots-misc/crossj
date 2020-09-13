@@ -76,6 +76,12 @@ function $STRCMP(a, b) {
 function $INSTOFSTR(value) {
     return typeof value === 'string';
 }
+function $INSTOFNUM(value) {
+    return typeof value === 'number';
+}
+function $INSTOFINT(value) {
+    return value === (value|0);
+}
 function $INSTOFFN(f, argc) {
     return typeof f === 'function' && f.length === argc;
 }
@@ -119,6 +125,17 @@ function repr(x) {
 }
 function $ITERlist(items) {
     return $CJ['crossj.List']().M$of(...items);
+}
+function* $ITERchunk(items, n) {
+    const List = $CJ['crossj.List']();
+    let chunk = [];
+    for (let item of items) {
+        chunk.push(item);
+        if (chunk.length >= n) {
+            yield new List(chunk);
+            chunk = [];
+        }
+    }
 }
 function* $ITERflatMap(items, f) {
     for (let item of items) {
@@ -207,6 +224,9 @@ $CJ['crossj.List'] = $LAZY(function () {
         }
         static M$of(...args) {
             return new List(args);
+        }
+        static M$fromJavaArray(args) {
+            return List.M$fromIterable(args);
         }
         static M$ofSize(n, f) {
             const arr = [];
@@ -651,6 +671,9 @@ $CJ['crossj.IntArray'] = $LAZY(function() {
         static M$of(...args) {
             return IntArray.fromJSArray(args);
         }
+        static M$fromJavaIntArray(args) {
+            return IntArray.fromJSArray(args);
+        }
         static M$withSize(size) {
             return new IntArray(new Int32Array(size));
         }
@@ -719,6 +742,9 @@ $CJ['crossj.DoubleArray'] = $LAZY(function() {
             return new DoubleArray(Float64Array.from(arr))
         }
         static M$of(...args) {
+            return DoubleArray.fromJSArray(args);
+        }
+        static M$fromJavaDoubleArray(args) {
             return DoubleArray.fromJSArray(args);
         }
         static M$withSize(size) {

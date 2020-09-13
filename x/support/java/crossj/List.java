@@ -27,6 +27,10 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         return new List<T>(new ArrayList<>(Arrays.asList(args)));
     }
 
+    public static <T> List<T> fromJavaArray(T[] args) {
+        return of(args);
+    }
+
     public static <T> List<T> ofSize(int n, Func0<T> f) {
         List<T> ret = List.of();
         for (int i = 0; i < n; i++) {

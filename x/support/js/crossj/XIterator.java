@@ -17,6 +17,8 @@ public final class XIterator<T> implements XIterable<T> /* , Iterator<T> */ {
 
     public native List<T> list();
 
+    public native XIterator<List<T>> chunk(int n);
+
     /*
     public native boolean hasNext();
     public native T next();

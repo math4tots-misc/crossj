@@ -17,6 +17,10 @@ public final class DoubleArray implements XIterable<Double> {
         return new DoubleArray(args);
     }
 
+    public static DoubleArray fromJavaDoubleArray(double[] args) {
+        return of(args);
+    }
+
     public static DoubleArray withSize(int size) {
         return new DoubleArray(new double[size]);
     }

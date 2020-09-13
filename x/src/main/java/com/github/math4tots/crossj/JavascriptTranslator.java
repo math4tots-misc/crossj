@@ -987,13 +987,15 @@ public final class JavascriptTranslator implements ITranslator {
                         sb.append(")");
                         break;
                     }
-                    case "int": {
+                    case "int":
+                    case "java.lang.Integer": {
                         sb.append("$INTCAST(");
                         node.getExpression().accept(this);
                         sb.append(")");
                         break;
                     }
-                    case "double": {
+                    case "double":
+                    case "java.lang.Double": {
                         sb.append("$NUMCAST(");
                         node.getExpression().accept(this);
                         sb.append(")");
@@ -1027,6 +1029,14 @@ public final class JavascriptTranslator implements ITranslator {
                 String qualifiedName = type.getQualifiedName();
                 if (qualifiedName.equals("java.lang.String")) {
                     sb.append("$INSTOFSTR(");
+                    translateExpression(node.getLeftOperand());
+                    sb.append(")");
+                } else if (qualifiedName.equals("java.lang.Double")) {
+                    sb.append("$INSTOFNUM(");
+                    translateExpression(node.getLeftOperand());
+                    sb.append(")");
+                } else if (qualifiedName.equals("java.lang.Integer")) {
+                    sb.append("$INSTOFINT(");
                     translateExpression(node.getLeftOperand());
                     sb.append(")");
                 } else if (qualifiedName.equals("java.lang.Object")) {

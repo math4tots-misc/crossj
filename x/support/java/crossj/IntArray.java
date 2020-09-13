@@ -17,6 +17,10 @@ public final class IntArray implements XIterable<Integer> {
         return new IntArray(args);
     }
 
+    public static IntArray fromJavaIntArray(int[] args) {
+        return of(args);
+    }
+
     public static IntArray withSize(int size) {
         return new IntArray(new int[size]);
     }

@@ -6,6 +6,8 @@ package crossj;
 public final class IntArray implements XIterable<Integer> {
     public native static IntArray of(int... args);
 
+    public native static IntArray fromJavaIntArray(int[] args);
+
     public native static IntArray withSize(int size);
 
     public native static IntArray fromList(List<Integer> list);

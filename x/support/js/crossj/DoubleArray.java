@@ -6,6 +6,8 @@ package crossj;
 public final class DoubleArray implements XIterable<Double> {
     public native static DoubleArray of(double... args);
 
+    public native static DoubleArray fromJavaDoubleArray(double[] args);
+
     public native static DoubleArray withSize(int size);
 
     public native static DoubleArray fromList(List<Double> list);

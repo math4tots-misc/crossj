@@ -46,6 +46,27 @@ public final class XIterator<T> implements Iterator<T>, XIterable<T> {
         return List.fromIterator(this);
     }
 
+    public XIterator<List<T>> chunk(int n) {
+        return new XIterator<>(new Iterator<List<T>>(){
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            @Override
+            public List<T> next() {
+                if (!hasNext()) {
+                    throw XError.withMessage("chunk.next called when hasNext is false");
+                }
+                List<T> ret = List.of(iter.next());
+                while (ret.size() < n && iter.hasNext()) {
+                    ret.add(iter.next());
+                }
+                return ret;
+            }
+        });
+    }
+
     public <R> XIterator<R> flatMap(Func1<XIterable<R>, T> f) {
         return new XIterator<>(new Iterator<R>() {
             boolean done = false;

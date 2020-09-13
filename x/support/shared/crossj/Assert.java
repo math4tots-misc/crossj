@@ -10,6 +10,12 @@ public final class Assert {
         }
     }
 
+    public static void withMessage(boolean cond, String message) {
+        if (!cond) {
+            throw XError.withMessage("Assertion failed: " + message);
+        }
+    }
+
     public static <T> void equals(T a, T b) {
         if (!Eq.of(a, b)) {
             throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to equal " + Repr.of(b));
@@ -19,6 +25,18 @@ public final class Assert {
     public static <T> void notEquals(T a, T b) {
         if (Eq.of(a, b)) {
             throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to NOT equal " + Repr.of(b));
+        }
+    }
+
+    public static <T> void almostEquals(T a, T b) {
+        if (!Eq.almost(a, b)) {
+            throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to be almost equal to " + Repr.of(b));
+        }
+    }
+
+    public static <T> void notAlmostEquals(T a, T b) {
+        if (Eq.almost(a, b)) {
+            throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to NOT be almost equal to " + Repr.of(b));
         }
     }
 
