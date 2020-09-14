@@ -173,6 +173,24 @@ function $ITERfold(items, init, f) {
     }
     return init;
 }
+function $ITERall(items, f) {
+    let ret = true;
+    for (let item of items) {
+        if (!f(item)) {
+            return false;
+        }
+    }
+    return ret;
+}
+function $ITERany(items, f) {
+    let ret = false;
+    for (let item of items) {
+        if (f(item)) {
+            return true;
+        }
+    }
+    return ret;
+}
 function $ITERiter(iterator) {
     return iterator;
 }
@@ -803,6 +821,13 @@ $CJ['crossj.DoubleArray'] = $LAZY(function() {
     }
     return DoubleArray;
 });
+$CJ['crossj.ImplChar'] = $LAZY(function() {
+    return class ImplChar {
+        static M$isWhitespace(ch) {
+            return /\s/g.test(ch);
+        }
+    };
+})
 $CJ['java.lang.Integer'] = $LAZY(function () {
     return class Integer {
         static M$valueOf(x) {

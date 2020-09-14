@@ -1,7 +1,9 @@
 package sanity.iter;
 
 import crossj.Assert;
+import crossj.List;
 import crossj.Repr;
+import crossj.Str;
 import crossj.Test;
 
 public final class StringTest {
@@ -38,5 +40,32 @@ public final class StringTest {
     public static void implicitToString() {
         Repr x = new ClassWithCustomRepr(-7);
         Assert.equals("" + x, "<ClassWithCustomRepr xx custom toString xx >");
+    }
+
+    @Test
+    public static void startsWithEndsWith() {
+        Assert.that(Str.startsWith("string", "str"));
+        Assert.that(!Str.startsWith("string", "tri"));
+        Assert.that(Str.startsWithAt("string", "tri", 1));
+        Assert.that(Str.endsWith("string", "ing"));
+        Assert.that(!Str.endsWith("string", "ri"));
+        Assert.that(Str.endsWithAt("string", "ri", 4));
+    }
+
+    @Test
+    public static void split() {
+        Assert.equals(Str.split("", " "), List.of(""));
+        Assert.equals(Str.split("Helloworld", " "), List.of("Helloworld"));
+        Assert.equals(Str.split("Hello world", " "), List.of("Hello", "world"));
+        Assert.equals(Str.split("a  b", " "), List.of("a", "", "b"));
+
+        // words is a bit different from split wrt corner cases
+        // (empty words are dropped)
+        Assert.equals(Str.words(""), List.of());
+        Assert.equals(Str.words("abc"), List.of("abc"));
+        Assert.equals(Str.words("abc def"), List.of("abc", "def"));
+        Assert.equals(Str.words("abc   def"), List.of("abc", "def"));
+        Assert.equals(Str.words("abc   def\n"), List.of("abc", "def"));
+        Assert.equals(Str.words("abc   def\n \nxxx"), List.of("abc", "def", "xxx"));
     }
 }

@@ -6,7 +6,7 @@ import crossj.DoubleArray;
 import crossj.Eq;
 import crossj.List;
 import crossj.M;
-import crossj.Repr;
+import crossj.Str;
 
 /**
  * Conceptually immutable Matrix.
@@ -197,10 +197,10 @@ public final class Matrix implements AlmostEq<Matrix> {
         } else if (isVector()) {
             return "Matrix.newVector(" + getX() + ", " + getY() + ", " + getZ() + ")";
         } else if (isTuple()) {
-            return "Matrix.newTuple(" + Repr.join(", ", data) + ")";
+            return "Matrix.newTuple(" + Str.join(", ", data) + ")";
         } else {
-            return "Matrix.withRows(" + Repr.join(", ",
-                    data.iter().chunk(ncols).map(row -> "List.of(" + Repr.join(", ", row) + ")").list()) + ")";
+            return "Matrix.withRows(" + Str.join(", ",
+                    data.iter().chunk(ncols).map(row -> "List.of(" + Str.join(", ", row) + ")").list()) + ")";
         }
     }
 

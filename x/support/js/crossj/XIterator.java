@@ -12,6 +12,9 @@ public final class XIterator<T> implements XIterable<T> /* , Iterator<T> */ {
     public native <R> R fold(R start, Func2<R, R, T> f);
     public native T reduce(Func2<T, T, T> f);
 
+    public native boolean all(Func1<Boolean, T> f);
+    public native boolean any(Func1<Boolean, T> f);
+
     @Override
     public native XIterator<T> iter();
 

@@ -32,4 +32,10 @@ public final class IterTest {
             Assert.equals(s, "abbccc");
         }
     }
+
+    @Test
+    public static void anyAll() {
+        Assert.that(List.of(1, 2, 3).iter().all(x -> x < 10));
+        Assert.that(List.of(1, 2, 3).iter().any(x -> x > 2));
+    }
 }

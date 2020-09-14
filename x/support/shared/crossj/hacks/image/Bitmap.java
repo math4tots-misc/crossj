@@ -3,6 +3,8 @@ package crossj.hacks.image;
 import crossj.Assert;
 import crossj.Bytes;
 import crossj.IntArray;
+import crossj.XIterable;
+import crossj.XIterator;
 
 /**
  * Quick and dirty class for playing with bitmaps
@@ -28,6 +30,11 @@ public final class Bitmap {
         return new Bitmap(width, data);
     }
 
+    public static Bitmap fromColors(int width, XIterable<Color> colors) {
+        IntArray data = IntArray.fromIterable(colors.iter().map(cl -> cl.toI32RGBA()));
+        return new Bitmap(width, data);
+    }
+
     public int getWidth() {
         return width;
     }
@@ -44,6 +51,10 @@ public final class Bitmap {
     public Color getColor(int x, int y) {
         int i = y * width + x;
         return Color.fromI32RGBA(data.get(i));
+    }
+
+    public XIterator<Color> colors() {
+        return data.iter().map(x -> Color.fromI32RGBA(x));
     }
 
     /**
@@ -96,5 +107,30 @@ public final class Bitmap {
         Assert.equals(out.size(), bytesize);
 
         return out;
+    }
+
+    /**
+     * Returns a plain PPM representation of this bitmap
+     *
+     * Primarily for testing
+     */
+    public String toP3() {
+        StringBuilder sb = new StringBuilder();
+        int width = getWidth();
+        int height = getHeight();
+        sb.append("P3\n");
+        sb.append(width + " " + height + "\n");
+        sb.append("255\n");
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (x > 0) {
+                    sb.append(" ");
+                }
+                Color color = getColor(x, y);
+                sb.append(color.r + " " + color.g + " " + color.b);
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

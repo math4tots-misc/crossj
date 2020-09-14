@@ -698,6 +698,15 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
+                            case "java.lang.String.substring": {
+                                translateExpression(owner);
+                                sb.append(".substring(");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(",");
+                                translateExpression((Expression) node.arguments().get(1));
+                                sb.append(")");
+                                break;
+                            }
                             case "java.lang.Boolean.compareTo":
                             case "java.lang.Double.compareTo":
                             case "java.lang.Integer.compareTo":{

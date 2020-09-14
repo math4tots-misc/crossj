@@ -32,17 +32,4 @@ public interface Repr {
         sb.append('"');
         return sb.toString();
     }
-
-    public static String join(String separator, XIterable<?> iterable) {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (Object obj : iterable) {
-            if (!first) {
-                sb.append(separator);
-            }
-            first = false;
-            sb.append(obj);
-        }
-        return sb.toString();
-    }
 }
