@@ -38,4 +38,11 @@ public final class IterTest {
         Assert.that(List.of(1, 2, 3).iter().all(x -> x < 10));
         Assert.that(List.of(1, 2, 3).iter().any(x -> x > 2));
     }
+
+    @Test
+    public static void takeSkip() {
+        Assert.equals(List.of(1, 2, 3, 4, 5).iter().skip(2).take(2).list(), List.of(3, 4));
+        Assert.equals(List.of(1, 2, 3, 4, 5).iter().skip(1).take(10).list(), List.of(2, 3, 4, 5));
+        Assert.equals(List.of(1, 2, 3, 4, 5).iter().skip(10).list(), List.of());
+    }
 }

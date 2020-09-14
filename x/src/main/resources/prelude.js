@@ -137,6 +137,30 @@ function* $ITERchunk(items, n) {
         }
     }
 }
+function* $ITERtake(items, n) {
+    let i = 0;
+    for (let item of items) {
+        if (i < n) {
+            yield item;
+        } else {
+            break;
+        }
+        i++;
+    }
+}
+function $ITERskip(items, n) {
+    if (n > 0) {
+        let i = 1;
+        for (let item of items) {
+            if (i < n) {
+                i++;
+            } else {
+                break;
+            }
+        }
+    }
+    return items;
+}
 function* $ITERflatMap(items, f) {
     for (let item of items) {
         for (let subitem of f(item)) {

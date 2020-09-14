@@ -67,6 +67,30 @@ public final class XIterator<T> implements Iterator<T>, XIterable<T> {
         });
     }
 
+    public XIterator<T> take(int n) {
+        return new XIterator<>(new Iterator<T>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < n && iter.hasNext();
+            }
+
+            @Override
+            public T next() {
+                i++;
+                return iter.next();
+            }
+        });
+    }
+
+    public XIterator<T> skip(int n) {
+        for (int i = 0; i < n && hasNext(); i++) {
+            next();
+        }
+        return this;
+    }
+
     public <R> XIterator<R> flatMap(Func1<XIterable<R>, T> f) {
         return new XIterator<>(new Iterator<R>() {
             boolean done = false;
