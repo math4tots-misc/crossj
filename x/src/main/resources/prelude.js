@@ -267,6 +267,9 @@ $CJ['crossj.List'] = $LAZY(function () {
         static M$of(...args) {
             return new List(args);
         }
+        static M$ofDoubles(...args) {
+            return new List(args);
+        }
         static M$fromJavaArray(args) {
             return List.M$fromIterable(args);
         }
@@ -723,11 +726,22 @@ $CJ['crossj.IntArray'] = $LAZY(function() {
             return IntArray.fromJSArray(list.arr);
         }
         static M$fromIterable(iterable) {
-            const values = [];
-            for (const value of iterable) {
-                values.push(value);
+            if (iterable instanceof IntArray) {
+                return new IntArray(new Int32Array(iterable.arr));
+            } else {
+                const values = [];
+                for (const value of iterable) {
+                    values.push(value);
+                }
+                return IntArray.fromJSArray(values);
             }
-            return IntArray.fromJSArray(values);
+        }
+        static M$convert(iterable) {
+            if (iterable instanceof IntArray) {
+                return iterable;
+            } else {
+                return IntArray.M$fromIterable(iterable);
+            }
         }
         M$size() {
             return this.arr.length;
@@ -796,11 +810,22 @@ $CJ['crossj.DoubleArray'] = $LAZY(function() {
             return DoubleArray.fromJSArray(list.arr);
         }
         static M$fromIterable(iterable) {
-            const values = [];
-            for (const value of iterable) {
-                values.push(value);
+            if (iterable instanceof DoubleArray) {
+                return new DoubleArray(new Float64Array(iterable.arr));
+            } else {
+                const values = [];
+                for (const value of iterable) {
+                    values.push(value);
+                }
+                return DoubleArray.fromJSArray(values);
             }
-            return DoubleArray.fromJSArray(values);
+        }
+        static M$convert(iterable) {
+            if (iterable instanceof DoubleArray) {
+                return iterable;
+            } else {
+                return DoubleArray.M$fromIterable(iterable);
+            }
         }
         M$size() {
             return this.arr.length;

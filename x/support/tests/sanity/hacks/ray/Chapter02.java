@@ -7,6 +7,9 @@ import crossj.Test;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 
+/**
+ * Chapter 2: Drawing on a Canvas
+ */
 public final class Chapter02 {
     @Test
     public static void colors() {

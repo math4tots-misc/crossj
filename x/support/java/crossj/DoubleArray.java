@@ -21,6 +21,9 @@ public final class DoubleArray implements XIterable<Double> {
         return of(args);
     }
 
+    /**
+     * Returns a zero-filled DoubleArray of the given size
+     */
     public static DoubleArray withSize(int size) {
         return new DoubleArray(new double[size]);
     }
@@ -34,7 +37,23 @@ public final class DoubleArray implements XIterable<Double> {
     }
 
     public static DoubleArray fromIterable(XIterable<Double> iterable) {
-        return fromList(iterable.iter().list());
+        if (iterable instanceof DoubleArray) {
+            return new DoubleArray(((DoubleArray) iterable).buffer.clone());
+        } else {
+            return fromList(iterable.iter().list());
+        }
+    }
+
+    /**
+     * Like fromIterable, but if the argument happens to be a DoubleArray already,
+     * it will return the value as is instead of creating a copy.
+     */
+    public static DoubleArray convert(XIterable<Double> iterable) {
+        if (iterable instanceof DoubleArray) {
+            return (DoubleArray) iterable;
+        } else {
+            return fromIterable(iterable);
+        }
     }
 
     public int size() {

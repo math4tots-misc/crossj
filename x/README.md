@@ -10,6 +10,12 @@ Rules:
     the resulting program will not work properly, since the method names
     will overwrite each other
 
+* Array types are in a fuzzy area. They kinda are supported for varargs. But any access
+    with them is invalid (e.g. with subscripting or calling `.length`). To get its values
+    you should call `List.fromJavaArray` to get a `List`.
+    Using `.length` is not currently checked for at translation time, and will result
+    in a runtiem failure (at least for JS).
+
 * Only properly supported numeric types are `int` and `double`. Use of `float`, `short`,
     `char`, `byte`, and `long` are undefined, and weird things might happen if you use them.
 

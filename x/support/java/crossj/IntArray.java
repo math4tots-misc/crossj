@@ -21,6 +21,9 @@ public final class IntArray implements XIterable<Integer> {
         return of(args);
     }
 
+    /**
+     * Returns a zero-filled IntArray of the given size
+     */
     public static IntArray withSize(int size) {
         return new IntArray(new int[size]);
     }
@@ -34,7 +37,23 @@ public final class IntArray implements XIterable<Integer> {
     }
 
     public static IntArray fromIterable(XIterable<Integer> iterable) {
-        return fromList(iterable.iter().list());
+        if (iterable instanceof IntArray) {
+            return new IntArray(((IntArray) iterable).buffer.clone());
+        } else {
+            return fromList(iterable.iter().list());
+        }
+    }
+
+    /**
+     * Like fromIterable, but if the argument happens to be an IntArray already,
+     * it will return the value as is instead of creating a copy.
+     */
+    public static IntArray convert(XIterable<Integer> iterable) {
+        if (iterable instanceof IntArray) {
+            return (IntArray) iterable;
+        } else {
+            return fromIterable(iterable);
+        }
     }
 
     public int size() {

@@ -4,6 +4,20 @@ directory with its own pom.
 Ideally, I'd like to just have everything live in one big root, but
 I'm starting to notice my IDE's quality starting to degrade a bit
 
+--
+
+IR between raw JDT types and the translators
+
+Right now, `JavascriptTranslator` operates directly on JDT core's ASTNode types, but
+creating an intermediate IR between JDT and the translator(s) would have a few benefits:
+
+* Allows decoupling translation logic from specifics of JDT
+* The IR can be more semantic aware (e.g. JDT has two separate node types `FieldAccess` and
+    `QualifiedName` that can potentially be a field-access operation).
+* Validations can be done during the JDT -> IR phase. This would allow each translator
+    to assume that proper validations have already been done.
+* Some validations would become easier (e.g. checking that fields are never accessed on
+    raw array types)
 
 --
 

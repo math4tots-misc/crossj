@@ -5,6 +5,9 @@ import crossj.M;
 import crossj.Test;
 import crossj.hacks.ray.Matrix;
 
+/**
+ * Chapter 1: Tuples, Points, and Vectors
+ */
 public final class Chapter01 {
     @Test
     public static void isPoint() {

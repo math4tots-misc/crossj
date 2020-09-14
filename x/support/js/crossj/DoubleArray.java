@@ -14,6 +14,8 @@ public final class DoubleArray implements XIterable<Double> {
 
     public native static DoubleArray fromIterable(XIterable<Double> iterable);
 
+    private native static DoubleArray convert(XIterable<Double> iterable);
+
     public native int size();
 
     public native double get(int i);

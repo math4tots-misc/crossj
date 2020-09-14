@@ -22,6 +22,13 @@ public final class Assert {
         }
     }
 
+    public static <T> void equalsWithMessage(T a, T b, String message) {
+        if (!Eq.of(a, b)) {
+            throw XError.withMessage(
+                    "Assertion failed, expected " + Repr.of(a) + " to equal " + Repr.of(b) + " (" + message + ")");
+        }
+    }
+
     public static <T> void notEquals(T a, T b) {
         if (Eq.of(a, b)) {
             throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to NOT equal " + Repr.of(b));
@@ -30,13 +37,15 @@ public final class Assert {
 
     public static <T> void almostEquals(T a, T b) {
         if (!Eq.almost(a, b)) {
-            throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to be almost equal to " + Repr.of(b));
+            throw XError
+                    .withMessage("Assertion failed, expected " + Repr.of(a) + " to be almost equal to " + Repr.of(b));
         }
     }
 
     public static <T> void notAlmostEquals(T a, T b) {
         if (Eq.almost(a, b)) {
-            throw XError.withMessage("Assertion failed, expected " + Repr.of(a) + " to NOT be almost equal to " + Repr.of(b));
+            throw XError.withMessage(
+                    "Assertion failed, expected " + Repr.of(a) + " to NOT be almost equal to " + Repr.of(b));
         }
     }
 
@@ -54,7 +63,8 @@ public final class Assert {
 
     public static void divides(int divisor, int dividend) {
         if (dividend % divisor != 0) {
-            throw XError.withMessage("Assertion failed, expected " + Repr.of(divisor) + " to divide " + Repr.of(dividend));
+            throw XError
+                    .withMessage("Assertion failed, expected " + Repr.of(divisor) + " to divide " + Repr.of(dividend));
         }
     }
 

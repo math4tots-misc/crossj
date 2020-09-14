@@ -4,6 +4,8 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     @SafeVarargs
     public static native <T> List<T> of(T... args);
 
+    public static native List<Double> ofDoubles(double... args);
+
     public static native <T> List<T> fromJavaArray(T[] args);
 
     public static native <T> List<T> ofSize(int n, Func0<T> f);

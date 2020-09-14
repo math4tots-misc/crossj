@@ -14,6 +14,8 @@ public final class IntArray implements XIterable<Integer> {
 
     public native static IntArray fromIterable(XIterable<Integer> iterable);
 
+    public native static IntArray convert(XIterable<Integer> iterable);
+
     public native int size();
 
     public native int get(int i);

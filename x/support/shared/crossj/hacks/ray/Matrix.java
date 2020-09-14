@@ -7,6 +7,8 @@ import crossj.Eq;
 import crossj.List;
 import crossj.M;
 import crossj.Str;
+import crossj.XError;
+import crossj.XIterable;
 
 /**
  * Conceptually immutable Matrix.
@@ -24,6 +26,10 @@ import crossj.Str;
  *
  */
 public final class Matrix implements AlmostEq<Matrix> {
+    private static final Matrix ID2 = identityNoCache(2);
+    private static final Matrix ID3 = identityNoCache(3);
+    private static final Matrix ID4 = identityNoCache(4);
+
     private final int ncols;
     private final DoubleArray data;
 
@@ -32,12 +38,38 @@ public final class Matrix implements AlmostEq<Matrix> {
         this.data = data;
     }
 
+    public static Matrix identity(int n) {
+        switch (n) {
+            case 2:
+                return ID2;
+            case 3:
+                return ID3;
+            case 4:
+                return ID4;
+            default:
+                return identityNoCache(n);
+        }
+    }
+
+    private static Matrix identityNoCache(int n) {
+        Matrix ret = withDimensions(n, n);
+        for (int i = 0; i < n; i++) {
+            ret.set(i, i, 1);
+        }
+        return ret;
+    }
+
+    public static Matrix withDimensions(int nrows, int ncols) {
+        DoubleArray data = DoubleArray.withSize(nrows * ncols);
+        return new Matrix(ncols, data);
+    }
+
     @SafeVarargs
-    public static Matrix withRows(List<Double>... rows) {
-        int nrows = rows.length;
-        List<List<Double>> rowList = List.fromJavaArray(rows);
+    public static Matrix withRows(XIterable<Double>... rows) {
+        List<DoubleArray> rowList = List.fromJavaArray(rows).map(row -> DoubleArray.fromIterable(row));
+        int nrows = rowList.size();
         int maxNCols = rowList.fold(0, (a, b) -> M.imax(a, b.size()));
-        int minNCols = rowList.fold(0, (a, b) -> M.imin(a, b.size()));
+        int minNCols = rowList.fold(rowList.get(0).size(), (a, b) -> M.imin(a, b.size()));
         Assert.equals(maxNCols, minNCols);
         DoubleArray data = DoubleArray.fromIterable(rowList.flatMap(x -> x));
         Assert.equals(maxNCols * nrows, data.size());
@@ -96,7 +128,7 @@ public final class Matrix implements AlmostEq<Matrix> {
         return data.get(row * ncols + column);
     }
 
-    public void set(int row, int column, double value) {
+    private void set(int row, int column, double value) {
         data.set(row * ncols + column, value);
     }
 
@@ -153,6 +185,75 @@ public final class Matrix implements AlmostEq<Matrix> {
         return scale(-1);
     }
 
+    public Matrix multiply(Matrix other) {
+        int len = ncols;
+        Assert.equalsWithMessage(len, other.getR(), "matrix multiplication dimension check");
+        int newR = getR();
+        int newC = other.getC();
+        DoubleArray arr = DoubleArray.withSize(newR * newC);
+        int j = 0;
+        for (int r = 0; r < newR; r++) {
+            for (int c = 0; c < newC; c++) {
+                double value = 0;
+                for (int i = 0; i < len; i++) {
+                    value += get(r, i) * other.get(i, c);
+                }
+                arr.set(j, value);
+                j++;
+            }
+        }
+        return new Matrix(newC, arr);
+    }
+
+    public Matrix transpose() {
+        int nrows = getR();
+        DoubleArray arr = DoubleArray.withSize(data.size());
+        int i = 0;
+        for (int c = 0; c < ncols; c++) {
+            for (int r = 0; r < nrows; r++) {
+                arr.set(i, get(r, c));
+                i++;
+            }
+        }
+        return new Matrix(nrows, arr);
+    }
+
+    public double determinant() {
+        Assert.equalsWithMessage(ncols, getR(), "only square matrices have determinants");
+        DoubleArray data = this.data;
+        switch (ncols) {
+            case 1: return data.get(0);
+            case 2: return data.get(0) * data.get(3) - data.get(1) * data.get(2);
+            default: {
+                throw XError.withMessage("determinant for this size not yet implemented");
+            }
+        }
+    }
+
+    public Matrix submatrix(int skipR, int skipC) {
+        int nrows = getR();
+        int ncols = getC();
+        DoubleArray data = DoubleArray.withSize((nrows - 1) * (ncols - 1));
+        int i = 0;
+        for (int r = 0; r < nrows; r++) {
+            if (r == skipR) {
+                continue;
+            }
+            for (int c = 0; c < ncols; c++) {
+                if (c == skipC) {
+                    continue;
+                }
+                data.set(i, get(r, c));
+                i++;
+            }
+        }
+        return new Matrix(ncols - 1, data);
+    }
+
+    public double minor(int skipR, int skipC) {
+        return submatrix(skipR, skipC).determinant();
+    }
+
     /**
      * Computes the length of a vector/tuple
      */
@@ -199,8 +300,9 @@ public final class Matrix implements AlmostEq<Matrix> {
         } else if (isTuple()) {
             return "Matrix.newTuple(" + Str.join(", ", data) + ")";
         } else {
-            return "Matrix.withRows(" + Str.join(", ",
-                    data.iter().chunk(ncols).map(row -> "List.of(" + Str.join(", ", row) + ")").list()) + ")";
+            return "Matrix.withRows("
+                    + Str.join(", ", data.iter().chunk(ncols).map(row -> "List.of(" + Str.join(", ", row) + ")").list())
+                    + ")";
         }
     }
 

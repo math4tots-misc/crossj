@@ -27,6 +27,18 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         return new List<T>(new ArrayList<>(Arrays.asList(args)));
     }
 
+    /**
+     * Just a convenience method since often when a List&lt; Double &gt; is required
+     * List.of(..) will still return List&lt; Integer &gt;.
+     */
+    public static List<Double> ofDoubles(double... args) {
+        ArrayList<Double> list = new ArrayList<>();
+        for (double arg: args) {
+            list.add(arg);
+        }
+        return new List<>(list);
+    }
+
     public static <T> List<T> fromJavaArray(T[] args) {
         return of(args);
     }
