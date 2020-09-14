@@ -3,6 +3,7 @@ package crossj.hacks.image;
 import crossj.Assert;
 import crossj.Bytes;
 import crossj.IntArray;
+import crossj.List;
 import crossj.XIterable;
 import crossj.XIterator;
 
@@ -112,6 +113,10 @@ public final class Bitmap {
     /**
      * Returns a plain PPM representation of this bitmap
      *
+     * NOTE: technically, this doesn't always produce valid P3 PPM files
+     * since P3 actually requires making sure lines do not exceed 70 characters.
+     * This implementation doesn't really cut things off properly.
+     *
      * Primarily for testing
      */
     public String toP3() {
@@ -127,7 +132,8 @@ public final class Bitmap {
                     sb.append(" ");
                 }
                 Color color = getColor(x, y);
-                sb.append(color.r + " " + color.g + " " + color.b);
+                List<Integer> channels = color.toIntegerList();
+                sb.append(channels.get(0) + " " + channels.get(1) + " " + channels.get(2));
             }
             sb.append("\n");
         }

@@ -64,6 +64,10 @@ public final class Color implements AlmostEq<Color> {
         return combineFloats(a, r, g, b);
     }
 
+    public List<Integer> toIntegerList() {
+        return split(toI32RGBA());
+    }
+
     private static int floatToIntChannel(double x) {
         // TODO: here and intToFloatChannel: better conversion method
         int i = (int) (x * 256);

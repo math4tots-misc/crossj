@@ -1,6 +1,8 @@
 package sanity.hacks.ray;
 
 import crossj.Assert;
+import crossj.List;
+import crossj.Str;
 import crossj.Test;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
@@ -48,8 +50,8 @@ public final class Chapter02 {
             Bitmap c = Bitmap.withDimensions(10, 20);
             Assert.equals(c.getWidth(), 10);
             Assert.equals(c.getHeight(), 20);
-            // Assert.withMessage(c.colors().all(cl -> cl.equals(Color.rgb(0, 0, 0))),
-            //         "Bitmaps should start out all black");
+            Assert.withMessage(c.colors().all(cl -> cl.equals(Color.of(0, 0, 0, 0))),
+                    "Bitmaps should start out all black");
         }
         {
             // writing pixels to a canvas
@@ -57,6 +59,32 @@ public final class Chapter02 {
             Color red = Color.rgb(1, 0, 0);
             c.setColor(2, 3, red);
             Assert.equals(c.getColor(2, 3), red);
+        }
+    }
+
+    @Test
+    public static void ppm() {
+        {
+            Bitmap c = Bitmap.withDimensions(5, 3);
+            String ppm = c.toP3();
+            List<String> lines = Str.lines(ppm);
+            Assert.equals(Str.join("\n", lines.iter().take(3)), "P3\n5 3\n255");
+        }
+        {
+            Bitmap c = Bitmap.withDimensions(5, 3);
+            Color c1 = Color.rgb(1.5, 0, 0);
+            Color c2 = Color.rgb(0, 0.5, 0);
+            Color c3 = Color.rgb(-0.5, 0, 2);
+            c.setColor(0, 0, c1);
+            c.setColor(2, 1, c2);
+            c.setColor(4, 2, c3);
+            String ppm = c.toP3();
+            // lines 4-6
+            List<String> lines = Str.lines(ppm).iter().skip(3).take(3).list();
+            Assert.equals(lines, List.of("255 0 0 0 0 0 0 0 0 0 0 0 0 0 0", "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0",
+                    "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255"));
+
+            // eh, skip the other PPM tests -- I'm going to be emitting bmp files instead anyway.
         }
     }
 }
