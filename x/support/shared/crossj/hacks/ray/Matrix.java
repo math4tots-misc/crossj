@@ -295,12 +295,7 @@ public final class Matrix implements AlmostEq<Matrix> {
 
     private void inplaceAdd(Matrix other) {
         Assert.equals(ncols, other.ncols);
-        Assert.equals(data.size(), other.data.size());
-        DoubleArray otherData = other.data;
-        int len = data.size();
-        for (int i = 0; i < len; i++) {
-            data.set(i, data.get(i) + otherData.get(i));
-        }
+        data.addWithFactor(other.data, 1);
     }
 
     public Matrix add(Matrix other) {
@@ -311,12 +306,7 @@ public final class Matrix implements AlmostEq<Matrix> {
 
     private void inplaceSubtract(Matrix other) {
         Assert.equals(ncols, other.ncols);
-        Assert.equals(data.size(), other.data.size());
-        DoubleArray otherData = other.data;
-        int len = data.size();
-        for (int i = 0; i < len; i++) {
-            data.set(i, data.get(i) - otherData.get(i));
-        }
+        data.addWithFactor(other.data, -1);
     }
 
     public Matrix subtract(Matrix other) {
@@ -326,10 +316,7 @@ public final class Matrix implements AlmostEq<Matrix> {
     }
 
     private void inplaceScale(double factor) {
-        int len = data.size();
-        for (int i = 0; i < len; i++) {
-            data.set(i, factor * data.get(i));
-        }
+        data.scale(factor);
     }
 
     public Matrix scale(double factor) {
