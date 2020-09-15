@@ -44,6 +44,9 @@ public final class Matrix implements AlmostEq<Matrix> {
         this.data = data;
     }
 
+    /**
+     * Returns a square identity matrix with the given dimension
+     */
     public static Matrix identity(int n) {
         switch (n) {
             case 2:
@@ -80,7 +83,9 @@ public final class Matrix implements AlmostEq<Matrix> {
     }
 
     /**
-     * Returns a left-handed rotation around the x-axis in a left-handed coordinate system
+     * Returns a left-handed rotation around the x-axis in a left-handed coordinate
+     * system
+     *
      * @param r angle to rotate in radians
      * @return
      */
@@ -89,7 +94,9 @@ public final class Matrix implements AlmostEq<Matrix> {
     }
 
     /**
-     * Returns a left-handed rotation around the y-axis in a left-handed coordinate system
+     * Returns a left-handed rotation around the y-axis in a left-handed coordinate
+     * system
+     *
      * @param r angle to rotate in radians
      * @return
      */
@@ -98,7 +105,9 @@ public final class Matrix implements AlmostEq<Matrix> {
     }
 
     /**
-     * Returns a left-handed rotation around the z-axis in a left-handed coordinate system
+     * Returns a left-handed rotation around the z-axis in a left-handed coordinate
+     * system
+     *
      * @param r angle to rotate in radians
      * @return
      */
@@ -106,6 +115,13 @@ public final class Matrix implements AlmostEq<Matrix> {
         return withData(4, M.cos(r), -M.sin(r), 0, 0, M.sin(r), M.cos(r), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     }
 
+    /**
+     * Returns a new zeroed out matrix with the given dimensions
+     *
+     * @param nrows
+     * @param ncols
+     * @return
+     */
     public static Matrix withDimensions(int nrows, int ncols) {
         DoubleArray data = DoubleArray.withSize(nrows * ncols);
         return new Matrix(ncols, data);
@@ -122,6 +138,14 @@ public final class Matrix implements AlmostEq<Matrix> {
         return fromListOfDoubleArrays(rowList);
     }
 
+    /**
+     * Creates a new matrix given the number of columns and double values. The
+     * number of double values provided should be a multiple of the ncols argument.
+     *
+     * @param ncols
+     * @param data
+     * @return
+     */
     public static Matrix withData(int ncols, double... data) {
         return new Matrix(ncols, DoubleArray.fromJavaDoubleArray(data));
     }
@@ -136,22 +160,40 @@ public final class Matrix implements AlmostEq<Matrix> {
         return new Matrix(maxNCols, data);
     }
 
+    /**
+     * Creates a new matrix representing a tuple of given values. In other places,
+     * this may be known as a column vector.
+     */
     public static Matrix tuple(double... values) {
         return new Matrix(1, DoubleArray.fromJavaDoubleArray(values));
     }
 
+    /**
+     * Creates a new matrix representing a 3-D point with given values. The actual
+     * resulting matrix is a 4x1 column vector whose 4th term is 1.
+     */
     public static Matrix point(double x, double y, double z) {
         return tuple(x, y, z, 1);
     }
 
+    /**
+     * Creates a new matrix representing a 3-D vector with given values. The actual
+     * resulting matrix is a 4x1 column vector whose 4th term is 0.
+     */
     public static Matrix vector(double x, double y, double z) {
         return tuple(x, y, z, 0);
     }
 
+    /**
+     * Returns the number of rows in this matrix
+     */
     public int getR() {
         return data.size() / ncols;
     }
 
+    /**
+     * Returns the number of columns in this matrix
+     */
     public int getC() {
         return ncols;
     }
@@ -294,9 +336,12 @@ public final class Matrix implements AlmostEq<Matrix> {
         Assert.equalsWithMessage(ncols, getR(), "only square matrices have determinants");
         DoubleArray data = this.data;
         switch (ncols) {
-            case 1: return data.get(0);
-            case 2: return data.get(0) * data.get(3) - data.get(1) * data.get(2);
-            default: return DeterminantSolver.solve(this);
+            case 1:
+                return data.get(0);
+            case 2:
+                return data.get(0) * data.get(3) - data.get(1) * data.get(2);
+            default:
+                return DeterminantSolver.solve(this);
         }
     }
 
