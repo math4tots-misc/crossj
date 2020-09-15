@@ -80,6 +80,9 @@ public final class GaussianElimination<Listener extends GaussianEliminationListe
         }
 
         // At this point, we're in row echelon form.
+        // TODO: Considering allowing some listeners to get access to the matrix here and exiting early
+        // This may be useful for e.g. computing LU decomposition
+
         // We no longer need to actually update the row values --
         // we can deduce what the remaining operations are without further modifications.
         for (int c = ncols - 1; c >= 0; c--) {
