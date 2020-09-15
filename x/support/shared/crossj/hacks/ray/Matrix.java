@@ -39,6 +39,7 @@ public final class Matrix implements AlmostEq<Matrix> {
     private final DoubleArray data;
 
     private Matrix(int ncols, DoubleArray data) {
+        Assert.divides(ncols, data.size());
         this.ncols = ncols;
         this.data = data;
     }
@@ -64,6 +65,20 @@ public final class Matrix implements AlmostEq<Matrix> {
         return ret;
     }
 
+    /**
+     * Returns a new 4x4 translation matrix
+     */
+    public static Matrix translation(double x, double y, double z) {
+        return withData(4, 1, 0, 0, x, 0, 1, 0, y, 0, 0, 1, z, 0, 0, 0, 1);
+    }
+
+    /**
+     * Returns a 4x4 scaling matrix
+     */
+    public static Matrix scaling(double x, double y, double z) {
+        return withData(4, x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1);
+    }
+
     public static Matrix withDimensions(int nrows, int ncols) {
         DoubleArray data = DoubleArray.withSize(nrows * ncols);
         return new Matrix(ncols, data);
@@ -78,6 +93,10 @@ public final class Matrix implements AlmostEq<Matrix> {
     public static Matrix fromRows(XIterable<XIterable<Double>> rows) {
         List<DoubleArray> rowList = List.fromIterable(rows).map(row -> DoubleArray.fromIterable(row));
         return fromListOfDoubleArrays(rowList);
+    }
+
+    public static Matrix withData(int ncols, double... data) {
+        return new Matrix(ncols, DoubleArray.fromJavaDoubleArray(data));
     }
 
     public static Matrix fromListOfDoubleArrays(List<DoubleArray> rowList) {
