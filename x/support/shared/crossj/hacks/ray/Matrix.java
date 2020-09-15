@@ -87,7 +87,6 @@ public final class Matrix implements AlmostEq<Matrix> {
      * system
      *
      * @param r angle to rotate in radians
-     * @return
      */
     public static Matrix xRotation(double r) {
         return withData(4, 1, 0, 0, 0, 0, M.cos(r), -M.sin(r), 0, 0, M.sin(r), M.cos(r), 0, 0, 0, 0, 1);
@@ -98,7 +97,6 @@ public final class Matrix implements AlmostEq<Matrix> {
      * system
      *
      * @param r angle to rotate in radians
-     * @return
      */
     public static Matrix yRotation(double r) {
         return withData(4, M.cos(r), 0, M.sin(r), 0, 0, 1, 0, 0, -M.sin(r), 0, M.cos(r), 0, 0, 0, 0, 1);
@@ -109,10 +107,31 @@ public final class Matrix implements AlmostEq<Matrix> {
      * system
      *
      * @param r angle to rotate in radians
-     * @return
      */
     public static Matrix zRotation(double r) {
         return withData(4, M.cos(r), -M.sin(r), 0, 0, M.sin(r), M.cos(r), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+
+    /**
+     * Returns a shearing matrix.
+     *
+     * From the book "The Ray Tracer Challenge":
+     *
+     * <blockquote>When applied to a tuple, a shearing transformation changes each
+     * component of the tuple in proportion to the other two components. So the x
+     * component changes in proportion to y and z, y changes in proportion to x and
+     * z and z changes in porportion to x and y.</blockquote>
+     *
+     * @param xy x moved in proportion to y
+     * @param xz x moved in proportion to z
+     * @param yx y moved in proportion to x
+     * @param yz y moved in proportion to z
+     * @param zx z moved in proportion to x
+     * @param zy z moved in proportion to y
+     * @return the matrix describing this transformation
+     */
+    public static Matrix shearing(double xy, double xz, double yx, double yz, double zx, double zy) {
+        return withData(4, 1, xy, xz, 0, yx, 1, yz, 0, zx, zy, 1, 0, 0, 0, 0, 1);
     }
 
     /**
@@ -379,6 +398,46 @@ public final class Matrix implements AlmostEq<Matrix> {
 
     public double minor(int skipR, int skipC) {
         return submatrix(skipR, skipC).determinant();
+    }
+
+    /**
+     * Part of a fluent interface for creating transformation matrices.
+     * Returns a new transform that will apply the given translation after applying this.
+     */
+    public Matrix thenTranslate(double x, double y, double z) {
+        return translation(x, y, z).multiply(this);
+    }
+
+    /**
+     * Part of a fluent interface for creating transformation matrices.
+     * Returns a new transform that will apply the given scaling after applying this.
+     */
+    public Matrix thenScale(double x, double y, double z) {
+        return scaling(x, y, z).multiply(this);
+    }
+
+    /**
+     * Part of a fluent interface for creating transformation matrices.
+     * Returns a new transform that will apply the given rotation after applying this.
+     */
+    public Matrix thenRotateX(double r) {
+        return xRotation(r).multiply(this);
+    }
+
+    /**
+     * Part of a fluent interface for creating transformation matrices.
+     * Returns a new transform that will apply the given rotation after applying this.
+     */
+    public Matrix thenRotateY(double r) {
+        return yRotation(r).multiply(this);
+    }
+
+    /**
+     * Part of a fluent interface for creating transformation matrices.
+     * Returns a new transform that will apply the given rotation after applying this.
+     */
+    public Matrix thenRotateZ(double r) {
+        return zRotation(r).multiply(this);
     }
 
     /**

@@ -92,4 +92,70 @@ public final class Chapter04 {
             Assert.almostEquals(fullQuarter.multiply(p), Matrix.point(-1, 0, 0));
         }
     }
+
+    @Test
+    public static void shearing() {
+        {
+            // A shearing transformation moves x in proportion to y
+            Matrix transform = Matrix.shearing(1, 0, 0, 0, 0, 0);
+            Matrix p = Matrix.point(2, 3, 4);
+            Assert.equals(transform.multiply(p), Matrix.point(5, 3, 4));
+        }
+        {
+            // A shearing transformation moves x in proportion to z
+            Matrix transform = Matrix.shearing(0, 1, 0, 0, 0, 0);
+            Matrix p = Matrix.point(2, 3, 4);
+            Assert.equals(transform.multiply(p), Matrix.point(6, 3, 4));
+        }
+        {
+            // A shearing transformation moves y in proportion to x
+            Matrix transform = Matrix.shearing(0, 0, 1, 0, 0, 0);
+            Matrix p = Matrix.point(2, 3, 4);
+            Assert.equals(transform.multiply(p), Matrix.point(2, 5, 4));
+        }
+        {
+            // A shearing transformation moves y in proportion to z
+            Matrix transform = Matrix.shearing(0, 0, 0, 1, 0, 0);
+            Matrix p = Matrix.point(2, 3, 4);
+            Assert.equals(transform.multiply(p), Matrix.point(2, 7, 4));
+        }
+        {
+            // A shearing transformation moves z in proportion to x
+            Matrix transform = Matrix.shearing(0, 0, 0, 0, 1, 0);
+            Matrix p = Matrix.point(2, 3, 4);
+            Assert.equals(transform.multiply(p), Matrix.point(2, 3, 6));
+        }
+        {
+            // A shearing transformation moves z in proportion to y
+            Matrix transform = Matrix.shearing(0, 0, 0, 0, 0, 1);
+            Matrix p = Matrix.point(2, 3, 4);
+            Assert.equals(transform.multiply(p), Matrix.point(2, 3, 7));
+        }
+    }
+
+    @Test
+    public static void chaining() {
+        {
+            // Individual transformations are applied in sequence
+            Matrix p = Matrix.point(1, 0, 1);
+            Matrix a = Matrix.xRotation(M.TAU / 4);
+            Matrix b = Matrix.scaling(5, 5, 5);
+            Matrix c = Matrix.translation(10, 5, 7);
+            Matrix p2 = a.multiply(p);
+            Assert.almostEquals(p2, Matrix.point(1, -1, 0));
+            Matrix p3 = b.multiply(p2);
+            Assert.almostEquals(p3, Matrix.point(5, -5, 0));
+            Matrix p4 = c.multiply(p3);
+            Assert.equals(p4, Matrix.point(15, 0, 7));
+        }
+        {
+            // Chained transformations must be applied in reverse order
+            Matrix p = Matrix.point(1, 0, 1);
+            Matrix a = Matrix.xRotation(M.TAU / 4);
+            Matrix b = Matrix.scaling(5, 5, 5);
+            Matrix c = Matrix.translation(10, 5, 7);
+            Matrix t = c.multiply(b).multiply(a);
+            Assert.equals(t.multiply(p), Matrix.point(15, 0, 7));
+        }
+    }
 }
