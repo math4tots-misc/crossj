@@ -80,7 +80,7 @@ public final class GaussianElimination<Listener extends GaussianEliminationListe
         }
 
         // At this point, we're in row echelon form.
-        // TODO: Considering allowing some listeners to get access to the matrix here and exiting early
+        // todo-lowpri: Considering allowing some listeners to get access to the matrix here and exiting early
         // This may be useful for e.g. computing LU decomposition
 
         // We no longer need to actually update the row values --
