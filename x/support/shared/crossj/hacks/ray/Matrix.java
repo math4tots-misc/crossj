@@ -10,6 +10,7 @@ import crossj.Optional;
 import crossj.Pair;
 import crossj.Range;
 import crossj.Str;
+import crossj.TypedEq;
 import crossj.XError;
 import crossj.XIterable;
 import crossj.XIterator;
@@ -31,7 +32,7 @@ import crossj.hacks.ray.gelim.InverseMatrixSolver;
  * private and are really helpers for constructing new matrices.
  *
  */
-public final class Matrix implements AlmostEq<Matrix> {
+public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     private static final Matrix ID2 = identityNoCache(2);
     private static final Matrix ID3 = identityNoCache(3);
     private static final Matrix ID4 = identityNoCache(4);
@@ -504,10 +505,11 @@ public final class Matrix implements AlmostEq<Matrix> {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Matrix)) {
-            return false;
-        }
-        Matrix other = (Matrix) obj;
+        return rawEquals(obj);
+    }
+
+    @Override
+    public boolean isEqualTo(Matrix other) {
         return ncols == other.ncols && data.equals(other.data);
     }
 

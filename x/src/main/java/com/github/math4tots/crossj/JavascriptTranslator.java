@@ -238,7 +238,7 @@ public final class JavascriptTranslator implements ITranslator {
                     if (!foundMethodNames.contains(methodName)) {
                         foundMethodNames.add(methodName);
                         sb.append(name + ".prototype.M$" + methodName + "="
-                                + getClassReference(superInterface.getQualifiedName()) + ".prototype.M$" + methodName
+                                + getClassReference(superInterface.getErasure().getQualifiedName()) + ".prototype.M$" + methodName
                                 + ";\n");
                     }
                 }
@@ -1006,6 +1006,12 @@ public final class JavascriptTranslator implements ITranslator {
             public boolean visit(CastExpression node) {
                 ITypeBinding type = node.resolveTypeBinding().getErasure();
                 switch (type.getQualifiedName()) {
+                    case "java.lang.Object": {
+                        // for 'Object' no extra cast is needed
+                        // (this can happen with unchecked casts)
+                        node.getExpression().accept(this);
+                        break;
+                    }
                     case "java.lang.String": {
                         sb.append("$STRCAST(");
                         node.getExpression().accept(this);

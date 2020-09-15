@@ -5,7 +5,7 @@ import java.math.BigInteger;
 /**
  * Normalizing wrapper around Java's BigInteger
  */
-public final class BigInt {
+public final class BigInt implements TypedEq<BigInt> {
     private static final BigInt ONE = new BigInt(BigInteger.ONE);
     private static final BigInt ZERO = new BigInt(BigInteger.ZERO);
 
@@ -73,7 +73,12 @@ public final class BigInt {
 
     @Override
     public boolean equals(Object obj) {
-        return value.equals(((BigInt) obj).value);
+        return rawEquals(obj);
+    }
+
+    @Override
+    public boolean isEqualTo(BigInt other) {
+        return value.equals(other.value);
     }
 
     @Override

@@ -3,6 +3,7 @@ package crossj.hacks.image;
 import crossj.AlmostEq;
 import crossj.Eq;
 import crossj.List;
+import crossj.TypedEq;
 
 /**
  * Color data
@@ -14,7 +15,7 @@ import crossj.List;
  * For better or for worse, it just seems that's how these colors tend to be
  * described in most docs I've been reading.
  */
-public final class Color implements AlmostEq<Color> {
+public final class Color implements AlmostEq<Color>, TypedEq<Color> {
     public final double r;
     public final double g;
     public final double b;
@@ -101,10 +102,11 @@ public final class Color implements AlmostEq<Color> {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Color)) {
-            return false;
-        }
-        Color other = (Color) obj;
+        return rawEquals(obj);
+    }
+
+    @Override
+    public boolean isEqualTo(Color other) {
         return r == other.r && g == other.g && b == other.b && a == other.a;
     }
 

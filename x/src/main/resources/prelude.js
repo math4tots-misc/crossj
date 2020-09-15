@@ -263,6 +263,17 @@ $CJ['crossj.IO'] = $LAZY(function () {
         }
     };
 });
+$CJ['crossj.Magic'] = $LAZY(function() {
+    return class Magic {
+        /**
+         * @param {object} a
+         * @param {object} b
+         */
+        static M$haveSameClass(a, b) {
+            return a && b && a.constructor === b.constructor;
+        }
+    };
+});
 $CJ['crossj.Range'] = $LAZY(function() {
     return class Range {
         static *M$of(start, end) {
@@ -279,7 +290,7 @@ $CJ['crossj.Range'] = $LAZY(function() {
             return Range.M$of(0, end);
         }
     };
-})
+});
 $CJ['crossj.List'] = $LAZY(function () {
     /**
      * @template T
