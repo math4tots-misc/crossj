@@ -7,11 +7,11 @@ import crossj.hacks.ray.Matrix;
 
 public final class Main {
     public static void main(String[] args) {
-        Matrix start = Matrix.newPoint(0, 1, 0);
-        Matrix velocity = Matrix.newVector(1, 1.8, 0).normalize().scale(11.25);
+        Matrix start = Matrix.point(0, 1, 0);
+        Matrix velocity = Matrix.vector(1, 1.8, 0).normalize().scale(11.25);
         Projectile p = new Projectile(start, velocity);
-        Matrix gravity = Matrix.newVector(0, -0.1, 0);
-        Matrix wind = Matrix.newVector(-0.01, 0, 0);
+        Matrix gravity = Matrix.vector(0, -0.1, 0);
+        Matrix wind = Matrix.vector(-0.01, 0, 0);
         Environment e = new Environment(gravity, wind);
         Bitmap c = Bitmap.withDimensions(900, 550);
         int width = c.getWidth();

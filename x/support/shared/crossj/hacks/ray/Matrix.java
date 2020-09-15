@@ -109,16 +109,16 @@ public final class Matrix implements AlmostEq<Matrix> {
         return new Matrix(maxNCols, data);
     }
 
-    public static Matrix newTuple(double... values) {
+    public static Matrix tuple(double... values) {
         return new Matrix(1, DoubleArray.fromJavaDoubleArray(values));
     }
 
-    public static Matrix newPoint(double x, double y, double z) {
-        return newTuple(x, y, z, 1);
+    public static Matrix point(double x, double y, double z) {
+        return tuple(x, y, z, 1);
     }
 
-    public static Matrix newVector(double x, double y, double z) {
-        return newTuple(x, y, z, 0);
+    public static Matrix vector(double x, double y, double z) {
+        return tuple(x, y, z, 0);
     }
 
     public int getR() {
@@ -342,7 +342,7 @@ public final class Matrix implements AlmostEq<Matrix> {
     public Matrix cross(Matrix b) {
         Assert.that(this.isVector());
         Assert.that(b.isVector());
-        return newVector(getY() * b.getZ() - getZ() * b.getY(), getZ() * b.getX() - getX() * b.getZ(),
+        return vector(getY() * b.getZ() - getZ() * b.getY(), getZ() * b.getX() - getX() * b.getZ(),
                 getX() * b.getY() - getY() * b.getX());
     }
 

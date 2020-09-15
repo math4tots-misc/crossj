@@ -116,8 +116,8 @@ public final class Chapter03 {
                 List.ofDoubles(8, 6, 4, 1),
                 List.ofDoubles(0, 0, 0, 1)
             );
-            Matrix b = Matrix.newTuple(1, 2, 3, 1);
-            Assert.equals(a.multiply(b), Matrix.newTuple(18, 24, 33, 1));
+            Matrix b = Matrix.tuple(1, 2, 3, 1);
+            Assert.equals(a.multiply(b), Matrix.tuple(18, 24, 33, 1));
         }
         {
             // Multiplying a matrix by the identity matrix
@@ -131,7 +131,7 @@ public final class Chapter03 {
         }
         {
             // Multiplying the identity matrix by a tuple
-            Matrix a = Matrix.newTuple(1, 2, 3, 4);
+            Matrix a = Matrix.tuple(1, 2, 3, 4);
             Assert.equals(Matrix.identity(4).multiply(a), a);
         }
     }
