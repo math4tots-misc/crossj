@@ -83,6 +83,26 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         return list.remove(list.size() - 1);
     }
 
+    public List<T> slice(int start, int end) {
+        return new List<>(new ArrayList<>(list.subList(start, end)));
+    }
+
+    public List<T> sliceFrom(int start) {
+        return slice(start, size());
+    }
+
+    public List<T> sliceUpto(int end) {
+        return slice(0, end);
+    }
+
+    public void swap(int i, int j) {
+        if (i != j) {
+            T value = list.get(i);
+            list.set(i, list.get(j));
+            list.set(j, value);
+        }
+    }
+
     public void reverse() {
         Collections.reverse(list);
     }

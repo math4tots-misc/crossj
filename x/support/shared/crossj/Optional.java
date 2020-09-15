@@ -44,6 +44,13 @@ public final class Optional<T> {
         return value;
     }
 
+    public T orThrow(Func0<XError> f) {
+        if (isEmpty()) {
+            throw f.apply();
+        }
+        return value;
+    }
+
     public <R> R branch(Func1<R, T> onPresent, Func0<R> onEmpty) {
         return isPresent() ? onPresent.apply(value) : onEmpty.apply();
     }

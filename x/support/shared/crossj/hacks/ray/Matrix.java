@@ -6,9 +6,14 @@ import crossj.DoubleArray;
 import crossj.Eq;
 import crossj.List;
 import crossj.M;
+import crossj.Range;
 import crossj.Str;
 import crossj.XError;
 import crossj.XIterable;
+import crossj.XIterator;
+import crossj.Optional;
+import crossj.hacks.ray.gelim.DeterminantSolver;
+import crossj.hacks.ray.gelim.InverseMatrixSolver;
 
 /**
  * Conceptually immutable Matrix.
@@ -67,6 +72,15 @@ public final class Matrix implements AlmostEq<Matrix> {
     @SafeVarargs
     public static Matrix withRows(XIterable<Double>... rows) {
         List<DoubleArray> rowList = List.fromJavaArray(rows).map(row -> DoubleArray.fromIterable(row));
+        return fromListOfDoubleArrays(rowList);
+    }
+
+    public static Matrix fromRows(XIterable<XIterable<Double>> rows) {
+        List<DoubleArray> rowList = List.fromIterable(rows).map(row -> DoubleArray.fromIterable(row));
+        return fromListOfDoubleArrays(rowList);
+    }
+
+    public static Matrix fromListOfDoubleArrays(List<DoubleArray> rowList) {
         int nrows = rowList.size();
         int maxNCols = rowList.fold(0, (a, b) -> M.imax(a, b.size()));
         int minNCols = rowList.fold(rowList.get(0).size(), (a, b) -> M.imin(a, b.size()));
@@ -94,6 +108,18 @@ public final class Matrix implements AlmostEq<Matrix> {
 
     public int getC() {
         return ncols;
+    }
+
+    public boolean isSquare() {
+        return getC() == getR();
+    }
+
+    public DoubleArray getRow(int r) {
+        return data.slice(ncols * r, ncols * (r + 1));
+    }
+
+    public XIterator<DoubleArray> getRows() {
+        return Range.upto(getR()).map(r -> getRow(r));
     }
 
     public boolean isTuple() {
@@ -224,10 +250,20 @@ public final class Matrix implements AlmostEq<Matrix> {
         switch (ncols) {
             case 1: return data.get(0);
             case 2: return data.get(0) * data.get(3) - data.get(1) * data.get(2);
-            default: {
-                throw XError.withMessage("determinant for this size not yet implemented");
-            }
+            default: return DeterminantSolver.solve(this);
         }
+    }
+
+    public Optional<Matrix> tryInverse() {
+        return InverseMatrixSolver.invert(this);
+    }
+
+    public Matrix inverse() {
+        return tryInverse().orThrow(() -> XError.withMessage("this matrix is not invertible"));
+    }
+
+    public boolean isInvertible() {
+        return determinant() != 0;
     }
 
     public Matrix submatrix(int skipR, int skipC) {
@@ -255,10 +291,9 @@ public final class Matrix implements AlmostEq<Matrix> {
     }
 
     /**
-     * Computes the length of a vector/tuple
+     * Euclidean norm taking this matrix as a member of (R x C) Euclidean space
      */
     public double magnitude() {
-        Assert.equals(ncols, 1);
         double ret = 0;
         for (double value : data) {
             ret += value * value;

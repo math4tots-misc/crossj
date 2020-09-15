@@ -22,6 +22,12 @@ public final class DoubleArray implements XIterable<Double> {
 
     public native void set(int i, double value);
 
+    public native DoubleArray slice(int start, int end);
+
+    public native void scale(double factor);
+
+    public native void addWithFactor(DoubleArray other, double factor);
+
     @Override
     public native XIterator<Double> iter();
 

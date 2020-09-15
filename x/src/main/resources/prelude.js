@@ -259,14 +259,44 @@ $CJ['crossj.IO'] = $LAZY(function () {
         }
     };
 });
+$CJ['crossj.Range'] = $LAZY(function() {
+    return class Range {
+        static *M$of(start, end) {
+            for (let i = start; i < end; i++) {
+                yield i;
+            }
+        }
+        static *M$from(start) {
+            for (let i = start;; i++) {
+                yield i;
+            }
+        }
+        static M$upto(end) {
+            return Range.M$of(0, end);
+        }
+    };
+})
 $CJ['crossj.List'] = $LAZY(function () {
+    /**
+     * @template T
+     */
     class List {
+        /**
+         * @param {Array<T>} arr
+         */
         constructor(arr) {
             this.arr = arr;
         }
+        /**
+         * @template T
+         * @param  {...T} args
+         */
         static M$of(...args) {
             return new List(args);
         }
+        /**
+         * @param  {...number} args
+         */
         static M$ofDoubles(...args) {
             return new List(args);
         }
@@ -313,6 +343,21 @@ $CJ['crossj.List'] = $LAZY(function () {
         }
         M$pop() {
             return this.arr.pop();
+        }
+        M$slice(start, end) {
+            return new List(this.arr.slice(start, end));
+        }
+        M$sliceFrom(start) {
+            return this.M$slice(start, this.M$size());
+        }
+        M$sliceUpto(end) {
+            return this.M$slice(0, end);
+        }
+        M$swap(i, j) {
+            const arr = this.arr;
+            const value = arr[i];
+            arr[i] = arr[j];
+            arr[j] = value;
         }
         M$size() {
             return this.arr.length;
@@ -752,6 +797,9 @@ $CJ['crossj.IntArray'] = $LAZY(function() {
         M$set(i, x) {
             this.arr[i] = x;
         }
+        M$slice(start, end) {
+            return new IntArray(this.arr.slice(start, end));
+        }
         M$iter() {
             return this.arr[Symbol.iterator]();
         }
@@ -835,6 +883,33 @@ $CJ['crossj.DoubleArray'] = $LAZY(function() {
         }
         M$set(i, x) {
             this.arr[i] = x;
+        }
+        M$slice(start, end) {
+            return new DoubleArray(this.arr.slice(start, end));
+        }
+        M$scale(factor) {
+            const arr = this.arr;
+            for (let i = 0; i < arr.length; i++) {
+                arr[i] *= factor;
+            }
+        }
+        /**
+         * @param {DoubleArray} other
+         * @param {number} factor
+         */
+        M$addWithFactor(other, factor) {
+            const a = this.arr;
+            const b = other.arr;
+            if (a.length !== b.length) {
+                throw Error(
+                    "DoubleArray.addWithFactor requires arrays of same size but got "
+                    + a.length
+                    + " and "
+                    + b.length);
+            }
+            for (let i = 0; i < a.length; i++) {
+                a[i] += b[i] * factor;
+            }
         }
         M$iter() {
             return this.arr[Symbol.iterator]();

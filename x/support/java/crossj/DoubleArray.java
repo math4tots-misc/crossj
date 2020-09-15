@@ -68,6 +68,24 @@ public final class DoubleArray implements XIterable<Double> {
         buffer[i] = value;
     }
 
+    public DoubleArray slice(int start, int end) {
+        return new DoubleArray(Arrays.copyOfRange(buffer, start, end));
+    }
+
+    public void scale(double factor) {
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] *= factor;
+        }
+    }
+
+    public void addWithFactor(DoubleArray other, double factor) {
+        Assert.equalsWithMessage(buffer.length, other.buffer.length, "DoubleArray.addWithFactor requires arrays of equal size");
+        double[] otherBuffer = other.buffer;
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] += otherBuffer[i] * factor;
+        }
+    }
+
     @Override
     public XIterator<Double> iter() {
         return XIterator.fromIterator(new Iterator<Double>() {

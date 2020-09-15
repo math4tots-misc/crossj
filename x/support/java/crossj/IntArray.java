@@ -68,6 +68,10 @@ public final class IntArray implements XIterable<Integer> {
         buffer[i] = value;
     }
 
+    public IntArray slice(int start, int end) {
+        return new IntArray(Arrays.copyOfRange(buffer, start, end));
+    }
+
     @Override
     public XIterator<Integer> iter() {
         return XIterator.fromIterator(new Iterator<Integer>() {

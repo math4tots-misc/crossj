@@ -22,6 +22,8 @@ public final class IntArray implements XIterable<Integer> {
 
     public native void set(int i, int value);
 
+    public native IntArray slice(int start, int end);
+
     @Override
     public native XIterator<Integer> iter();
 
