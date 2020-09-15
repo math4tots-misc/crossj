@@ -7,6 +7,14 @@ I'm starting to notice my IDE's quality starting to degrade a bit
 
 --
 
+Consider not allowing `XIterator` to implement `XIterable`. While it's really convenient and
+it's common among dynamically typed languages to allow iterators to be used like iterables,
+technically it's kind of wrong. In some areas, I might be able to get away with it like Java,
+but in general, I'm afraid this might make some things harder when targeting statically typed
+languages.
+
+--
+
 `MutableList`
 
 Consider splitting out immutable types or at least, add a 'mutable' field to collection types.
