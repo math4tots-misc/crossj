@@ -244,10 +244,14 @@ $CJ['crossj.IO'] = $LAZY(function () {
             return require('path').join(...paths);
         }
         static M$writeFile(filepath, data) {
+            const path = require('path');
+            const fs = require('fs');
+            const dirname = path.dirname(filepath);
+            fs.mkdirSync(dirname, {recursive: true});
             require('fs').writeFileSync(filepath, data);
         }
         static M$writeFileBytes(filepath, bytes) {
-            require('fs').writeFileSync(filepath, bytes.M$asU8s());
+            IO.M$writeFile(filepath, bytes.M$asU8s());
         }
         static M$readFile(filepath) {
             return require('fs').readFileSync(filepath, 'utf-8');

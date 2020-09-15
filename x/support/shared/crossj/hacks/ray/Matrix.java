@@ -6,12 +6,13 @@ import crossj.DoubleArray;
 import crossj.Eq;
 import crossj.List;
 import crossj.M;
+import crossj.Optional;
+import crossj.Pair;
 import crossj.Range;
 import crossj.Str;
 import crossj.XError;
 import crossj.XIterable;
 import crossj.XIterator;
-import crossj.Optional;
 import crossj.hacks.ray.gelim.DeterminantSolver;
 import crossj.hacks.ray.gelim.InverseMatrixSolver;
 
@@ -155,6 +156,29 @@ public final class Matrix implements AlmostEq<Matrix> {
     public static Matrix fromRows(XIterable<XIterable<Double>> rows) {
         List<DoubleArray> rowList = List.fromIterable(rows).map(row -> DoubleArray.fromIterable(row));
         return fromListOfDoubleArrays(rowList);
+    }
+
+    @SafeVarargs
+    public static Matrix withColumns(XIterable<Double>... columns) {
+        return fromColumns(List.fromJavaArray(columns));
+    }
+
+    public static Matrix fromColumns(XIterable<XIterable<Double>> columns) {
+        return fromRows(columns).transpose();
+    }
+
+    /**
+     * Given n pairs of column vectors (v[i], w[i]), where v[i], w[i] are vectors in R^n
+     * returns the linear transformation T such that T(v[i]) = w[i] for all i.
+     * TODO: generalize to non-square dimensions, and varying input length
+     * @param pairs
+     * @return
+     */
+    public static Matrix fromMap(XIterable<Pair<Matrix, Matrix>> pairs) {
+        List<Pair<Matrix, Matrix>> pairList = pairs.iter().list();
+        Matrix vmatrix = fromColumns(pairList.iter().map(pair -> pair.get1().data));
+        Matrix wmatrix = fromColumns(pairList.iter().map(pair -> pair.get2().data));
+        return wmatrix.multiply(vmatrix.inverse());
     }
 
     /**

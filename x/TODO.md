@@ -4,6 +4,15 @@ directory with its own pom.
 Ideally, I'd like to just have everything live in one big root, but
 I'm starting to notice my IDE's quality starting to degrade a bit
 
+
+--
+
+`MutableList`
+
+Consider splitting out immutable types or at least, add a 'mutable' field to collection types.
+Using immutable values by default everywhere would allow reusing data structures more widely
+and easily.
+
 --
 
 IR between raw JDT types and the translators

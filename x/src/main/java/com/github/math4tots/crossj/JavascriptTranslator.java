@@ -733,6 +733,22 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
+                            case "crossj.Func0.apply":
+                            case "crossj.Func1.apply":
+                            case "crossj.Func2.apply":
+                            case "crossj.Func3.apply":
+                            case "crossj.Func4.apply": {
+                                translateExpression(owner);
+                                sb.append("(");
+                                for (int i = 0; i < node.arguments().size(); i++) {
+                                    if (i > 0) {
+                                        sb.append(',');
+                                    }
+                                    translateExpression((Expression) node.arguments().get(i));
+                                }
+                                sb.append(")");
+                                break;
+                            }
                             case "java.lang.String.toString":
                             case "java.lang.Integer.toString":
                             case "java.lang.Double.toString":
