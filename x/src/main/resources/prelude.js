@@ -1013,6 +1013,14 @@ $CJ['crossj.M'] = $LAZY(function () {
             return Math.round(x);
         }
 
+        static M$floor(x) {
+            return Math.floor(x);
+        }
+
+        static M$ceil(x) {
+            return Math.ceil(x);
+        }
+
         static M$abs(x) {
             return Math.abs(x);
         }
@@ -1027,6 +1035,10 @@ $CJ['crossj.M'] = $LAZY(function () {
 
         static M$ipow(a, b) {
             return a ** b;
+        }
+
+        static M$sqrt(x) {
+            return Math.sqrt(x);
         }
 
         static M$floor(x) {
@@ -1045,16 +1057,20 @@ $CJ['crossj.M'] = $LAZY(function () {
             return Math.tan(x);
         }
 
-        static M$atan(x) {
-            return Math.atan(x);
-        }
-
         static M$asin(x) {
             return Math.asin(x);
         }
 
         static M$acos(x) {
             return Math.acos(x);
+        }
+
+        static M$atan(x) {
+            return Math.atan(x);
+        }
+
+        static M$atan2(y, x) {
+            return Math.atan2(y, x);
         }
     };
     return M;

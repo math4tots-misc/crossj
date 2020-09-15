@@ -1,6 +1,7 @@
 package sanity.hacks.ray;
 
 import crossj.Assert;
+import crossj.M;
 import crossj.Test;
 import crossj.hacks.ray.Matrix;
 
@@ -10,7 +11,7 @@ import crossj.hacks.ray.Matrix;
 public final class Chapter04 {
 
     @Test
-    public static void translations() {
+    public static void translationsAndScaling() {
         {
             // Multiplying by a translation matrix
             Matrix transform = Matrix.translation(5, -3, 2);
@@ -54,6 +55,41 @@ public final class Chapter04 {
             Matrix transform = Matrix.scaling(-1, 1, 1);
             Matrix p = Matrix.point(2, 3, 4);
             Assert.equals(transform.multiply(p), Matrix.point(-2, 3, 4));
+        }
+    }
+
+    @Test
+    public static void rotations() {
+        {
+            // Rotating a point around the x axis
+            Matrix p = Matrix.point(0, 1, 0);
+            Matrix halfQuarter = Matrix.xRotation(M.TAU / 8);
+            Matrix fullQuarter = Matrix.xRotation(M.TAU / 4);
+            Assert.almostEquals(halfQuarter.multiply(p), Matrix.point(0, M.sqrt(2) / 2, M.sqrt(2) / 2));
+            Assert.almostEquals(fullQuarter.multiply(p), Matrix.point(0, 0, 1));
+        }
+        {
+            // The inverse of an x-rotation rotates in the opposite direction
+            Matrix p = Matrix.point(0, 1, 0);
+            Matrix halfQuarter = Matrix.xRotation(M.TAU / 8);
+            Matrix inv = halfQuarter.inverse();
+            Assert.almostEquals(inv.multiply(p), Matrix.point(0, M.sqrt(2) / 2, -M.sqrt(2) / 2));
+        }
+        {
+            // Rotating a point around the y axis
+            Matrix p = Matrix.point(0, 0, 1);
+            Matrix halfQuarter = Matrix.yRotation(M.TAU / 8);
+            Matrix fullQuarter = Matrix.yRotation(M.TAU / 4);
+            Assert.almostEquals(halfQuarter.multiply(p), Matrix.point(M.sqrt(2)/2, 0, M.sqrt(2)/2));
+            Assert.almostEquals(fullQuarter.multiply(p), Matrix.point(1, 0, 0));
+        }
+        {
+            // Rotating a point around the z axis
+            Matrix p = Matrix.point(0, 1, 0);
+            Matrix halfQuarter = Matrix.zRotation(M.TAU / 8);
+            Matrix fullQuarter = Matrix.zRotation(M.TAU / 4);
+            Assert.almostEquals(halfQuarter.multiply(p), Matrix.point(-M.sqrt(2)/2, M.sqrt(2)/2, 0));
+            Assert.almostEquals(fullQuarter.multiply(p), Matrix.point(-1, 0, 0));
         }
     }
 }

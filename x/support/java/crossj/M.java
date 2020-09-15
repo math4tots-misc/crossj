@@ -43,6 +43,14 @@ public final class M {
         return Math.round(value);
     }
 
+    public static double floor(double value) {
+        return Math.floor(value);
+    }
+
+    public static double ceil(double value) {
+        return Math.ceil(value);
+    }
+
     public static double abs(double value) {
         return Math.abs(value);
     }
@@ -57,5 +65,37 @@ public final class M {
 
     public static int ipow(int a, int b) {
         return (int) Math.pow(a, b);
+    }
+
+    public static double sqrt(double x) {
+        return Math.sqrt(x);
+    }
+
+    public static double sin(double radians) {
+        return Math.sin(radians);
+    }
+
+    public static double cos(double radians) {
+        return Math.cos(radians);
+    }
+
+    public static double tan(double radians) {
+        return Math.tan(radians);
+    }
+
+    public static double asin(double x) {
+        return Math.asin(x);
+    }
+
+    public static double acos(double x) {
+        return Math.acos(x);
+    }
+
+    public static double atan(double x) {
+        return Math.atan(x);
+    }
+
+    public static double atan2(double y, double x) {
+        return Math.atan2(y, x);
     }
 }

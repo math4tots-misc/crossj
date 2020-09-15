@@ -21,6 +21,10 @@ public final class M {
 
     public static native double round(double value);
 
+    public static native double floor(double value);
+
+    public static native double ceil(double value);
+
     public static native double abs(double value);
 
     public static native int iabs(int x);
@@ -28,4 +32,20 @@ public final class M {
     public static native double pow(double a, double b);
 
     public static native int ipow(int a, int b);
+
+    public static native double sqrt(double x);
+
+    public static native double sin(double radians);
+
+    public static native double cos(double radians);
+
+    public static native double tan(double radians);
+
+    public static native double asin(double x);
+
+    public static native double acos(double x);
+
+    public static native double atan(double x);
+
+    public static native double atan2(double y, double x);
 }

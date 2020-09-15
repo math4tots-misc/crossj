@@ -79,6 +79,33 @@ public final class Matrix implements AlmostEq<Matrix> {
         return withData(4, x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1);
     }
 
+    /**
+     * Returns a left-handed rotation around the x-axis in a left-handed coordinate system
+     * @param r angle to rotate in radians
+     * @return
+     */
+    public static Matrix xRotation(double r) {
+        return withData(4, 1, 0, 0, 0, 0, M.cos(r), -M.sin(r), 0, 0, M.sin(r), M.cos(r), 0, 0, 0, 0, 1);
+    }
+
+    /**
+     * Returns a left-handed rotation around the y-axis in a left-handed coordinate system
+     * @param r angle to rotate in radians
+     * @return
+     */
+    public static Matrix yRotation(double r) {
+        return withData(4, M.cos(r), 0, M.sin(r), 0, 0, 1, 0, 0, -M.sin(r), 0, M.cos(r), 0, 0, 0, 0, 1);
+    }
+
+    /**
+     * Returns a left-handed rotation around the z-axis in a left-handed coordinate system
+     * @param r angle to rotate in radians
+     * @return
+     */
+    public static Matrix zRotation(double r) {
+        return withData(4, M.cos(r), -M.sin(r), 0, 0, M.sin(r), M.cos(r), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+
     public static Matrix withDimensions(int nrows, int ncols) {
         DoubleArray data = DoubleArray.withSize(nrows * ncols);
         return new Matrix(ncols, data);
