@@ -6,6 +6,38 @@ package crossj;
 public final class Str {
     private Str() {}
 
+    /**
+     * Returns a UTF code unit.
+     *
+     * The actual value returned depends on the platform.
+     *
+     * There are three possible cases:
+     *
+     * <li>1: UTF-16.
+     * Targets: Java, JavaScript, C#.
+     * In this scenario, all strings are assumed to be represented internally as UTF-16.
+     * The method will return a value between 0 and 65535 representing the UTF-16 code unit.
+     * </li>
+     * <li>2: UTF-8.
+     * Targets: C/C++, Rust.
+     * In this scenario, all strings are assumed to be represented internally as UTF-8.
+     * The method will return a value between 0 and 255 representing a UTF-8 code unit.
+     * </li>
+     * <li>3: UCS-4/UTF-32.
+     * Targets: Python.
+     * Every unicode character can be indexed directly.
+     * The method will return
+     * </li>
+     *
+     */
+    public static int codeAt(String string, int index) {
+        return StrImpl.codeAt(string, index);
+    }
+
+    public static int code(char c) {
+        return StrImpl.charCode(c);
+    }
+
     public static String join(String separator, XIterable<?> iterable) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;

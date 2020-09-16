@@ -606,6 +606,18 @@ public final class JavascriptTranslator implements ITranslator {
                     ITypeBinding cls = method.getDeclaringClass().getErasure();
                     String qualifiedClassName = cls.getQualifiedName();
                     switch (qualifiedClassName + "." + method.getName()) {
+                        case "crossj.StrImpl.codeAt": {
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(".charCodeAt(");
+                            translateExpression((Expression) node.arguments().get(1));
+                            sb.append(")");
+                            break;
+                        }
+                        case "crossj.StrImpl.charCode": {
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(".charCodeAt(0)");
+                            break;
+                        }
                         case "crossj.Eq.of": {
                             // Equality check is a common operation, so it seems like a good idea to
                             // not require a class lookup for this

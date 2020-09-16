@@ -68,4 +68,38 @@ public final class StringTest {
         Assert.equals(Str.words("abc   def\n"), List.of("abc", "def"));
         Assert.equals(Str.words("abc   def\n \nxxx"), List.of("abc", "def", "xxx"));
     }
+
+    @Test
+    public static void unicode() {
+        // TODO: Once we have a UTF-8 string platform I'll have to update these tests.
+        //
+        // Right now, all targets are UTF-16, so I assume it everywhere.
+        //
+        // NOTE: on some platforms (e.g. windows) "-encoding "UTF-8"" needs to be explicitly
+        // passed to javac to ensure
+        //
+        {
+            // ASCII, sanity check
+            String ascii = "abc";
+            Assert.equals(Str.codeAt(ascii, 0), Str.code('a'));
+            Assert.equals(Str.codeAt(ascii, 0), 97);
+            Assert.equals(Str.codeAt(ascii, 1), Str.code('b'));
+            Assert.equals(Str.codeAt(ascii, 2), Str.code('c'));
+        }
+        {
+            // Value in BMP (should be 1 unit per-char in UTF-16)
+            String s = "日本";
+            Assert.equals(s.length(), 2);
+            Assert.equals(Str.codeAt(s, 0), 0x65E5);
+            Assert.equals(Str.codeAt(s, 0), Str.code('日'));
+            Assert.equals(Str.codeAt(s, 1), Str.code('本'));
+        }
+        {
+            // Character outside BMP
+            String s = "𩸽";
+            Assert.equals(Str.codeAt(s, 0), 55399);
+            Assert.equals(Str.codeAt(s, 1), 56893);
+            Assert.equals(s.length(), 2);
+        }
+    }
 }
