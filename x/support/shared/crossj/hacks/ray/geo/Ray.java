@@ -1,7 +1,6 @@
 package crossj.hacks.ray.geo;
 
 import crossj.Assert;
-import crossj.XError;
 import crossj.hacks.ray.Matrix;
 
 /**
