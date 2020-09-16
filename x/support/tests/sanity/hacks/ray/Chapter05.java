@@ -141,4 +141,54 @@ public final class Chapter05 {
             Assert.equals(xs.getHit().get(), i4);
         }
     }
+
+    @Test
+    public static void transform() {
+        {
+            // Translating a ray
+            Ray r = Ray.of(Matrix.point(1, 2, 3), Matrix.vector(0, 1, 0));
+            Matrix m = Matrix.translation(3, 4, 5);
+            Ray r2 = r.transform(m);
+            Assert.equals(r2.getOrigin(), Matrix.point(4, 6, 8));
+            Assert.equals(r2.getDirection(), Matrix.vector(0, 1, 0));
+        }
+        {
+            // Scaling a ray
+            Ray r = Ray.of(Matrix.point(1, 2, 3), Matrix.vector(0, 1, 0));
+            Matrix m = Matrix.scaling(2, 3, 4);
+            Ray r2 = r.transform(m);
+            Assert.equals(r2.getOrigin(), Matrix.point(2, 6, 12));
+            Assert.equals(r2.getDirection(), Matrix.vector(0, 3, 0));
+        }
+        {
+            // A sphere's default transformation
+            Sphere s = Sphere.unit();
+            Assert.equals(s.getTransform(), Matrix.identity(4));
+        }
+        {
+            // Changing a sphere's transformation
+            Sphere s = Sphere.unit();
+            Matrix t = Matrix.translation(2, 3, 4);
+            s.setTransform(t);
+            Assert.equals(s.getTransform(), t);
+        }
+        {
+            // Intersecting a scaled sphere with a ray
+            Ray r = Ray.of(Matrix.point(0, 0, -5), Matrix.vector(0, 0, 1));
+            Sphere s = Sphere.unit();
+            s.setTransform(Matrix.scaling(2, 2, 2));
+            Intersections xs = s.intersectRay(r);
+            Assert.equals(xs.size(), 2);
+            Assert.equals(xs.get(0).getT(), 3.0);
+            Assert.equals(xs.get(1).getT(), 7.0);
+        }
+        {
+            // Intersecting a translated sphere with a ray
+            Ray r = Ray.of(Matrix.point(0, 0, -5), Matrix.vector(0, 0, 1));
+            Sphere s = Sphere.unit();
+            s.setTransform(Matrix.translation(5, 0, 0));
+            Intersections xs = s.intersectRay(r);
+            Assert.equals(xs.size(), 0);
+        }
+    }
 }

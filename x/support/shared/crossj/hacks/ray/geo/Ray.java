@@ -32,4 +32,8 @@ public final class Ray {
     public Matrix position(double t) {
         return origin.add(direction.scale(t));
     }
+
+    public Ray transform(Matrix t) {
+        return Ray.of(t.multiply(origin), t.multiply(direction));
+    }
 }
