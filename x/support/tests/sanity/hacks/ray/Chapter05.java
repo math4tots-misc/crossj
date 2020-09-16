@@ -92,8 +92,8 @@ public final class Chapter05 {
             Intersection i2 = Intersection.of(2, s);
             Intersections xs = Intersections.of(i1, i2);
             Assert.equals(xs.size(), 2);
-            Assert.equals(xs.get(0).getT(), 1);
-            Assert.equals(xs.get(1).getT(), 2);
+            Assert.equals(xs.get(0).getT(), 1.0);
+            Assert.equals(xs.get(1).getT(), 2.0);
         }
         {
             // Intersect sets the object on the intersection
