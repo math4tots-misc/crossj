@@ -338,6 +338,11 @@ $CJ['crossj.List'] = $LAZY(function () {
             arr.sort($CMP);
             return new List(arr);
         }
+        static M$sortedBy(iterable, f) {
+            const arr = Array.from(iterable);
+            arr.sort(f);
+            return new List(arr);
+        }
         M$add(x) {
             this.arr.push(x);
         }
@@ -355,6 +360,9 @@ $CJ['crossj.List'] = $LAZY(function () {
         }
         M$sort() {
             this.arr.sort($CMP);
+        }
+        M$sortBy(f) {
+            this.arr.sort(f);
         }
         M$pop() {
             return this.arr.pop();
@@ -1022,6 +1030,14 @@ $CJ['crossj.M'] = $LAZY(function () {
 
         static M$imin(...values) {
             return Math.min(...values);
+        }
+
+        static M$cmp(a, b) {
+            return a < b ? -1 : a == b ? 0 : 1;
+        }
+
+        static M$icmp(a, b) {
+            return a < b ? -1 : a == b ? 0 : 1;
         }
 
         static M$round(x) {

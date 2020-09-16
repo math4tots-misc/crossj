@@ -1,6 +1,6 @@
 package crossj;
 
-public final class Optional<T> {
+public final class Optional<T> implements TypedEq<Optional<T>> {
     private final T value;
 
     private Optional(T value) {
@@ -53,5 +53,15 @@ public final class Optional<T> {
 
     public <R> R branch(Func1<R, T> onPresent, Func0<R> onEmpty) {
         return isPresent() ? onPresent.apply(value) : onEmpty.apply();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return rawEquals(obj);
+    }
+
+    @Override
+    public boolean isEqualTo(Optional<T> other) {
+        return isEmpty() ? other.isEmpty() : value.equals(other.value);
     }
 }

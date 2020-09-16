@@ -41,8 +41,12 @@ public final class Tuple<T> implements XIterable<T>, Comparable<Tuple<T>>, Typed
         return fromList(List.reversed(iterable));
     }
 
-    public static <T extends Comparable<T>> Tuple<T> sorted(Iterable<T> iterable) {
+    public static <T extends Comparable<T>> Tuple<T> sorted(XIterable<T> iterable) {
         return fromList(List.sorted(iterable));
+    }
+
+    public static <T> Tuple<T> sortedBy(XIterable<T> iterable, Func2<Integer, T, T> f) {
+        return fromList(List.sortedBy(iterable, f));
     }
 
     public int size() {

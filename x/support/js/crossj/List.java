@@ -16,6 +16,8 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
 
     public static native <T extends Comparable<T>> List<T> sorted(Iterable<T> iterable);
 
+    public static native <T> List<T> sortedBy(Iterable<T> iterable, Func2<Integer, T, T> f);
+
     public native int size();
     public native T get(int i);
     public native T last();
@@ -28,6 +30,7 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
 
     public native void reverse();
     public native void sort();
+    public native void sortBy(Func2<Integer, T, T> f);
 
     @Override
     public native boolean equals(Object other);

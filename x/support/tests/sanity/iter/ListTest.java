@@ -1,6 +1,7 @@
 package sanity.iter;
 
 import crossj.Assert;
+import crossj.Default;
 import crossj.List;
 import crossj.Test;
 
@@ -26,7 +27,7 @@ public final class ListTest {
         Assert.equals(list, List.of(-1, -2, -3, 3, 2, 1));
         list.reverse();
         Assert.equals(list, List.of(1, 2, 3, -3, -2, -1));
-        list.sort();
+        list.sortBy(Default.comparator());
         Assert.equals(list, List.of(-3, -2, -1, 1, 2, 3));
     }
 

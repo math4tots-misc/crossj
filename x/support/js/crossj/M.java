@@ -19,6 +19,10 @@ public final class M {
 
     public static native int imin(int value, int... values);
 
+    public static native int cmp(double a, double b);
+
+    public static native int icmp(int a, int b);
+
     public static native double round(double value);
 
     public static native double floor(double value);

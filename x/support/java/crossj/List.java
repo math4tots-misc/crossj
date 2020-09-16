@@ -28,8 +28,8 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     }
 
     /**
-     * Just a convenience method since often when a List&lt; Double &gt; is required
-     * List.of(..) will still return List&lt; Integer &gt;.
+     * Just a convenience method since often when a <code>List&lt;Double&gt;</code> is required
+     * <code>List.of(..)</code> will still return <code>List&lt;Integer&gt;</code>.
      */
     public static List<Double> ofDoubles(double... args) {
         ArrayList<Double> list = new ArrayList<>();
@@ -60,6 +60,12 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     public static <T extends Comparable<T>> List<T> sorted(Iterable<T> iterable) {
         List<T> ret = List.fromIterable(iterable);
         Collections.sort(ret.list);
+        return ret;
+    }
+
+    public static <T> List<T> sortedBy(Iterable<T> iterable, Func2<Integer, T, T> f) {
+        List<T> ret = List.fromIterable(iterable);
+        ret.sortBy(f);
         return ret;
     }
 
@@ -107,9 +113,18 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         Collections.reverse(list);
     }
 
-    @SuppressWarnings("unchecked")
-    public void sort() {
-        Collections.sort(list, (a, b) -> ((Comparable<T>) a).compareTo(b));
+    /**
+     * Sorts the list with the given comparator.
+     *
+     * If T implements <code>Comaparable&lt;T&gt;</code>, you can also write:
+     *
+     * <pre>
+     * list.sortBy(Default.comparator());
+     * </pre>
+     * @param f
+     */
+    public void sortBy(Func2<Integer, T, T> f) {
+        Collections.sort(list, (a, b) -> f.apply(a, b));
     }
 
     @Override

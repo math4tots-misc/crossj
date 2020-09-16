@@ -39,6 +39,14 @@ public final class M {
         return value;
     }
 
+    public static int cmp(double a, double b) {
+        return a < b ? -1 : a == b ? 0 : 1;
+    }
+
+    public static int icmp(int a, int b) {
+        return a < b ? -1 : a == b ? 0 : 1;
+    }
+
     public static double round(double value) {
         return Math.round(value);
     }
