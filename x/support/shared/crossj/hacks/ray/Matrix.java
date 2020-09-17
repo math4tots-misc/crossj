@@ -282,6 +282,46 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
         return get(3, 0);
     }
 
+    /**
+     * Returns a copy of this matrix except with the (0, 0)
+     * coordinate replaced with the given value
+     */
+    public Matrix withX(double newX) {
+        Matrix ret = clone();
+        ret.set(0, 0, newX);
+        return ret;
+    }
+
+    /**
+     * Returns a copy of this matrix except with the (1, 0)
+     * coordinate replaced with the given value
+     */
+    public Matrix withY(double newY) {
+        Matrix ret = clone();
+        ret.set(1, 0, newY);
+        return ret;
+    }
+
+    /**
+     * Returns a copy of this matrix except with the (2, 0)
+     * coordinate replaced with the given value
+     */
+    public Matrix withZ(double newZ) {
+        Matrix ret = clone();
+        ret.set(2, 0, newZ);
+        return ret;
+    }
+
+    /**
+     * Returns a copy of this matrix except with the (3, 0)
+     * coordinate replaced with the given value
+     */
+    public Matrix withW(double newW) {
+        Matrix ret = clone();
+        ret.set(3, 0, newW);
+        return ret;
+    }
+
     public double get(int row, int column) {
         return data.get(row * ncols + column);
     }
