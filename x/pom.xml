@@ -8,9 +8,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <!-- Tell Maven we want to use Java 8 -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- Tell Maven we want to use Java 11 -->
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <!-- Tell Maven to treat all source files as UTF-8 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <exec.mainClass>com.github.math4tots.crossj.Main</exec.mainClass>

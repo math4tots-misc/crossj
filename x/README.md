@@ -4,6 +4,13 @@ mvn clean package && \
 
 NOTES
 
+Java version:
+
+* Originally I was limiting myself to Java 8, but I really wanted local variable type
+    inference, so I'm using Java 11 to develop instead. In practice though, I'm
+    planning on only really using Java 8 + 'var', though I might accidentally use
+    other features (e.g. private static methods in interfaces).
+
 Rules:
 * method overloading is not supported. There isn't a check yet
     to reject programs that use this, but on some targets (e.g. Javascript)
