@@ -16,6 +16,10 @@ import crossj.TypedEq;
  * described in most docs I've been reading.
  */
 public final class Color implements AlmostEq<Color>, TypedEq<Color> {
+
+    public static final Color WHITE = rgb(1, 1, 1);
+    public static final Color BLACK = rgb(0, 0, 0);
+
     public final double r;
     public final double g;
     public final double b;
@@ -51,6 +55,10 @@ public final class Color implements AlmostEq<Color>, TypedEq<Color> {
 
     public Color scale(double factor) {
         return of(r * factor, g * factor, b * factor, a);
+    }
+
+    public Color multiply(Color other) {
+        return of(r * other.r, g * other.g, b * other.b, a * other.a);
     }
 
     public Color hadamardProduct(Color other) {

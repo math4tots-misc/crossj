@@ -3,7 +3,10 @@ package sanity.hacks.ray;
 import crossj.Assert;
 import crossj.M;
 import crossj.Test;
+import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.geo.Material;
+import crossj.hacks.ray.geo.PointLight;
 import crossj.hacks.ray.geo.Sphere;
 
 /**
@@ -33,13 +36,13 @@ public final class Chapter06 {
         {
             // The normal on a sphere at a nonaxsial point
             var s = Sphere.unit();
-            var n = s.normalAt(Matrix.point(M.sqrt(3)/3, M.sqrt(3)/3, M.sqrt(3)/3));
-            Assert.equals(n, Matrix.vector(M.sqrt(3)/3, M.sqrt(3)/3, M.sqrt(3)/3));
+            var n = s.normalAt(Matrix.point(M.sqrt(3) / 3, M.sqrt(3) / 3, M.sqrt(3) / 3));
+            Assert.equals(n, Matrix.vector(M.sqrt(3) / 3, M.sqrt(3) / 3, M.sqrt(3) / 3));
         }
         {
             // The normal is a normalized vector
             var s = Sphere.unit();
-            var n = s.normalAt(Matrix.point(M.sqrt(3)/3, M.sqrt(3)/3, M.sqrt(3)/3));
+            var n = s.normalAt(Matrix.point(M.sqrt(3) / 3, M.sqrt(3) / 3, M.sqrt(3) / 3));
             Assert.equals(n, n.normalize());
         }
         {
@@ -52,9 +55,9 @@ public final class Chapter06 {
         {
             // Computing the normal on a transformed sphere
             var s = Sphere.unit();
-            var m = Matrix.scaling(1, 0.5, 1).multiply(Matrix.zRotation(M.TAU/10));
+            var m = Matrix.scaling(1, 0.5, 1).multiply(Matrix.zRotation(M.TAU / 10));
             s.setTransform(m);
-            var n = s.normalAt(Matrix.point(0, M.sqrt(2)/2, -M.sqrt(2)/2));
+            var n = s.normalAt(Matrix.point(0, M.sqrt(2) / 2, -M.sqrt(2) / 2));
             n.toString();
         }
     }
@@ -71,9 +74,89 @@ public final class Chapter06 {
         {
             // Reflecting a vector off a slanted surface
             var v = Matrix.vector(0, -1, 0);
-            var n = Matrix.vector(M.sqrt(2)/2, M.sqrt(2)/2, 0);
+            var n = Matrix.vector(M.sqrt(2) / 2, M.sqrt(2) / 2, 0);
             var r = v.reflectAround(n);
-            Assert.equals(r, Matrix.vector(1, 0, 0));
+            Assert.almostEquals(r, Matrix.vector(1, 0, 0));
+        }
+    }
+
+    @Test
+    public static void lights() {
+        {
+            // A point light has a position and intensity
+            var intensity = Color.rgb(1, 1, 1);
+            var position = Matrix.point(0, 0, 0);
+            var light = PointLight.of(position, intensity);
+            Assert.equals(light.getPosition(), position);
+            Assert.equals(light.getIntensity(), intensity);
+        }
+        {
+            // The default material
+            var m = Material.getDefault();
+            Assert.equals(m.getColor(), Color.rgb(1, 1, 1));
+            Assert.equals(m.getAmbient(), 0.1);
+            Assert.equals(m.getDiffuse(), 0.9);
+            Assert.equals(m.getSpecular(), 0.9);
+            Assert.equals(m.getShininess(), 200.0);
+        }
+        {
+            // A sphere has a default material
+            var s = Sphere.unit();
+            Assert.equals(s.getMaterial(), Material.getDefault());
+        }
+        {
+            // A sphere may be assigned a material
+            var s = Sphere.unit();
+            var m = Material.getDefault();
+            m = m.withAmbient(1);
+            s.setMaterial(m);
+            Assert.equals(s.getMaterial(), m);
+        }
+    }
+
+    @Test
+    public static void lighting() {
+        var m = Material.getDefault();
+        var position = Matrix.point(0, 0, 0);
+        {
+            // Lighting with the eye between the light and the surface
+            var eyev = Matrix.vector(0, 0, -1);
+            var normalv = Matrix.vector(0, 0, -1);
+            var light = PointLight.of(Matrix.point(0, 0, -10), Color.rgb(1, 1, 1));
+            var result = m.lighting(light, position, eyev, normalv);
+            Assert.equals(result, Color.rgb(1.9, 1.9, 1.9));
+        }
+        {
+            // Lighting with the eye between light and surface, eye offset 45 degrees
+            var eyev = Matrix.vector(0, M.sqrt(2) / 2, -M.sqrt(2) / 2);
+            var normalv = Matrix.vector(0, 0, -1);
+            var light = PointLight.of(Matrix.point(0, 0, -10), Color.rgb(1, 1, 1));
+            var result = m.lighting(light, position, eyev, normalv);
+            Assert.equals(result, Color.rgb(1.0, 1.0, 1.0));
+        }
+        {
+            // Lighting with the eye opposite surface, light offset 45 degrees
+            var eyev = Matrix.vector(0, 0, -1);
+            var normalv = Matrix.vector(0, 0, -1);
+            var light = PointLight.of(Matrix.point(0, 10, -10), Color.rgb(1, 1, 1));
+            var result = m.lighting(light, position, eyev, normalv);
+            Assert.less(Matrix.fromRGB(result.subtract(Color.rgb(0.7364, 0.7364, 0.7364))).magnitude(), 0.0001);
+        }
+        {
+            // Lighting with eye in the path of the reflection vector
+            var eyev = Matrix.vector(0, -M.sqrt(2) / 2, -M.sqrt(2) / 2);
+            var normalv = Matrix.vector(0, 0, -1);
+            var light = PointLight.of(Matrix.point(0, 10, -10), Color.rgb(1, 1, 1));
+            var result = m.lighting(light, position, eyev, normalv);
+            Assert.less(Matrix.fromRGB(result.subtract(Color.rgb(1.6364, 1.6364, 1.6364))).magnitude(), 0.0001);
+        }
+        {
+            // Lighting with the light behind the surface
+            var eyev = Matrix.vector(0, 0, -1);
+            var normalv = Matrix.vector(0, 0, -1);
+            var light = PointLight.of(Matrix.point(0, 0, 10), Color.rgb(1, 1, 1));
+            var result = m.lighting(light, position, eyev, normalv);
+            Assert.equals(result, Color.rgb(0.1, 0.1, 0.1));
         }
     }
 }

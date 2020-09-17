@@ -14,6 +14,7 @@ import crossj.TypedEq;
 import crossj.XError;
 import crossj.XIterable;
 import crossj.XIterator;
+import crossj.hacks.image.Color;
 import crossj.hacks.ray.gelim.DeterminantSolver;
 import crossj.hacks.ray.gelim.InverseMatrixSolver;
 
@@ -112,6 +113,20 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
      */
     public static Matrix zRotation(double r) {
         return withData(4, M.cos(r), -M.sin(r), 0, 0, M.sin(r), M.cos(r), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+
+    /**
+     * Creates a 3-element column vector of red, green and blue from a color
+     */
+    public static Matrix fromRGB(Color color) {
+        return tuple(color.r, color.g, color.b);
+    }
+
+    /**
+     * Creates a 4-element column vector of red, green, blue, alpha from a color
+     */
+    public static Matrix fromRGBA(Color color) {
+        return tuple(color.r, color.g, color.b, color.a);
     }
 
     /**
@@ -537,7 +552,7 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     public Matrix reflectAround(Matrix normal) {
         Assert.withMessage(this.isVector(), "Matrix.reflect requires this to be a normal");
         Assert.withMessage(normal.isVector(), "Matrix.reflect requires the 'normal' argument to be a vector");
-        return subtract(normal).scale(2 * dot(normal));
+        return subtract(normal.scale(2 * dot(normal)));
     }
 
     public String toString() {

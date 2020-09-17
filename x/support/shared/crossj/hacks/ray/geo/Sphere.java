@@ -6,6 +6,7 @@ import crossj.hacks.ray.Matrix;
 
 public final class Sphere {
     private Matrix transform;
+    private Material material = Material.getDefault();
 
     private Sphere(Matrix transform) {
         this.transform = transform;
@@ -30,6 +31,14 @@ public final class Sphere {
 
     public void setTransform(Matrix transform) {
         this.transform = transform;
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
     }
 
     public Intersections intersectRay(Ray ray) {
