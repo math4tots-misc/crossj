@@ -58,4 +58,22 @@ public final class Chapter06 {
             n.toString();
         }
     }
+
+    @Test
+    public static void reflect() {
+        {
+            // Reflecting a vector approaching at 45 degrees
+            var v = Matrix.vector(1, -1, 0);
+            var n = Matrix.vector(0, 1, 0);
+            var r = v.reflectAround(n);
+            Assert.equals(r, Matrix.vector(1, 1, 0));
+        }
+        {
+            // Reflecting a vector off a slanted surface
+            var v = Matrix.vector(0, -1, 0);
+            var n = Matrix.vector(M.sqrt(2)/2, M.sqrt(2)/2, 0);
+            var r = v.reflectAround(n);
+            Assert.equals(r, Matrix.vector(1, 0, 0));
+        }
+    }
 }

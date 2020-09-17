@@ -529,6 +529,17 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
                 getX() * b.getY() - getY() * b.getX());
     }
 
+    /**
+     * Reflects 'this' around the given 'normal' vector.
+     * Requires that both 'this' and 'normal' be vectors.
+     * Assumes that 'normal' is normalized.
+     */
+    public Matrix reflectAround(Matrix normal) {
+        Assert.withMessage(this.isVector(), "Matrix.reflect requires this to be a normal");
+        Assert.withMessage(normal.isVector(), "Matrix.reflect requires the 'normal' argument to be a vector");
+        return subtract(normal).scale(2 * dot(normal));
+    }
+
     public String toString() {
         if (isPoint()) {
             return "Matrix.newPoint(" + getX() + ", " + getY() + ", " + getZ() + ")";
