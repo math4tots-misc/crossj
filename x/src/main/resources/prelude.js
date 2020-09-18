@@ -1108,8 +1108,8 @@ $CJ['crossj.M'] = $LAZY(function () {
 });
 $CJ['crossj.Time'] = $LAZY(function() {
     class Time {
-        static now() {
-            return Date.now() / 1000 | 0;
+        static M$now() {
+            return Date.now() / 1000;
         }
     }
     return Time;

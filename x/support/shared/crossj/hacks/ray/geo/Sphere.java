@@ -7,6 +7,8 @@ import crossj.hacks.ray.Matrix;
 public final class Sphere {
     private Matrix transform;
     private Material material = Material.getDefault();
+    private Matrix transformInverse = null;
+    private Matrix transformInverseTranspose = null;
 
     private Sphere(Matrix transform) {
         this.transform = transform;
@@ -31,6 +33,22 @@ public final class Sphere {
 
     public void setTransform(Matrix transform) {
         this.transform = transform;
+        transformInverse = null;
+        transformInverseTranspose = null;
+    }
+
+    private Matrix getTransformInverse() {
+        if (transformInverse == null) {
+            transformInverse = transform.inverse();
+        }
+        return transformInverse;
+    }
+
+    private Matrix getTransformInverseTranspose() {
+        if (transformInverseTranspose == null) {
+            transformInverseTranspose = getTransformInverse().transpose();
+        }
+        return transformInverseTranspose;
     }
 
     public Material getMaterial() {
@@ -67,18 +85,16 @@ public final class Sphere {
     public Matrix normalAt(Matrix point) {
         Assert.withMessage(point.isPoint(), "Sphere.normalAt requires a point");
 
-        // return point.subtract(Matrix.point(0, 0, 0)).normalize();
-
         // objectPoint the given point but using a coordinate system where the given sphere
         // is unit size and centered on the origin
-        var objectPoint = transform.inverse().multiply(point);
+        var objectPoint = getTransformInverse().multiply(point);
 
         // objectNormal is the normal for the point objectPoint for the unit sphere at the
         // origin
         var objectNormal = objectPoint.subtract(Matrix.point(0, 0, 0));
 
         // worldNormal is objectNormal translated back into 'world coordinates'.
-        var worldNormal = transform.inverse().transpose().multiply(objectNormal).withW(0);
+        var worldNormal = getTransformInverseTranspose().multiply(objectNormal).withW(0);
 
         return worldNormal.normalize();
     }

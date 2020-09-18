@@ -1,6 +1,7 @@
 package crossj.hacks.ray.main.ch06;
 
 import crossj.IO;
+import crossj.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
@@ -24,6 +25,7 @@ public final class Main {
         var lightColor = Color.rgb(1, 1, 1);
         var light = PointLight.of(lightPosition, lightColor);
 
+        var start = Time.now();
         for (int y = 0; y < canvasPixels; y++) {
             var worldY = half - pixelSize * y;
             for (int x = 0; x < canvasPixels; x++) {
@@ -43,6 +45,10 @@ public final class Main {
                 }
             }
         }
+        var end = Time.now();
+        IO.println("start = " + start);
+        IO.println("end = " + end);
+        IO.println("Rendering took " + (end - start) + " seconds");
 
         IO.writeFileBytes("out/ray/ch06.bmp", canvas.toBMPBytes());
     }
