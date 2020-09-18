@@ -19,6 +19,9 @@ public final class Color implements AlmostEq<Color>, TypedEq<Color> {
 
     public static final Color WHITE = rgb(1, 1, 1);
     public static final Color BLACK = rgb(0, 0, 0);
+    public static final Color RED = rgb(1, 0, 0);
+    public static final Color GREEN = rgb(0, 1, 0);
+    public static final Color BLUE = rgb(0, 0, 1);
 
     public final double r;
     public final double g;
