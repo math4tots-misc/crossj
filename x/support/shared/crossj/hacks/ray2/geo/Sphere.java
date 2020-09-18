@@ -1,12 +1,11 @@
-package crossj.hacks.ray.geo;
+package crossj.hacks.ray2.geo;
 
 import crossj.Assert;
 import crossj.M;
 import crossj.hacks.ray.Matrix;
 
-public final class Sphere {
+public final class Sphere implements Surface {
     private Matrix transform;
-    private Material material = Material.getDefault();
     private Matrix transformInverse = null;
     private Matrix transformInverseTranspose = null;
 
@@ -51,14 +50,7 @@ public final class Sphere {
         return transformInverseTranspose;
     }
 
-    public Material getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Material material) {
-        this.material = material;
-    }
-
+    @Override
     public Intersections intersectRay(Ray ray) {
 
         Ray adjustedRay = ray.transform(transform.inverse());
@@ -74,24 +66,26 @@ public final class Sphere {
         } else {
             double t1 = (-b - M.sqrt(discriminant)) / (2 * a);
             double t2 = (-b + M.sqrt(discriminant)) / (2 * a);
-            return Intersections.of(Intersection.of(t1, this), Intersection.of(t2, this));
+            Matrix p1 = ray.position(t1);
+            Matrix p2 = ray.position(t2);
+            Matrix normal1 = normalAt(p1);
+            Matrix normal2 = normalAt(p2);
+            return Intersections.of(Intersection.of(t1, p1, normal1), Intersection.of(t2, p2, normal2));
         }
     }
 
     /**
-     * Returns the normal vector given a point on a sphere. Assumes that the given
-     * point is on the given sphere.
+     * Returns the normal vector given a point on a sphere.
+     * Assumes that the given point is on the given sphere.
      */
     public Matrix normalAt(Matrix point) {
         Assert.withMessage(point.isPoint(), "Sphere.normalAt requires a point");
 
-        // objectPoint the given point but using a coordinate system where the given
-        // sphere
+        // objectPoint the given point but using a coordinate system where the given sphere
         // is unit size and centered on the origin
         var objectPoint = getTransformInverse().multiply(point);
 
-        // objectNormal is the normal for the point objectPoint for the unit sphere at
-        // the
+        // objectNormal is the normal for the point objectPoint for the unit sphere at the
         // origin
         var objectNormal = objectPoint.subtract(Matrix.point(0, 0, 0));
 

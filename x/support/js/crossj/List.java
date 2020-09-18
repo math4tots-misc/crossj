@@ -44,6 +44,7 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     public native T reduce(Func2<T, T, T> f);
     public native boolean contains(T t);
     public native void add(T t);
+    public native void addAll(XIterable<T> t);
     public native T removeIndex(int i);
     public native void removeValue(T t);
 

@@ -1,4 +1,4 @@
-package crossj.hacks.ray2.main.ch04;
+package crossj.hacks.ray2.main.ch06;
 
 import crossj.IO;
 import crossj.Time;
@@ -6,10 +6,20 @@ import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray2.geo.Ray;
+import crossj.hacks.ray2.geo.Sphere;
 
-public final class Main {
+public final class Main1 {
+
+    private final static Sphere sphere = Sphere.withTransform(Matrix.scaling(0.5, 0.5, 0.5).thenTranslate(0, 0, -1));
 
     private static Color rayColor(Ray r) {
+        var intersections = sphere.intersectRay(r);
+        if (intersections.getHit().isPresent()) {
+            var hit = intersections.getHit().get();
+            var t = hit.getT();
+            var n = r.position(t).subtract(Matrix.vector(0, 0, -1));
+            return Color.rgb(n.getX() + 1, n.getY() + 1, n.getZ() + 1).scale(0.5);
+        }
         var unitDirection = r.getDirection().normalize();
         var t = 0.5 * (unitDirection.getY() + 1.0);
         return Color.rgb(1, 1, 1).scale(1.0 - t).add(Color.rgb(0.5, 0.7, 1).scale(t));
@@ -51,6 +61,6 @@ public final class Main {
         }
         var end = Time.now();
         IO.println("Finished render in " + (end - start) + " seconds");
-        IO.writeFileBytes("out/ray2/ch04.bmp", canvas.toBMPBytes());
+        IO.writeFileBytes("out/ray2/ch06-1.bmp", canvas.toBMPBytes());
     }
 }

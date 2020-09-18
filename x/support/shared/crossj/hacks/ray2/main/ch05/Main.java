@@ -5,8 +5,8 @@ import crossj.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
-import crossj.hacks.ray.geo.Ray;
-import crossj.hacks.ray.geo.Sphere;
+import crossj.hacks.ray2.geo.Ray;
+import crossj.hacks.ray2.geo.Sphere;
 
 public final class Main {
 

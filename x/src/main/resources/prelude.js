@@ -346,6 +346,9 @@ $CJ['crossj.List'] = $LAZY(function () {
         M$add(x) {
             this.arr.push(x);
         }
+        M$addAll(x) {
+            this.arr.push(...x);
+        }
         M$get(i) {
             return this.arr[i];
         }
