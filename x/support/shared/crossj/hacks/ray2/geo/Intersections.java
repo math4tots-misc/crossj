@@ -15,7 +15,8 @@ public final class Intersections implements XIterable<Intersection> {
         this.intersections = Tuple.sortedBy(intersections, (a, b) -> M.cmp(a.getT(), b.getT()));
         int hitIndex = -1;
         for (int i = 0; i < this.intersections.size(); i++) {
-            if (this.intersections.get(i).getT() > 0) {
+            // We use 0.0000000001 instead of 0 to avoid shadow acne
+            if (this.intersections.get(i).getT() > 0.0000000001) {
                 hitIndex = i;
                 break;
             }

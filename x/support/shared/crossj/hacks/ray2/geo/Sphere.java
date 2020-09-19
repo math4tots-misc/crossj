@@ -76,7 +76,7 @@ public final class Sphere implements Surface {
     @Override
     public Intersections intersectRay(Ray ray) {
 
-        Ray adjustedRay = ray.transform(transform.inverse());
+        Ray adjustedRay = ray.transform(getTransformInverse());
 
         // vector from the sphere's center, to the ray origin
         Matrix sphereToRay = adjustedRay.getOrigin().subtract(Matrix.point(0, 0, 0));

@@ -4,20 +4,8 @@ import crossj.Assert;
 import crossj.hacks.ray.Matrix;
 
 public final class Intersection {
-    /**
-     * The distance along the ray (potentially negative) where
-     * this intersectino happened
-     */
     private final double t;
-
-    /**
-     * The point where this intersection takes place
-     */
     private final Matrix point;
-
-    /**
-     * The normal of the surface where the intersection happened
-     */
     private final Matrix normal;
 
     private Intersection(double t, Matrix point, Matrix normal) {
@@ -32,14 +20,24 @@ public final class Intersection {
         return new Intersection(t, point, normal);
     }
 
+    /**
+     * The distance along the ray (potentially negative) where
+     * this intersectino happened
+     */
     public double getT() {
         return t;
     }
 
+    /**
+     * The point where this intersection takes place
+     */
     public Matrix getPoint() {
         return point;
     }
 
+    /**
+     * The normal vector of the surface where the intersection happened
+     */
     public Matrix getNormal() {
         return normal;
     }
