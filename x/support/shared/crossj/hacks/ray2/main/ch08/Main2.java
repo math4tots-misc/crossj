@@ -17,7 +17,15 @@ import crossj.hacks.ray2.geo.Surfaces;
 /**
  * Diffuse Materials
  */
-public final class Main {
+public final class Main2 {
+
+    private static Matrix randomUnitVectorForLambertian() {
+        var rng = Rand.getDefault();
+        var a = rng.nextDouble(0, M.TAU);
+        var z = rng.nextDouble(-1, 1);
+        var r = M.sqrt(1 - z * z);
+        return Matrix.vector(r * M.cos(a), r * M.sin(a), z);
+    }
 
     private static Color rayColor(Ray r, Surface world, int depth) {
 
@@ -33,7 +41,7 @@ public final class Main {
             var hit = intersections.getHit().get();
             var point = hit.getPoint();
             var normal = hit.getNormal();
-            var target = point.add(normal).add(Sphere.randomPointOnUnitSphere().withW(0));
+            var target = point.add(normal).add(randomUnitVectorForLambertian());
             return rayColor(Ray.of(point, target.subtract(point)), world, depth - 1).scale(0.5);
         }
 
@@ -85,6 +93,6 @@ public final class Main {
         }
         var end = Time.now();
         IO.println("Finished render in " + (end - start) + " seconds");
-        IO.writeFileBytes("out/ray2/ch08-1.bmp", canvas.toBMPBytes());
+        IO.writeFileBytes("out/ray2/ch08-2.bmp", canvas.toBMPBytes());
     }
 }
