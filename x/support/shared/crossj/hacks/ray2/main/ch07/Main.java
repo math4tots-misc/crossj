@@ -57,8 +57,8 @@ public final class Main {
 
                 var samples = List.<Color>of();
                 for (int s = 0; s < samplesPerPixel; s++) {
-                    var u = (i + rng.get()) / (imageWidth - 1);
-                    var v = (j + rng.get()) / (imageHeight - 1);
+                    var u = (i + rng.next()) / (imageWidth - 1);
+                    var v = (j + rng.next()) / (imageHeight - 1);
                     var r = camera.getRay(u, v);
                     samples.add(rayColor(r, world));
                 }
