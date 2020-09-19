@@ -1,23 +1,20 @@
-package crossj.hacks.ray2.geo;
+package crossj.hacks.ray3.geo;
 
-import crossj.Assert;
 import crossj.hacks.ray.Matrix;
 
-public final class Intersection {
+public final class Hit {
     private final double t;
     private final Matrix point;
     private final Matrix normal;
 
-    private Intersection(double t, Matrix point, Matrix normal) {
-        Assert.withMessage(point.isPoint(), "An intersection point must be a vector");
-        Assert.withMessage(normal.isVector(), "An intersection's normal must be a vector");
+    private Hit(double t, Matrix point, Matrix normal) {
         this.t = t;
         this.point = point;
         this.normal = normal;
     }
 
-    public static Intersection of(double t, Matrix point, Matrix normal) {
-        return new Intersection(t, point, normal);
+    public static Hit of(double t, Matrix point, Matrix normal) {
+        return new Hit(t, point, normal);
     }
 
     /**
@@ -40,10 +37,5 @@ public final class Intersection {
      */
     public Matrix getNormal() {
         return normal;
-    }
-
-    @Override
-    public String toString() {
-        return "Intersection.of(" + t + ", " + normal + ")";
     }
 }
