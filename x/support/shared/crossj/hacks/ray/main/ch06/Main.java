@@ -8,7 +8,7 @@ import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Material;
 import crossj.hacks.ray.geo.PointLight;
 import crossj.hacks.ray.geo.Ray;
-import crossj.hacks.ray.geo.Sphere;
+import crossj.hacks.ray.geo.DeprecatedSphere;
 
 public final class Main {
     public static void main(String[] args) {
@@ -19,7 +19,7 @@ public final class Main {
         var pixelSize = wallSize / canvasPixels;
         var half = wallSize / 2;
         var canvas = Bitmap.withDimensions(canvasPixels, canvasPixels);
-        var shape = Sphere.unit();
+        var shape = DeprecatedSphere.unit();
         shape.setMaterial(Material.getDefault().withColor(Color.rgb(1, 0.2, 1)));
         var lightPosition = Matrix.point(-10, 10, -10);
         var lightColor = Color.rgb(1, 1, 1);

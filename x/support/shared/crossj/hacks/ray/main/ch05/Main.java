@@ -5,7 +5,7 @@ import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Ray;
-import crossj.hacks.ray.geo.Sphere;
+import crossj.hacks.ray.geo.DeprecatedSphere;
 
 public final class Main {
     public static void main(String[] args) {
@@ -17,7 +17,7 @@ public final class Main {
         var half = wallSize / 2;
         var canvas = Bitmap.withDimensions(canvasPixels, canvasPixels);
         var color = Color.RED;
-        var shape = Sphere.unit();
+        var shape = DeprecatedSphere.unit();
 
         for (int y = 0; y < canvasPixels; y++) {
             var worldY = half - pixelSize * y;

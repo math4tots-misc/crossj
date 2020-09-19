@@ -114,8 +114,15 @@ public final class Main {
             CompilationUnit compilationUnit = parser.parseFile(filepath);
             StringBuilder sb = new StringBuilder();
             for (IProblem problem : compilationUnit.getProblems()) {
-                String filename = new String(problem.getOriginatingFileName());
-                sb.append("\nin " + filename + " on line " + problem.getSourceLineNumber() + ": " + problem);
+                if (problem.isError()) {
+                    String filename = new String(problem.getOriginatingFileName());
+                    sb.append("\nin " + filename + " on line " + problem.getSourceLineNumber() + ": " + problem);
+                } else {
+                    if (verbose) {
+                        String filename = new String(problem.getOriginatingFileName());
+                        IO.eprintln("in " + filename + " on line " + problem.getSourceLineNumber() + ": " + problem);
+                    }
+                }
             }
             String message = sb.toString();
             if (!message.isEmpty()) {

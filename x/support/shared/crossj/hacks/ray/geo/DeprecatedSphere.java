@@ -4,27 +4,28 @@ import crossj.Assert;
 import crossj.M;
 import crossj.hacks.ray.Matrix;
 
-public final class Sphere {
+// @Deprecated
+public final class DeprecatedSphere {
     private Matrix transform;
     private Material material = Material.getDefault();
     private Matrix transformInverse = null;
     private Matrix transformInverseTranspose = null;
 
-    private Sphere(Matrix transform) {
+    private DeprecatedSphere(Matrix transform) {
         this.transform = transform;
     }
 
     /**
      * Create a unit sphere centered at the origin
      */
-    public static Sphere unit() {
+    public static DeprecatedSphere unit() {
         return withTransform(Matrix.identity(4));
     }
 
-    public static Sphere withTransform(Matrix transform) {
+    public static DeprecatedSphere withTransform(Matrix transform) {
         Assert.withMessage(transform.getC() == 4 && transform.getR() == 4,
                 "Sphere.withTransform expects a 4x4 transformation matrix");
-        return new Sphere(transform);
+        return new DeprecatedSphere(transform);
     }
 
     public Matrix getTransform() {

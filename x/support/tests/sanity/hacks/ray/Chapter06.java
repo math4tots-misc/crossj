@@ -7,7 +7,7 @@ import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Material;
 import crossj.hacks.ray.geo.PointLight;
-import crossj.hacks.ray.geo.Sphere;
+import crossj.hacks.ray.geo.DeprecatedSphere;
 
 /**
  * Chapter 6: Light and Shading
@@ -17,44 +17,44 @@ public final class Chapter06 {
     public static void normals() {
         {
             // The normal on a sphere at a point on the x axis
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             var n = s.normalAt(Matrix.point(1, 0, 0));
             Assert.equals(n, Matrix.vector(1, 0, 0));
         }
         {
             // The normal on a sphere at a point on the y axis
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             var n = s.normalAt(Matrix.point(0, 1, 0));
             Assert.equals(n, Matrix.vector(0, 1, 0));
         }
         {
             // The normal on a sphere at a point on the z axis
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             var n = s.normalAt(Matrix.point(0, 0, 1));
             Assert.equals(n, Matrix.vector(0, 0, 1));
         }
         {
             // The normal on a sphere at a nonaxsial point
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             var n = s.normalAt(Matrix.point(M.sqrt(3) / 3, M.sqrt(3) / 3, M.sqrt(3) / 3));
             Assert.equals(n, Matrix.vector(M.sqrt(3) / 3, M.sqrt(3) / 3, M.sqrt(3) / 3));
         }
         {
             // The normal is a normalized vector
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             var n = s.normalAt(Matrix.point(M.sqrt(3) / 3, M.sqrt(3) / 3, M.sqrt(3) / 3));
             Assert.equals(n, n.normalize());
         }
         {
             // Computing the normal on a translated sphere
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             s.setTransform(Matrix.translation(0, 1, 0));
             var n = s.normalAt(Matrix.point(0, 1.70711, -0.70711));
             Assert.less(n.subtract(Matrix.vector(0, 0.70711, -0.70711)).magnitude(), 0.0001);
         }
         {
             // Computing the normal on a transformed sphere
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             var m = Matrix.scaling(1, 0.5, 1).multiply(Matrix.zRotation(M.TAU / 10));
             s.setTransform(m);
             var n = s.normalAt(Matrix.point(0, M.sqrt(2) / 2, -M.sqrt(2) / 2));
@@ -101,12 +101,12 @@ public final class Chapter06 {
         }
         {
             // A sphere has a default material
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             Assert.equals(s.getMaterial(), Material.getDefault());
         }
         {
             // A sphere may be assigned a material
-            var s = Sphere.unit();
+            var s = DeprecatedSphere.unit();
             var m = Material.getDefault();
             m = m.withAmbient(1);
             s.setMaterial(m);
