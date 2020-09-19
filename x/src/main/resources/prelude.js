@@ -1122,6 +1122,10 @@ $CJ['crossj.M'] = $LAZY(function () {
         static M$atan2(y, x) {
             return Math.atan2(y, x);
         }
+
+        static M$ln(x) {
+            return Math.log(x);
+        }
     };
     return M;
 });

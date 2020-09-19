@@ -52,4 +52,6 @@ public final class M {
     public static native double atan(double x);
 
     public static native double atan2(double y, double x);
+
+    public static native double ln(double x);
 }

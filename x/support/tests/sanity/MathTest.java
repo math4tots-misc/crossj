@@ -48,4 +48,10 @@ public final class MathTest {
         Assert.equals(M.round(3.5), 4.0);
         Assert.equals(M.round(3.4), 3.0);
     }
+
+    @Test
+    public static void log() {
+        Assert.equals(M.ln(M.E), 1.0);
+        Assert.equals(M.ln(M.E * M.E), 2.0);
+    }
 }

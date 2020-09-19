@@ -106,4 +106,8 @@ public final class M {
     public static double atan2(double y, double x) {
         return Math.atan2(y, x);
     }
+
+    public static double ln(double x) {
+        return Math.log(x);
+    }
 }
