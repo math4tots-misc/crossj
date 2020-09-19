@@ -4,6 +4,8 @@ public final class IO {
     private IO() {}
     public static native void println(Object object);
     public static native void eprintln(Object object);
+    public static native void print(Object object);
+    public static native void eprint(Object object);
     public static native String join(String... parts);
 
     /** basically '\\' on windows, '/' everywhere else */

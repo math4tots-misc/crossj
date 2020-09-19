@@ -234,6 +234,12 @@ $CJ['crossj.IO'] = $LAZY(function () {
         static M$eprintln(x) {
             console.error(x);
         }
+        static M$print(x) {
+            process.stdout.write('' + x);
+        }
+        static M$eprint(x) {
+            process.stderr.write('' + x);
+        }
         static M$separator() {
             return require('path').sep;
         }
@@ -978,6 +984,16 @@ $CJ['crossj.ImplChar'] = $LAZY(function() {
         }
     };
 })
+$CJ['crossj.RandImpl'] = $LAZY(function() {
+    return class RandImpl {
+        static M$getDefault() {
+            return new RandImpl();
+        }
+        M$nextDouble() {
+            return Math.random();
+        }
+    }
+});
 $CJ['java.lang.Integer'] = $LAZY(function () {
     return class Integer {
         static M$valueOf(x) {
