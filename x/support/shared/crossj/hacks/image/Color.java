@@ -4,6 +4,7 @@ import crossj.AlmostEq;
 import crossj.Eq;
 import crossj.List;
 import crossj.TypedEq;
+import crossj.XIterable;
 
 /**
  * Color data
@@ -46,6 +47,25 @@ public final class Color implements AlmostEq<Color>, TypedEq<Color> {
     public static Color fromI32RGBA(int rgba) {
         List<Double> channels = splitIntoDouble(rgba);
         return of(channels.get(0), channels.get(1), channels.get(2), channels.get(3));
+    }
+
+    /**
+     * Creates a color by average all channels of the given colors
+     */
+    public static Color join(XIterable<Color> colors) {
+        double r = 0;
+        double g = 0;
+        double b = 0;
+        double a = 0;
+        int total = 0;
+        for (var color : colors) {
+            total++;
+            r += color.r;
+            g += color.g;
+            b += color.b;
+            a += color.a;
+        }
+        return of(r / total, g / total, b / total, a / total);
     }
 
     public Color add(Color other) {
