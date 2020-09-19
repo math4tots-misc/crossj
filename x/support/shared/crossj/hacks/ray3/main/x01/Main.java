@@ -1,7 +1,6 @@
 package crossj.hacks.ray3.main.x01;
 
 import crossj.IO;
-import crossj.List;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
