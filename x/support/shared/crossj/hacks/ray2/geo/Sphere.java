@@ -2,6 +2,7 @@ package crossj.hacks.ray2.geo;
 
 import crossj.Assert;
 import crossj.M;
+import crossj.Rand;
 import crossj.hacks.ray.Matrix;
 
 public final class Sphere implements Surface {
@@ -20,6 +21,9 @@ public final class Sphere implements Surface {
         return withTransform(Matrix.identity(4));
     }
 
+    /**
+     * Returns a the surface created by applying the given transform to a unit sphere.
+     */
     public static Sphere withTransform(Matrix transform) {
         Assert.withMessage(transform.getC() == 4 && transform.getR() == 4,
                 "Sphere.withTransform expects a 4x4 transformation matrix");
@@ -48,6 +52,25 @@ public final class Sphere implements Surface {
             transformInverseTranspose = getTransformInverse().transpose();
         }
         return transformInverseTranspose;
+    }
+
+    /**
+     * Select a random point from a unit sphere
+     */
+    public static Matrix randomPointOnUnitSphere() {
+        var rng = Rand.getDefault();
+        var x = rng.nextGaussian();
+        var y = rng.nextGaussian();
+        var z = rng.nextGaussian();
+        var len = M.sqrt(x * x + y * y + z * z);
+        return Matrix.point(x / len, y / len, z / len);
+    }
+
+    /**
+     * Select a random point from this sphere
+     */
+    public Matrix getRandomPoint() {
+        return transform.multiply(randomPointOnUnitSphere());
     }
 
     @Override

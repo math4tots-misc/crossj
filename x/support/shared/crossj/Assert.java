@@ -61,6 +61,13 @@ public final class Assert {
         }
     }
 
+    public static <A extends Comparable<B>, B extends Comparable<C>, C> void order(A a, B b, C c) {
+        if (!(a.compareTo(b) <= 0 && b.compareTo(c) <= 0)) {
+            throw XError.withMessage(
+                    "Assertion failed, expected " + Repr.of(a) + " <= " + Repr.of(b) + " <= " + Repr.of(c));
+        }
+    }
+
     public static void divides(int divisor, int dividend) {
         if (dividend % divisor != 0) {
             throw XError
