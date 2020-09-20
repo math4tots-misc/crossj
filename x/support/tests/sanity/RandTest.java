@@ -39,7 +39,7 @@ public final class RandTest {
         }
         double ratio = ((double) std1) / total;
         // we expect the ratio to be ~68%.
-        Assert.less(0.58, ratio);
-        Assert.less(ratio, 0.78);
+        Assert.less(0.53, ratio);
+        Assert.less(ratio, 0.83);
     }
 }

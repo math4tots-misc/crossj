@@ -116,6 +116,34 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     /**
+     * Computes a 4x4 rotation matrix around a given axis
+     *
+     * @param origin a point on the axis of rotation
+     * @param vector a vector indicating the direction of the axis from the origin
+     * @param r      angle to rotate in radians
+     * @return the matrix describing the rotation
+     */
+    public static Matrix rotation(Matrix origin, Matrix vector, double r) {
+        Assert.withMessage(origin.isPoint(), "Matrix.rotation requires the 'origin' argument to  be a point");
+        Assert.withMessage(vector.isVector(), "Matrix.rotation requires the 'vector' argument to be a vector");
+        vector = vector.normalize();
+        var toOrigin = translation(-origin.getX(), -origin.getY(), -origin.getZ());
+        var fromOrigin = translation(origin.getX(), origin.getY(), origin.getZ());
+        var cosR = M.cos(r);
+        var sinR = M.sin(r);
+        var x = vector.getX();
+        var y = vector.getY();
+        var z = vector.getZ();
+        // The rotation assuming 'origin' is (0, 0, 0)
+        // from https://en.wikipedia.org/wiki/Rotation_matrix
+        var coreRotation = withData(4, cosR + x * x * (1 - cosR), x * y * (1 - cosR) - z * sinR,
+                x * z * (1 - cosR) + y * sinR, 0, y * x * (1 - cosR) + z * sinR, cosR + y * y * (1 - cosR),
+                y * z * (1 - cosR) - x * sinR, 0, z * x * (1 - cosR) - y * sinR, z * y * (1 - cosR) + x * sinR,
+                cosR + z * z * (1 - cosR), 0, 0, 0, 0, 1);
+        return fromOrigin.multiply(coreRotation).multiply(toOrigin);
+    }
+
+    /**
      * Creates a 3-element column vector of red, green and blue from a color
      */
     public static Matrix fromRGB(Color color) {
@@ -184,9 +212,10 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     /**
-     * Given n pairs of column vectors (v[i], w[i]), where v[i], w[i] are vectors in R^n
-     * returns the linear transformation T such that T(v[i]) = w[i] for all i.
+     * Given n pairs of column vectors (v[i], w[i]), where v[i], w[i] are vectors in
+     * R^n returns the linear transformation T such that T(v[i]) = w[i] for all i.
      * TODO: generalize to non-square dimensions, and varying input length
+     *
      * @param pairs
      * @return
      */
@@ -298,8 +327,8 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     /**
-     * Returns a copy of this matrix except with the (0, 0)
-     * coordinate replaced with the given value
+     * Returns a copy of this matrix except with the (0, 0) coordinate replaced with
+     * the given value
      */
     public Matrix withX(double newX) {
         Matrix ret = clone();
@@ -308,8 +337,8 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     /**
-     * Returns a copy of this matrix except with the (1, 0)
-     * coordinate replaced with the given value
+     * Returns a copy of this matrix except with the (1, 0) coordinate replaced with
+     * the given value
      */
     public Matrix withY(double newY) {
         Matrix ret = clone();
@@ -318,8 +347,8 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     /**
-     * Returns a copy of this matrix except with the (2, 0)
-     * coordinate replaced with the given value
+     * Returns a copy of this matrix except with the (2, 0) coordinate replaced with
+     * the given value
      */
     public Matrix withZ(double newZ) {
         Matrix ret = clone();
@@ -328,8 +357,8 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     /**
-     * Returns a copy of this matrix except with the (3, 0)
-     * coordinate replaced with the given value
+     * Returns a copy of this matrix except with the (3, 0) coordinate replaced with
+     * the given value
      */
     public Matrix withW(double newW) {
         Matrix ret = clone();
@@ -468,40 +497,40 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     /**
-     * Part of a fluent interface for creating transformation matrices.
-     * Returns a new transform that will apply the given translation after applying this.
+     * Part of a fluent interface for creating transformation matrices. Returns a
+     * new transform that will apply the given translation after applying this.
      */
     public Matrix thenTranslate(double x, double y, double z) {
         return translation(x, y, z).multiply(this);
     }
 
     /**
-     * Part of a fluent interface for creating transformation matrices.
-     * Returns a new transform that will apply the given scaling after applying this.
+     * Part of a fluent interface for creating transformation matrices. Returns a
+     * new transform that will apply the given scaling after applying this.
      */
     public Matrix thenScale(double x, double y, double z) {
         return scaling(x, y, z).multiply(this);
     }
 
     /**
-     * Part of a fluent interface for creating transformation matrices.
-     * Returns a new transform that will apply the given rotation after applying this.
+     * Part of a fluent interface for creating transformation matrices. Returns a
+     * new transform that will apply the given rotation after applying this.
      */
     public Matrix thenRotateX(double r) {
         return xRotation(r).multiply(this);
     }
 
     /**
-     * Part of a fluent interface for creating transformation matrices.
-     * Returns a new transform that will apply the given rotation after applying this.
+     * Part of a fluent interface for creating transformation matrices. Returns a
+     * new transform that will apply the given rotation after applying this.
      */
     public Matrix thenRotateY(double r) {
         return yRotation(r).multiply(this);
     }
 
     /**
-     * Part of a fluent interface for creating transformation matrices.
-     * Returns a new transform that will apply the given rotation after applying this.
+     * Part of a fluent interface for creating transformation matrices. Returns a
+     * new transform that will apply the given rotation after applying this.
      */
     public Matrix thenRotateZ(double r) {
         return zRotation(r).multiply(this);
@@ -511,11 +540,15 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
      * Euclidean norm taking this matrix as a member of (R x C) Euclidean space
      */
     public double magnitude() {
+        return M.pow(magnitudeSquared(), 0.5);
+    }
+
+    public double magnitudeSquared() {
         double ret = 0;
         for (double value : data) {
             ret += value * value;
         }
-        return M.pow(ret, 0.5);
+        return ret;
     }
 
     /**
@@ -545,9 +578,8 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     /**
-     * Reflects 'this' around the given 'normal' vector.
-     * Requires that both 'this' and 'normal' be vectors.
-     * Assumes that 'normal' is normalized.
+     * Reflects 'this' around the given 'normal' vector. Requires that both 'this'
+     * and 'normal' be vectors. Assumes that 'normal' is normalized.
      */
     public Matrix reflectAround(Matrix normal) {
         Assert.withMessage(this.isVector(), "Matrix.reflect requires this to be a normal");
