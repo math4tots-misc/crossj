@@ -1034,6 +1034,7 @@ $CJ['crossj.M'] = $LAZY(function () {
         static F$E = Math.E;
         static F$PI = Math.PI;
         static F$TAU = Math.PI * 2;
+        static F$INFINITY = Infinity;
 
         static M$max(...values) {
             return Math.max(...values);

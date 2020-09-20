@@ -4,22 +4,27 @@ import crossj.Assert;
 import crossj.M;
 import crossj.Optional;
 import crossj.Rand;
+import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
 
 public final class Sphere implements Surface {
-    private Matrix transform;
+    private static final Matrix DEFAULT_TRANSFORM = Matrix.identity(4);
+    private static final Material DEFAULT_MATERIAL = Lambertian.withColor(Color.rgb(0.5, 0.5, 0.5));
+    private final Matrix transform;
     private Matrix transformInverse = null;
     private Matrix transformInverseTranspose = null;
+    private final Material material;
 
-    private Sphere(Matrix transform) {
+    private Sphere(Matrix transform, Material material) {
         this.transform = transform;
+        this.material = material;
     }
 
     /**
      * Create a unit sphere centered at the origin
      */
     public static Sphere unit() {
-        return withTransform(Matrix.identity(4));
+        return withTransform(DEFAULT_TRANSFORM);
     }
 
     /**
@@ -28,17 +33,25 @@ public final class Sphere implements Surface {
     public static Sphere withTransform(Matrix transform) {
         Assert.withMessage(transform.getC() == 4 && transform.getR() == 4,
                 "Sphere.withTransform expects a 4x4 transformation matrix");
-        return new Sphere(transform);
+        return new Sphere(transform, DEFAULT_MATERIAL);
+    }
+
+    /**
+     * Returns a unit sphere with the given material
+     */
+    public static Sphere withMaterial(Material material) {
+        return new Sphere(DEFAULT_TRANSFORM, material);
+    }
+
+    /**
+     * Returns a copy of this sphere with the given transform applied
+     */
+    public Sphere andTransform(Matrix transform) {
+        return new Sphere(transform.multiply(this.transform), material);
     }
 
     public Matrix getTransform() {
         return transform;
-    }
-
-    public void setTransform(Matrix transform) {
-        this.transform = transform;
-        transformInverse = null;
-        transformInverseTranspose = null;
     }
 
     private Matrix getTransformInverse() {
@@ -55,16 +68,24 @@ public final class Sphere implements Surface {
         return transformInverseTranspose;
     }
 
+    public Material getMaterial() {
+        return material;
+    }
+
     /**
      * Select a random point from a unit sphere
      */
     public static Matrix randomPointOnUnitSphere() {
+        return randomUnitVector().withW(1);
+    }
+
+    public static Matrix randomUnitVector() {
         var rng = Rand.getDefault();
         var x = rng.nextGaussian();
         var y = rng.nextGaussian();
         var z = rng.nextGaussian();
         var len = M.sqrt(x * x + y * y + z * z);
-        return Matrix.point(x / len, y / len, z / len);
+        return Matrix.vector(x / len, y / len, z / len);
     }
 
     /**
@@ -103,7 +124,7 @@ public final class Sphere implements Surface {
             Matrix p = ray.position(t);
             Matrix normal = normalAt(p);
 
-            return Optional.of(Hit.of(t, p, normal));
+            return Optional.of(Hit.of(ray, t, p, normal, material));
         }
     }
 

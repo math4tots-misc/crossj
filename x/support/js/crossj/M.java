@@ -10,6 +10,7 @@ public final class M {
     public static final double E = 2.718281828459045;
     public static final double PI = 3.14159265358979323846;
     public static final double TAU = PI * 2;
+    public static final double INFINITY = 1.0 / 0.0;
 
     public static native double max(double value, double... values);
 

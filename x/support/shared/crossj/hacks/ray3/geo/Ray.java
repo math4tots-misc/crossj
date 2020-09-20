@@ -34,4 +34,9 @@ public final class Ray {
     public Ray transform(Matrix t) {
         return Ray.of(t.multiply(origin), t.multiply(direction));
     }
+
+    @Override
+    public String toString() {
+        return "Ray.of(" + origin + ", " + direction + ")";
+    }
 }

@@ -10,6 +10,7 @@ public final class M {
     public static final double E = Math.E;
     public static final double PI = Math.PI;
     public static final double TAU = PI * 2;
+    public static final double INFINITY = Double.POSITIVE_INFINITY;
 
     public static double max(double value, double... values) {
         for (double x : values) {
