@@ -1,4 +1,4 @@
-package crossj.hacks.ray3.main.x04;
+package crossj.hacks.ray3.main.x05;
 
 import crossj.IO;
 import crossj.M;
@@ -13,7 +13,11 @@ import crossj.hacks.ray3.geo.Sphere;
 import crossj.hacks.ray3.geo.Surface;
 import crossj.hacks.ray3.geo.Surfaces;
 import crossj.hacks.ray3.material.Lambertian;
+import crossj.hacks.ray3.material.Metal;
 
+/**
+ * Metals
+ */
 public final class Main {
     public static void main(String[] args) {
         var samplesPerPixel = 20;
@@ -27,7 +31,11 @@ public final class Main {
         var camera = Camera.getDefault();
         var world = Surfaces.of(
                 Sphere.withMaterial(Lambertian.withColor(Color.rgb(0.2, 0.2, 0.4)))
-                        .andTransform(Matrix.scaling(0.5, 0.5, 0.5).thenTranslate(0, 0, -1)),
+                        .andTransform(Matrix.scaling(0.5, 0.5, 0.5).thenTranslate(0, 0, -1.5)),
+                Sphere.withMaterial(Metal.withColor(Color.rgb(0.5, 0.5, 0.5)))
+                    .andTransform(Matrix.scaling(0.5, 0.5, 0.5).thenTranslate(-1.5, 0, -1)),
+                    Sphere.withMaterial(Metal.withColor(Color.rgb(0.5, 0.2, 0.2)).andFuzz(0.3))
+                        .andTransform(Matrix.scaling(0.5, 0.5, 0.5).thenTranslate(1.5, 0, -1.2)),
                 Sphere.withTransform(Matrix.scaling(100, 100, 100).thenTranslate(0, -100.5, -1)));
 
         var lastUpdate = -1.0;
@@ -71,7 +79,7 @@ public final class Main {
         var end = Time.now();
         IO.println("Render finished in " + (end - start) + " seconds");
 
-        IO.writeFileBytes("out/ray3/x04.bmp", canvas.toBMPBytes());
+        IO.writeFileBytes("out/ray3/x05.bmp", canvas.toBMPBytes());
     }
 
     public static Color rayColor(Ray ray, Surface world, int depth) {
@@ -82,7 +90,7 @@ public final class Main {
 
         var totalAttenuation = Color.WHITE;
 
-        while (tryHit.isPresent() && depth > 0) {
+        while (tryHit.isPresent() && depth > 0 && totalAttenuation.rgb2Norm2() > 0.00001) {
             var hit = tryHit.get();
             var pair = hit.scatter();
             var colorAttenuation = pair.get1();

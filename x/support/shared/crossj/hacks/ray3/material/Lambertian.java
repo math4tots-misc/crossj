@@ -1,8 +1,10 @@
-package crossj.hacks.ray3.geo;
+package crossj.hacks.ray3.material;
 
 import crossj.Pair;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray3.geo.Ray;
+import crossj.hacks.ray3.geo.Sphere;
 
 public final class Lambertian implements Material {
     private final Color albedo;

@@ -88,6 +88,13 @@ public final class Color implements AlmostEq<Color>, TypedEq<Color> {
         return of(r * other.r, g * other.g, b * other.b, a * other.a);
     }
 
+    /**
+     * Treat (r, g, b) as a vector in R^3, and get the 2-norm squared
+     */
+    public double rgb2Norm2() {
+        return r * r + g * g + b * b;
+    }
+
     public int toI32RGBA() {
         return combineFloats(r, g, b, a);
     }
