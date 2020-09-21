@@ -1,6 +1,7 @@
 package sanity.iter;
 
 import crossj.Assert;
+import crossj.List;
 import crossj.Tuple;
 import crossj.Test;
 
@@ -12,9 +13,23 @@ public final class TupleTest {
     }
 
     @Test
-    public static void fromIterable() {
+    public static void fromIterableWithTuple() {
         Tuple<Integer> a = Tuple.of(1, 2, 3);
         Tuple<Integer> b = Tuple.fromIterable(a);
+
+        // Tuple.fromIterable will just return the original iterable if the iterable
+        // is a Tuple.
+        Assert.that(a == b);
+
+        Assert.equals(a, b);
+    }
+
+    @Test
+    public static void fromIterableWithList() {
+        List<Integer> ints = List.of(1, 2, 3);
+        Tuple<Integer> a = Tuple.fromIterable(ints);
+        Tuple<Integer> b = Tuple.fromIterable(ints);
+
         Assert.that(a != b);
         Assert.equals(a, b);
     }

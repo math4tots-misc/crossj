@@ -229,10 +229,10 @@ $CJ['crossj.XError'] = $LAZY(function () {
 $CJ['crossj.IO'] = $LAZY(function () {
     return class IO {
         static M$println(x) {
-            console.log(x);
+            console.log('' + x);
         }
         static M$eprintln(x) {
-            console.error(x);
+            console.error('' + x);
         }
         static M$print(x) {
             process.stdout.write('' + x);

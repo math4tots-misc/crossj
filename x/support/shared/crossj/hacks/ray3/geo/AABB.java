@@ -1,8 +1,9 @@
 package crossj.hacks.ray3.geo;
 
 import crossj.Assert;
-import crossj.IO;
 import crossj.M;
+import crossj.Tuple;
+import crossj.XIterable;
 import crossj.hacks.ray.Matrix;
 
 /**
@@ -22,14 +23,37 @@ public final class AABB {
                 Matrix.point(M.max(x1, x2), M.max(y1, y2), M.max(z1, z2)));
     }
 
-    public static AABB withPoints(Matrix p1, Matrix p2) {
-        Assert.withMessage(p1.isPoint(), "AABB.withPoints p1 arg must be a point");
-        Assert.withMessage(p2.isPoint(), "AABB.withPoints p2 arg must be a point");
-        return withCoordinates(p1.getX(), p1.getY(), p1.getZ(), p2.getX(), p2.getY(), p2.getZ());
+    public static AABB withPoints(Matrix... pts) {
+        return fromPoints(Tuple.fromJavaArray(pts));
     }
 
     /**
-     * Alias for <code>this.hitInRange(ray, Surface.DEFAULT_T_MIN, Surface.DEFAULT_T_MAX)</code>
+     * Returns the smallest axis aligned bounding box containing all the given
+     * points
+     */
+    public static AABB fromPoints(XIterable<Matrix> points) {
+        var pts = Tuple.fromIterable(points);
+        var xmin = pts.get(0).getX();
+        var xmax = xmin;
+        var ymin = pts.get(0).getY();
+        var ymax = ymin;
+        var zmin = pts.get(0).getZ();
+        var zmax = zmin;
+        for (var point : pts) {
+            Assert.withMessage(point.isPoint(), "AABB.fromPoints expects every entry in points to be a Point");
+            xmin = M.min(xmin, point.getX());
+            xmax = M.max(xmax, point.getX());
+            ymin = M.min(ymin, point.getY());
+            ymax = M.max(ymax, point.getY());
+            zmin = M.min(zmin, point.getZ());
+            zmax = M.max(zmax, point.getZ());
+        }
+        return withCoordinates(xmin, ymin, zmin, xmax, ymax, zmax);
+    }
+
+    /**
+     * Alias for
+     * <code>this.hitInRange(ray, Surface.DEFAULT_T_MIN, Surface.DEFAULT_T_MAX)</code>
      */
     public boolean hit(Ray ray) {
         return hitInRange(ray, Surface.DEFAULT_T_MIN, Surface.DEFAULT_T_MAX);
@@ -58,5 +82,10 @@ public final class AABB {
             }
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "AABB.withPoints(" + min + ", " + max + ")";
     }
 }

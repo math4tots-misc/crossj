@@ -34,7 +34,11 @@ public final class Tuple<T> implements XIterable<T>, Comparable<Tuple<T>>, Typed
     }
 
     public static <T> Tuple<T> fromIterable(XIterable<T> iterable) {
-        return fromList(List.fromIterable(iterable));
+        if (iterable instanceof Tuple<?>) {
+            return ((Tuple<T>) iterable);
+        } else {
+            return fromList(List.fromIterable(iterable));
+        }
     }
 
     public static <T> Tuple<T> reversed(XIterable<T> iterable) {

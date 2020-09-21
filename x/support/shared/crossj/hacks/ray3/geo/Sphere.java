@@ -1,6 +1,7 @@
 package crossj.hacks.ray3.geo;
 
 import crossj.Assert;
+import crossj.List;
 import crossj.M;
 import crossj.Optional;
 import crossj.Rand;
@@ -16,6 +17,7 @@ public final class Sphere implements Surface {
     private Matrix transformInverse = null;
     private Matrix transformInverseTranspose = null;
     private final Material material;
+    private AABB box = null;
 
     private Sphere(Matrix transform, Material material) {
         this.transform = transform;
@@ -72,6 +74,22 @@ public final class Sphere implements Surface {
 
     public Material getMaterial() {
         return material;
+    }
+
+    @Override
+    public Optional<AABB> getBoundingBox() {
+        if (box == null) {
+            var pts = List.<Matrix>of();
+            for (double x = -1; x <= 1; x += 2) {
+                for (double y = -1; y <= 1; y += 2) {
+                    for (double z = -1; z <= 1; z += 2) {
+                        pts.add(transform.multiply(Matrix.point(x, y, z)));
+                    }
+                }
+            }
+            box = AABB.fromPoints(pts);
+        }
+        return Optional.of(box);
     }
 
     /**
