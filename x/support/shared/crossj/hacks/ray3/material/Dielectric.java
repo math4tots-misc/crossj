@@ -89,14 +89,13 @@ public final class Dielectric implements Material {
     }
 
     /**
-     * Schlick's approximation for the reflection coefficient.
-     *
-     * See: https://en.wikipedia.org/wiki/Schlick%27s_approximation
+     * Schlick's approximation, as described here:
+     * https://raytracing.github.io/books/RayTracingInOneWeekend.html#dielectrics/schlickapproximation
      */
     private static double schlick(double n1, double n2, double cosTheta) {
         var sqrtR0 = (n1 - n2) / (n1 + n2);
         var r0 = sqrtR0 * sqrtR0;
-        return r0 + (1 - r0) * (1 - cosTheta);
+        return r0 + (1 - r0) * M.pow(1 - cosTheta, 5);
     }
 
     public double getRefractiveIndex() {

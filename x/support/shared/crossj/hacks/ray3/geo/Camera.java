@@ -1,5 +1,7 @@
 package crossj.hacks.ray3.geo;
 
+import crossj.Assert;
+import crossj.M;
 import crossj.hacks.ray.Matrix;
 
 /**
@@ -7,6 +9,7 @@ import crossj.hacks.ray.Matrix;
  * https://raytracing.github.io/books/RayTracingInOneWeekend.html
  */
 public final class Camera {
+    public static final double DEFAULT_FIELD_OF_VIEW = M.TAU / 4;
     public static final double DEFAULT_ASPECT_RATIO = 16.0 / 9.0;
 
     private Matrix origin;
@@ -14,24 +17,41 @@ public final class Camera {
     private Matrix horizontal;
     private Matrix vertical;
 
-    private Camera() {
-        var aspectRatio = DEFAULT_ASPECT_RATIO;
-        var viewportHeight = 2.0;
+    private Camera(Matrix lookFrom, Matrix lookAt, Matrix viewUp, double vfov, double aspectRatio) {
+        Assert.withMessage(lookFrom.isPoint(), "Camera requires 'lookFrom' to be a point");
+        Assert.withMessage(lookAt.isPoint(), "Camera requires 'lookAt' to be a point");
+        Assert.withMessage(viewUp.isVector(), "Camera requires 'viewUp' to be a vector");
+        var h = M.tan(vfov / 2);
+        var viewportHeight = 2.0 * h;
         var viewportWidth = aspectRatio * viewportHeight;
-        var focalLength = 1.0;
 
-        origin = Matrix.point(0, 0, 0);
-        horizontal = Matrix.vector(viewportWidth, 0, 0);
-        vertical = Matrix.vector(0, viewportHeight, 0);
-        lowerLeftCorner = origin.subtract(horizontal.scale(0.5)).subtract(vertical.scale(0.5))
-                .subtract(Matrix.vector(0, 0, focalLength));
+        var w = lookFrom.subtract(lookAt).normalize();
+        var u = viewUp.cross(w).normalize();
+        var v = w.cross(u);
+
+        origin = lookFrom;
+        horizontal = u.scale(viewportWidth);
+        vertical = v.scale(viewportHeight);
+        lowerLeftCorner = origin.subtract(horizontal.scale(0.5)).subtract(vertical.scale(0.5)).subtract(w);
     }
 
     /**
      * Returns the default camera centered at the origin facing the negative z-axis.
      */
     public static Camera getDefault() {
-        return new Camera();
+        return new Camera(Matrix.point(0, 0, 0), Matrix.point(0, 0, -1), Matrix.vector(0, 1, 0), DEFAULT_FIELD_OF_VIEW,
+                DEFAULT_ASPECT_RATIO);
+    }
+
+    /**
+     * @param lookFrom    point indicating where the camera should look from
+     * @param lookAt      point where this camera is looking at
+     * @param viewUp      vector indicating which direction is up
+     * @param vfov        vertical field of view in radians
+     * @param aspectRatio
+     */
+    public static Camera of(Matrix lookFrom, Matrix lookAt, Matrix viewUp, double vfov, double aspectRatio) {
+        return new Camera(lookFrom, lookAt, viewUp, vfov, aspectRatio);
     }
 
     public Matrix getOrigin() {
@@ -51,7 +71,9 @@ public final class Camera {
     }
 
     /**
-     * Gets the ray for the camera at the given horizontal and vertical points on the viewport.
+     * Gets the ray for the camera at the given horizontal and vertical points on
+     * the viewport.
+     *
      * @param u horizontal scale of the viewport (between 0 and 1)
      * @param v vertical scale of the viewport (between 0 and 1)
      */
