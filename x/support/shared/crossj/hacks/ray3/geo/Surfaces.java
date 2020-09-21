@@ -1,5 +1,6 @@
 package crossj.hacks.ray3.geo;
 
+import crossj.List;
 import crossj.Optional;
 import crossj.Tuple;
 import crossj.XIterable;
@@ -7,6 +8,7 @@ import crossj.XIterator;
 
 public final class Surfaces implements Surface, XIterable<Surface> {
     private final Tuple<Surface> tuple;
+    private Optional<AABB> box = null;
 
     private Surfaces(Tuple<Surface> tuple) {
         this.tuple = tuple;
@@ -35,5 +37,26 @@ public final class Surfaces implements Surface, XIterable<Surface> {
             }
         }
         return bestHit;
+    }
+
+    @Override
+    public Optional<AABB> getBoundingBox() {
+        if (box == null) {
+            if (tuple.size() == 0) {
+                box = Optional.empty();
+            } else {
+                List<AABB> boxes = List.of();
+                for (var s : tuple) {
+                    var b = s.getBoundingBox();
+                    if (b.isEmpty()) {
+                        box = Optional.empty();
+                        return box;
+                    }
+                    boxes.add(b.get());
+                }
+                box = Optional.of(AABB.join(boxes));
+            }
+        }
+        return box;
     }
 }

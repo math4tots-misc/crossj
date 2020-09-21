@@ -1,6 +1,7 @@
 package crossj.hacks.ray3.geo;
 
 import crossj.Assert;
+import crossj.List;
 import crossj.M;
 import crossj.Tuple;
 import crossj.XIterable;
@@ -25,6 +26,13 @@ public final class AABB {
 
     public static AABB withPoints(Matrix... pts) {
         return fromPoints(Tuple.fromJavaArray(pts));
+    }
+
+    /**
+     * Create a new AABB that surrounds all the given AABBs.
+     */
+    public static AABB join(XIterable<AABB> aabbs) {
+        return fromPoints(aabbs.iter().flatMap(aabb -> List.of(aabb.min, aabb.max)));
     }
 
     /**

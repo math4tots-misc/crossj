@@ -1,6 +1,6 @@
 package crossj;
 
-public final class Optional<T> implements TypedEq<Optional<T>> {
+public final class Optional<T> implements TypedEq<Optional<T>>, XIterable<T> {
     private final T value;
 
     private Optional(T value) {
@@ -63,5 +63,14 @@ public final class Optional<T> implements TypedEq<Optional<T>> {
     @Override
     public boolean isEqualTo(Optional<T> other) {
         return isEmpty() ? other.isEmpty() : value.equals(other.value);
+    }
+
+    @Override
+    public XIterator<T> iter() {
+        if (isEmpty()) {
+            return List.<T>of().iter();
+        } else {
+            return List.of(value).iter();
+        }
     }
 }
