@@ -48,7 +48,6 @@ public final class Main {
         IO.println("Starting render");
         var start = Time.now();
         for (int y = imageHeight - 1; y >= 0; y--) {
-            IO.println("y = " + y);
             var doneRatio = (imageHeight - y) / (double) imageHeight;
             if (doneRatio - lastUpdate >= 0.05) {
                 IO.println(((int) (doneRatio * 100)) + "% done");
@@ -136,14 +135,14 @@ public final class Main {
 
         // ground
         surfaces.add(Sphere.withMaterial(Lambertian.withColor(Color.rgb(0.5, 0.5, 0.5)))
-                .andTransform(Matrix.translation(0, -1000, 0).thenScale(1000, 1000, 1000)));
+                .andTransform(Matrix.scaling(1000, 1000, 1000).thenTranslate(0, -1000, 0)));
 
         for (int a = -11; a < 11; a++) {
             for (int b = -11; b < 11; b++) {
                 var chooseMaterial = rng.next();
                 var center = Matrix.point(a + 0.9 * rng.next(), 0.2, b + 0.9 * rng.next());
-                var sphereTransform = Matrix.translation(center.getX(), center.getY(), center.getZ()).thenScale(0.2,
-                        0.2, 0.2);
+                var sphereTransform = Matrix.scaling(0.2, 0.2, 0.2).thenTranslate(center.getX(), center.getY(),
+                        center.getZ());
 
                 if (center.subtract(Matrix.point(4, 0.2, 0)).magnitude() > 0.9) {
                     Material sphereMaterial;

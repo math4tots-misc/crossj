@@ -34,7 +34,7 @@ public final class AABBTest {
     public static void forSphere() {
         {
             var s = Sphere.withTransform(Matrix.scaling(2, 2, 2).thenTranslate(10, 10, 10));
-            var box = s.getBoundingBox().get();
+            var box = s.getBoundingBox();
             var ray = Ray.of(Matrix.point(10, 10, 7), Matrix.vector(0, 0, 1));
             Assert.that(box.hit(ray));
         }

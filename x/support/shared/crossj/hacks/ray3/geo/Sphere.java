@@ -77,7 +77,7 @@ public final class Sphere implements Surface {
     }
 
     @Override
-    public Optional<AABB> getBoundingBox() {
+    public AABB getBoundingBox() {
         if (box == null) {
             var pts = List.<Matrix>of();
             for (double x = -1; x <= 1; x += 2) {
@@ -89,7 +89,7 @@ public final class Sphere implements Surface {
             }
             box = AABB.fromPoints(pts);
         }
-        return Optional.of(box);
+        return box;
     }
 
     /**

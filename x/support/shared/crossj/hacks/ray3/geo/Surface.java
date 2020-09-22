@@ -13,7 +13,5 @@ public interface Surface {
         return hitRayInRange(ray, DEFAULT_T_MIN, DEFAULT_T_MAX);
     }
 
-    default Optional<AABB> getBoundingBox() {
-        return Optional.empty();
-    }
+    AABB getBoundingBox();
 }

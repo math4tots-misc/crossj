@@ -59,6 +59,14 @@ public final class AABB {
         return withCoordinates(xmin, ymin, zmin, xmax, ymax, zmax);
     }
 
+    public double getMinForAxis(int axis) {
+        return min.get(axis, 0);
+    }
+
+    public double getMaxForAxis(int axis) {
+        return max.get(axis, 0);
+    }
+
     /**
      * Alias for
      * <code>this.hitInRange(ray, Surface.DEFAULT_T_MIN, Surface.DEFAULT_T_MAX)</code>
