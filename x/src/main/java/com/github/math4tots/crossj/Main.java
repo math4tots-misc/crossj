@@ -20,7 +20,7 @@ public final class Main {
         Optional<ITranslator> translator = Optional.empty();
         Optional<String> main = Optional.empty();
         Optional<String> outdir = Optional.empty();
-        boolean verbose = false;
+        boolean verboseToggle = false;
 
         for (String arg : args) {
             switch (mode) {
@@ -48,7 +48,7 @@ public final class Main {
                         }
                         case "-v":
                         case "--verbose": {
-                            verbose = true;
+                            verboseToggle = true;
                             break;
                         }
                         default: {
@@ -92,6 +92,9 @@ public final class Main {
             }
         }
 
+        // like verboseToggle, but final
+        final var verbose = verboseToggle;
+
         ITranslator tr = translator.isPresent() ? translator.get() : new JavascriptTranslator();
         if (main.isPresent()) {
             tr.setMain(main.get());
@@ -110,7 +113,22 @@ public final class Main {
 
         // Parse all the files
         double parsingStart = Time.now();
-        List<Pair<String, CompilationUnit>> compilationUnits = List.fromIterable(parser.parseFiles(filepaths));
+        var updateInfo = new Object() {
+            public double lastTime = Time.now();
+            public double lastRatio = -1;
+        };
+        List<Pair<String, CompilationUnit>> compilationUnits = List.fromIterable(parser.parseFiles(filepaths, r -> {
+            if (verbose) {
+                // Update every 1 second if we've made at least 1% progress
+                var now = Time.now();
+                if (now - updateInfo.lastTime > 1 && r - updateInfo.lastRatio > 0.01) {
+                    updateInfo.lastTime = now;
+                    updateInfo.lastRatio = r;
+                    IO.println("... parsed " + ((int) (r * 100)) + "%");
+                }
+            }
+            return null;
+        }));
         double parsingEnd = Time.now();
         if (verbose) {
             double rounded = M.round(10000 * (parsingEnd - parsingStart)) / 10000.0;

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -19,13 +20,16 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
+import crossj.Assert;
+import crossj.Func1;
 import crossj.Pair;
 
 public final class Parser {
     private final ASTParser parser = ASTParser.newParser(AST.JLS14);
     private final List<String> sources = new ArrayList<>();
 
-    public List<Pair<String, CompilationUnit>> parseFiles(Iterable<String> pathsAsIterable) {
+    public List<Pair<String, CompilationUnit>> parseFiles(Iterable<String> pathsAsIterable,
+            Func1<Void, Double> progressMonitor) {
         List<String> paths = new ArrayList<>();
         pathsAsIterable.forEach(path -> paths.add(path));
         parser.setResolveBindings(true);
@@ -49,7 +53,22 @@ public final class Parser {
             public void acceptAST(String sourceFilePath, CompilationUnit ast) {
                 cus.add(Pair.of(sourceFilePath, ast));
             }
-        }, null);
+        }, new NullProgressMonitor() {
+            int totalWork = 0;
+            int doneSoFar = 0;
+
+            public void beginTask(String name, int totalWork) {
+                this.totalWork = totalWork;
+            };
+
+            public void worked(int work) {
+                Assert.withMessage(totalWork != 0, "Tried to report progress when total work is 0");
+                doneSoFar += work;
+                if (progressMonitor != null) {
+                    progressMonitor.apply(doneSoFar / (double) totalWork);
+                }
+            };
+        });
 
         return cus;
     }
@@ -63,7 +82,7 @@ public final class Parser {
     }
 
     public CompilationUnit parseFile(String path) {
-        return parseFiles(Arrays.asList(path)).get(0).get2();
+        return parseFiles(Arrays.asList(path), null).get(0).get2();
     }
 
     public void addSourceRoot(String path) {
