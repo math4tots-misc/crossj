@@ -71,6 +71,7 @@ public final class Main {
                     switch (arg) {
                         case "javascript":
                         case "Javascript":
+                        case "JavaScript":
                         case "js":
                         case "JS": {
                             translator = Optional.of(new JavascriptTranslator());
