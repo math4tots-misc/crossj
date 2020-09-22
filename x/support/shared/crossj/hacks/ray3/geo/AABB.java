@@ -67,6 +67,10 @@ public final class AABB {
         return max.get(axis, 0);
     }
 
+    public double getMidpointForAxis(int axis) {
+        return (getMinForAxis(axis) + getMaxForAxis(axis)) / 2;
+    }
+
     /**
      * Alias for
      * <code>this.hitInRange(ray, Surface.DEFAULT_T_MIN, Surface.DEFAULT_T_MAX)</code>

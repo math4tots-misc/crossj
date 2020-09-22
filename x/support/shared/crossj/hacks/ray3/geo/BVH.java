@@ -40,8 +40,8 @@ public final class BVH implements Surface {
                 return new BVH(ss.get(0), ss.get(1));
         }
 
-        ss.sortBy((a, b) -> ((Double) a.getBoundingBox().getMinForAxis(axis))
-                .compareTo(b.getBoundingBox().getMinForAxis(axis)));
+        ss.sortBy((a, b) -> ((Double) a.getBoundingBox().getMidpointForAxis(axis))
+                .compareTo(b.getBoundingBox().getMidpointForAxis(axis)));
 
         int middleIndex = ss.size() / 2;
 
