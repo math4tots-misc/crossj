@@ -1031,11 +1031,6 @@ $CJ['crossj.M'] = $LAZY(function () {
     // the 'Math' class but renamed 'M' due to conflict with
     // java.lang.Math
     class M {
-        static F$E = Math.E;
-        static F$PI = Math.PI;
-        static F$TAU = Math.PI * 2;
-        static F$INFINITY = Infinity;
-
         static M$max(...values) {
             return Math.max(...values);
         }
@@ -1092,10 +1087,6 @@ $CJ['crossj.M'] = $LAZY(function () {
             return Math.sqrt(x);
         }
 
-        static M$floor(x) {
-            return Math.floor(x);
-        }
-
         static M$sin(x) {
             return Math.sin(x);
         }
@@ -1128,6 +1119,12 @@ $CJ['crossj.M'] = $LAZY(function () {
             return Math.log(x);
         }
     };
+    // Older JS engines don't like
+    // the 'static foo = baz' syntax inside class definitions.
+    M.F$E = Math.E;
+    M.F$PI = Math.PI;
+    M.F$TAU = Math.PI * 2;
+    M.F$INFINITY = Infinity;
     return M;
 });
 $CJ['crossj.Time'] = $LAZY(function() {
