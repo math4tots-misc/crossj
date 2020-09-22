@@ -14,15 +14,20 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+
+import crossj.Pair;
 
 public final class Parser {
     private final ASTParser parser = ASTParser.newParser(AST.JLS14);
     private final List<String> sources = new ArrayList<>();
 
-    public CompilationUnit parseFile(String path) {
+    public List<Pair<String, CompilationUnit>> parseFiles(Iterable<String> pathsAsIterable) {
+        List<String> paths = new ArrayList<>();
+        pathsAsIterable.forEach(path -> paths.add(path));
         parser.setResolveBindings(true);
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
         java.util.Map<String, String> options = JavaCore.getOptions();
@@ -35,10 +40,30 @@ public final class Parser {
         }
         parser.setEnvironment(classpath, sources, getEncodings(sources.length), false);
 
-        parser.setUnitName(path);
-        parser.setSource(readFile(path).toCharArray());
+        parser.setUnitName(paths.get(0));
+        parser.setSource(readFile(paths.get(0)).toCharArray());
 
-        return (CompilationUnit) parser.createAST(null);
+        List<Pair<String, CompilationUnit>> cus = new ArrayList<>();
+        parser.createASTs(toStringArray(paths), getEncodings(paths.size()), new String[0], new FileASTRequestor() {
+            @Override
+            public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+                cus.add(Pair.of(sourceFilePath, ast));
+            }
+        }, null);
+
+        return cus;
+    }
+
+    private static String[] toStringArray(List<String> strings) {
+        var ret = new String[strings.size()];
+        for (int i = 0; i < strings.size(); i++) {
+            ret[i] = strings.get(i);
+        }
+        return ret;
+    }
+
+    public CompilationUnit parseFile(String path) {
+        return parseFiles(Arrays.asList(path)).get(0).get2();
     }
 
     public void addSourceRoot(String path) {

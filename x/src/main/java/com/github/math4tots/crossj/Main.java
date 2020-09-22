@@ -9,6 +9,7 @@ import crossj.IO;
 import crossj.List;
 import crossj.M;
 import crossj.Optional;
+import crossj.Pair;
 import crossj.Time;
 import crossj.XError;
 
@@ -105,13 +106,19 @@ public final class Main {
         if (verbose) {
             IO.println("Found " + filepaths.size() + " files");
         }
-        for (int i = 0; i < filepaths.size(); i++) {
-            double start = Time.now();
-            String filepath = filepaths.get(i);
-            if (verbose) {
-                IO.print("Translating " + filepath + " (" + (i + 1) + "/" + filepaths.size() + ") ... ");
-            }
-            CompilationUnit compilationUnit = parser.parseFile(filepath);
+
+        // Parse all the files
+        double parsingStart = Time.now();
+        List<Pair<String, CompilationUnit>> compilationUnits = List.fromIterable(parser.parseFiles(filepaths));
+        double parsingEnd = Time.now();
+        if (verbose) {
+            double rounded = M.round(10000 * (parsingEnd - parsingStart)) / 10000.0;
+            IO.println("Finished parsing (in " + rounded + "s)");
+        }
+
+        // check for problems detected by the parser
+        for (int i = 0; i < compilationUnits.size(); i++) {
+            var compilationUnit = compilationUnits.get(i).get2();
             StringBuilder sb = new StringBuilder();
             for (IProblem problem : compilationUnit.getProblems()) {
                 if (problem.isError()) {
@@ -128,6 +135,17 @@ public final class Main {
             if (!message.isEmpty()) {
                 throw XError.withMessage("\n" + message);
             }
+        }
+
+        // do the actual translations
+        var translationStart = Time.now();
+        for (int i = 0; i < compilationUnits.size(); i++) {
+            double start = Time.now();
+            var filepath = compilationUnits.get(i).get1();
+            var compilationUnit = compilationUnits.get(i).get2();
+            if (verbose) {
+                IO.print("Translating " + filepath + " (" + (i + 1) + "/" + filepaths.size() + ") ... ");
+            }
             tr.translate(filepath, compilationUnit);
             if (verbose) {
                 double end = Time.now();
@@ -136,6 +154,11 @@ public final class Main {
             }
         }
         tr.commit();
+        var translationEnd = Time.now();
+        if (verbose) {
+            double rounded = M.round(10000 * (translationEnd - translationStart)) / 10000.0;
+            IO.println("All translations DONE (in " + rounded + "s)");
+        }
     }
 
     private enum Mode {
