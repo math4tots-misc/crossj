@@ -294,6 +294,8 @@ public final class JavascriptTranslator implements ITranslator {
                     return "0";
                 case "char":
                     return "'\\0'";
+                case "boolean":
+                    return "false";
                 default:
                     throw err("Unrecognized primitive type: " + type.getQualifiedName(), nodes);
             }

@@ -19,6 +19,12 @@ public final class AABB {
         this.max = max;
     }
 
+    public static AABB unbounded() {
+        var min = -M.INFINITY;
+        var max = M.INFINITY;
+        return withCoordinates(min, min, min, max, max, max);
+    }
+
     public static AABB withCoordinates(double x1, double y1, double z1, double x2, double y2, double z2) {
         return new AABB(Matrix.point(M.min(x1, x2), M.min(y1, y2), M.min(z1, z2)),
                 Matrix.point(M.max(x1, x2), M.max(y1, y2), M.max(z1, z2)));

@@ -13,6 +13,7 @@ public final class Camera {
     public static final double DEFAULT_FIELD_OF_VIEW = M.TAU / 4;
     public static final double DEFAULT_ASPECT_RATIO = 16.0 / 9.0;
 
+    private final double aspectRatio;
     private final Matrix origin;
     private final Matrix lowerLeftCorner;
     private final Matrix horizontal;
@@ -30,6 +31,7 @@ public final class Camera {
         var viewportHeight = 2.0 * h;
         var viewportWidth = aspectRatio * viewportHeight;
 
+        this.aspectRatio = aspectRatio;
         var w = lookFrom.subtract(lookAt).normalize();
         u = viewUp.cross(w).normalize();
         v = w.cross(u);
@@ -123,5 +125,9 @@ public final class Camera {
         var x = r * M.cos(theta);
         var y = r * M.sin(theta);
         return Matrix.point(x, y, 0);
+    }
+
+    public double getAspectRatio() {
+        return aspectRatio;
     }
 }
