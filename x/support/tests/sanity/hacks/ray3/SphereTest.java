@@ -1,9 +1,9 @@
-package sanity.hacks.ray2;
+package sanity.hacks.ray3;
 
 import crossj.Assert;
 import crossj.Test;
 import crossj.hacks.ray.Matrix;
-import crossj.hacks.ray2.geo.Sphere;
+import crossj.hacks.ray3.geo.Sphere;
 
 public final class SphereTest {
 
