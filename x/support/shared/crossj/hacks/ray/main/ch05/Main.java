@@ -4,7 +4,7 @@ import crossj.IO;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
-import crossj.hacks.ray.geo.Ray;
+import crossj.hacks.ray.geo.DeprecatedRay;
 import crossj.hacks.ray.geo.DeprecatedSphere;
 
 public final class Main {
@@ -25,7 +25,7 @@ public final class Main {
                 var worldX = -half + pixelSize * x;
                 var position = Matrix.point(worldX, worldY, wallZ);
 
-                var r = Ray.of(rayOrigin, position.subtract(rayOrigin).normalize());
+                var r = DeprecatedRay.of(rayOrigin, position.subtract(rayOrigin).normalize());
                 var xs = shape.intersectRay(r);
 
                 if (xs.getHit().isPresent()) {

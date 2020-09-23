@@ -5,8 +5,8 @@ import crossj.M;
 import crossj.Test;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
-import crossj.hacks.ray.geo.Material;
-import crossj.hacks.ray.geo.PointLight;
+import crossj.hacks.ray.geo.DeprecatedMaterial;
+import crossj.hacks.ray.geo.DeprecatedPointLight;
 import crossj.hacks.ray.geo.DeprecatedSphere;
 
 /**
@@ -86,13 +86,13 @@ public final class Chapter06 {
             // A point light has a position and intensity
             var intensity = Color.rgb(1, 1, 1);
             var position = Matrix.point(0, 0, 0);
-            var light = PointLight.of(position, intensity);
+            var light = DeprecatedPointLight.of(position, intensity);
             Assert.equals(light.getPosition(), position);
             Assert.equals(light.getIntensity(), intensity);
         }
         {
             // The default material
-            var m = Material.getDefault();
+            var m = DeprecatedMaterial.getDefault();
             Assert.equals(m.getColor(), Color.rgb(1, 1, 1));
             Assert.equals(m.getAmbient(), 0.1);
             Assert.equals(m.getDiffuse(), 0.9);
@@ -102,12 +102,12 @@ public final class Chapter06 {
         {
             // A sphere has a default material
             var s = DeprecatedSphere.unit();
-            Assert.equals(s.getMaterial(), Material.getDefault());
+            Assert.equals(s.getMaterial(), DeprecatedMaterial.getDefault());
         }
         {
             // A sphere may be assigned a material
             var s = DeprecatedSphere.unit();
-            var m = Material.getDefault();
+            var m = DeprecatedMaterial.getDefault();
             m = m.withAmbient(1);
             s.setMaterial(m);
             Assert.equals(s.getMaterial(), m);
@@ -116,13 +116,13 @@ public final class Chapter06 {
 
     @Test
     public static void lighting() {
-        var m = Material.getDefault();
+        var m = DeprecatedMaterial.getDefault();
         var position = Matrix.point(0, 0, 0);
         {
             // Lighting with the eye between the light and the surface
             var eyev = Matrix.vector(0, 0, -1);
             var normalv = Matrix.vector(0, 0, -1);
-            var light = PointLight.of(Matrix.point(0, 0, -10), Color.rgb(1, 1, 1));
+            var light = DeprecatedPointLight.of(Matrix.point(0, 0, -10), Color.rgb(1, 1, 1));
             var result = m.lighting(light, position, eyev, normalv);
             Assert.equals(result, Color.rgb(1.9, 1.9, 1.9));
         }
@@ -130,7 +130,7 @@ public final class Chapter06 {
             // Lighting with the eye between light and surface, eye offset 45 degrees
             var eyev = Matrix.vector(0, M.sqrt(2) / 2, -M.sqrt(2) / 2);
             var normalv = Matrix.vector(0, 0, -1);
-            var light = PointLight.of(Matrix.point(0, 0, -10), Color.rgb(1, 1, 1));
+            var light = DeprecatedPointLight.of(Matrix.point(0, 0, -10), Color.rgb(1, 1, 1));
             var result = m.lighting(light, position, eyev, normalv);
             Assert.equals(result, Color.rgb(1.0, 1.0, 1.0));
         }
@@ -138,7 +138,7 @@ public final class Chapter06 {
             // Lighting with the eye opposite surface, light offset 45 degrees
             var eyev = Matrix.vector(0, 0, -1);
             var normalv = Matrix.vector(0, 0, -1);
-            var light = PointLight.of(Matrix.point(0, 10, -10), Color.rgb(1, 1, 1));
+            var light = DeprecatedPointLight.of(Matrix.point(0, 10, -10), Color.rgb(1, 1, 1));
             var result = m.lighting(light, position, eyev, normalv);
             Assert.less(Matrix.fromRGB(result.subtract(Color.rgb(0.7364, 0.7364, 0.7364))).magnitude(), 0.0001);
         }
@@ -146,7 +146,7 @@ public final class Chapter06 {
             // Lighting with eye in the path of the reflection vector
             var eyev = Matrix.vector(0, -M.sqrt(2) / 2, -M.sqrt(2) / 2);
             var normalv = Matrix.vector(0, 0, -1);
-            var light = PointLight.of(Matrix.point(0, 10, -10), Color.rgb(1, 1, 1));
+            var light = DeprecatedPointLight.of(Matrix.point(0, 10, -10), Color.rgb(1, 1, 1));
             var result = m.lighting(light, position, eyev, normalv);
             Assert.less(Matrix.fromRGB(result.subtract(Color.rgb(1.6364, 1.6364, 1.6364))).magnitude(), 0.0001);
         }
@@ -154,7 +154,7 @@ public final class Chapter06 {
             // Lighting with the light behind the surface
             var eyev = Matrix.vector(0, 0, -1);
             var normalv = Matrix.vector(0, 0, -1);
-            var light = PointLight.of(Matrix.point(0, 0, 10), Color.rgb(1, 1, 1));
+            var light = DeprecatedPointLight.of(Matrix.point(0, 0, 10), Color.rgb(1, 1, 1));
             var result = m.lighting(light, position, eyev, normalv);
             Assert.equals(result, Color.rgb(0.1, 0.1, 0.1));
         }

@@ -8,14 +8,14 @@ import crossj.TypedEq;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
 
-public final class Material implements AlmostEq<Material>, TypedEq<Material> {
+public final class DeprecatedMaterial implements AlmostEq<DeprecatedMaterial>, TypedEq<DeprecatedMaterial> {
     private final Color color;
     private final double ambient;
     private final double diffuse;
     private final double specular;
     private final double shininess;
 
-    private Material(Color color, double ambient, double diffuse, double specular, double shininess) {
+    private DeprecatedMaterial(Color color, double ambient, double diffuse, double specular, double shininess) {
         this.color = color;
         this.ambient = ambient;
         this.diffuse = diffuse;
@@ -23,11 +23,11 @@ public final class Material implements AlmostEq<Material>, TypedEq<Material> {
         this.shininess = shininess;
     }
 
-    public static Material of(Color color, double ambient, double diffuse, double specular, double shininess) {
-        return new Material(color, ambient, diffuse, specular, shininess);
+    public static DeprecatedMaterial of(Color color, double ambient, double diffuse, double specular, double shininess) {
+        return new DeprecatedMaterial(color, ambient, diffuse, specular, shininess);
     }
 
-    public static Material getDefault() {
+    public static DeprecatedMaterial getDefault() {
         return of(Color.rgb(1, 1, 1), 0.1, 0.9, 0.9, 200.0);
     }
 
@@ -51,27 +51,27 @@ public final class Material implements AlmostEq<Material>, TypedEq<Material> {
         return shininess;
     }
 
-    public Material withColor(Color color) {
+    public DeprecatedMaterial withColor(Color color) {
         return of(color, ambient, diffuse, specular, shininess);
     }
 
-    public Material withAmbient(double ambient) {
+    public DeprecatedMaterial withAmbient(double ambient) {
         return of(color, ambient, diffuse, specular, shininess);
     }
 
-    public Material withDiffuse(double diffuse) {
+    public DeprecatedMaterial withDiffuse(double diffuse) {
         return of(color, ambient, diffuse, specular, shininess);
     }
 
-    public Material withSpecular(double specular) {
+    public DeprecatedMaterial withSpecular(double specular) {
         return of(color, ambient, diffuse, specular, shininess);
     }
 
-    public Material withShininess(double shininess) {
+    public DeprecatedMaterial withShininess(double shininess) {
         return of(color, ambient, diffuse, specular, shininess);
     }
 
-    public Color lighting(PointLight light, Matrix position, Matrix eyev, Matrix normalv) {
+    public Color lighting(DeprecatedPointLight light, Matrix position, Matrix eyev, Matrix normalv) {
         Assert.withMessage(position.isPoint(), "Material.lighting's position argument must be a point");
         Assert.withMessage(eyev.isVector(), "Material.lighting's eyev argument must be a vector");
         Assert.withMessage(normalv.isVector(), "Material.lighting's normalv argument must be a vector");
@@ -118,14 +118,14 @@ public final class Material implements AlmostEq<Material>, TypedEq<Material> {
     }
 
     @Override
-    public boolean almostEquals(Material other) {
+    public boolean almostEquals(DeprecatedMaterial other) {
         return color.almostEquals(other.color) && Eq.almostForDouble(ambient, other.ambient)
                 && Eq.almostForDouble(diffuse, other.diffuse) && Eq.almostForDouble(specular, other.specular)
                 && Eq.almostForDouble(shininess, other.shininess);
     }
 
     @Override
-    public boolean isEqualTo(Material other) {
+    public boolean isEqualTo(DeprecatedMaterial other) {
         return color.isEqualTo(other.color) && ambient == other.ambient && diffuse == other.diffuse
                 && specular == other.specular && shininess == other.shininess;
     }

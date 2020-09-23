@@ -5,9 +5,9 @@ import crossj.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
-import crossj.hacks.ray.geo.Material;
-import crossj.hacks.ray.geo.PointLight;
-import crossj.hacks.ray.geo.Ray;
+import crossj.hacks.ray.geo.DeprecatedMaterial;
+import crossj.hacks.ray.geo.DeprecatedPointLight;
+import crossj.hacks.ray.geo.DeprecatedRay;
 import crossj.hacks.ray.geo.DeprecatedSphere;
 
 public final class Main {
@@ -20,10 +20,10 @@ public final class Main {
         var half = wallSize / 2;
         var canvas = Bitmap.withDimensions(canvasPixels, canvasPixels);
         var shape = DeprecatedSphere.unit();
-        shape.setMaterial(Material.getDefault().withColor(Color.rgb(1, 0.2, 1)));
+        shape.setMaterial(DeprecatedMaterial.getDefault().withColor(Color.rgb(1, 0.2, 1)));
         var lightPosition = Matrix.point(-10, 10, -10);
         var lightColor = Color.rgb(1, 1, 1);
-        var light = PointLight.of(lightPosition, lightColor);
+        var light = DeprecatedPointLight.of(lightPosition, lightColor);
 
         var start = Time.now();
         for (int y = 0; y < canvasPixels; y++) {
@@ -32,7 +32,7 @@ public final class Main {
                 var worldX = -half + pixelSize * x;
                 var position = Matrix.point(worldX, worldY, wallZ);
 
-                var r = Ray.of(rayOrigin, position.subtract(rayOrigin).normalize());
+                var r = DeprecatedRay.of(rayOrigin, position.subtract(rayOrigin).normalize());
                 var xs = shape.intersectRay(r);
 
                 if (xs.getHit().isPresent()) {

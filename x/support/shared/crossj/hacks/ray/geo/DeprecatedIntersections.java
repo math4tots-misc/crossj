@@ -7,11 +7,11 @@ import crossj.Tuple;
 import crossj.XIterable;
 import crossj.XIterator;
 
-public final class Intersections implements XIterable<Intersection> {
-    private final Tuple<Intersection> intersections;
+public final class DeprecatedIntersections implements XIterable<DeprecatedIntersection> {
+    private final Tuple<DeprecatedIntersection> intersections;
     private final int hitIndex;
 
-    private Intersections(XIterable<Intersection> intersections) {
+    private DeprecatedIntersections(XIterable<DeprecatedIntersection> intersections) {
         this.intersections = Tuple.sortedBy(intersections, (a, b) -> M.cmp(a.getT(), b.getT()));
         int hitIndex = -1;
         for (int i = 0; i < this.intersections.size(); i++) {
@@ -23,11 +23,11 @@ public final class Intersections implements XIterable<Intersection> {
         this.hitIndex = hitIndex;
     }
 
-    public static Intersections of(Intersection... sections) {
-        return new Intersections(List.fromJavaArray(sections));
+    public static DeprecatedIntersections of(DeprecatedIntersection... sections) {
+        return new DeprecatedIntersections(List.fromJavaArray(sections));
     }
 
-    public Intersection get(int i) {
+    public DeprecatedIntersection get(int i) {
         return intersections.get(i);
     }
 
@@ -35,12 +35,12 @@ public final class Intersections implements XIterable<Intersection> {
         return intersections.size();
     }
 
-    public Optional<Intersection> getHit() {
+    public Optional<DeprecatedIntersection> getHit() {
         return hitIndex >= 0 ? Optional.of(get(hitIndex)) : Optional.empty();
     }
 
     @Override
-    public XIterator<Intersection> iter() {
+    public XIterator<DeprecatedIntersection> iter() {
         return intersections.iter();
     }
 }

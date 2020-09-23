@@ -7,7 +7,7 @@ import crossj.hacks.ray.Matrix;
 // @Deprecated
 public final class DeprecatedSphere {
     private Matrix transform;
-    private Material material = Material.getDefault();
+    private DeprecatedMaterial material = DeprecatedMaterial.getDefault();
     private Matrix transformInverse = null;
     private Matrix transformInverseTranspose = null;
 
@@ -52,17 +52,17 @@ public final class DeprecatedSphere {
         return transformInverseTranspose;
     }
 
-    public Material getMaterial() {
+    public DeprecatedMaterial getMaterial() {
         return material;
     }
 
-    public void setMaterial(Material material) {
+    public void setMaterial(DeprecatedMaterial material) {
         this.material = material;
     }
 
-    public Intersections intersectRay(Ray ray) {
+    public DeprecatedIntersections intersectRay(DeprecatedRay ray) {
 
-        Ray adjustedRay = ray.transform(transform.inverse());
+        DeprecatedRay adjustedRay = ray.transform(transform.inverse());
 
         // vector from the sphere's center, to the ray origin
         Matrix sphereToRay = adjustedRay.getOrigin().subtract(Matrix.point(0, 0, 0));
@@ -71,11 +71,11 @@ public final class DeprecatedSphere {
         double c = sphereToRay.dot(sphereToRay) - 1;
         double discriminant = b * b - 4 * a * c;
         if (discriminant < 0) {
-            return Intersections.of();
+            return DeprecatedIntersections.of();
         } else {
             double t1 = (-b - M.sqrt(discriminant)) / (2 * a);
             double t2 = (-b + M.sqrt(discriminant)) / (2 * a);
-            return Intersections.of(Intersection.of(t1, this), Intersection.of(t2, this));
+            return DeprecatedIntersections.of(DeprecatedIntersection.of(t1, this), DeprecatedIntersection.of(t2, this));
         }
     }
 

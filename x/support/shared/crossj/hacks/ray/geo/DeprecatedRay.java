@@ -6,19 +6,19 @@ import crossj.hacks.ray.Matrix;
 /**
  * First described in Chapter 5 (Ray-Sphere intersections)
  */
-public final class Ray {
+public final class DeprecatedRay {
     private final Matrix origin;
     private final Matrix direction;
 
-    private Ray(Matrix origin, Matrix direction) {
+    private DeprecatedRay(Matrix origin, Matrix direction) {
         Assert.withMessage(origin.isPoint(), "A ray's origin must be a point");
         Assert.withMessage(direction.isVector(), "A ray's direction must be a vector");
         this.origin = origin;
         this.direction = direction;
     }
 
-    public static Ray of(Matrix origin, Matrix direction) {
-        return new Ray(origin, direction);
+    public static DeprecatedRay of(Matrix origin, Matrix direction) {
+        return new DeprecatedRay(origin, direction);
     }
 
     public Matrix getOrigin() {
@@ -33,7 +33,7 @@ public final class Ray {
         return origin.add(direction.scale(t));
     }
 
-    public Ray transform(Matrix t) {
-        return Ray.of(t.multiply(origin), t.multiply(direction));
+    public DeprecatedRay transform(Matrix t) {
+        return DeprecatedRay.of(t.multiply(origin), t.multiply(direction));
     }
 }

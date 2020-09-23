@@ -1,7 +1,7 @@
 package crossj.hacks.ray.geo;
 
 // @Deprecated
-public final class Intersection {
+public final class DeprecatedIntersection {
     /**
      * The distance along the ray (potentially negative) where
      * this intersectino happened
@@ -13,13 +13,13 @@ public final class Intersection {
      */
     private final DeprecatedSphere object;
 
-    private Intersection(double t, DeprecatedSphere object) {
+    private DeprecatedIntersection(double t, DeprecatedSphere object) {
         this.t = t;
         this.object = object;
     }
 
-    public static Intersection of(double t, DeprecatedSphere object) {
-        return new Intersection(t, object);
+    public static DeprecatedIntersection of(double t, DeprecatedSphere object) {
+        return new DeprecatedIntersection(t, object);
     }
 
     public double getT() {
