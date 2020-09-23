@@ -152,7 +152,7 @@ public final class Sphere implements Surface {
      * Returns the normal vector given a point on a sphere.
      * Assumes that the given point is on the given sphere.
      */
-    public Matrix normalAt(Matrix point) {
+    private Matrix normalAt(Matrix point) {
         Assert.withMessage(point.isPoint(), "Sphere.normalAt requires a point");
 
         // objectPoint the given point but using a coordinate system where the given sphere
