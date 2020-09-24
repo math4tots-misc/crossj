@@ -29,6 +29,7 @@ public final class SDF implements Surface {
     private static final AABB DEFAULT_BOX = AABB.unbounded();
     private static final int MAX_MARCH_STEPS = 200;
     private static final double DEFAULT_ALLOWANCE_FACTOR = 0.01;
+    private static final double DEFAULT_ALLOWANCE_CONSTANT = 0.001;
 
     private final Material material;
     private final AABB box;
@@ -79,7 +80,7 @@ public final class SDF implements Surface {
             }
 
             var estimate = distanceEstimator.apply(point);
-            if (estimate < DEFAULT_ALLOWANCE_FACTOR * (t * magnitude)) {
+            if (estimate < DEFAULT_ALLOWANCE_FACTOR * (t * magnitude) || estimate < DEFAULT_ALLOWANCE_CONSTANT) {
                 Assert.equals(ray.position(t), point);
                 var normal = estimateNormalAt(point);
                 return Optional.of(Hit.of(ray, t, point, normal, material));
@@ -91,30 +92,30 @@ public final class SDF implements Surface {
 
         // rewind, try again, but this time, print out the results.
         // point = ray.getOrigin().add(direction.scale(min));
-        // t = min;
-        // for (int step = 0; step < MAX_MARCH_STEPS && t < max; step++) {
-        //     var newRay = Ray.of(point, direction);
-        //     if (!box.hit(newRay)) {
-        //         if (step > 0) {
-        //             IO.println("ESCAPED BOX");
-        //         }
-        //         // If the new ray no longer intersects the given box, there's no need
-        //         // to search anymore.
-        //         return Optional.empty();
-        //     }
+        t = min;
+        for (int step = 0; step < MAX_MARCH_STEPS && t < max; step++) {
+            var newRay = Ray.of(point, direction);
+            if (!box.hit(newRay)) {
+                if (step > 0) {
+                    IO.println("ESCAPED BOX");
+                }
+                // If the new ray no longer intersects the given box, there's no need
+                // to search anymore.
+                return Optional.empty();
+            }
 
-        //     var estimate = distanceEstimator.apply(point);
-        //     IO.println("point = " + point + ", estimate = " + estimate + ", direction = " + direction + ", magnitude = "
-        //             + magnitude);
-        //             if (estimate < DEFAULT_ALLOWANCE_FACTOR * (t * magnitude)) {
-        //         Assert.equals(ray.position(t), point);
-        //         var normal = estimateNormalAt(point);
-        //         return Optional.of(Hit.of(ray, t, point, normal, material));
-        //     }
-        //     var dt = estimate / magnitude;
-        //     t += dt;
-        //     point = point.add(direction.scale(dt));
-        // }
+            var estimate = distanceEstimator.apply(point);
+            IO.println("point = " + point + ", estimate = " + estimate + ", direction = " + direction + ", magnitude = "
+                    + magnitude);
+                    if (estimate < DEFAULT_ALLOWANCE_FACTOR * (t * magnitude) || estimate < DEFAULT_ALLOWANCE_CONSTANT) {
+                Assert.equals(ray.position(t), point);
+                var normal = estimateNormalAt(point);
+                return Optional.of(Hit.of(ray, t, point, normal, material));
+            }
+            var dt = estimate / magnitude;
+            t += dt;
+            point = point.add(direction.scale(dt));
+        }
 
         IO.println("HIT MAX MARCH STEPS");
         return Optional.empty();

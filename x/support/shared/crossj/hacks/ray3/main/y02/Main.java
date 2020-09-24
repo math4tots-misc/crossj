@@ -43,28 +43,32 @@ public final class Main {
 
     private static Surface buildScene() {
         var list = List.<Surface>of();
-        var r = 0.2;
+        var r = 2;
         // list.add(Sphere.withTransform(Matrix.scaling(r, r, r)));
         // list.addAll(List.of(SDF.fromDistanceEstimator(point -> point.withW(0).magnitude() - r)
         //         .withBox(AABB.withPoints(Matrix.point(-r, -r, -r), Matrix.point(r, r, r)))));
 
         // list.add(SDF.fromDistanceEstimator(
-        //         point -> Matrix.vector(mod(point.getX()), mod(point.getY()), mod(point.getZ())).magnitude() - r)
-        //         .withBox(AABB.withPoints(Matrix.point(-r * 10, -r * 10, -r * 10), Matrix.point(r * 10, r * 10, r * 10))));
+        //         point -> Matrix.vector(point.getX(), point.getY(), point.getZ()).magnitude() - r)
+        //         .withBox(AABB.withPoints(Matrix.point(-r * 2, -r * 2, -r * 2), Matrix.point(r * 2, r * 2, r * 2))));
 
-        list.add(SDF.fromDistanceEstimator(
-                point -> {
-                    var mag2 = 0.0;
-                    for (int a = 0; a < 3; a++) {
-                        var x = point.get(a, 0);
-                        var low = M.floor(x);
-                        var high = M.ceil(x);
-                        var dist2 = M.min(M.abs(x - low), M.abs(x - high));
-                        mag2 += dist2;
-                    }
-                    return M.sqrt(mag2) - 0.4;
-                })
-                .withBox(AABB.withPoints(Matrix.point(-10, -10, -10), Matrix.point(0, 0, 0))));
+        var n = Matrix.vector(0, 3, 3).normalize();
+        list.add(SDF.fromDistanceEstimator(point -> point.dot(n))
+            .withBox(AABB.withPoints(Matrix.point(-r * 2, -r * 2, -r * 2), Matrix.point(r * 2, r * 2, r * 2))));
+
+        // list.add(SDF.fromDistanceEstimator(
+        //         point -> {
+        //             var mag2 = 0.0;
+        //             for (int a = 0; a < 3; a++) {
+        //                 var x = point.get(a, 0);
+        //                 var low = M.floor(x);
+        //                 var high = M.ceil(x);
+        //                 var dist2 = M.min(M.abs(x - low), M.abs(x - high));
+        //                 mag2 += dist2;
+        //             }
+        //             return M.sqrt(mag2) - 0.4;
+        //         })
+        //         .withBox(AABB.withPoints(Matrix.point(-10, -10, -10), Matrix.point(0, 0, 0))));
         list.add(Sphere.withMaterial(Lambertian.withColor(Color.rgb(0.2, 0.2, 0.1)))
                 .andTransform(Matrix.scaling(1000, 1000, 1000).thenTranslate(0, -1000 - r, 0)));
 
