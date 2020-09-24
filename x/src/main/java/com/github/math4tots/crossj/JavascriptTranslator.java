@@ -324,10 +324,12 @@ public final class JavascriptTranslator implements ITranslator {
                 sb.append("return " + cacheRef + ";\n");
                 sb.append("}\n");
 
-                // setter
-                sb.append("static set F$" + name + "(x){\n");
-                sb.append(cacheRef + "=x;\n");
-                sb.append("}\n");
+                if (!Modifier.isFinal(declaration.getModifiers())) {
+                    // setter
+                    sb.append("static set F$" + name + "(x){\n");
+                    sb.append(cacheRef + "=x;\n");
+                    sb.append("}\n");
+                }
 
             } else {
                 // instance field
