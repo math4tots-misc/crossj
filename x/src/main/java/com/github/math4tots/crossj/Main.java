@@ -1,9 +1,13 @@
 package com.github.math4tots.crossj;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.eclipse.jdt.core.compiler.IProblem;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 
 import crossj.IO;
 import crossj.List;
@@ -156,6 +160,19 @@ public final class Main {
             }
         }
 
+        // Sort compilation units by the number of interfaces they implement (including
+        // all implicitly implemented).
+        // This ensures that all base types are translated before any given type.
+        {
+            var cache = new HashMap<ITypeBinding, HashSet<ITypeBinding>>();
+            compilationUnits.sortBy((a, b) -> Pair
+                    .of(getAllInterfaces(((AbstractTypeDeclaration) a.get2().types().get(0)).resolveBinding(), cache)
+                            .size(), a.get1())
+                    .compareTo(Pair
+                            .of(getAllInterfaces(((AbstractTypeDeclaration) b.get2().types().get(0)).resolveBinding(),
+                                    cache).size(), b.get1())));
+        }
+
         // do the actual translations
         var translationStart = Time.now();
         for (int i = 0; i < compilationUnits.size(); i++) {
@@ -190,6 +207,22 @@ public final class Main {
             out.addAll(findAllFiles(directory));
         }
         return out;
+    }
+
+    private static HashSet<ITypeBinding> getAllInterfaces(ITypeBinding tb,
+            HashMap<ITypeBinding, HashSet<ITypeBinding>> cache) {
+        tb = tb.getErasure();
+        if (!cache.containsKey(tb)) {
+            var ifaces = tb.getInterfaces();
+            var set = new HashSet<ITypeBinding>();
+            for (var iface : ifaces) {
+                iface = iface.getErasure();
+                set.add(iface);
+                set.addAll(getAllInterfaces(iface, cache));
+            }
+            cache.put(tb, set);
+        }
+        return cache.get(tb);
     }
 
     private static List<String> findAllFiles(String directory) {

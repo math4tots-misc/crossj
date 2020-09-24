@@ -143,7 +143,7 @@ public final class JavascriptTranslator implements ITranslator {
         sb.append("];\n");
         if (main.isPresent()) {
             String m = main.get();
-            sb.append("$CJ['" + m + "']().M$main([]);\n");
+            sb.append(getClassReference(m) + ".M$main([]);\n");
         }
         sb.append("return $CJ;\n");
         sb.append("})();\n");
@@ -197,10 +197,14 @@ public final class JavascriptTranslator implements ITranslator {
             }
         }
 
-        String name = declaration.getName().toString();
         String qualifiedName = typeBinding.getQualifiedName();
-        sb.append("$CJ['" + qualifiedName + "']=$LAZY(function(){\n");
-        sb.append("class " + name + "{\n");
+        String classRef = getClassReference(qualifiedName);
+        sb.append("class " + classRef + "{\n");
+
+        // define static field getter methods
+        for (FieldDeclaration field : declaration.getFields()) {
+            translateField(qualifiedName, field);
+        }
 
         // initialize a default constructor, if one is needed
         boolean hasConstructor = false;
@@ -227,6 +231,7 @@ public final class JavascriptTranslator implements ITranslator {
         }
 
         sb.append("}\n");
+        sb.append("$CJ['" + qualifiedName + "']=" + classRef + ";\n");
 
         // add all the inherited default methods for this class
         for (ITypeBinding superInterface : superInterfaces) {
@@ -237,9 +242,9 @@ public final class JavascriptTranslator implements ITranslator {
                     String methodName = method.getName();
                     if (!foundMethodNames.contains(methodName)) {
                         foundMethodNames.add(methodName);
-                        sb.append(name + ".prototype.M$" + methodName + "="
-                                + getClassReference(superInterface.getErasure().getQualifiedName()) + ".prototype.M$" + methodName
-                                + ";\n");
+                        sb.append(classRef + ".prototype.M$" + methodName + "="
+                                + getClassReference(superInterface.getErasure().getQualifiedName()) + ".prototype.M$"
+                                + methodName + ";\n");
                     }
                 }
             }
@@ -247,22 +252,14 @@ public final class JavascriptTranslator implements ITranslator {
 
         // define toString
         if (foundMethodNames.contains("toString")) {
-            sb.append(name + ".prototype.toString=function(){return this.M$toString();};\n");
+            sb.append(classRef + ".prototype.toString=function(){return this.M$toString();};\n");
         }
 
         // add a marker for all the types that this type is a subtype of.
         for (String qualifiedInterfaceName : superInterfaceNames) {
             String tag = "I$" + qualifiedInterfaceName.replace(".", "$");
-            sb.append(name + ".prototype." + tag + "=true;\n");
+            sb.append(classRef + ".prototype." + tag + "=true;\n");
         }
-
-        // initialize static fields
-        for (FieldDeclaration field : declaration.getFields()) {
-            translateField(field);
-        }
-
-        sb.append("return " + name + ";\n");
-        sb.append("});\n");
     }
 
     private void initInstanceFields(TypeDeclaration declaration) {
@@ -304,20 +301,34 @@ public final class JavascriptTranslator implements ITranslator {
         }
     }
 
-    public void translateField(FieldDeclaration declaration) {
-        String shortClassName = currentTypeDeclaration.getName().toString();
+    public void translateField(String qualifiedClassName, FieldDeclaration declaration) {
         for (Object obj : declaration.fragments()) {
             VariableDeclarationFragment fragment = (VariableDeclarationFragment) obj;
             if (Modifier.isStatic(declaration.getModifiers())) {
                 // static field
                 Expression init = fragment.getInitializer();
-                sb.append(shortClassName + ".F$" + fragment.getName() + "=");
+                String name = fragment.getName().toString();
+                String cacheRef = getClassReference(qualifiedClassName) + ".FC$" + name;
+
+                // getter
+                sb.append("static get F$" + name + "(){\n");
+                sb.append("if (" + cacheRef + "===undefined){\n");
+                sb.append(cacheRef + "=");
                 if (init != null) {
                     translateExpression(init);
                 } else {
                     sb.append(getDefaultValueForType(declaration.getType().resolveBinding(), fragment));
                 }
                 sb.append(";\n");
+                sb.append("}\n");
+                sb.append("return " + cacheRef + ";\n");
+                sb.append("}\n");
+
+                // setter
+                sb.append("static set F$" + name + "(x){\n");
+                sb.append(cacheRef + "=x;\n");
+                sb.append("}\n");
+
             } else {
                 // instance field
                 // do nothing here -- this is handled in the constructor
@@ -326,11 +337,7 @@ public final class JavascriptTranslator implements ITranslator {
     }
 
     public String getClassReference(String qualifiedClassName) {
-        if (qualifiedClassName.equals(ITranslator.getQualifiedName(currentTypeDeclaration))) {
-            return currentTypeDeclaration.getName().toString();
-        } else {
-            return "$CJ['" + qualifiedClassName + "']()";
-        }
+        return "C$" + qualifiedClassName.replace(".", "$");
     }
 
     public String getClassReference(TypeDeclaration declaration) {
@@ -723,7 +730,7 @@ public final class JavascriptTranslator implements ITranslator {
                             }
                             case "java.lang.Boolean.compareTo":
                             case "java.lang.Double.compareTo":
-                            case "java.lang.Integer.compareTo":{
+                            case "java.lang.Integer.compareTo": {
                                 sb.append("$NCMP(");
                                 translateExpression(owner);
                                 sb.append(",");
