@@ -3,6 +3,7 @@ package crossj.hacks.ray3.geo;
 import crossj.Assert;
 import crossj.Func1;
 import crossj.IO;
+import crossj.M;
 import crossj.Optional;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
@@ -30,6 +31,7 @@ public final class SDF implements Surface {
     private static final int MAX_MARCH_STEPS = 200;
     private static final double DEFAULT_ALLOWANCE_FACTOR = 0.01;
     private static final double DEFAULT_ALLOWANCE_CONSTANT = 0.001;
+    private static final double MINIMUM_STEP_SIZE = 0.001;
 
     private final Material material;
     private final AABB box;
@@ -112,7 +114,7 @@ public final class SDF implements Surface {
                 var normal = estimateNormalAt(point);
                 return Optional.of(Hit.of(ray, t, point, normal, material));
             }
-            var dt = estimate / magnitude;
+            var dt = M.max(estimate, MINIMUM_STEP_SIZE) / magnitude;
             t += dt;
             point = point.add(direction.scale(dt));
         }
