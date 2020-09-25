@@ -42,7 +42,7 @@ public final class Main {
 
     private static Surface buildScene() {
         var list = List.<Surface>of();
-        var r = 2;
+        // var r = 2;
         // list.add(Sphere.withTransform(Matrix.scaling(r, r, r)));
         // list.addAll(List.of(SDF.fromDistanceEstimator(point -> point.withW(0).magnitude() - r)
         //         .withBox(AABB.withPoints(Matrix.point(-r, -r, -r), Matrix.point(r, r, r)))));
@@ -51,9 +51,9 @@ public final class Main {
         //         point -> Matrix.vector(point.getX(), point.getY(), point.getZ()).magnitude() - r)
         //         .withBox(AABB.withPoints(Matrix.point(-r * 2, -r * 2, -r * 2), Matrix.point(r * 2, r * 2, r * 2))));
 
-        var n = Matrix.vector(0, 3, 3).normalize();
+        var n = Matrix.vector(0, 0, 1).normalize();
         list.add(SDF.fromDistanceEstimator(point -> point.dot(n))
-            .withBox(AABB.withPoints(Matrix.point(-r * 2, -r * 2, -r * 2), Matrix.point(r * 2, r * 2, r * 2))));
+            .withBox(AABB.withPoints(Matrix.point(-6, -6, -1), Matrix.point(6, 6, 1))));
 
         // list.add(SDF.fromDistanceEstimator(
         //         point -> {
@@ -68,8 +68,8 @@ public final class Main {
         //             return M.sqrt(mag2) - 0.4;
         //         })
         //         .withBox(AABB.withPoints(Matrix.point(-10, -10, -10), Matrix.point(0, 0, 0))));
-        list.add(Sphere.withMaterial(Lambertian.withColor(Color.rgb(0.2, 0.2, 0.1)))
-                .andTransform(Matrix.scaling(1000, 1000, 1000).thenTranslate(0, -1000 - r, 0)));
+        // list.add(Sphere.withMaterial(Lambertian.withColor(Color.rgb(0.2, 0.2, 0.1)))
+        //         .andTransform(Matrix.scaling(1000, 1000, 1000).thenTranslate(0, -1000 - r, 0)));
 
         return Surfaces.fromIterable(list);
     }
