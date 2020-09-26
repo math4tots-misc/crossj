@@ -47,7 +47,7 @@ public final class ObjLoader {
             }
         }
         IO.println("faces = " + faces);
-        return Surfaces.fromIterableWithoutBVH(faces);
+        return Surfaces.fromIterable(faces);
     }
 
     public Surface parseString(String string) {
