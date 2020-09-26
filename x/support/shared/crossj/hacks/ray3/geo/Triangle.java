@@ -113,4 +113,9 @@ public final class Triangle implements Surface {
     public AABB getBoundingBox() {
         return box;
     }
+
+    @Override
+    public String toString() {
+        return "Triangle.withMaterial(" + material + ").andAt(" + a + ", " + b + ", " + c + ")";
+    }
 }

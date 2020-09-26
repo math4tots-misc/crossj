@@ -72,6 +72,19 @@ public final class Str {
         return ImplChar.isWhitespace(ch);
     }
 
+    public static String strip(String string) {
+        int len = string.length();
+        int start = 0;
+        while (start < len && isSpaceChar(string.charAt(start))) {
+            start++;
+        }
+        int end = len;
+        while (len > 0 && isSpaceChar(string.charAt(end - 1))) {
+            end--;
+        }
+        return string.substring(start, end);
+    }
+
     public static List<String> lines(String string) {
         return split(string, "\n");
     }

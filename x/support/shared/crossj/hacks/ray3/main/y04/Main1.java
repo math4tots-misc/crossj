@@ -1,4 +1,4 @@
-package crossj.hacks.ray3.main.y03;
+package crossj.hacks.ray3.main.y04;
 
 import crossj.IO;
 import crossj.List;
@@ -7,16 +7,20 @@ import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray3.RayTracer;
 import crossj.hacks.ray3.geo.Box;
 import crossj.hacks.ray3.geo.Camera;
+import crossj.hacks.ray3.geo.ObjLoader;
 import crossj.hacks.ray3.geo.Sphere;
 import crossj.hacks.ray3.geo.Surfaces;
-import crossj.hacks.ray3.geo.Triangle;
 import crossj.hacks.ray3.material.Lambertian;
 import crossj.hacks.ray3.material.Metal;
 
-public final class Main {
-    private static final String filepath = "out/ray3/y03.bmp";
+/**
+ * Playing with support for *.obj files.
+ */
+public final class Main1 {
+    private static final String filepath = "out/ray3/y04-1.bmp";
 
     public static void main(String[] args) {
+        var objLoader = ObjLoader.usingMaterial(Metal.withColor(Color.rgb(0.9, 0.9, 0.9)));
         var camera = Camera.of(
                 // lookFrom
                 Matrix.point(0, 4, 4),
@@ -27,7 +31,7 @@ public final class Main {
                 // vfov (vertical field of view)
                 Camera.DEFAULT_FIELD_OF_VIEW, Camera.DEFAULT_ASPECT_RATIO);
         var tracer = RayTracer.getDefault().withCamera(camera).withVerbose(true);
-        var scene = Surfaces.fromIterable(List.of(
+        var scene = Surfaces.fromIterableWithoutBVH(List.of(
                 // // draw the positive axes (x-r, y-g, z-b)
                 // Box.withMaterial(Lambertian.withColor(Color.rgb(0.8, 0.2, 0.2)))
                 //         .andTransform(Matrix.scaling(0.2, 0.2, 100).thenTranslate(0, 0, 50)),
@@ -53,11 +57,19 @@ public final class Main {
                 Box.withMaterial(Metal.withColor(Color.rgb(0.4, 0.2, 0.2)).andFuzz(0.1))
                     .andTransform(Matrix.scaling(2, 2, 2).thenTranslate(-3, 1, -4)),
 
-                Triangle.withMaterial(Metal.withColor(Color.rgb(0.9, 0.9, 0.9)))
-                    .andAt(Matrix.point(4, 0, -10), Matrix.point(0, 4, -10), Matrix.point(-4, 0, -10)),
+                // Triangle.withMaterial(Metal.withColor(Color.rgb(0.9, 0.9, 0.9)))
+                //     .andAt(Matrix.point(4, 0, -10), Matrix.point(0, 4, -10), Matrix.point(-4, 0, -10)),
 
-                Triangle.withMaterial(Metal.withColor(Color.rgb(0.9, 0.9, 0.9)))
-                    .andAt(Matrix.point(-4, 0, -10), Matrix.point(-8, 4, -8), Matrix.point(-12, 0, -6)),
+                objLoader.parseString(
+                    "v 4 0 -10\n" +
+                    "v 0 4 -10\n" +
+                    "v -4 0 -10\n" +
+                    "v -4 0 -10\n" +
+                    "v -8 4 -8\n" +
+                    "v -12 0 -6\n" +
+                    "f 1 2 3\n" +
+                    "f 4 5 6\n"
+                ),
 
                 // Triangle.withMaterial(Lambertian.withColor(Color.rgb(0.6, 0.6, 0.6)))
                 //     .andAt(Matrix.point(0, 0, 0), Matrix.point(4, 0, 0), Matrix.point(0, 4, 0))));

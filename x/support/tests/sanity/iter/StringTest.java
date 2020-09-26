@@ -67,6 +67,12 @@ public final class StringTest {
         Assert.equals(Str.words("abc   def"), List.of("abc", "def"));
         Assert.equals(Str.words("abc   def\n"), List.of("abc", "def"));
         Assert.equals(Str.words("abc   def\n \nxxx"), List.of("abc", "def", "xxx"));
+
+        // Split when the splitter is missing
+        Assert.equals(Str.split("", "/"), List.of(""));
+        Assert.equals(Str.split("abc", "/"), List.of("abc"));
+        Assert.equals(Str.split("abc/", "/"), List.of("abc", ""));
+        Assert.equals(Str.split("abc/def", "/"), List.of("abc", "def"));
     }
 
     @Test
@@ -101,5 +107,11 @@ public final class StringTest {
             Assert.equals(Str.codeAt(s, 1), 56893);
             Assert.equals(s.length(), 2);
         }
+    }
+
+    @Test
+    public static void strip() {
+        Assert.equals(Str.strip("  hello world \n"), "hello world");
+        Assert.equals(Str.strip("abcdef"), "abcdef");
     }
 }
