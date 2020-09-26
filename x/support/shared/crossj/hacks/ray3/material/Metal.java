@@ -24,7 +24,10 @@ public final class Metal implements Material {
     }
 
     @Override
-    public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal) {
+    public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal, boolean front) {
+        if (!front) {
+            normal = normal.negate();
+        }
         var reflected = inputRay.getDirection().normalize().reflectAround(normal);
         if (fuzz > 0) {
             return Pair.of(albedo, Ray.of(point, reflected.add(Sphere.randomUnitVector().scale(fuzz))));

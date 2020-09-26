@@ -18,7 +18,10 @@ public final class Lambertian implements Material {
     }
 
     @Override
-    public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal) {
+    public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal, boolean front) {
+        if (!front) {
+            normal = normal.negate();
+        }
         return Pair.of(albedo, Ray.of(point, normal.add(Sphere.randomUnitVector())));
     }
 }

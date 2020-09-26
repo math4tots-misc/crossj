@@ -14,6 +14,8 @@ public final class Hit {
     private final Matrix point;
     private final Matrix normal;
     private final Material material;
+    private final boolean front;
+    private final Matrix facingNormal;
 
     private Hit(Ray ray, double t, Matrix point, Matrix normal, Material material) {
         this.ray = ray;
@@ -21,6 +23,8 @@ public final class Hit {
         this.point = point;
         this.normal = normal;
         this.material = material;
+        this.front = ray.getDirection().dot(normal) <= 0;
+        this.facingNormal = this.front ? normal : normal.negate();
     }
 
     public static Hit of(Ray ray, double t, Matrix point, Matrix normal, Material material) {
@@ -28,8 +32,8 @@ public final class Hit {
     }
 
     /**
-     * The distance along the ray (potentially negative) where
-     * this intersection happened
+     * The distance along the ray (potentially negative) where this intersection
+     * happened
      */
     public double getT() {
         return t;
@@ -57,11 +61,26 @@ public final class Hit {
     }
 
     /**
-     * Simulates scattering by returning a pair:
-     *      1: the color attenuation (i.e. how much of the light did this surface absorb?)
-     *      2: the scattered ray (i.e. in what direction was light bent?)
+     * Indicates whether the ray hit the front or back of the surface
+     */
+    public boolean isFront() {
+        return front;
+    }
+
+    /**
+     * Returns the normal taking into account the face the ray hit this surface at,
+     * instead of always just returning the normal from the front face.
+     */
+    public Matrix getFacingNormal() {
+        return facingNormal;
+    }
+
+    /**
+     * Simulates scattering by returning a pair: 1: the color attenuation (i.e. how
+     * much of the light did this surface absorb?) 2: the scattered ray (i.e. in
+     * what direction was light bent?)
      */
     public Pair<Color, Ray> scatter() {
-        return material.scatter(ray, point, normal);
+        return material.scatter(ray, point, normal, front);
     }
 }

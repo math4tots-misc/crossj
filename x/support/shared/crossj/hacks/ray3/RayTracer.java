@@ -5,6 +5,7 @@ import crossj.IO;
 import crossj.M;
 import crossj.Rand;
 import crossj.Time;
+import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray3.geo.Camera;
 import crossj.hacks.ray3.geo.Ray;
@@ -62,6 +63,23 @@ public final class RayTracer {
 
     public int getImageHeight() {
         return (int) (imageWidth / camera.getAspectRatio());
+    }
+
+    public void renderToBitmapFile(Surface scene, String filepath) {
+        var bitmap = renderToBitmap(scene);
+        IO.writeFileBytes(filepath, bitmap.toBMPBytes());
+    }
+
+    public Bitmap renderToBitmap(Surface scene) {
+        var imageHeight = getImageHeight();
+        var bitmap = Bitmap.withDimensions(imageWidth, imageHeight);
+        render(scene, (x, y, color) -> {
+            // The coordinate system of the Bitmap class is flipped (i.e. origin is upper-left corner)
+            // compared to the RayTracer's coordinate system (i.e. origin is lower-left corner).
+            bitmap.setColor(x, imageHeight - 1 - y, color);
+            return null;
+        });
+        return bitmap;
     }
 
     public void render(Surface scene, Func3<Void, Integer, Integer, Color> pixelCallback) {

@@ -16,7 +16,8 @@ public interface Material {
      * @param point    the point in space where the material was intersected by the
      *                 given ray
      * @param normal   the normal vector of the surface at the intersection point
+     * @param front    flag indicating whether the material was hit from the front
      * @return a pair of the color attenuation and the new ray
      */
-    Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal);
+    Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal, boolean front);
 }

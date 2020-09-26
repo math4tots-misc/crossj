@@ -46,12 +46,11 @@ public final class Dielectric implements Material {
     }
 
     @Override
-    public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal) {
+    public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal, boolean front) {
         // Determine if we hit from outside the material (i.e. against the normal).
         // If we're hitting the material from the inside, we flip the normal
         // for the snell's law calculations.
-        var hitFront = inputRay.getDirection().dot(normal) <= 0;
-        if (!hitFront) {
+        if (!front) {
             normal = normal.negate();
         }
 
@@ -61,8 +60,8 @@ public final class Dielectric implements Material {
         // so n1 = <air-refrative-index> = ~1,
         // n2 = <material's-reflective-index> = this.refractiveIndex.
         // n1 and n2 are flipped when we "exit" the object.
-        var n1 = hitFront ? 1 : refractiveIndex;
-        var n2 = hitFront ? refractiveIndex : 1;
+        var n1 = front ? 1 : refractiveIndex;
+        var n2 = front ? refractiveIndex : 1;
         var r = n1 / n2;
         var s1 = inputRay.getDirection().normalize();
         var tryRefract = computeRefractedVector(s1, normal, r);

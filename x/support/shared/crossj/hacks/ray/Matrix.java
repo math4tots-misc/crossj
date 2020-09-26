@@ -238,6 +238,10 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
         return new Matrix(ncols, DoubleArray.fromJavaDoubleArray(data));
     }
 
+    public static Matrix fromDoubleArray(int ncols, DoubleArray data) {
+        return new Matrix(ncols, data);
+    }
+
     public static Matrix fromListOfDoubleArrays(List<DoubleArray> rowList) {
         int nrows = rowList.size();
         int maxNCols = rowList.fold(0, (a, b) -> M.imax(a, b.size()));
@@ -364,6 +368,77 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
         Matrix ret = clone();
         ret.set(3, 0, newW);
         return ret;
+    }
+
+    /**
+     * Returns a new matrix with the given row dropped
+     */
+    public Matrix dropRow(int skipR) {
+        int nrows = getR();
+        int ncols = getC();
+        DoubleArray data = DoubleArray.withSize((nrows - 1) * ncols);
+        int i = 0;
+        for (int r = 0; r < nrows; r++) {
+            if (r == skipR) {
+                continue;
+            }
+            for (int c = 0; c < ncols; c++) {
+                data.set(i, get(r, c));
+                i++;
+            }
+        }
+        return new Matrix(ncols, data);
+    }
+
+    /**
+     * Returns a new matrix with the given column dropped
+     */
+    public Matrix dropColumn(int skipC) {
+        int nrows = getR();
+        int ncols = getC();
+        DoubleArray data = DoubleArray.withSize(nrows * (ncols - 1));
+        int i = 0;
+        for (int r = 0; r < nrows; r++) {
+            for (int c = 0; c < ncols; c++) {
+                if (c == skipC) {
+                    continue;
+                }
+                data.set(i, get(r, c));
+                i++;
+            }
+        }
+        return new Matrix(ncols - 1, data);
+    }
+
+    public Matrix addRows(DoubleArray... arrayArray) {
+        return addRowsFromList(List.fromJavaArray(arrayArray));
+    }
+
+    private Matrix addRowsFromList(List<DoubleArray> operands) {
+        int newRowCount = getR() + operands.size();
+        var newData = DoubleArray.withSize(newRowCount * ncols);
+        int i = 0;
+        for (double value : data) {
+            newData.set(i, value);
+            i++;
+        }
+        for (var other : operands) {
+            Assert.equalsWithMessage(other.size(), ncols, "when adding rows, columns did not match");
+            for (double value : other) {
+                newData.set(i, value);
+                i++;
+            }
+        }
+        return new Matrix(ncols, newData);
+    }
+
+    public Matrix addColumns(DoubleArray... input) {
+        return addColumnsFromList(List.fromJavaArray(input));
+    }
+
+    private Matrix addColumnsFromList(List<DoubleArray> input) {
+        // TODO: something more efficient
+        return transpose().addRowsFromList(input).transpose();
     }
 
     public double get(int row, int column) {
@@ -571,8 +646,7 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
     }
 
     public Matrix cross(Matrix b) {
-        Assert.that(this.isVector());
-        Assert.that(b.isVector());
+        Assert.withMessage(this.isVector() && b.isVector(), "Cross products require two vector arguments");
         return vector(getY() * b.getZ() - getZ() * b.getY(), getZ() * b.getX() - getX() * b.getZ(),
                 getX() * b.getY() - getY() * b.getX());
     }

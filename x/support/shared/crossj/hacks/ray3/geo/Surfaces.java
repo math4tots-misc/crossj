@@ -27,6 +27,10 @@ public final class Surfaces implements Surface, XIterable<Surface> {
         }
     }
 
+    public static Surfaces fromIterableWithoutBVH(XIterable<Surface> surfaces) {
+        return new Surfaces(Tuple.fromIterable(surfaces));
+    }
+
     @Override
     public XIterator<Surface> iter() {
         return tuple.iter();
