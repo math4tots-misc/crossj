@@ -27,7 +27,7 @@ public final class Main {
                 // vfov (vertical field of view)
                 Camera.DEFAULT_FIELD_OF_VIEW, Camera.DEFAULT_ASPECT_RATIO);
         var tracer = RayTracer.getDefault().withCamera(camera).withVerbose(true);
-        var scene = Surfaces.fromIterableWithoutBVH(List.of(
+        var scene = Surfaces.fromIterable(List.of(
                 // // draw the positive axes (x-r, y-g, z-b)
                 // Box.withMaterial(Lambertian.withColor(Color.rgb(0.8, 0.2, 0.2)))
                 //         .andTransform(Matrix.scaling(0.2, 0.2, 100).thenTranslate(0, 0, 50)),
