@@ -13,6 +13,9 @@ import crossj.hacks.ray3.material.Glossy;
 import crossj.hacks.ray3.material.Lambertian;
 import crossj.hacks.ray3.material.Metal;
 
+/**
+ * Glossy
+ */
 public final class Main1 {
     private static final String filepath = "out/ray3/y05-1.bmp";
 

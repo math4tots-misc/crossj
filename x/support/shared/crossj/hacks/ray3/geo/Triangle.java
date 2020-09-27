@@ -58,6 +58,10 @@ public final class Triangle implements Surface {
         return new Triangle(material, a, b, c);
     }
 
+    public Triangle andTransform(Matrix transform) {
+        return new Triangle(material, transform.multiply(a), transform.multiply(b), transform.multiply(c));
+    }
+
     @Override
     public Optional<Hit> hitRayInRange(Ray ray, double min, double max) {
         /**

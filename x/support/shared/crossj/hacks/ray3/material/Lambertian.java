@@ -21,4 +21,9 @@ public final class Lambertian implements Material {
     public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal, boolean front) {
         return Pair.of(albedo, Ray.of(point, normal.add(Sphere.randomUnitVector())));
     }
+
+    @Override
+    public String toString() {
+        return "Lambertian.withColor(" + albedo + ")";
+    }
 }

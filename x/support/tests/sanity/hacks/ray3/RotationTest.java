@@ -40,4 +40,11 @@ public final class RotationTest {
         // (0, 0, 1) -> (1/2, 1/2, sqrt(2)/2)
         Assert.almostEquals(rotation.multiply(Matrix.point(0, 0, 1)), Matrix.point(0.5, -0.5, M.sqrt(2) / 2));
     }
+
+    @Test
+    public static void zeroRotation() {
+        Assert.almostEquals(Matrix.yRotation(0), Matrix.identity(4));
+        Assert.almostEquals(Matrix.xRotation(0), Matrix.identity(4));
+        Assert.almostEquals(Matrix.zRotation(0), Matrix.identity(4));
+    }
 }

@@ -32,4 +32,17 @@ public final class Metal implements Material {
             return Pair.of(albedo, Ray.of(point, reflected));
         }
     }
+
+    public Color getAlbedo() {
+        return albedo;
+    }
+
+    public double getFuzz() {
+        return fuzz;
+    }
+
+    @Override
+    public String toString() {
+        return "Metal.withColor(" + albedo + ").andFuzz(" + fuzz + ")";
+    }
 }

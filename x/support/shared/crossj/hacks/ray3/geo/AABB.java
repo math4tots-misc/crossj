@@ -34,6 +34,18 @@ public final class AABB {
         return fromPoints(Tuple.fromJavaArray(pts));
     }
 
+    public Matrix getMin() {
+        return min;
+    }
+
+    public Matrix getMax() {
+        return max;
+    }
+
+    public Matrix getCenter() {
+        return min.add(max).scale(0.5);
+    }
+
     /**
      * Create a new AABB that surrounds all the given AABBs.
      */

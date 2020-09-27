@@ -24,6 +24,18 @@ public final class Glossy implements Material {
         return new Glossy(shininess, metal, lambertian);
     }
 
+    public Glossy setShininess(double shininess) {
+        return new Glossy(shininess, metal, lambertian);
+    }
+
+    public Glossy setReflectiveAlbedo(Color albedo) {
+        return new Glossy(shininess, Metal.withColor(albedo).andFuzz(metal.getFuzz()), lambertian);
+    }
+
+    public Glossy setDiffuseAlbedo(Color albedo) {
+        return new Glossy(shininess, metal, Lambertian.withColor(albedo));
+    }
+
     @Override
     public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal, boolean front) {
         if (Rand.getDefault().next() < shininess) {
@@ -31,5 +43,10 @@ public final class Glossy implements Material {
         } else {
             return lambertian.scatter(inputRay, point, normal, front);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Glossy.fromParts(" + shininess + ", " + metal + ", " + lambertian + ")";
     }
 }
