@@ -26,6 +26,7 @@ public final class AABB {
     }
 
     public static AABB withCoordinates(double x1, double y1, double z1, double x2, double y2, double z2) {
+
         return new AABB(Matrix.point(M.min(x1, x2), M.min(y1, y2), M.min(z1, z2)),
                 Matrix.point(M.max(x1, x2), M.max(y1, y2), M.max(z1, z2)));
     }
@@ -115,7 +116,7 @@ public final class AABB {
             }
             tmin = t0 > tmin ? t0 : tmin;
             tmax = t1 < tmax ? t1 : tmax;
-            if (tmax <= tmin) {
+            if (tmax < tmin) {
                 return false;
             }
         }

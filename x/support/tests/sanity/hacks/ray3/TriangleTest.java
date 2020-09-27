@@ -26,4 +26,17 @@ public final class TriangleTest {
         // parallel to plane
         Assert.that(!t.hitRay(Ray.of(Matrix.point(10, 1, -2), Matrix.vector(0, 1, 0))).isPresent());
     }
+
+    @Test
+    public static void hit2() {
+        var t = Triangle.at(Matrix.point(3, -3, -1), Matrix.point(3, 3, -1), Matrix.point(-3, 3, -1));
+        {
+            var ray = Ray.of(Matrix.point(0, 1, 0), Matrix.vector(0, 0, -1));
+            Assert.that(t.hitRay(ray).isPresent());
+        }
+        {
+            var ray = Ray.of(Matrix.point(0, -1, 0), Matrix.vector(0, 0, -1));
+            Assert.that(t.hitRay(ray).isEmpty());
+        }
+    }
 }

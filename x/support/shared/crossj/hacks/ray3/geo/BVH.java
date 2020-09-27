@@ -75,4 +75,9 @@ public final class BVH implements Surface {
         var hit2 = tryHit2.get();
         return Optional.of(hit1.getT() < hit2.getT() ? hit1 : hit2);
     }
+
+    @Override
+    public String toString() {
+        return "BVH[" + box + ", " + left + ", " + right + "]";
+    }
 }
