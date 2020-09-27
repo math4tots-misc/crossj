@@ -57,7 +57,6 @@ public final class TestFinder {
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks"), "sanity.hacks."),
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks", "image"), "sanity.hacks.image."),
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks", "ray"), "sanity.hacks.ray."),
-                    Pair.of(Paths.get("support", "tests", "sanity", "hacks", "ray3"), "sanity.hacks.ray3."),
                     Pair.of(Paths.get("support", "tests", "sanity"), "sanity."));
             for (Pair<Path, String> pair : basePaths) {
                 Path path = pair.get1();
