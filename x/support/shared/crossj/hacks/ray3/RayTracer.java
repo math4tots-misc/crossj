@@ -74,8 +74,9 @@ public final class RayTracer {
         var imageHeight = getImageHeight();
         var bitmap = Bitmap.withDimensions(imageWidth, imageHeight);
         render(scene, (x, y, color) -> {
-            // The coordinate system of the Bitmap class is flipped (i.e. origin is upper-left corner)
-            // compared to the RayTracer's coordinate system (i.e. origin is lower-left corner).
+            // The coordinate system of the Bitmap class is flipped (i.e. origin is
+            // upper-left corner) compared to the RayTracer's coordinate system (i.e. origin
+            // is lower-left corner).
             bitmap.setColor(x, imageHeight - 1 - y, color);
             return null;
         });

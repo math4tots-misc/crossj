@@ -302,6 +302,10 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
         return Range.upto(getR()).map(r -> getRow(r));
     }
 
+    public XIterator<Double> getValues() {
+        return data.iter();
+    }
+
     public boolean isTuple() {
         return ncols == 1;
     }

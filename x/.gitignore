@@ -4,4 +4,6 @@
 /.project
 /out
 /sources.txt
-*.obj
+data/ray/*.obj
+data/ray/*.mtl
+out.bmp

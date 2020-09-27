@@ -68,6 +68,14 @@ public final class Str {
         return parts;
     }
 
+    public static String upto(String string, int i) {
+        return string.substring(0, i);
+    }
+
+    public static String from(String string, int i) {
+        return string.substring(i, string.length());
+    }
+
     public static boolean isSpaceChar(char ch) {
         return ImplChar.isWhitespace(ch);
     }
@@ -139,5 +147,19 @@ public final class Str {
             return false;
         }
         return string.substring(start, end).equals(part);
+    }
+
+    public static String lpad(String string, int len, String prefix) {
+        while (string.length() < len) {
+            string = prefix + string;
+        }
+        return string;
+    }
+
+    public static String rpad(String string, int len, String suffix) {
+        while (string.length() < len) {
+            string += suffix;
+        }
+        return string;
     }
 }

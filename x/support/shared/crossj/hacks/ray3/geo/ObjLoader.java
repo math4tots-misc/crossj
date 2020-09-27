@@ -82,8 +82,12 @@ public final class ObjLoader {
     }
 
     public Surface parseLines(XIterable<String> lines) {
+        return Surfaces.fromIterable(parseLinesToTriangles(lines).map(x -> x));
+    }
+
+    public List<Triangle> parseLinesToTriangles(XIterable<String> lines) {
         var vertices = List.<Matrix>of();
-        var faces = List.<Surface>of();
+        var faces = List.<Triangle>of();
         var material = defaultMaterial;
         for (var line : lines) {
             line = Str.strip(line);
@@ -104,13 +108,12 @@ public final class ObjLoader {
                 faces.add(Triangle.withMaterial(material).andAt(parts.get(0), parts.get(1), parts.get(2)));
             } else if (Str.startsWith(line, "usemtl ")) {
                 var name = Str.words(line).get(1);
-                var newMaterial = materialMap.get(name);
+                var newMaterial = materialMap.getOrNull(name);
                 if (newMaterial == null) {
                     if (verbose) {
                         IO.println("ObjLoader: unrecognized material: " + name);
                     }
                 } else {
-                    IO.println("usemtl " + name + " => " + newMaterial);
                     material = newMaterial;
                 }
             } else if (Str.startsWith(line, "g") || Str.startsWith(line, "s ")) {
@@ -122,7 +125,7 @@ public final class ObjLoader {
                 }
             }
         }
-        return Surfaces.fromIterable(faces);
+        return faces;
     }
 
     public void parseMTLString(String string) {
@@ -135,6 +138,10 @@ public final class ObjLoader {
 
     public Surface load(String path) {
         return parseLines(Str.lines(IO.readFile(path)));
+    }
+
+    public List<Triangle> loadTriangles(String path) {
+        return parseLinesToTriangles(Str.lines(IO.readFile(path)));
     }
 
     public void loadMTL(String path) {

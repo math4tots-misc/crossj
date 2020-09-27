@@ -1,5 +1,12 @@
 "use strict";
 const $CJ = Object.create(null);
+const cliargs = (function() {
+    try {
+        return process.argv.slice(2);
+    } catch (e) {
+        return [];
+    }
+})();
 function $LAZY(f) {
     var result = undefined;
     return function () {

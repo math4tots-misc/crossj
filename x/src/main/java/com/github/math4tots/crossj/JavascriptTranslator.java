@@ -143,7 +143,7 @@ public final class JavascriptTranslator implements ITranslator {
         sb.append("];\n");
         if (main.isPresent()) {
             String m = main.get();
-            sb.append(getClassReference(m) + ".M$main([]);\n");
+            sb.append(getClassReference(m) + ".M$main(cliargs);\n");
         }
         sb.append("return $CJ;\n");
         sb.append("})();\n");
@@ -727,6 +727,20 @@ public final class JavascriptTranslator implements ITranslator {
                                 translateExpression((Expression) node.arguments().get(0));
                                 sb.append(",");
                                 translateExpression((Expression) node.arguments().get(1));
+                                sb.append(")");
+                                break;
+                            }
+                            case "java.lang.String.endsWith": {
+                                translateExpression(owner);
+                                sb.append(".endsWith(");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "java.lang.String.startsWith": {
+                                translateExpression(owner);
+                                sb.append(".startsWith(");
+                                translateExpression((Expression) node.arguments().get(0));
                                 sb.append(")");
                                 break;
                             }

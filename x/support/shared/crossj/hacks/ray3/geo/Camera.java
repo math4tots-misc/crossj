@@ -13,6 +13,9 @@ public final class Camera {
     public static final double DEFAULT_FIELD_OF_VIEW = M.TAU / 4;
     public static final double DEFAULT_ASPECT_RATIO = 16.0 / 9.0;
 
+    private final Matrix lookFrom;
+    private final Matrix lookAt;
+    private final Matrix viewUp;
     private final double aspectRatio;
     private final Matrix origin;
     private final Matrix lowerLeftCorner;
@@ -27,6 +30,10 @@ public final class Camera {
         Assert.withMessage(lookFrom.isPoint(), "Camera requires 'lookFrom' to be a point");
         Assert.withMessage(lookAt.isPoint(), "Camera requires 'lookAt' to be a point");
         Assert.withMessage(viewUp.isVector(), "Camera requires 'viewUp' to be a vector");
+        this.lookFrom = lookFrom;
+        this.lookAt = lookAt;
+        this.viewUp = viewUp;
+
         var h = M.tan(vfov / 2);
         var viewportHeight = 2.0 * h;
         var viewportWidth = aspectRatio * viewportHeight;
@@ -97,6 +104,18 @@ public final class Camera {
     public static Camera withDepthOfField(Matrix lookFrom, Matrix lookAt, Matrix viewUp, double vfov,
             double aspectRatio, double aperture, double focusDistance) {
         return new Camera(lookFrom, lookAt, viewUp, vfov, aspectRatio, aperture, focusDistance);
+    }
+
+    public Matrix getLookAt() {
+        return lookAt;
+    }
+
+    public Matrix getLookFrom() {
+        return lookFrom;
+    }
+
+    public Matrix getViewUp() {
+        return viewUp;
     }
 
     public Matrix getOrigin() {

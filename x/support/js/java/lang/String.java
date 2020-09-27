@@ -23,6 +23,10 @@ public final class String implements Comparable<String> {
 
     public native String substring(int beginIndex, int endIndex);
 
+    public native boolean startsWith(String prefix);
+
+    public native boolean endsWith(String suffix);
+
     @Override
     public native int hashCode();
 

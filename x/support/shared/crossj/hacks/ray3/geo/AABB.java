@@ -1,6 +1,7 @@
 package crossj.hacks.ray3.geo;
 
 import crossj.Assert;
+import crossj.Eq;
 import crossj.List;
 import crossj.M;
 import crossj.Tuple;
@@ -90,6 +91,10 @@ public final class AABB {
         return (getMinForAxis(axis) + getMaxForAxis(axis)) / 2;
     }
 
+    public double getLengthForAxis(int axis) {
+        return getMaxForAxis(axis) - getMinForAxis(axis);
+    }
+
     /**
      * Alias for
      * <code>this.hitInRange(ray, Surface.DEFAULT_T_MIN, Surface.DEFAULT_T_MAX)</code>
@@ -126,5 +131,37 @@ public final class AABB {
     @Override
     public String toString() {
         return "AABB.withPoints(" + min + ", " + max + ")";
+    }
+
+    /**
+     * If this AABB is degenerate, return a non-degenerate
+     * bounding box containing this one. Otherwise return this.
+     */
+    public AABB reify() {
+        var smallestNonZeroLen = M.INFINITY;
+        var degenerateDims = List.<Integer>of();
+        for (int axis = 0; axis < 3; axis++) {
+            var len = getMaxForAxis(axis) - getMinForAxis(axis);
+            if (Eq.almostForDouble(len, 0)) {
+                degenerateDims.add(axis);
+            } else {
+                smallestNonZeroLen = M.min(smallestNonZeroLen, len);
+            }
+        }
+        if (degenerateDims.size() == 0) {
+            return this;
+        } else if (smallestNonZeroLen == M.INFINITY) {
+            // just being lazy here... maybe have a unit aabb around the point?
+            return AABB.unbounded();
+        } else {
+            var radius = smallestNonZeroLen / 2;
+            var newMin = min.getValues().list();
+            var newMax = max.getValues().list();
+            for (int axis : degenerateDims) {
+                newMin.set(axis, newMin.get(axis) - radius);
+                newMax.set(axis, newMax.get(axis) + radius);
+            }
+            return new AABB(Matrix.withColumns(newMin), Matrix.withColumns(newMax));
+        }
     }
 }

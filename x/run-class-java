@@ -4,4 +4,4 @@ javac -d out \
     $(find support/java -type f | grep '\.java$') \
     $(find support/shared -type f | grep '\.java$') \
     && \
-java -cp out "$1"
+java -cp out "$1" "${@:2}"
