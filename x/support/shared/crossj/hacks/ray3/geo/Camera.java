@@ -72,6 +72,19 @@ public final class Camera {
     }
 
     /**
+     * Creates a new camera with just lookFrom and lookAt parameters.
+     *
+     * All other parameters are filled in with defaults.
+     *
+     * viewUp = positive y axis,<br/>
+     * vfov = DEFAULT_FIELD_OF_VIEW = M.TAU / 4,<br/>
+     * aspectRatio = DEFAULT_ASPECT_RATIO = 16 / 9
+     */
+    public static Camera basic(Matrix lookFrom, Matrix lookAt) {
+        return of(lookFrom, lookAt, Matrix.vector(0, 1, 0), DEFAULT_FIELD_OF_VIEW, DEFAULT_ASPECT_RATIO);
+    }
+
+    /**
      * @param lookFrom      point indicating where the camera should look from
      * @param lookAt        point where this camera is looking at
      * @param viewUp        vector indicating which directio nis up

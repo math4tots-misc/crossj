@@ -581,6 +581,14 @@ public final class Matrix implements AlmostEq<Matrix>, TypedEq<Matrix> {
 
     /**
      * Part of a fluent interface for creating transformation matrices. Returns a
+     * new transform that will apply the given translation after applying this.
+     */
+    public Matrix thenShear(double xy, double xz, double yx, double yz, double zx, double zy) {
+        return shearing(xy, xz, yx, yz, zx, zy).multiply(this);
+    }
+
+    /**
+     * Part of a fluent interface for creating transformation matrices. Returns a
      * new transform that will apply the given scaling after applying this.
      */
     public Matrix thenScale(double x, double y, double z) {

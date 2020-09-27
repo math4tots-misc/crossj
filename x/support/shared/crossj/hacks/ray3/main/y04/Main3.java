@@ -4,6 +4,7 @@ import crossj.IO;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray3.RayTracer;
+import crossj.hacks.ray3.geo.Box;
 import crossj.hacks.ray3.geo.Camera;
 import crossj.hacks.ray3.geo.ObjLoader;
 import crossj.hacks.ray3.geo.Sphere;
@@ -33,17 +34,25 @@ public final class Main3 {
                 Matrix.vector(0, 1, 0),
                 // vfov (vertical field of view)
                 Camera.DEFAULT_FIELD_OF_VIEW, Camera.DEFAULT_ASPECT_RATIO);
-        var tracer = RayTracer.getDefault().withCamera(camera).withVerbose(true);
+        var tracer = RayTracer.getDefault().withCamera(camera).withVerbose(true).withMaxDepth(300);
         var cow = objLoader.load("data/ray/cow.obj");
         IO.println("cow.getBoundingBox() = " + cow.getBoundingBox());
         var scene = Surfaces.of(
                 // main object
                 cow,
+
                 // big mirrors
-                Triangle.withMaterial(Metal.withColor(Color.rgb(0.6, 0.6, 0.6))).andAt(
-                    Matrix.point(-20, 0, -12), Matrix.point(20, 0, -12), Matrix.point(0, 30, -12)),
-                Triangle.withMaterial(Metal.withColor(Color.rgb(0.6, 0.6, 0.6))).andAt(
-                    Matrix.point(-20, 0, -12), Matrix.point(-20, 0, 32), Matrix.point(-20, 30, 0)),
+                Triangle.withMaterial(Metal.withColor(Color.rgb(0.6, 0.6, 0.6))).andAt(Matrix.point(-20, 0, -12),
+                        Matrix.point(20, 0, -12), Matrix.point(0, 30, -12)),
+                Triangle.withMaterial(Metal.withColor(Color.rgb(0.6, 0.6, 0.6))).andAt(Matrix.point(-20, 0, -12),
+                        Matrix.point(-20, 0, 32), Matrix.point(-20, 30, 0)),
+
+                // glass box
+                // Box.withMaterial(Dielectric.withRefractiveIndex(1.5))
+                // .andTransform(Matrix.scaling(2, 2, 2).thenTranslate(-3.5, 3, 2)),
+                Box.withMaterial(Lambertian.withColor(Color.rgb(0.1, 0.4, 0.22)))
+                        .andTransform(Matrix.scaling(2, 2, 2).thenTranslate(-3.5, 3, 2)),
+
                 // ground
                 Sphere.withMaterial(Lambertian.withColor(Color.rgb(0.8, 0.8, 0.4)))
                         .andTransform(Matrix.scaling(1000, 1000, 1000).thenTranslate(0, -1005, -1)));

@@ -46,7 +46,6 @@ public final class ObjLoader {
                 // unrecognized
             }
         }
-        IO.println("faces = " + faces);
         return Surfaces.fromIterable(faces);
     }
 

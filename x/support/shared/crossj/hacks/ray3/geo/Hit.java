@@ -81,6 +81,6 @@ public final class Hit {
      * what direction was light bent?)
      */
     public Pair<Color, Ray> scatter() {
-        return material.scatter(ray, point, normal, front);
+        return material.scatter(ray, point, facingNormal, front);
     }
 }

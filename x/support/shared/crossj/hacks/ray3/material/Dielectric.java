@@ -47,13 +47,6 @@ public final class Dielectric implements Material {
 
     @Override
     public Pair<Color, Ray> scatter(Ray inputRay, Matrix point, Matrix normal, boolean front) {
-        // Determine if we hit from outside the material (i.e. against the normal).
-        // If we're hitting the material from the inside, we flip the normal
-        // for the snell's law calculations.
-        if (!front) {
-            normal = normal.negate();
-        }
-
         // r = n1/n2
         // generally, if we're on the "outside" we assume a ~1 refractiveIndex
         // for the air. If we hit from the front, we're "entering" the object,

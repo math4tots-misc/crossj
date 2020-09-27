@@ -100,7 +100,10 @@ public final class Sphere implements Surface {
     }
 
     public static Matrix randomUnitVector() {
-        var rng = Rand.getDefault();
+        return randomUnitVectorWithRng(Rand.getDefault());
+    }
+
+    public static Matrix randomUnitVectorWithRng(Rand rng) {
         var x = rng.nextGaussian();
         var y = rng.nextGaussian();
         var z = rng.nextGaussian();
