@@ -8,6 +8,8 @@ import crossj.Str;
 import crossj.XIterable;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.material.Solid;
+import crossj.hacks.ray.material.Dielectric;
 import crossj.hacks.ray.material.Glossy;
 import crossj.hacks.ray.material.Lambertian;
 import crossj.hacks.ray.material.Material;
@@ -43,7 +45,7 @@ public final class ObjLoader {
 
     public void parseMTLLines(XIterable<String> lines) {
         var currentMaterialName = "";
-        Glossy currentMaterial = null;
+        Solid currentMaterial = null;
         for (var line : lines) {
             line = Str.strip(line);
             if (line.length() == 0 || Str.startsWith(line, "#")) {
@@ -53,20 +55,28 @@ public final class ObjLoader {
                     materialMap.put(currentMaterialName, currentMaterial);
                 }
                 currentMaterialName = Str.words(line).get(1);
-                currentMaterial = Glossy.fromParts(0.5, Metal.withColor(Color.WHITE),
-                        Lambertian.withColor(DEFAULT_DIFFFUSE_COLOR));
+                currentMaterial = Solid.fromParts(1.0, Glossy.fromParts(0.5, Metal.withColor(Color.WHITE),
+                        Lambertian.withColor(DEFAULT_DIFFFUSE_COLOR)), Dielectric.withRefractiveIndex(1.5));
             } else if (currentMaterial != null && Str.startsWith(line, "Ns ")) {
                 // shininess
                 // ranges from 0 to 1000
                 var shininess = Num.parseDouble(Str.words(line).get(1)) / 1000;
-                currentMaterial = currentMaterial.setShininess(shininess);
+                currentMaterial = currentMaterial.withShininess(shininess);
+            } else if (currentMaterial != null && Str.startsWith(line, "d ")) {
+                // dissolve
+                var dissolve = Num.parseDouble(Str.words(line).get(1));
+                currentMaterial = currentMaterial.withDissolve(dissolve);
+            } else if (currentMaterial != null && Str.startsWith(line, "Ni")) {
+                // refractive index
+                var refractiveIndex = Num.parseDouble(Str.words(line).get(1));
+                currentMaterial = currentMaterial.withRefractiveIndex(refractiveIndex);
             } else if (currentMaterial != null && Str.startsWith(line, "Kd ")) {
                 // diffuse
                 var rgb = Str.words(line).iter().skip(1).take(3).map(x -> Num.parseDouble(x)).list();
-                currentMaterial = currentMaterial.setDiffuseAlbedo(Color.rgb(rgb.get(0), rgb.get(1), rgb.get(2)));
+                currentMaterial = currentMaterial.withDiffuseAlbedo(Color.rgb(rgb.get(0), rgb.get(1), rgb.get(2)));
             } else if (currentMaterial != null && Str.startsWith(line, "Ks ")) {
                 var rgb = Str.words(line).iter().skip(1).take(3).map(x -> Num.parseDouble(x)).list();
-                currentMaterial = currentMaterial.setReflectiveAlbedo(Color.rgb(rgb.get(0), rgb.get(1), rgb.get(2)));
+                currentMaterial = currentMaterial.withReflectiveAlbedo(Color.rgb(rgb.get(0), rgb.get(1), rgb.get(2)));
             } else if (Str.startsWith(line, "illum ") || Str.startsWith(line, "Ka ")) {
                 // ignored for now
             } else {

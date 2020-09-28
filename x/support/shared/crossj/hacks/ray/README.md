@@ -19,3 +19,13 @@ References:
     (this was my primary reference for ray2 until I abandoned it)
 
 TODO: Merge ray3 and ray
+
+===
+
+Sample cli usage:
+
+./run-class-java crossj.hacks.ray3.Main -v \
+    data/ray/mod/scene1/vp.mtl \
+    data/ray/mod/scene1/cow1.obj \
+    data/ray/mod/scene1/walls1.obj \
+    -c 0,0,8/0,0,0
