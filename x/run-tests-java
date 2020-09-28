@@ -1,5 +1,7 @@
 #!/bin/bash
 mkdir -p out && \
+rm -rf out/crossj && \
+rm -rf out/sanity && \
 javac -d out \
     $(find support/java -type f | grep '\.java$') \
     $(find support/shared -type f | grep '\.java$') \

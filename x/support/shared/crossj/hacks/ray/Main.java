@@ -36,10 +36,10 @@ public final class Main {
                 } else if (arg.equals("-v")) {
                     verbose = true;
                     objLoader = objLoader.setVerbose(verbose);
-                } else if (arg.endsWith(".mtl") || arg.endsWith(".obj")) {
+                } else if (arg.endsWith(".mtl") || arg.endsWith(".obj") || arg.endsWith(".obj2")) {
                     filepaths.add(arg);
                 } else {
-                    IO.println("Unrecognized flag or argument: " + arg);
+                    throw XError.withMessage("Unrecognized flag or argument: " + arg);
                 }
             } else if (flag.equals("-c")) {
                 var parts = Str.split(arg, "/");
@@ -71,6 +71,17 @@ public final class Main {
                     IO.print(fmtbox(box) + " ");
                 }
                 surfaces.addAll(triangles.map(x -> x));
+            } else if (path.endsWith(".obj2")) {
+                var obj2Surfaces = objLoader.loadObj2(path);
+                if (verbose) {
+                    if (obj2Surfaces.size() == 0) {
+                        IO.println("WARNING: no objects found in " + path);
+                    } else {
+                        var box = AABB.join(obj2Surfaces.map(t -> t.getBoundingBox()));
+                        IO.print(fmtbox(box) + " ");
+                    }
+                }
+                surfaces.addAll(obj2Surfaces);
             } else {
                 throw XError.withMessage("Unrecognizd file extension: " + path);
             }
@@ -89,6 +100,12 @@ public final class Main {
         if (verbose) {
             IO.println("DONE (" + fmtnum(endBuildScene - startBuildScene) + "s)");
             IO.println("Scene box: " + fmtbox(sceneBox));
+        }
+        if (camera == null) {
+            camera = objLoader.getSuggestedCameraOrNull();
+            if (camera != null && verbose) {
+                IO.println("Using scene suggested camera");
+            }
         }
         if (camera == null) {
             IO.println("Computing auto-camera");

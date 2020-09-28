@@ -1,0 +1,54 @@
+# Just some walls
+
+camera 0,3,8 0,0,0
+
+def wallXY {
+    # A unit wall along the XY-plane
+    v 1 0 0
+    v 1 1 0
+    v 0 1 0
+    v 0 0 0
+    f 1 2 3
+    f 1 3 4
+}
+
+def wallYZ {
+    # A unit wall along the YZ plane
+    rotate y -0.25
+    include wallXY
+}
+
+def wallXZ {
+    # A unit wall along the XZ plane
+    rotate x 0.25
+    include wallXY
+}
+
+{
+    # far wall
+    usemtl brown
+    translate -10 -10 -3
+    scale 20
+    include wallXY
+}
+{
+    # left wall
+    usemtl brown
+    translate -8 -10 -10
+    scale 20
+    include wallYZ
+}
+{
+    # right wall
+    usemtl brown
+    translate  8 -10 -10
+    scale 20
+    include wallYZ
+}
+{
+    # floor
+    usemtl flbrown
+    translate -10 -4 -10
+    scale 20
+    include wallXZ
+}

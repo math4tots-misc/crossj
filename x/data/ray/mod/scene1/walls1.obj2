@@ -1,13 +1,21 @@
 # Add a wall for cow1.obj
 
+def wall {
+    v  6 -6 -3
+    v  6  6 -3
+    v -6  6 -3
+    v -6 -6 -3
+    f 1 2 3
+    f 1 3 4
+}
+
 # far wall
-usemtl grey
+call wall
+
 v  6 -6 -3
 v  6  6 -3
 v -6  6 -3
 v -6 -6 -3
-f 1 2 3
-f 1 3 4
 
 # floor
 usemtl flbrown

@@ -19,4 +19,18 @@ public final class Num {
     public static int parseInt(String s) {
         return Integer.parseInt(s);
     }
+
+    public static String format(double x) {
+        var i = (int) (x * 1000);
+        var afterDecimal = Str.lpad("" + (i % 1000), 3, "0");
+        var beforeDecimal = "" + (i / 1000);
+        while (afterDecimal.endsWith("0")) {
+            afterDecimal = afterDecimal.substring(0, afterDecimal.length() - 1);
+        }
+        if (afterDecimal.length() == 0) {
+            return beforeDecimal;
+        } else {
+            return beforeDecimal + "." + afterDecimal;
+        }
+    }
 }

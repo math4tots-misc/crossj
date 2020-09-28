@@ -3,6 +3,7 @@ package crossj.hacks.ray;
 import crossj.Func3;
 import crossj.IO;
 import crossj.M;
+import crossj.Num;
 import crossj.Rand;
 import crossj.Time;
 import crossj.hacks.image.Bitmap;
@@ -96,7 +97,8 @@ public final class RayTracer {
             if (verbose) {
                 var doneRatio = (imageHeight - y) / (double) imageHeight;
                 if (doneRatio - lastUpdate >= 0.05) {
-                    IO.println(((int) (doneRatio * 100)) + "% done");
+                    var elapsedTime = Num.format(Time.now() - startTime);
+                    IO.println(((int) (doneRatio * 100)) + "% done (" + elapsedTime + "s elapsed)");
                     lastUpdate = doneRatio;
                 }
             }
