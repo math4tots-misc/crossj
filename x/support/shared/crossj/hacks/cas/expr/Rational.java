@@ -43,7 +43,7 @@ public final class Rational implements Number {
         return denominator;
     }
 
-    public Rational simplify() {
+    public Rational normalizeRational() {
         if (denominator.equals(BigInt.one())) {
             return this;
         } else {
@@ -59,8 +59,8 @@ public final class Rational implements Number {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Rational) {
-            var a = simplify();
-            var b = ((Rational) obj).simplify();
+            var a = normalizeRational();
+            var b = ((Rational) obj).normalizeRational();
             return a.numerator.equals(b.numerator) && a.denominator.equals(b.denominator);
         } else {
             return false;
