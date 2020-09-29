@@ -1,0 +1,121 @@
+# Just some walls
+
+camera 0,10,15 0,0,0
+
+def wallXY {
+    # A unit wall along the XY-plane
+    v 1 0 0
+    v 1 1 0
+    v 0 1 0
+    v 0 0 0
+    f 1 2 3
+    f 1 3 4
+}
+
+def wallYZ {
+    # A unit wall along the YZ plane
+    rotate y -0.25
+    include wallXY
+}
+
+def wallXZ {
+    # A unit wall along the XZ plane
+    rotate x 0.25
+    include wallXY
+}
+
+defmtl brown {
+    Kd 0.0857 0.0147 0.0000
+    Ks 0.1633 0.0240 0.0000
+    Ns 65.8900
+}
+
+defmtl flbrown {
+    Kd 0.1102 0.0120 0.0013
+    Ns 800
+}
+
+defmtl yellow {
+    Kd 0.6 0.6 0.2
+    Ns 10
+}
+
+def walls {
+    {
+        # far wall
+        usemtl brown
+        translate -25 -25 -20
+        scale 50
+        include wallXY
+    }
+    {
+        # back wall
+        usemtl brown
+        translate -25 -25 30
+        scale 50
+        include wallXY
+    }
+    {
+        # left wall
+        usemtl brown
+        translate -16 -40 -40
+        scale 80
+        include wallYZ
+    }
+    {
+        # right wall
+        usemtl brown
+        translate  16 -40 -40
+        scale 80
+        include wallYZ
+    }
+    {
+        # floor
+        usemtl flbrown
+        translate -40 0 -40
+        scale 80
+        include wallXZ
+    }
+}
+
+include walls
+
+def leaf {
+    v  0.25  0  0
+    v  0     1  0
+    v -0.25  0  0
+    f 1 2 3
+}
+
+def petals {
+    usemtl yellow
+    scale 6
+    {
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+        rotate z 0.1
+        include leaf
+    }
+}
+
+{
+    translate 0 4 0
+    rotate x -0.1
+    include petals
+}

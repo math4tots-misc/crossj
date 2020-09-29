@@ -47,4 +47,18 @@ public final class RotationTest {
         Assert.almostEquals(Matrix.xRotation(0), Matrix.identity(4));
         Assert.almostEquals(Matrix.zRotation(0), Matrix.identity(4));
     }
+
+    @Test
+    public static void generalVsAARotations() {
+        // check that axis algined rotations are about the same
+        Assert.equals(Matrix.xRotation(0.2), Matrix.rotation(Matrix.point(0, 0, 0), Matrix.vector(1, 0, 0), 0.2));
+        Assert.equals(Matrix.yRotation(0.2), Matrix.rotation(Matrix.point(0, 0, 0), Matrix.vector(0, 1, 0), 0.2));
+        Assert.equals(Matrix.zRotation(0.2), Matrix.rotation(Matrix.point(0, 0, 0), Matrix.vector(0, 0, 1), 0.2));
+        Assert.equals(Matrix.xRotation(-0.2), Matrix.rotation(Matrix.point(0, 0, 0), Matrix.vector(1, 0, 0), -0.2));
+        Assert.equals(Matrix.yRotation(-0.2), Matrix.rotation(Matrix.point(0, 0, 0), Matrix.vector(0, 1, 0), -0.2));
+        Assert.equals(Matrix.zRotation(-0.2), Matrix.rotation(Matrix.point(0, 0, 0), Matrix.vector(0, 0, 1), -0.2));
+        Assert.almostEquals(Matrix.xRotation(-0.2), Matrix.xRotation(M.TAU - 0.2));
+        Assert.almostEquals(Matrix.yRotation(-0.2), Matrix.yRotation(M.TAU - 0.2));
+        Assert.almostEquals(Matrix.zRotation(-0.2), Matrix.zRotation(M.TAU - 0.2));
+    }
 }

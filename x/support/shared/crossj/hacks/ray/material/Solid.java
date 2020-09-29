@@ -64,4 +64,14 @@ public final class Solid implements Material {
     public Solid withRefractiveIndex(double refractiveIndex) {
         return withDielectric(Dielectric.withRefractiveIndex(refractiveIndex));
     }
+
+    public Material simplify() {
+        if (dissolve == 1.0) {
+            return glossy.simplify();
+        } else if (dissolve == 0.0) {
+            return dielectric;
+        } else {
+            return this;
+        }
+    }
 }

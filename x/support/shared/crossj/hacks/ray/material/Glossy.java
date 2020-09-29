@@ -49,4 +49,14 @@ public final class Glossy implements Material {
     public String toString() {
         return "Glossy.fromParts(" + shininess + ", " + metal + ", " + lambertian + ")";
     }
+
+    public Material simplify() {
+        if (shininess == 1.0) {
+            return metal;
+        } else if (shininess == 0.0) {
+            return lambertian;
+        } else {
+            return this;
+        }
+    }
 }

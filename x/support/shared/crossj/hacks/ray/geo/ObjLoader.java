@@ -34,6 +34,7 @@ public final class ObjLoader {
         this.defaultMaterial = defaultMaterial;
         this.verbose = verbose;
     }
+
     public static ObjLoader getDefault() {
         return usingMaterial(DEFAULT_MATERIAL);
     }
@@ -207,6 +208,7 @@ public final class ObjLoader {
                         .andTransform(transformStack.last()));
                 i++;
             } else if (cmd.equals("usemtl")) {
+                checkLine(i, line, 1, false);
                 var name = line.get(1);
                 var newMaterial = materialMap.getOrNull(name);
                 if (newMaterial == null) {
@@ -216,6 +218,65 @@ public final class ObjLoader {
                 } else {
                     materialStack.set(materialStack.size() - 1, newMaterial);
                 }
+                i++;
+            } else if (cmd.equals("defmtl")) {
+                // define material
+                checkLine(i, line, 1, true);
+                var name = line.get(1);
+                var dissolve = 1.0;
+                var refractiveIndex = 1.5;
+                var shininess = 0.0;
+                var specular = Color.rgb(0.2, 0.2, 0.2);
+                var diffuse = Color.rgb(0.8, 0.8, 0.8);
+                var fuzz = 0.0;
+                i++;
+                while (i < lines.size()) {
+                    line = lines.get(i);
+                    if (line.size() == 0) {
+                        i++;
+                        continue;
+                    }
+                    var attr = line.get(0);
+                    if (attr.equals("}") && line.size() == 1) {
+                        break;
+                    }
+                    if (attr.equals("Kd")) {
+                        // diffuse color
+                        checkLine(i, line, 3, false);
+                        var rgb = line.iter().skip(1).take(3).map(x -> Num.parseDouble(x)).list();
+                        diffuse = Color.rgb(rgb.get(0), rgb.get(1), rgb.get(2));
+                    } else if (attr.equals("Ks")) {
+                        // specular color
+                        checkLine(i, line, 3, false);
+                        var rgb = line.iter().skip(1).take(3).map(x -> Num.parseDouble(x)).list();
+                        specular = Color.rgb(rgb.get(0), rgb.get(1), rgb.get(2));
+                    } else if (attr.equals("Ns")) {
+                        // shininess from 0 to 1000
+                        checkLine(i, line, 1, false);
+                        shininess = Num.parseDouble(line.get(1)) / 1000;
+                    } else if (attr.equals("Ni")) {
+                        // refractive index
+                        checkLine(i, line, 1, false);
+                        refractiveIndex = Num.parseDouble(line.get(1));
+                    } else if (attr.equals("d")) {
+                        // dissolve
+                        checkLine(i, line, 1, false);
+                        dissolve = Num.parseDouble(line.get(1));
+                    } else if (attr.equals("sharpness")) {
+                        // sharpness/inverse-fuzz
+                        checkLine(i, line, 1, false);
+                        fuzz = 1 - (Num.parseDouble(line.get(1)) / 1000);
+                    } else {
+                        throw XError.withMessage("On line " + (i + 1) + ": unrecognized defmtl attribute: " + attr);
+                    }
+                    i++;
+                }
+                materialMap.put(name, Solid
+                        .fromParts(dissolve,
+                                Glossy.fromParts(shininess, Metal.withColor(specular).andFuzz(fuzz),
+                                        Lambertian.withColor(diffuse)),
+                                Dielectric.withRefractiveIndex(refractiveIndex))
+                        .simplify());
                 i++;
             } else if (cmd.equals("camera")) {
                 // the suggested camera.
@@ -267,6 +328,7 @@ public final class ObjLoader {
                     checkLine(i, line, 2, false);
                     var axis = parseAxis(line.get(1));
                     var angle = parseAngle(line.get(2));
+                    IO.println("angle = " + angle + " radians");
                     transform = Matrix.rotation(axis.get1(), axis.get2(), angle);
                 }
                 var j = transformStack.size() - 1;
