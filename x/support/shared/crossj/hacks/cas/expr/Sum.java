@@ -8,6 +8,8 @@ import crossj.XIterable;
 /**
  * A sum of expressions.
  *
+ * Associativity is always assumed.
+ *
  * "Sum" expressions cannot be directly nested -- if it were allowed,
  * it would be visually confusing (if a separation or nesting is really desired
  * use a Parenthetical expression).
@@ -23,7 +25,7 @@ public final class Sum implements Expression {
     public static Expression fromTuple(Tuple<Expression> summands) {
         if (summands.size() == 0) {
             // empty sum
-            return Number.zero();
+            return Expression.zero();
         } else if (summands.size() == 1) {
             return summands.get(0);
         } else if (summands.iter().any(e -> (e instanceof Sum))) {
@@ -50,6 +52,15 @@ public final class Sum implements Expression {
         return fromTuple(Tuple.fromJavaArray(summands));
     }
 
+    public Tuple<Expression> getOperands() {
+        return summands;
+    }
+
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visitSum(this);
+    }
+
     @Override
     public String toString() {
         var sb = new StringBuilder();
@@ -58,5 +69,15 @@ public final class Sum implements Expression {
             sb.append(" + " + summands.get(i));
         }
         return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return List.of("Sum", summands).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Sum && ((Sum) obj).summands.equals(summands);
     }
 }

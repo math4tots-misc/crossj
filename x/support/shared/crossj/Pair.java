@@ -42,4 +42,9 @@ public final class Pair<A1, A2> implements Comparable<Pair<A1, A2>> {
     public int compareTo(Pair<A1, A2> o) {
         return toList().compareTo(o.toList());
     }
+
+    @Override
+    public String toString() {
+        return "Pair.of(" + a1 + ", " + a2 + ")";
+    }
 }
