@@ -13,6 +13,8 @@ import crossj.hacks.ray.geo.Ray;
 import crossj.hacks.ray.geo.Surface;
 
 public final class RayTracer {
+    public static final int DEFAULT_SAMPLES_PER_PIXEL = 20;
+
     private final Camera camera;
     private final int imageWidth;
     private final boolean gammaCorrection;
@@ -31,7 +33,7 @@ public final class RayTracer {
     }
 
     public static RayTracer getDefault() {
-        return new RayTracer(Camera.getDefault(), 800, true, 20, 200, false);
+        return new RayTracer(Camera.getDefault(), 800, true, DEFAULT_SAMPLES_PER_PIXEL, 200, false);
     }
 
     public RayTracer withCamera(Camera camera) {

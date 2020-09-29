@@ -27,10 +27,13 @@ public final class Main {
         var surfaces = List.<Surface>of();
         var verbose = false;
         var filepaths = List.<String>of();
+        var samplesPerPixel = RayTracer.DEFAULT_SAMPLES_PER_PIXEL;
         for (var arg : args) {
             if (flag.length() == 0) {
                 if (arg.equals("-c") || arg.equals("--camera")) {
                     flag = "-c";
+                } else if (arg.equals("-s") || arg.equals("--samples-per-pixel")) {
+                    flag = "-s";
                 } else if (arg.equals("-o")) {
                     flag = "-o";
                 } else if (arg.equals("-v")) {
@@ -52,6 +55,9 @@ public final class Main {
                 flag = "";
             } else if (flag.equals("-o")) {
                 outPath = arg;
+                flag = "";
+            } else if (flag.equals("-s")) {
+                samplesPerPixel = Num.parseInt(arg);
                 flag = "";
             } else {
                 throw XError.withMessage("Invalid flag: " + flag);
@@ -115,7 +121,11 @@ public final class Main {
             IO.println("Camera: looking from " + fmtpt(camera.getLookFrom()) + ", looking at "
                     + fmtpt(camera.getLookAt()) + " (up = " + fmtpt(camera.getViewUp()) + ")");
         }
-        var tracer = RayTracer.getDefault().withCamera(camera).withVerbose(verbose);
+        if (verbose) {
+            IO.println("Using " + samplesPerPixel + " samples per pixel");
+        }
+        var tracer = RayTracer.getDefault().withCamera(camera).withVerbose(verbose)
+                .withSamplesPerPixel(samplesPerPixel);
         if (verbose) {
             IO.println("Starting render");
         }

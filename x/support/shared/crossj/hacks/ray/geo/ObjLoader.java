@@ -328,7 +328,6 @@ public final class ObjLoader {
                     checkLine(i, line, 2, false);
                     var axis = parseAxis(line.get(1));
                     var angle = parseAngle(line.get(2));
-                    IO.println("angle = " + angle + " radians");
                     transform = Matrix.rotation(axis.get1(), axis.get2(), angle);
                 }
                 var j = transformStack.size() - 1;
