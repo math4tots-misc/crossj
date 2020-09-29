@@ -9,6 +9,7 @@ import crossj.hacks.cas.expr.ExpressionVisitor;
 import crossj.hacks.cas.expr.Fraction;
 import crossj.hacks.cas.expr.IntegerLiteral;
 import crossj.hacks.cas.expr.Parenthetical;
+import crossj.hacks.cas.expr.Power;
 import crossj.hacks.cas.expr.Product;
 import crossj.hacks.cas.expr.Sum;
 import crossj.hacks.cas.expr.Variable;
@@ -58,6 +59,26 @@ public final class ReduceToRationalLiteral implements ExpressionVisitor<Optional
     @Override
     public Optional<Expression> visitParenthetical(Parenthetical e) {
         return e.getInner().accept(this);
+    }
+
+    @Override
+    public Optional<Expression> visitPower(Power e) {
+        var tryBase = e.getBase().accept(this);
+        if (tryBase.isEmpty()) {
+            return Optional.empty();
+        }
+        var tryExponent = e.getExponent().accept(this);
+        if (tryExponent.isEmpty()) {
+            return Optional.empty();
+        }
+        var base = tryBase.get().asBigIntFraction().get();
+        // TODO: fractional exponents
+        var tryExponentInt = tryExponent.get().asBigInt();
+        if (tryExponentInt.isEmpty()) {
+            return Optional.empty();
+        }
+        var n = tryExponentInt.get().intValue();
+        return Optional.of(Fraction.reduceFromBigInts(base.get1().pow(n), base.get2().pow(n)));
     }
 
     @Override

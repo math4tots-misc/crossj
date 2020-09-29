@@ -5,6 +5,7 @@ import crossj.hacks.cas.expr.ExpressionVisitor;
 import crossj.hacks.cas.expr.Fraction;
 import crossj.hacks.cas.expr.IntegerLiteral;
 import crossj.hacks.cas.expr.Parenthetical;
+import crossj.hacks.cas.expr.Power;
 import crossj.hacks.cas.expr.Product;
 import crossj.hacks.cas.expr.Sum;
 import crossj.hacks.cas.expr.Variable;
@@ -37,6 +38,11 @@ public final class IsLiteral implements ExpressionVisitor<Boolean> {
     @Override
     public Boolean visitParenthetical(Parenthetical e) {
         return e.getInner().accept(this);
+    }
+
+    @Override
+    public Boolean visitPower(Power e) {
+        return e.getBase().accept(this) && e.getExponent().accept(this);
     }
 
     @Override
