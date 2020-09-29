@@ -12,7 +12,7 @@ public final class Tuple<T> implements XIterable<T>, Comparable<Tuple<T>>, Typed
         this.list = list;
     }
 
-    public static <T> Tuple<T> fromList(List<T> list) {
+    private static <T> Tuple<T> fromList(List<T> list) {
         return new Tuple<>(list);
     }
 

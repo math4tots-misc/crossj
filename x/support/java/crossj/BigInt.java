@@ -71,6 +71,10 @@ public final class BigInt implements TypedEq<BigInt> {
         return new BigInt(value.pow(other));
     }
 
+    public BigInt gcd(BigInt other) {
+        return new BigInt(value.gcd(other.value));
+    }
+
     @Override
     public boolean equals(Object obj) {
         return rawEquals(obj);
@@ -84,5 +88,10 @@ public final class BigInt implements TypedEq<BigInt> {
     @Override
     public int hashCode() {
         return value.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "" + value;
     }
 }

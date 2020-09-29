@@ -580,6 +580,14 @@ public final class JavascriptTranslator implements ITranslator {
         });
     }
 
+    public void translateExpressionOrThis(Expression expression) {
+        if (expression == null) {
+            sb.append("this");
+        } else {
+            translateExpression(expression);
+        }
+    }
+
     public void translateExpression(Expression expression) {
         expression.accept(new DefaultVisitor() {
 
@@ -691,7 +699,7 @@ public final class JavascriptTranslator implements ITranslator {
                         switch (qualifiedName) {
                             case "java.lang.Object.equals": {
                                 sb.append("$EQ(");
-                                translateExpression(owner);
+                                translateExpressionOrThis(owner);
                                 sb.append(',');
                                 translateExpression((Expression) node.arguments().get(0));
                                 sb.append(")");
@@ -840,6 +848,14 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append("(");
                                 translateExpression(owner);
                                 sb.append("**");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(")");
+                                break;
+                            }
+                            case "crossj.BigInt.gcd": {
+                                sb.append("$bigintGCD(");
+                                translateExpression(owner);
+                                sb.append(",");
                                 translateExpression((Expression) node.arguments().get(0));
                                 sb.append(")");
                                 break;

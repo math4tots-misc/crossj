@@ -12,4 +12,11 @@ public final class BigIntTest {
         Assert.equals(one.add(one), BigInt.fromInt(2));
         // Assert.equals(one.add(one), BigInt.fromInt(3));
     }
+
+    @Test
+    public static void gcd() {
+        var a = BigInt.fromInt(2424);
+        var b = BigInt.fromInt(48);
+        Assert.equals(a.gcd(b), BigInt.fromInt(24));
+    }
 }

@@ -35,4 +35,6 @@ public final class BigInt {
     public native BigInt remainder(BigInt other);
 
     public native BigInt pow(int other);
+
+    public native BigInt gcd(BigInt other);
 }

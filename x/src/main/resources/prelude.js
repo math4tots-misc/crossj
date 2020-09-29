@@ -130,6 +130,14 @@ function $CASTIF(value, ifaceTag) {
 function repr(x) {
     return C$crossj$Repr.M$of(x);
 }
+function $bigintGCD(a, b) {
+    while (b) {
+        const tmp = b;
+        b = a % b;
+        a = tmp;
+    }
+    return a;
+}
 function $ITERlist(items) {
     return C$crossj$List.M$of(...items);
 }

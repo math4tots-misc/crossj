@@ -44,6 +44,10 @@ public final class Optional<T> implements TypedEq<Optional<T>>, XIterable<T> {
         return value;
     }
 
+    public T getOrElse(T fallback) {
+        return value == null ? fallback : value;
+    }
+
     public T orThrow(Func0<XError> f) {
         if (isEmpty()) {
             throw f.apply();
