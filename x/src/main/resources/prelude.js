@@ -1125,6 +1125,15 @@ class C$crossj$M {
     static M$ln(x) {
         return Math.log(x);
     }
+
+    static M$gcd(a, b) {
+        while (b) {
+            const tmp = b;
+            b = a % b;
+            a = tmp;
+        }
+        return a;
+    }
 }
 C$crossj$M.F$E = Math.E;
 C$crossj$M.F$PI = Math.PI;

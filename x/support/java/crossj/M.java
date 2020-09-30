@@ -111,4 +111,13 @@ public final class M {
     public static double ln(double x) {
         return Math.log(x);
     }
+
+    public static int gcd(int a, int b) {
+        while (b != 0) {
+            var tmp = b;
+            b = a % b;
+            a = tmp;
+        }
+        return a;
+    }
 }

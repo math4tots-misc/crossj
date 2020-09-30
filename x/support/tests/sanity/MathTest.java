@@ -54,4 +54,12 @@ public final class MathTest {
         Assert.equals(M.ln(M.E), 1.0);
         Assert.equals(M.ln(M.E * M.E), 2.0);
     }
+
+    @Test
+    public static void gcd() {
+        Assert.equals(M.gcd(23, 24), 1);
+        Assert.equals(M.gcd(15, 45), 15);
+        Assert.equals(M.gcd(123454321, 1234321), 1);
+        Assert.equals(M.gcd(124124, 2442), 22);
+    }
 }
