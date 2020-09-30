@@ -6,6 +6,9 @@ import crossj.Str;
 import crossj.Test;
 import crossj.Tuple;
 
+/**
+ * Content here could all conceivably also llive in StringTest
+ */
 public final class UTFTest {
 
     @Test
