@@ -7,7 +7,7 @@ import crossj.Test;
 import crossj.Tuple;
 
 /**
- * Content here could all conceivably also llive in StringTest
+ * Content here could all conceivably also live in StringTest
  */
 public final class UTFTest {
 
