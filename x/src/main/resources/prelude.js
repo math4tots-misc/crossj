@@ -127,6 +127,55 @@ function $CASTIF(value, ifaceTag) {
         throw new Error("Could not cast " + value + " to " + ifaceTag.substring(2).replace('$', '.'));
     }
 }
+function $stringToUTF8(string) {
+    // More or less based on snippet here:
+    // https://stackoverflow.com/a/18729931/956134
+    // (how-to-convert-utf8-string-to-byte-array)
+    //
+    // NOTES:
+    //   0x80 = byte with only highest bit set
+    //   0x3F = the low 6 bits set to 1
+    //   0xC0 = byte with only highest 2 bits set
+    //   0xE0 = byte with only highest 3 bits set
+    //   0xF0 = byte with only highest 4 bits set
+    const arr = [];
+    for (let i = 0; i < string.length; i++) {
+        const code = string.charCodeAt(i);
+        if (code < 0x80) {
+            arr.push(code);
+        } else if (code < 0x800) {
+            arr.push(0xC0 | (code >> 6));
+            arr.push(0x80 | (code & 0x3F));
+        } else if (code < 0xD800 || code >= 0xE000) {
+            arr.push(0xE0 | (code >> 12));
+            arr.push(0x80 | ((code >> 6) & 0x3F));
+            arr.push(0x80 | (code & 0x3F));
+        } else {
+            // surrogate pair
+            i++;
+            const p2 = string.charCodeAt(i);
+            const c = 0x10000 + (((code & 0x3FF) << 10) | (p2 & 0x3FF));
+            arr.push(0xF0 | (c >> 18));
+            arr.push(0x80 | ((c >> 12) & 0x3F));
+            arr.push(0x80 | ((c >> 6) & 0x3F));
+            arr.push(0x80 | (c & 0x3F));
+        }
+    }
+    return C$crossj$Bytes.M$fromU8s(arr);
+}
+/**
+ * @param {string} string
+ */
+function* $stringToCodePoints(string) {
+    // Iterating over a string yields the codepoints of the string
+    // (rather than the UTF-16 values).
+    for (let codePoint of string) {
+        yield codePoint.codePointAt(0);
+    }
+}
+function $codePointsToString(codePoints) {
+    return String.fromCodePoint(...codePoints);
+}
 function repr(x) {
     return C$crossj$Repr.M$of(x);
 }

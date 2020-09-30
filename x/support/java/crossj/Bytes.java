@@ -35,6 +35,10 @@ public final class Bytes {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
+    static Bytes fromByteBuffer(ByteBuffer buffer) {
+        return new Bytes(buffer, buffer.limit());
+    }
+
     public static Bytes withCapacity(int capacity) {
         if (capacity < 16) {
             capacity = 16;

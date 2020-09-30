@@ -1,7 +1,11 @@
 package crossj;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+
 public final class StrImpl {
-    private StrImpl() {}
+    private StrImpl() {
+    }
 
     /**
      * See documentation on Str.codeAt for more information
@@ -11,6 +15,39 @@ public final class StrImpl {
     }
 
     public static int charCode(char c) {
+        // NOTE: in Java, chars are zero-extended when converting to larger sized
+        // integers.
         return (int) c;
+    }
+
+    public static Bytes toUTF8(String string) {
+        return Bytes.fromByteBuffer(StandardCharsets.UTF_8.encode(string));
+    }
+
+    public static XIterator<Integer> toCodePoints(String string) {
+        return XIterator.fromIterator(new Iterator<Integer>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < string.length();
+            }
+
+            @Override
+            public Integer next() {
+                var code = string.codePointAt(i);
+                i += Character.charCount(code);
+                return code;
+            }
+        });
+    }
+
+    public static String fromCodePoints(XIterable<Integer> codePoints) {
+        var tuple = Tuple.fromIterable(codePoints);
+        var points = new int[tuple.size()];
+        for (int i = 0; i < points.length; i++) {
+            points[i] = tuple.get(i);
+        }
+        return new String(points, 0, points.length);
     }
 }

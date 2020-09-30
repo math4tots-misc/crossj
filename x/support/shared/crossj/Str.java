@@ -4,7 +4,8 @@ package crossj;
  * Some basic utils for manipulating strings.
  */
 public final class Str {
-    private Str() {}
+    private Str() {
+    }
 
     /**
      * Returns a UTF code unit.
@@ -13,21 +14,14 @@ public final class Str {
      *
      * There are three possible cases:
      *
-     * <li>1: UTF-16.
-     * Targets: Java, JavaScript, C#.
-     * In this scenario, all strings are assumed to be represented internally as UTF-16.
-     * The method will return a value between 0 and 65535 representing the UTF-16 code unit.
-     * </li>
-     * <li>2: UTF-8.
-     * Targets: C/C++, Rust.
-     * In this scenario, all strings are assumed to be represented internally as UTF-8.
-     * The method will return a value between 0 and 255 representing a UTF-8 code unit.
-     * </li>
-     * <li>3: UCS-4/UTF-32.
-     * Targets: Python.
-     * Every unicode character can be indexed directly.
-     * The method will return
-     * </li>
+     * <li>1: <b>UTF-16</b> Targets: Java, JavaScript, C#. In this scenario, all
+     * strings are assumed to be represented internally as UTF-16. The method will
+     * return a value between 0 and 65535 representing the UTF-16 code unit.</li>
+     * <li>2: <b>UTF-8</b> Targets: C/C++, Rust. In this scenario, all strings are
+     * assumed to be represented internally as UTF-8. The method will return a value
+     * between 0 and 255 representing a UTF-8 code unit.</li>
+     * <li>3: <b>UCS-4/UTF-32</b> Targets: Python. Every unicode character can be
+     * indexed directly. The method will return a full unicode codepoint.</li>
      *
      */
     public static int codeAt(String string, int index) {
@@ -120,6 +114,35 @@ public final class Str {
         return parts;
     }
 
+    /**
+     * Converts a string into a Bytes object containing its UTF8 representation.
+     */
+    public static Bytes toUTF8(String string) {
+        return StrImpl.toUTF8(string);
+    }
+
+    /**
+     * Iterate over the codepoints of a string.
+     */
+    public static XIterator<Integer> toCodePoints(String string) {
+        return StrImpl.toCodePoints(string);
+    }
+
+    /**
+     * Get a string from some codepoints.
+     */
+    public static String fromCodePoints(XIterable<Integer> codePoints) {
+        return StrImpl.fromCodePoints(codePoints);
+    }
+
+    public static Tuple<Integer> toUTF32(String string) {
+        return Tuple.fromIterable(toCodePoints(string));
+    }
+
+    public static String fromUTF32(Tuple<Integer> codePoints) {
+        return fromCodePoints(codePoints);
+    }
+
     public static boolean startsWithAt(String string, String prefix, int start) {
         return equalsSubstring(string, prefix, start, start + prefix.length());
     }
@@ -149,6 +172,11 @@ public final class Str {
         return string.substring(start, end).equals(part);
     }
 
+    /**
+     * Pad a string to a given length by repeatedly adding a given prefix to the
+     * left. If the prefix has length greater than 1, the final string might exceed
+     * the given limit even if originally it had length less than 'len'.
+     */
     public static String lpad(String string, int len, String prefix) {
         while (string.length() < len) {
             string = prefix + string;
@@ -156,6 +184,11 @@ public final class Str {
         return string;
     }
 
+    /**
+     * Pad a string to a given length by repeatedly adding a given suffix to the
+     * right. If the suffix has length greater than 1, the final string might exceed
+     * the given limit even if originally it had length less than 'len'.
+     */
     public static String rpad(String string, int len, String suffix) {
         while (string.length() < len) {
             string += suffix;
