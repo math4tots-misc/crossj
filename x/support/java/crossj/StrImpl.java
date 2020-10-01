@@ -43,11 +43,21 @@ public final class StrImpl {
     }
 
     public static String fromCodePoints(XIterable<Integer> codePoints) {
-        var tuple = Tuple.fromIterable(codePoints);
-        var points = new int[tuple.size()];
-        for (int i = 0; i < points.length; i++) {
-            points[i] = tuple.get(i);
+        if (codePoints instanceof IntArray) {
+            var array = (IntArray) codePoints;
+            return fromSliceOfCodePoints(array, 0, array.size());
+        } else {
+            var tuple = Tuple.fromIterable(codePoints);
+            var points = new int[tuple.size()];
+            for (int i = 0; i < points.length; i++) {
+                points[i] = tuple.get(i);
+            }
+            return new String(points, 0, points.length);
         }
-        return new String(points, 0, points.length);
+    }
+
+    public static String fromSliceOfCodePoints(IntArray codePoints, int start, int end) {
+        var len = end - start;
+        return new String(codePoints.getJavaArray(), 0, len);
     }
 }

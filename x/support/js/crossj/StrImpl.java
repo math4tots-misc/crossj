@@ -13,4 +13,6 @@ public final class StrImpl {
     public static native XIterator<Integer> toCodePoints(String string);
 
     public static native String fromCodePoints(XIterable<Integer> codePoints);
+
+    public static native String fromSliceOfCodePoints(IntArray codePoints, int start, int end);
 }

@@ -176,6 +176,15 @@ function* $stringToCodePoints(string) {
 function $codePointsToString(codePoints) {
     return String.fromCodePoint(...codePoints);
 }
+/**
+ *
+ * @param {C$crossj$IntArray} codePoints
+ * @param {number} start
+ * @param {number} end
+ */
+function $sliceOfcodePointsToString(codePoints, start, end) {
+    return String.fromCodePoint(...codePoints.arr.subarray(start, end));
+}
 function repr(x) {
     return C$crossj$Repr.M$of(x);
 }

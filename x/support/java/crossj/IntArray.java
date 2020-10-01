@@ -56,6 +56,15 @@ public final class IntArray implements XIterable<Integer> {
         }
     }
 
+    /**
+     * For use only inside crossj.
+     *
+     * Returns the actual underlying buffer, so changes will affect the contents of this IntArray.
+     */
+    int[] getJavaArray() {
+        return buffer;
+    }
+
     public int size() {
         return buffer.length;
     }

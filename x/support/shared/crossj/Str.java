@@ -135,12 +135,16 @@ public final class Str {
         return StrImpl.fromCodePoints(codePoints);
     }
 
-    public static Tuple<Integer> toUTF32(String string) {
-        return Tuple.fromIterable(toCodePoints(string));
+    public static IntArray toUTF32(String string) {
+        return IntArray.fromIterable(toCodePoints(string));
     }
 
-    public static String fromUTF32(Tuple<Integer> codePoints) {
-        return fromCodePoints(codePoints);
+    public static String fromUTF32(IntArray codePoints) {
+        return fromSliceOfCodePoints(codePoints, 0, codePoints.size());
+    }
+
+    public static String fromSliceOfCodePoints(IntArray codePoints, int start, int end) {
+        return StrImpl.fromSliceOfCodePoints(codePoints, start, end);
     }
 
     public static boolean startsWithAt(String string, String prefix, int start) {

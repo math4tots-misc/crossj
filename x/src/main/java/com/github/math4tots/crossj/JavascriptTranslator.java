@@ -655,6 +655,12 @@ public final class JavascriptTranslator implements ITranslator {
                             sb.append(")");
                             break;
                         }
+                        case "crossj.StrImpl.fromSliceOfCodePoints": {
+                            sb.append("$sliceOfcodePointsToString(");
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(")");
+                            break;
+                        }
                         case "crossj.Eq.of": {
                             // Equality check is a common operation, so it seems like a good idea to
                             // not require a class lookup for this
