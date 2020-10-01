@@ -32,6 +32,99 @@ public final class Str {
         return StrImpl.charCode(c);
     }
 
+    public static String unescape(String escaped) {
+        final int DEFAULT = 0;
+        final int ESCAPE = 1;
+        final int HEX_SEQ_1 = 2;
+        final int HEX_SEQ_2 = 3;
+        StringBuilder sb = new StringBuilder();
+        int state = 0;
+        int byteSeqPart = 0;
+        for (var ch : toCodePoints(escaped)) {
+            switch (state) {
+                // default
+                case DEFAULT: {
+                    if (ch == (int) '\\') {
+                        state = ESCAPE;
+                    } else {
+                        sb.appendCodePoint(ch);
+                    }
+                    break;
+                }
+                // escape sequence
+                case ESCAPE: {
+                    switch (ch) {
+                        case (int) '\0':
+                            sb.appendCodePoint((int) '\0');
+                            state = DEFAULT;
+                            break;
+                        case (int) '\\':
+                            sb.appendCodePoint((int) '\\');
+                            state = DEFAULT;
+                            break;
+                        case (int) 'r':
+                            sb.appendCodePoint((int) '\r');
+                            state = DEFAULT;
+                            break;
+                        case (int) 'n':
+                            sb.appendCodePoint((int) '\n');
+                            state = DEFAULT;
+                            break;
+                        case (int) 't':
+                            sb.appendCodePoint((int) '\t');
+                            state = DEFAULT;
+                            break;
+                        case (int) '"':
+                            sb.appendCodePoint((int) '\"');
+                            state = DEFAULT;
+                            break;
+                        case (int) '\'':
+                            sb.appendCodePoint((int) '\'');
+                            state = DEFAULT;
+                            break;
+                        case (int) 'x':
+                            state = HEX_SEQ_1;
+                            break;
+                        default:
+                            throw XError.withMessage("Unrecognized escape character " + ch);
+                    }
+                    break;
+                }
+                case HEX_SEQ_1:
+                    byteSeqPart = ch;
+                    state = HEX_SEQ_2;
+                    break;
+                case HEX_SEQ_2: {
+                    sb.appendCodePoint(hexCodeFromDigits(byteSeqPart, ch));
+                    state = DEFAULT;
+                    break;
+                }
+                default:
+                    throw XError.withMessage("Invalid state: " + state);
+            }
+        }
+        if (state != DEFAULT) {
+            throw XError.withMessage("Incomplete escape (" + escaped + ")");
+        }
+        return sb.toString();
+    }
+
+    private static int hexDigitToValue(int codePoint) {
+        if (codePoint >= (int) '0' && codePoint <= (int) '9') {
+            return codePoint - (int) '0';
+        } else if (codePoint >= (int) 'A' && codePoint <= (int) 'F') {
+            return codePoint - (int) 'A';
+        } else if (codePoint >= (int) 'a' && codePoint <= (int) 'f') {
+            return codePoint - (int) 'a';
+        } else {
+            throw XError.withMessage("Invalid digit: " + fromCodePoint(codePoint));
+        }
+    }
+
+    private static int hexCodeFromDigits(int firstChar, int secondChar) {
+        return hexDigitToValue(firstChar) * 16 + secondChar;
+    }
+
     public static String join(String separator, XIterable<?> iterable) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
@@ -133,6 +226,10 @@ public final class Str {
      */
     public static String fromCodePoints(XIterable<Integer> codePoints) {
         return StrImpl.fromCodePoints(codePoints);
+    }
+
+    public static String fromCodePoint(int codePoint) {
+        return StrImpl.fromCodePoints(IntArray.of(codePoint));
     }
 
     public static IntArray toUTF32(String string) {

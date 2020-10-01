@@ -8,6 +8,8 @@ public final class StringBuilder {
 
     public native void append(Object object);
 
+    public native void appendCodePoint(int codePoint);
+
     @Override
     public native String toString();
 }

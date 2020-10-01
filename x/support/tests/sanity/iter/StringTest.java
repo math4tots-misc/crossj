@@ -114,4 +114,11 @@ public final class StringTest {
         Assert.equals(Str.strip("  hello world \n"), "hello world");
         Assert.equals(Str.strip("abcdef"), "abcdef");
     }
+
+    @Test
+    public static void unescape() {
+        Assert.equals(Str.unescape("\\n\n"), "\n\n");
+        Assert.equals(Str.unescape("\\n\n\\n"), "\n\n\n");
+        Assert.equals(Str.unescape("\\'\\\"\\t\\n"), "'\"\t\n");
+    }
 }

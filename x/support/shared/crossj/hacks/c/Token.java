@@ -14,6 +14,10 @@ public final class Token {
         this.data = data;
     }
 
+    public static Token of(Mark mark, String type, Object data) {
+        return new Token(mark, type, data);
+    }
+
     public Mark getMark() {
         return mark;
     }

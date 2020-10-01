@@ -1089,6 +1089,9 @@ class C$java$lang$StringBuilder {
     M$append(part) {
         this.arr.push(part.toString());
     }
+    M$appendCodePoint(codePoint) {
+        this.arr.push(String.fromCodePoint(codePoint));
+    }
     M$toString() {
         return this.arr.join('');
     }

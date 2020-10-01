@@ -31,6 +31,18 @@ public final class BigInt implements TypedEq<BigInt> {
         return new BigInt(BigInteger.valueOf((long) value));
     }
 
+    public static BigInt fromString(String string) {
+        return new BigInt(new BigInteger(string));
+    }
+
+    public static BigInt fromHexString(String string) {
+        return new BigInt(new BigInteger(string, 16));
+    }
+
+    public static BigInt fromOctString(String string) {
+        return new BigInt(new BigInteger(string, 8));
+    }
+
     public int intValue() {
         return value.intValue();
     }

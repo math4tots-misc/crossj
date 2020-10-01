@@ -672,8 +672,21 @@ public final class JavascriptTranslator implements ITranslator {
                             break;
                         }
                         case "crossj.BigInt.fromInt":
-                        case "crossj.BigInt.fromDouble": {
+                        case "crossj.BigInt.fromDouble":
+                        case "crossj.BigInt.fromString": {
                             sb.append("BigInt(");
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(")");
+                            break;
+                        }
+                        case "crossj.BigInt.fromHexString": {
+                            sb.append("BigInt('0x' + ");
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(")");
+                            break;
+                        }
+                        case "crossj.BigInt.fromOctString": {
+                            sb.append("BigInt('0o' + ");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(")");
                             break;
@@ -1097,9 +1110,20 @@ public final class JavascriptTranslator implements ITranslator {
                     }
                     case "int":
                     case "java.lang.Integer": {
-                        sb.append("$INTCAST(");
-                        node.getExpression().accept(this);
-                        sb.append(")");
+                        if (node.getExpression() instanceof CharacterLiteral) {
+                            // a character literal immediately cast to an int.
+                            // In this case, let's just replace the expression with
+                            // the actual integer value.
+                            char ch = (Character) node.getExpression().resolveConstantExpressionValue();
+                            sb.append("" + (int) ch);
+                        } else if (node.getExpression().resolveTypeBinding().getQualifiedName().equals("char")) {
+                            node.getExpression().accept(this);
+                            sb.append(".codePointAt(0)");
+                        } else {
+                            sb.append("$INTCAST(");
+                            node.getExpression().accept(this);
+                            sb.append(")");
+                        }
                         break;
                     }
                     case "double":

@@ -19,4 +19,24 @@ public final class BigIntTest {
         var b = BigInt.fromInt(48);
         Assert.equals(a.gcd(b), BigInt.fromInt(24));
     }
+
+    @Test
+    public static void fromHex() {
+        var x = BigInt.fromHexString("FF");
+        Assert.equals(x, BigInt.fromInt(255));
+        x = BigInt.fromHexString("af");
+        Assert.equals(x, BigInt.fromInt(10 * 16 + 15));
+        x = BigInt.fromHexString("12");
+        Assert.equals(x, BigInt.fromInt(16 + 2));
+    }
+
+    @Test
+    public static void fromOct() {
+        var x = BigInt.fromOctString("77");
+        Assert.equals(x, BigInt.fromInt(7 * 8 + 7));
+        x = BigInt.fromOctString("44");
+        Assert.equals(x, BigInt.fromInt(4 * 8 + 4));
+        x = BigInt.fromOctString("12");
+        Assert.equals(x, BigInt.fromInt(8 + 2));
+    }
 }

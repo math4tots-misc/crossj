@@ -16,6 +16,12 @@ public final class BigInt {
 
     public native static BigInt fromDouble(double value);
 
+    public native static BigInt fromString(String string);
+
+    public native static BigInt fromHexString(String string);
+
+    public native static BigInt fromOctString(String string);
+
     public native int intValue();
 
     public native double doubleValue();
