@@ -158,7 +158,35 @@ public final class Map<K, V> {
         }
     }
 
+    public XIterator<V> values() {
+        if (list == null) {
+            return List.<V>of().iter();
+        } else {
+            return list.iter().flatMap(bucket -> bucket.map(triple -> triple.get3()));
+        }
+    }
+
     private static int getIndex(int hash, int size) {
         return (hash % size + size) % size;
+    }
+
+    @Override
+    public String toString() {
+        var sb = new StringBuilder();
+        sb.append("Map.of(");
+        boolean first = true;
+        for (K key : keys()) {
+            if (!first) {
+                sb.append(", ");
+            }
+            first = false;
+            sb.append("Pair.of(");
+            sb.append(Repr.of(key));
+            sb.append(", ");
+            sb.append(Repr.of(get(key)));
+            sb.append(")");
+        }
+        sb.append(")");
+        return sb.toString();
     }
 }

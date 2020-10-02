@@ -1,6 +1,7 @@
 package com.github.math4tots.crossj;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -12,8 +13,12 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import crossj.IO;
 import crossj.List;
 import crossj.M;
+import crossj.Map;
+import crossj.Num;
 import crossj.Optional;
 import crossj.Pair;
+import crossj.Set;
+import crossj.Str;
 import crossj.Time;
 import crossj.XError;
 
@@ -25,6 +30,7 @@ public final class Main {
         Optional<String> main = Optional.empty();
         Optional<String> outdir = Optional.empty();
         boolean verboseToggle = false;
+        boolean prune = true;
 
         for (String arg : args) {
             switch (mode) {
@@ -48,6 +54,10 @@ public final class Main {
                         case "-o":
                         case "--out": {
                             mode = Mode.Out;
+                            break;
+                        }
+                        case "--no-prune": {
+                            prune = false;
                             break;
                         }
                         case "-v":
@@ -110,9 +120,36 @@ public final class Main {
             parser.addSourceRoot(root);
         }
 
-        List<String> filepaths = findAllFilesInMultipleDirectories(sourceRoots);
-        if (verbose) {
-            IO.println("Found " + filepaths.size() + " files");
+        List<String> filepaths;
+        if (prune && main.isPresent()) {
+            /**
+             * If a main class is specified, we can do a very coarse pruning where we only
+             * look at packages that are actually needed by that main class and its
+             * dependencies.
+             */
+            var classFileMap = getFilesByPackageName(sourceRoots);
+            var fileCount = classFileMap.values().fold(0, (total, list) -> total + list.size());
+            if (verbose) {
+                IO.println("Found " + classFileMap.size() + " packages containing " + fileCount + " files");
+            }
+
+            var pruneStart = Time.now();
+            filepaths = filterToDependentPackages(classFileMap, main.get());
+            var pruneEnd = Time.now();
+
+            if (verbose) {
+                IO.println("Pruned to " + filepaths.size() + " files (in " + Num.format(pruneEnd - pruneStart) + "s)");
+            }
+        } else {
+            /**
+             * If either pruning is disabled or no main class is specified, we translate all
+             * files we find in these source roots.
+             */
+            filepaths = findAllFilesInMultipleDirectories(sourceRoots);
+
+            if (verbose) {
+                IO.println("Found " + filepaths.size() + " files");
+            }
         }
 
         // Parse all the files
@@ -209,6 +246,52 @@ public final class Main {
         return out;
     }
 
+    private static String getPackageName(String qualifiedClassName) {
+        return qualifiedClassName.substring(0, qualifiedClassName.lastIndexOf("."));
+    }
+
+    private static Map<String, List<String>> getFilesByPackageName(Iterable<String> sourceRoots) {
+        Map<String, List<String>> out = Map.of();
+        for (var sourceRoot : sourceRoots) {
+            var root = Path.of(sourceRoot);
+            for (var path : findAllFiles(sourceRoot)) {
+                var relativePath = root.relativize(Path.of(path)).toString();
+                var qualifiedClassName = relativePathToQualifiedClassName(relativePath);
+                var packageName = getPackageName(qualifiedClassName);
+                if (!out.containsKey(packageName)) {
+                    out.put(packageName, List.of());
+                }
+                out.get(packageName).add(path);
+            }
+        }
+        return out;
+    }
+
+    private static List<String> filterToDependentPackages(Map<String, List<String>> map, String main) {
+        List<String> out = List.of();
+        var stack = List.of(getPackageName(main));
+        var seen = Set.fromIterable(stack);
+        while (stack.size() > 0) {
+            var packageName = stack.pop();
+            for (var path : map.get(packageName)) {
+                out.add(path);
+                for (var importedPackage : getImportedPackages(path)) {
+                    if (!seen.contains(importedPackage)) {
+                        seen.add(importedPackage);
+                        stack.add(importedPackage);
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
+    private static List<String> getImportedPackages(String path) {
+        return Str.lines(IO.readFile(path)).iter().filter(line -> line.startsWith("import "))
+                .map(line -> line.substring("import ".length(), line.indexOf(";")))
+                .map(className -> getPackageName(className)).list();
+    }
+
     private static HashSet<ITypeBinding> getAllInterfaces(ITypeBinding tb,
             HashMap<ITypeBinding, HashSet<ITypeBinding>> cache) {
         tb = tb.getErasure();
@@ -240,5 +323,14 @@ public final class Main {
             }
         }
         return out;
+    }
+
+    private static String relativePathToQualifiedClassName(String path) {
+        if (path.endsWith(".java")) {
+            path = path.substring(0, path.length() - ".java".length());
+        } else if (path.endsWith(".crossj")) {
+            path = path.substring(0, path.length() - ".crossj".length());
+        }
+        return path.replace("/", ".");
     }
 }
