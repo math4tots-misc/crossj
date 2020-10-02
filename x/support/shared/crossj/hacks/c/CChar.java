@@ -116,6 +116,10 @@ public final class CChar {
         return (get(codePoint) & DIGIT) != 0;
     }
 
+    public static boolean isHexDigit(int codePoint) {
+        return (get(codePoint) & HEX) != 0;
+    }
+
     public static boolean isLetterOrDigit(int codePoint) {
         return (get(codePoint) & (LETTER | DIGIT)) != 0;
     }

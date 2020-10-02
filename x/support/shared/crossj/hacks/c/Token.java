@@ -26,6 +26,10 @@ public final class Token {
         return type;
     }
 
+    public Object getData() {
+        return data;
+    }
+
     public String getStringData() {
         return (String) data;
     }

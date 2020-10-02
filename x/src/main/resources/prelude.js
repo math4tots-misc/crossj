@@ -506,6 +506,9 @@ class C$crossj$List {
     M$reduce(f) {
         return this.arr.reduce(f);
     }
+    M$contains(t) {
+        return this.arr.some(x => $EQ(x, t));
+    }
     M$removeIndex(index) {
         let value = this.arr[index];
         this.arr.splice(index, 1);

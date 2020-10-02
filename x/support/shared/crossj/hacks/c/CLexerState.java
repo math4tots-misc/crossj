@@ -6,7 +6,7 @@ import crossj.Num;
 import crossj.Str;
 import crossj.XError;
 
-public final class LexerState {
+public final class CLexerState {
     private final static int BACK_SLASH = (int) '\\';
     private final static int SLASH = (int) '/';
     private final static int STAR = (int) '*';
@@ -32,16 +32,17 @@ public final class LexerState {
     private int lineno = 1;
     private int colno = 1;
     private int lastNewline = -1;
+    private boolean done = false;
     private Token peek = null;
 
-    LexerState(CLexer lexer, Source source) {
+    CLexerState(CLexer lexer, Source source) {
         this.lexer = lexer;
         this.source = source;
         codePoints = Str.toUTF32(source.getData());
     }
 
     public Token peek() {
-        if (peek == null && i < codePoints.size()) {
+        if (peek == null && !done) {
             peek = pump();
         }
         return peek;
@@ -52,7 +53,8 @@ public final class LexerState {
         if (token == null) {
             throw XError.withMessage("No more tokens");
         }
-        return peek;
+        peek = null;
+        return token;
     }
 
     private Token pump() {
@@ -93,6 +95,7 @@ public final class LexerState {
         var mark = Mark.of(source, lineno, i - lastNewline);
         if (i >= s.size()) {
             this.i = i;
+            done = true;
             return Token.of(mark, EOF, null);
         }
         var ch = s.get(i);
@@ -102,12 +105,19 @@ public final class LexerState {
         if (CChar.isDigit(ch) || ch == DOT && i < len && CChar.isDigit(s.get(i))) {
             if (ch == ZERO && i < len) {
                 var c = s.get(i);
+                i++;
                 BigInt value = null;
                 if (c == LOWER_X || c == UPPER_X) {
                     // hex literal
-                    value = BigInt.fromHexString(Str.fromSliceOfCodePoints(s, start + 1, i));
+                    while (i < len && CChar.isHexDigit(s.get(i))) {
+                        i++;
+                    }
+                    value = BigInt.fromHexString(Str.fromSliceOfCodePoints(s, start + 2, i));
                 } else if (CChar.isDigit(c)) {
                     // oct literal
+                    while (i < len && CChar.isDigit(s.get(i))) {
+                        i++;
+                    }
                     value = BigInt.fromOctString(Str.fromSliceOfCodePoints(s, start + 1, i));
                 }
                 if (value != null) {
@@ -160,7 +170,8 @@ public final class LexerState {
         {
             var op = lexer.getOperators().findLongestMatchUsingCharsOrNull(s, start, len);
             if (op != null) {
-                this.i = start + len;
+                // this is ok because all operators are ASCII
+                this.i = start + op.length();
                 return Token.of(mark, op, null);
             }
         }
@@ -194,7 +205,7 @@ public final class LexerState {
                 return Token.of(mark, "ID", Str.fromSliceOfCodePoints(s, start, i));
             }
         }
-        throw XError.withMessage(mark.format() + "Unrecognized token: " + ch);
+        throw XError.withMessage(mark.format() + "Unrecognized token: " + Str.fromCodePoint(ch));
     }
 
     public Source getSource() {

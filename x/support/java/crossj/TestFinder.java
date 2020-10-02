@@ -56,6 +56,7 @@ public final class TestFinder {
                     Pair.of(Paths.get("support", "tests", "sanity", "misc"), "sanity.misc."),
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks"), "sanity.hacks."),
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks", "cas"), "sanity.hacks.cas."),
+                    Pair.of(Paths.get("support", "tests", "sanity", "hacks", "c"), "sanity.hacks.c."),
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks", "image"), "sanity.hacks.image."),
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks", "ray"), "sanity.hacks.ray."),
                     Pair.of(Paths.get("support", "tests", "sanity"), "sanity."));

@@ -658,6 +658,10 @@ public final class JavascriptTranslator implements ITranslator {
                         case "crossj.StrImpl.fromSliceOfCodePoints": {
                             sb.append("$sliceOfcodePointsToString(");
                             translateExpression((Expression) node.arguments().get(0));
+                            sb.append(",");
+                            translateExpression((Expression) node.arguments().get(1));
+                            sb.append(",");
+                            translateExpression((Expression) node.arguments().get(2));
                             sb.append(")");
                             break;
                         }

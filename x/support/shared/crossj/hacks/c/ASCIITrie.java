@@ -9,7 +9,7 @@ import crossj.XIterable;
 /**
  * String trie for quick keyword lookup
  */
-final class ASCIITrie {
+public final class ASCIITrie {
     private String value = null;
     private List<ASCIITrie> children = null;
 
@@ -81,6 +81,6 @@ final class ASCIITrie {
             }
             trie = trie.children.get(ch);
         }
-        return lastMatch;
+        return trie != null && trie.value != null ? trie.value : lastMatch;
     }
 }

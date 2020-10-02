@@ -6,8 +6,8 @@ import crossj.XIterable;
 
 public final class CLexer {
     public static final Tuple<String> OPERATORS = Tuple.of("&&", "||", "+=", "-=", "*=", "/=", "%=", "!=", "==", "+",
-    "-", "*", "/", "%", ",", ":", ";", "{", "}", "[", "]", "(", ")", "...");
-    public static final Tuple<String> KEYWORDS = Tuple.of();
+            "-", "*", "/", "%", ",", ":", ";", "{", "}", "[", "]", "(", ")", "...");
+    public static final Tuple<String> KEYWORDS = Tuple.of("while", "for", "break", "continue");
 
     private static final CLexer DEFAULT = new CLexer(OPERATORS, KEYWORDS);
 
@@ -23,8 +23,8 @@ public final class CLexer {
         return DEFAULT;
     }
 
-    public LexerState startLex(Source source) {
-        return new LexerState(this, source);
+    public CLexerState startLex(Source source) {
+        return new CLexerState(this, source);
     }
 
     public List<Token> lexAll(Source source) {

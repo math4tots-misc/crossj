@@ -58,6 +58,6 @@ public final class StrImpl {
 
     public static String fromSliceOfCodePoints(IntArray codePoints, int start, int end) {
         var len = end - start;
-        return new String(codePoints.getJavaArray(), 0, len);
+        return new String(codePoints.getJavaArray(), start, len);
     }
 }

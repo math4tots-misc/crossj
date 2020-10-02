@@ -121,4 +121,10 @@ public final class StringTest {
         Assert.equals(Str.unescape("\\n\n\\n"), "\n\n\n");
         Assert.equals(Str.unescape("\\'\\\"\\t\\n"), "'\"\t\n");
     }
+
+    @Test
+    public static void fromUTF32Slice() {
+        var chars = Str.toUTF32("hello world");
+        Assert.equals(Str.fromSliceOfCodePoints(chars, 6, chars.size()), "world");
+    }
 }
