@@ -68,4 +68,26 @@ public final class IO {
             return s.hasNext() ? s.next() : "";
         }
     }
+
+    /**
+     * Read everything in STDIN and return it as a string.
+     */
+    public static String readStdin() {
+        return new String(readStdinByteArray(), StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Read everything in STDIN and return it as Bytes.
+     */
+    public static Bytes readStdinBytes() {
+        return Bytes.wrapByteArray(readStdinByteArray());
+    }
+
+    private static byte[] readStdinByteArray() {
+        try {
+            return System.in.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -105,6 +105,14 @@ public final class XIterator<T> implements Iterator<T>, XIterable<T> {
         return this;
     }
 
+    public List<T> pop(int n) {
+        var list = List.<T>of();
+        for (int i = 0; i < n && hasNext(); i++) {
+            list.add(next());
+        }
+        return list;
+    }
+
     public <R> XIterator<R> flatMap(Func1<XIterable<R>, T> f) {
         return new XIterator<>(new Iterator<R>() {
             boolean done = false;

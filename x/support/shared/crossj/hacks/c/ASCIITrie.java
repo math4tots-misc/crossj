@@ -3,6 +3,7 @@ package crossj.hacks.c;
 import crossj.Assert;
 import crossj.IntArray;
 import crossj.List;
+import crossj.Repr;
 import crossj.Str;
 import crossj.XError;
 import crossj.XIterable;
@@ -26,6 +27,10 @@ public final class ASCIITrie implements XIterable<String> {
             trie.insert(string);
         }
         return trie;
+    }
+
+    public static ASCIITrie of(String... strings) {
+        return fromIterable(List.fromJavaArray(strings));
     }
 
     private static ASCIITrie newEmpty() {
@@ -83,7 +88,7 @@ public final class ASCIITrie implements XIterable<String> {
                 return lastMatch;
             }
             if (trie.children == null) {
-                return null;
+                return lastMatch;
             }
             trie = trie.children.get(ch);
         }
@@ -120,6 +125,11 @@ public final class ASCIITrie implements XIterable<String> {
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ASCIITrie.of(" + Str.join(", ", iter().map(s -> Repr.of(s))) + ")";
     }
 
     /**

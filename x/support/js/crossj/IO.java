@@ -21,4 +21,6 @@ public final class IO {
     public static native void writeFileBytes(String path, Bytes data);
     public static native String readFile(String path);
     public static native Bytes readFileBytes(String path);
+    public static native String readStdin();
+    public static native Bytes readStdinBytes();
 }

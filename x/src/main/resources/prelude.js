@@ -238,6 +238,21 @@ function $ITERskip(items, n) {
     }
     return items;
 }
+function $ITERpop(items, n) {
+    const list = [];
+    if (n > 0) {
+        let i = 1;
+        for (let item of items) {
+            list.push(item);
+            if (i < n) {
+                i++;
+            } else {
+                break;
+            }
+        }
+    }
+    return new C$crossj$List(list);
+}
 function* $ITERflatMap(items, f) {
     for (let item of items) {
         for (let subitem of f(item)) {
@@ -340,6 +355,14 @@ class C$crossj$IO {
     }
     static M$readFileBytes(filepath) {
         const b = require('fs').readFileSync(filepath);
+        const arraybuffer = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+        return new C$crossj$Bytes(arraybuffer, b.byteLength);
+    }
+    static M$readStdin() {
+        return require('fs').readFileSync(0, 'utf-8');
+    }
+    static M$readStdinBytes() {
+        const b = require('fs').readFileSync(0);
         const arraybuffer = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
         return new C$crossj$Bytes(arraybuffer, b.byteLength);
     }

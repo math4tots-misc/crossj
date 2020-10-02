@@ -45,4 +45,14 @@ public final class IterTest {
         Assert.equals(List.of(1, 2, 3, 4, 5).iter().skip(1).take(10).list(), List.of(2, 3, 4, 5));
         Assert.equals(List.of(1, 2, 3, 4, 5).iter().skip(10).list(), List.of());
     }
+
+    @Test
+    public static void pop() {
+        var list = List.of(1, 2, 3, 4, 5, 6);
+        var iter = list.iter();
+        var first = iter.pop(3);
+        var rest = iter.list();
+        Assert.equals(first, List.of(1, 2, 3));
+        Assert.equals(rest, List.of(4, 5, 6));
+    }
 }

@@ -45,22 +45,26 @@ public final class CLexerTest {
             Assert.equals(tokens, List.of("ID/asdf", "CHAR/c", "STRING/some string", "INT/5", "DOUBLE/12.2",
                     "DOUBLE/0.002", "EOF/null"));
         }
+        {
+            // ;
+            var tokens = lex(";\n// foo");
+            Assert.equals(tokens, List.of(";/null", "EOF/null"));
+        }
+        {
+            var tokens = lex("import crossj.foo.bar;\npublic class Foo {}");
+            Assert.equals(tokens, List.of("ID/import", "ID/crossj", "./null", "ID/foo", "./null", "ID/bar", ";/null",
+                    "ID/public", "ID/class", "ID/Foo", "{/null", "}/null", "EOF/null"));
+        }
     }
 
     @Test
     public static void comments() {
         {
-            var tokens = lex(
-                "2.4e-1 // these are some comments\n" +
-                "next_line"
-            );
+            var tokens = lex("2.4e-1 // these are some comments\n" + "next_line");
             Assert.equals(tokens, List.of("DOUBLE/0.24", "ID/next_line", "EOF/null"));
         }
         {
-            var tokens = lex(
-                "2.4e-1 /* these are some comments */ 'x'\n" +
-                "next_line"
-            );
+            var tokens = lex("2.4e-1 /* these are some comments */ 'x'\n" + "next_line");
             Assert.equals(tokens, List.of("DOUBLE/0.24", "CHAR/x", "ID/next_line", "EOF/null"));
         }
     }

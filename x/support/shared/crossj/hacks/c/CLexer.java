@@ -5,9 +5,13 @@ import crossj.Tuple;
 import crossj.XIterable;
 
 public final class CLexer {
-    public static final Tuple<String> OPERATORS = Tuple.of("&&", "||", "+=", "-=", "*=", "/=", "%=", "!=", "==", "+",
-            "-", "*", "/", "%", ",", ":", ";", "{", "}", "[", "]", "(", ")", "...");
-    public static final Tuple<String> KEYWORDS = Tuple.of("while", "for", "break", "continue");
+    public static final Tuple<String> OPERATORS = Tuple.of("...", ">>=", "<<=", "+=", "-=", "*=", "/=", "%=", "&=",
+            "^=", "|=", ">>", "<<", "++", "--", "->", "&&", "||", "<=", ">=", "==", "!=", ";", ",", ":", "=", "(", ")",
+            ".", "&", "!", "~", "-", "+", "*", "/", "%", "<", ">", "^", "|", "?", "{", "}", "[", "]");
+    public static final Tuple<String> KEYWORDS = Tuple.of("auto", "double", "int", "struct", "break", "else", "long",
+            "switch", "case", "enum", "register", "typedef", "char", "extern", "return", "union", "const", "float",
+            "short", "unsigned", "continue", "for", "signed", "void", "default", "goto", "sizeof", "volatile", "do",
+            "if", "static", "while");
 
     private static final CLexer DEFAULT = builder().build();
 
