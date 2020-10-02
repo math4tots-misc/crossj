@@ -9,7 +9,14 @@ import crossj.hacks.c.Source;
 public final class CLexerTest {
 
     @Test
-    public static void sample() {
+    public static void includesCertainKeywordsAndOperators() {
+        var lexer = CLexer.getDefault();
+        Assert.equals(lexer.getOperators().findUsingStringOrNull("+"), "+");
+        Assert.equals(lexer.getKeywords().findUsingStringOrNull("break"), "break");
+    }
+
+    @Test
+    public static void misc() {
         {
             var tokens = lex("");
             Assert.equals(tokens, List.of("EOF/null"));
@@ -37,6 +44,24 @@ public final class CLexerTest {
             var tokens = lex("asdf 'c' \"some string\" 5 12.2 2e-3");
             Assert.equals(tokens, List.of("ID/asdf", "CHAR/c", "STRING/some string", "INT/5", "DOUBLE/12.2",
                     "DOUBLE/0.002", "EOF/null"));
+        }
+    }
+
+    @Test
+    public static void comments() {
+        {
+            var tokens = lex(
+                "2.4e-1 // these are some comments\n" +
+                "next_line"
+            );
+            Assert.equals(tokens, List.of("DOUBLE/0.24", "ID/next_line", "EOF/null"));
+        }
+        {
+            var tokens = lex(
+                "2.4e-1 /* these are some comments */ 'x'\n" +
+                "next_line"
+            );
+            Assert.equals(tokens, List.of("DOUBLE/0.24", "CHAR/x", "ID/next_line", "EOF/null"));
         }
     }
 

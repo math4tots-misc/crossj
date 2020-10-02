@@ -6,6 +6,7 @@ package crossj;
  * Iterator with many convenience methods
  */
 public final class XIterator<T> implements XIterable<T> /* , Iterator<T> */ {
+    public static native <T> XIterator<T> fromParts(Func0<Boolean> hasNext, Func0<T> getNext);
     public native <R> XIterator<R> flatMap(Func1<XIterable<R>, T> f);
     public native <R> XIterator<R> map(Func1<R, T> f);
     public native XIterator<T> filter(Func1<Boolean, T> f);

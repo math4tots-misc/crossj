@@ -17,6 +17,12 @@ Rules:
     the resulting program will not work properly, since the method names
     will overwrite each other
 
+* `char` types must be used carefully. Avoid them and just use `int` code points if you can.
+    If you need char literals, you should always explicitly cast with `(int)` to get its
+    integer value. Otherwise, in the Javascript backend, `char` values are represented
+    with a string of length 1, and implicit casts are not well detected, so weird things might
+    happen if you don't handle it properly.
+
 * Array types are in a fuzzy area. They kinda are supported for varargs. But any access
     with them is invalid (e.g. with subscripting or calling `.length`). To get its values
     you should call `List.fromJavaArray` to get a `List`.

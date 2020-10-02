@@ -61,6 +61,8 @@ public final class CLexerState {
         var s = codePoints;
         var len = s.size();
         var i = this.i;
+        var cStyleComments = lexer.useCStyleComments();
+        var hashComments = lexer.useHashComments();
         // skip spaces and comments
         while (true) {
             while (i < len && CChar.isBlank(s.get(i))) {
@@ -72,7 +74,7 @@ public final class CLexerState {
                 i++;
                 continue;
             }
-            if (i + 1 < len && s.get(i) == SLASH) {
+            if (cStyleComments && i + 1 < len && s.get(i) == SLASH) {
                 if (s.get(i + 1) == SLASH) {
                     // line comment
                     i += 2;
@@ -88,6 +90,12 @@ public final class CLexerState {
                     }
                     i += 2;
                     continue;
+                }
+            }
+            if (hashComments && i < len && s.get(i) == (int) '#') {
+                // line comment
+                while (i < len && !CChar.isNewline(s.get(i))) {
+                    i++;
                 }
             }
             break;

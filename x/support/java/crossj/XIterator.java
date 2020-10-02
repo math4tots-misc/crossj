@@ -22,6 +22,20 @@ public final class XIterator<T> implements Iterator<T>, XIterable<T> {
         return new XIterator<>(iter);
     }
 
+    public static <T> XIterator<T> fromParts(Func0<Boolean> hasNext, Func0<T> getNext) {
+        return fromIterator(new Iterator<T>(){
+            @Override
+            public boolean hasNext() {
+                return hasNext.apply();
+            }
+
+            @Override
+            public T next() {
+                return getNext.apply();
+            }
+        });
+    }
+
     @Override
     public boolean hasNext() {
         return iter.hasNext();

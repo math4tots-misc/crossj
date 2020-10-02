@@ -196,6 +196,11 @@ function $bigintGCD(a, b) {
     }
     return a;
 }
+function* $ITERfromParts(hasNext, getNext) {
+    while (hasNext()) {
+        yield getNext();
+    }
+}
 function $ITERlist(items) {
     return C$crossj$List.M$of(...items);
 }

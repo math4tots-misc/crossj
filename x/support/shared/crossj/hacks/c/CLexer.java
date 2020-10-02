@@ -9,18 +9,30 @@ public final class CLexer {
             "-", "*", "/", "%", ",", ":", ";", "{", "}", "[", "]", "(", ")", "...");
     public static final Tuple<String> KEYWORDS = Tuple.of("while", "for", "break", "continue");
 
-    private static final CLexer DEFAULT = new CLexer(OPERATORS, KEYWORDS);
+    private static final CLexer DEFAULT = builder().build();
 
     private final ASCIITrie operators;
     private final ASCIITrie keywords;
+    private final boolean cStyleComments;
+    private final boolean hashComments;
 
-    private CLexer(XIterable<String> operators, XIterable<String> keywords) {
+    CLexer(XIterable<String> operators, XIterable<String> keywords, boolean cStyleComments, boolean hashComments) {
         this.operators = ASCIITrie.fromIterable(operators);
         this.keywords = ASCIITrie.fromIterable(keywords);
+        this.cStyleComments = cStyleComments;
+        this.hashComments = hashComments;
     }
 
     public static CLexer getDefault() {
         return DEFAULT;
+    }
+
+    public static CLexerBuilder builder() {
+        return new CLexerBuilder(KEYWORDS, OPERATORS, true, false);
+    }
+
+    static CLexer fromBuilder(CLexerBuilder builder) {
+        return new CLexer(builder.operators, builder.keywords, builder.cStyleComments, builder.hashComments);
     }
 
     public CLexerState startLex(Source source) {
@@ -42,5 +54,13 @@ public final class CLexer {
 
     public ASCIITrie getKeywords() {
         return keywords;
+    }
+
+    public boolean useCStyleComments() {
+        return cStyleComments;
+    }
+
+    public boolean useHashComments() {
+        return hashComments;
     }
 }

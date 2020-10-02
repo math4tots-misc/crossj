@@ -625,6 +625,14 @@ public final class JavascriptTranslator implements ITranslator {
                     ITypeBinding cls = method.getDeclaringClass().getErasure();
                     String qualifiedClassName = cls.getQualifiedName();
                     switch (qualifiedClassName + "." + method.getName()) {
+                        case "crossj.XIterator.fromParts": {
+                            sb.append("$ITERfromParts(");
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(",");
+                            translateExpression((Expression) node.arguments().get(1));
+                            sb.append(")");
+                            break;
+                        }
                         case "crossj.StrImpl.codeAt": {
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(".charCodeAt(");
