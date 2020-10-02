@@ -4,9 +4,9 @@ import crossj.DoubleArray;
 import crossj.List;
 import crossj.Optional;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.material.Lambertian;
 import crossj.hacks.ray.material.Material;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Triangle surface.

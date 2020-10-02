@@ -4,7 +4,7 @@ import crossj.Assert;
 import crossj.DoubleArray;
 import crossj.List;
 import crossj.M;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Performs gaussian elimination to reduced row echelon form.

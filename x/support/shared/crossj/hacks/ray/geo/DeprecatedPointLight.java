@@ -2,7 +2,7 @@ package crossj.hacks.ray.geo;
 
 import crossj.Assert;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 public final class DeprecatedPointLight {
     private final Color intensity;

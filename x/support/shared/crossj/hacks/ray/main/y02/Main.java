@@ -3,13 +3,13 @@ package crossj.hacks.ray.main.y02;
 import crossj.IO;
 import crossj.List;
 import crossj.hacks.image.Bitmap;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.AABB;
 import crossj.hacks.ray.RayTracer;
 import crossj.hacks.ray.geo.Camera;
 import crossj.hacks.ray.geo.SDF;
 import crossj.hacks.ray.geo.Surface;
 import crossj.hacks.ray.geo.Surfaces;
+import crossj.hacks.ray.math.Matrix;
 
 public final class Main {
 

@@ -4,11 +4,11 @@ import crossj.IO;
 import crossj.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.DeprecatedMaterial;
 import crossj.hacks.ray.geo.DeprecatedPointLight;
 import crossj.hacks.ray.geo.DeprecatedRay;
 import crossj.hacks.ray.geo.DeprecatedSphere;
+import crossj.hacks.ray.math.Matrix;
 
 public final class Main {
     public static void main(String[] args) {

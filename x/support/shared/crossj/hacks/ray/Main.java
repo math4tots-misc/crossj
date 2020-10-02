@@ -12,6 +12,7 @@ import crossj.hacks.ray.geo.Camera;
 import crossj.hacks.ray.geo.ObjLoader;
 import crossj.hacks.ray.geo.Surface;
 import crossj.hacks.ray.geo.Surfaces;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Command line program that accepts some *.obj, *.mtl files and renders a ray

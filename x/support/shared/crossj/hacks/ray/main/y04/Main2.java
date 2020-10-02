@@ -2,11 +2,11 @@ package crossj.hacks.ray.main.y04;
 
 import crossj.IO;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.RayTracer;
 import crossj.hacks.ray.geo.Camera;
 import crossj.hacks.ray.geo.ObjLoader;
 import crossj.hacks.ray.material.Metal;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Playing with support for *.obj files.

@@ -5,8 +5,8 @@ import crossj.Optional;
 import crossj.Pair;
 import crossj.Rand;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Ray;
+import crossj.hacks.ray.math.Matrix;
 
 // TODO: keep track of the refractiveIndex on each hit, instead of always
 // assuming that one side is air.

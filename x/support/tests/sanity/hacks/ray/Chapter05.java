@@ -2,11 +2,11 @@ package sanity.hacks.ray;
 
 import crossj.Assert;
 import crossj.Test;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.DeprecatedIntersection;
 import crossj.hacks.ray.geo.DeprecatedIntersections;
 import crossj.hacks.ray.geo.DeprecatedRay;
 import crossj.hacks.ray.geo.DeprecatedSphere;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Chapter 5: Ray-Sphere Intersections

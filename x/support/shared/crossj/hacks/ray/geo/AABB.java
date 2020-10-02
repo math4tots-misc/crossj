@@ -6,7 +6,7 @@ import crossj.List;
 import crossj.M;
 import crossj.Tuple;
 import crossj.XIterable;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Axis Aligned Bounding Box

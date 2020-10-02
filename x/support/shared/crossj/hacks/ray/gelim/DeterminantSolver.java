@@ -1,6 +1,6 @@
 package crossj.hacks.ray.gelim;
 
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 public final class DeterminantSolver implements GaussianEliminationListener {
     private double denominator = 1;

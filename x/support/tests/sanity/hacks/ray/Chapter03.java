@@ -4,7 +4,7 @@ import crossj.Assert;
 import crossj.DoubleArray;
 import crossj.List;
 import crossj.Test;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Chapter 3: Matrices

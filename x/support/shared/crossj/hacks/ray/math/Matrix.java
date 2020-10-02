@@ -1,4 +1,4 @@
-package crossj.hacks.ray;
+package crossj.hacks.ray.math;
 
 import crossj.AlmostEq;
 import crossj.Assert;

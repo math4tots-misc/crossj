@@ -2,9 +2,9 @@ package sanity.hacks.ray;
 
 import crossj.Assert;
 import crossj.Test;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Ray;
 import crossj.hacks.ray.geo.Triangle;
+import crossj.hacks.ray.math.Matrix;
 
 public final class TriangleTest {
     @Test

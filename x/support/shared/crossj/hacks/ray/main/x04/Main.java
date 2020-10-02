@@ -6,13 +6,13 @@ import crossj.Rand;
 import crossj.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Camera;
 import crossj.hacks.ray.geo.Ray;
 import crossj.hacks.ray.geo.Sphere;
 import crossj.hacks.ray.geo.Surface;
 import crossj.hacks.ray.geo.Surfaces;
 import crossj.hacks.ray.material.Lambertian;
+import crossj.hacks.ray.math.Matrix;
 
 public final class Main {
     public static void main(String[] args) {

@@ -2,10 +2,10 @@ package sanity.hacks.ray;
 
 import crossj.Assert;
 import crossj.Test;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.AABB;
 import crossj.hacks.ray.geo.Ray;
 import crossj.hacks.ray.geo.Sphere;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Tests for axis aligned bounding boxes

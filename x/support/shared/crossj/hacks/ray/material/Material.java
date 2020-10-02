@@ -2,8 +2,8 @@ package crossj.hacks.ray.material;
 
 import crossj.Pair;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Ray;
+import crossj.hacks.ray.math.Matrix;
 
 public interface Material {
     /**

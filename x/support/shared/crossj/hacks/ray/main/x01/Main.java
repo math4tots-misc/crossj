@@ -3,12 +3,12 @@ package crossj.hacks.ray.main.x01;
 import crossj.IO;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Camera;
 import crossj.hacks.ray.geo.Ray;
 import crossj.hacks.ray.geo.Sphere;
 import crossj.hacks.ray.geo.Surface;
 import crossj.hacks.ray.geo.Surfaces;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Return color based on the (x,y,z) values of the normal vector

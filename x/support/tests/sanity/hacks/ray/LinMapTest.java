@@ -4,7 +4,7 @@ import crossj.Assert;
 import crossj.List;
 import crossj.Pair;
 import crossj.Test;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 public final class LinMapTest {
 

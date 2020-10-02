@@ -4,7 +4,7 @@ import crossj.Assert;
 import crossj.DoubleArray;
 import crossj.List;
 import crossj.Optional;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 public final class InverseMatrixSolver implements GaussianEliminationListener {
     private boolean invertible = true;

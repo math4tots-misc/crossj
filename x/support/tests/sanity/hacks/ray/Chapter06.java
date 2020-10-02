@@ -4,10 +4,10 @@ import crossj.Assert;
 import crossj.M;
 import crossj.Test;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.DeprecatedMaterial;
 import crossj.hacks.ray.geo.DeprecatedPointLight;
 import crossj.hacks.ray.geo.DeprecatedSphere;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Chapter 6: Light and Shading

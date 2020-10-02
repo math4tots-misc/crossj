@@ -3,8 +3,8 @@ package sanity.hacks.ray;
 import crossj.Assert;
 import crossj.M;
 import crossj.Test;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.material.Dielectric;
+import crossj.hacks.ray.math.Matrix;
 
 public final class RefractTest {
     @Test

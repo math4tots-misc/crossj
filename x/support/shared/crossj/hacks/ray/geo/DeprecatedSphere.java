@@ -2,7 +2,7 @@ package crossj.hacks.ray.geo;
 
 import crossj.Assert;
 import crossj.M;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 // @Deprecated
 public final class DeprecatedSphere {

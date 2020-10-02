@@ -3,7 +3,6 @@ package crossj.hacks.ray.main.y05;
 import crossj.IO;
 import crossj.M;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Box;
 import crossj.hacks.ray.RayTracer;
 import crossj.hacks.ray.geo.Camera;
@@ -12,6 +11,7 @@ import crossj.hacks.ray.geo.Surfaces;
 import crossj.hacks.ray.material.Glossy;
 import crossj.hacks.ray.material.Lambertian;
 import crossj.hacks.ray.material.Metal;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Glossy

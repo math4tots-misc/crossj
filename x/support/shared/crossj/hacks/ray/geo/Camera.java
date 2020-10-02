@@ -3,7 +3,7 @@ package crossj.hacks.ray.geo;
 import crossj.Assert;
 import crossj.M;
 import crossj.Rand;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * More or less the camera described in

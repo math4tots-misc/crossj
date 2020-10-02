@@ -7,7 +7,6 @@ import crossj.Rand;
 import crossj.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Camera;
 import crossj.hacks.ray.geo.Ray;
 import crossj.hacks.ray.geo.Sphere;
@@ -17,6 +16,7 @@ import crossj.hacks.ray.material.Dielectric;
 import crossj.hacks.ray.material.Lambertian;
 import crossj.hacks.ray.material.Material;
 import crossj.hacks.ray.material.Metal;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Putting it together with things so far from "Ray Tracing in One Weekend"

@@ -2,8 +2,8 @@ package crossj.hacks.ray.geo;
 
 import crossj.Pair;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.material.Material;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Contextual information about when a ray hits a surface.

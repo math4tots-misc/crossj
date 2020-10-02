@@ -6,9 +6,9 @@ import crossj.M;
 import crossj.Optional;
 import crossj.Rand;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.material.Lambertian;
 import crossj.hacks.ray.material.Material;
+import crossj.hacks.ray.math.Matrix;
 
 public final class Sphere implements Surface {
     private static final Matrix DEFAULT_TRANSFORM = Matrix.identity(4);

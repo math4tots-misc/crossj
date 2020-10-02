@@ -5,9 +5,9 @@ import crossj.List;
 import crossj.M;
 import crossj.Optional;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.material.Lambertian;
 import crossj.hacks.ray.material.Material;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Like Sphere, starts out with unit shape, i.e. cube with side length 1

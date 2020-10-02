@@ -6,7 +6,7 @@ import crossj.Eq;
 import crossj.M;
 import crossj.TypedEq;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 public final class DeprecatedMaterial implements AlmostEq<DeprecatedMaterial>, TypedEq<DeprecatedMaterial> {
     private final Color color;

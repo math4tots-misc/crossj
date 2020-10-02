@@ -5,7 +5,6 @@ import crossj.List;
 import crossj.Rand;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
-import crossj.hacks.ray.Matrix;
 import crossj.hacks.ray.geo.Box;
 import crossj.hacks.ray.RayTracer;
 import crossj.hacks.ray.geo.Camera;
@@ -16,6 +15,7 @@ import crossj.hacks.ray.material.Dielectric;
 import crossj.hacks.ray.material.Lambertian;
 import crossj.hacks.ray.material.Material;
 import crossj.hacks.ray.material.Metal;
+import crossj.hacks.ray.math.Matrix;
 
 public final class Main {
 

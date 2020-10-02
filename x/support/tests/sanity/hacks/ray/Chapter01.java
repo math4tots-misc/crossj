@@ -3,7 +3,7 @@ package sanity.hacks.ray;
 import crossj.Assert;
 import crossj.M;
 import crossj.Test;
-import crossj.hacks.ray.Matrix;
+import crossj.hacks.ray.math.Matrix;
 
 /**
  * Chapter 1: Tuples, Points, and Vectors
