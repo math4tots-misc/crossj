@@ -1,6 +1,6 @@
 package crossj.hacks.ray.main.ch05;
 
-import crossj.IO;
+import crossj.base.IO;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.geo.DeprecatedRay;

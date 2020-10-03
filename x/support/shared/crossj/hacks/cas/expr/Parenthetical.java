@@ -1,6 +1,6 @@
 package crossj.hacks.cas.expr;
 
-import crossj.List;
+import crossj.base.List;
 
 /**
  * A parenthetical expression.

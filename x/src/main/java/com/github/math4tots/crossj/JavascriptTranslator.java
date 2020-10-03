@@ -60,12 +60,12 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
-import crossj.IO;
-import crossj.List;
-import crossj.Optional;
-import crossj.Pair;
-import crossj.Set;
-import crossj.XError;
+import crossj.base.IO;
+import crossj.base.List;
+import crossj.base.Optional;
+import crossj.base.Pair;
+import crossj.base.Set;
+import crossj.base.XError;
 
 public final class JavascriptTranslator implements ITranslator {
     private String outputDirectory;
@@ -226,7 +226,7 @@ public final class JavascriptTranslator implements ITranslator {
 
         // if this class implements 'XIterable', it needs to implement the
         // [Symbol.iterator] method
-        if (superInterfaceNames.contains("crossj.XIterable")) {
+        if (superInterfaceNames.contains("crossj.base.XIterable")) {
             sb.append("[Symbol.iterator](){return this.M$iter();}");
         }
 
@@ -363,7 +363,7 @@ public final class JavascriptTranslator implements ITranslator {
                     if (modifier instanceof Annotation) {
                         IAnnotationBinding binding = ((Annotation) modifier).resolveAnnotationBinding();
                         if (binding != null) {
-                            if (binding.getAnnotationType().getQualifiedName().equals("crossj.Test")) {
+                            if (binding.getAnnotationType().getQualifiedName().equals("crossj.base.Test")) {
                                 tests.add(Pair.of(currentTypeDeclarationBinding.getQualifiedName(), name));
                             }
                         }
@@ -625,7 +625,7 @@ public final class JavascriptTranslator implements ITranslator {
                     ITypeBinding cls = method.getDeclaringClass().getErasure();
                     String qualifiedClassName = cls.getQualifiedName();
                     switch (qualifiedClassName + "." + method.getName()) {
-                        case "crossj.XIterator.fromParts": {
+                        case "crossj.base.XIterator.fromParts": {
                             sb.append("$ITERfromParts(");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(",");
@@ -633,37 +633,37 @@ public final class JavascriptTranslator implements ITranslator {
                             sb.append(")");
                             break;
                         }
-                        case "crossj.StrImpl.codeAt": {
+                        case "crossj.base.StrImpl.codeAt": {
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(".charCodeAt(");
                             translateExpression((Expression) node.arguments().get(1));
                             sb.append(")");
                             break;
                         }
-                        case "crossj.StrImpl.charCode": {
+                        case "crossj.base.StrImpl.charCode": {
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(".charCodeAt(0)");
                             break;
                         }
-                        case "crossj.StrImpl.toUTF8": {
+                        case "crossj.base.StrImpl.toUTF8": {
                             sb.append("$stringToUTF8(");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(")");
                             break;
                         }
-                        case "crossj.StrImpl.toCodePoints": {
+                        case "crossj.base.StrImpl.toCodePoints": {
                             sb.append("$stringToCodePoints(");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(")");
                             break;
                         }
-                        case "crossj.StrImpl.fromCodePoints": {
+                        case "crossj.base.StrImpl.fromCodePoints": {
                             sb.append("$codePointsToString(");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(")");
                             break;
                         }
-                        case "crossj.StrImpl.fromSliceOfCodePoints": {
+                        case "crossj.base.StrImpl.fromSliceOfCodePoints": {
                             sb.append("$sliceOfcodePointsToString(");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(",");
@@ -673,7 +673,7 @@ public final class JavascriptTranslator implements ITranslator {
                             sb.append(")");
                             break;
                         }
-                        case "crossj.Eq.of": {
+                        case "crossj.base.Eq.of": {
                             // Equality check is a common operation, so it seems like a good idea to
                             // not require a class lookup for this
                             sb.append("$EQ(");
@@ -683,31 +683,31 @@ public final class JavascriptTranslator implements ITranslator {
                             sb.append(")");
                             break;
                         }
-                        case "crossj.BigInt.fromInt":
-                        case "crossj.BigInt.fromDouble":
-                        case "crossj.BigInt.fromString": {
+                        case "crossj.base.BigInt.fromInt":
+                        case "crossj.base.BigInt.fromDouble":
+                        case "crossj.base.BigInt.fromString": {
                             sb.append("BigInt(");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(")");
                             break;
                         }
-                        case "crossj.BigInt.fromHexString": {
+                        case "crossj.base.BigInt.fromHexString": {
                             sb.append("BigInt('0x' + ");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(")");
                             break;
                         }
-                        case "crossj.BigInt.fromOctString": {
+                        case "crossj.base.BigInt.fromOctString": {
                             sb.append("BigInt('0o' + ");
                             translateExpression((Expression) node.arguments().get(0));
                             sb.append(")");
                             break;
                         }
-                        case "crossj.BigInt.one": {
+                        case "crossj.base.BigInt.one": {
                             sb.append("1n");
                             break;
                         }
-                        case "crossj.BigInt.zero": {
+                        case "crossj.base.BigInt.zero": {
                             sb.append("0n");
                             break;
                         }
@@ -730,7 +730,7 @@ public final class JavascriptTranslator implements ITranslator {
                     String qualifiedName = qualifiedClassName + "." + method.getName();
                     Expression owner = node.getExpression();
 
-                    if (qualifiedClassName.equals("crossj.XIterator")) {
+                    if (qualifiedClassName.equals("crossj.base.XIterator")) {
                         String funcName = "$ITER" + method.getName();
                         sb.append(funcName + "(");
                         if (owner == null) {
@@ -827,11 +827,11 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
-                            case "crossj.Func0.apply":
-                            case "crossj.Func1.apply":
-                            case "crossj.Func2.apply":
-                            case "crossj.Func3.apply":
-                            case "crossj.Func4.apply": {
+                            case "crossj.base.Func0.apply":
+                            case "crossj.base.Func1.apply":
+                            case "crossj.base.Func2.apply":
+                            case "crossj.base.Func3.apply":
+                            case "crossj.base.Func4.apply": {
                                 translateExpression(owner);
                                 sb.append("(");
                                 for (int i = 0; i < node.arguments().size(); i++) {
@@ -847,13 +847,13 @@ public final class JavascriptTranslator implements ITranslator {
                             case "java.lang.Integer.toString":
                             case "java.lang.Double.toString":
                             case "java.lang.Object.toString":
-                            case "crossj.BigInt.toString": {
+                            case "crossj.base.BigInt.toString": {
                                 sb.append("(''+");
                                 translateExpression(owner);
                                 sb.append(")");
                                 break;
                             }
-                            case "crossj.BigInt.add": {
+                            case "crossj.base.BigInt.add": {
                                 sb.append("(");
                                 translateExpression(owner);
                                 sb.append('+');
@@ -861,7 +861,7 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
-                            case "crossj.BigInt.subtract": {
+                            case "crossj.base.BigInt.subtract": {
                                 sb.append("(");
                                 translateExpression(owner);
                                 sb.append('-');
@@ -869,7 +869,7 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
-                            case "crossj.BigInt.multiply": {
+                            case "crossj.base.BigInt.multiply": {
                                 sb.append("(");
                                 translateExpression(owner);
                                 sb.append('*');
@@ -877,7 +877,7 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
-                            case "crossj.BigInt.divide": {
+                            case "crossj.base.BigInt.divide": {
                                 sb.append("(");
                                 translateExpression(owner);
                                 sb.append('/');
@@ -885,7 +885,7 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
-                            case "crossj.BigInt.remainder": {
+                            case "crossj.base.BigInt.remainder": {
                                 sb.append("(");
                                 translateExpression(owner);
                                 sb.append('%');
@@ -893,7 +893,7 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
-                            case "crossj.BigInt.pow": {
+                            case "crossj.base.BigInt.pow": {
                                 sb.append("(");
                                 translateExpression(owner);
                                 sb.append("**");
@@ -901,7 +901,7 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
-                            case "crossj.BigInt.gcd": {
+                            case "crossj.base.BigInt.gcd": {
                                 sb.append("$bigintGCD(");
                                 translateExpression(owner);
                                 sb.append(",");
@@ -946,7 +946,7 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(LambdaExpression node) {
-                String expectedTypeName = "crossj.Func" + node.parameters().size();
+                String expectedTypeName = "crossj.base.Func" + node.parameters().size();
                 ITypeBinding type = node.resolveTypeBinding().getErasure();
                 if (!type.getQualifiedName().equals(expectedTypeName)) {
                     throw err("Expected lambda expression to have type " + expectedTypeName + " but got type "
@@ -1188,8 +1188,8 @@ public final class JavascriptTranslator implements ITranslator {
                     sb.append("(");
                     translateExpression(node.getLeftOperand());
                     sb.append("&&0||true)");
-                } else if (qualifiedName.startsWith("crossj.Func")) {
-                    int argc = Integer.parseInt(qualifiedName.substring("crossj.Func".length()));
+                } else if (qualifiedName.startsWith("crossj.base.Func")) {
+                    int argc = Integer.parseInt(qualifiedName.substring("crossj.base.Func".length()));
                     sb.append("$INSTOFFN(");
                     translateExpression(node.getLeftOperand());
                     sb.append("," + argc + ")");

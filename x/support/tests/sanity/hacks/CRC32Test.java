@@ -1,9 +1,9 @@
 package sanity.hacks;
 
-import crossj.Assert;
-import crossj.Bytes;
-import crossj.Int;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Bytes;
+import crossj.base.Int;
+import crossj.base.Test;
 import crossj.hacks.CRC32;
 
 /**

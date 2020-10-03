@@ -1,7 +1,7 @@
 package crossj.hacks.image;
 
-import crossj.IO;
-import crossj.M;
+import crossj.base.IO;
+import crossj.base.M;
 
 public final class Demo {
     public static void main(String[] args) {

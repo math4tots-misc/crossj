@@ -1,7 +1,7 @@
 package crossj.hacks.c;
 
-import crossj.Tuple;
-import crossj.XIterable;
+import crossj.base.Tuple;
+import crossj.base.XIterable;
 
 public final class CLexerBuilder {
     Tuple<String> keywords;

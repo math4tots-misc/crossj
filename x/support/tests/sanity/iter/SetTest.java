@@ -1,8 +1,8 @@
 package sanity.iter;
 
-import crossj.Assert;
-import crossj.Set;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Set;
+import crossj.base.Test;
 
 public final class SetTest {
     @Test

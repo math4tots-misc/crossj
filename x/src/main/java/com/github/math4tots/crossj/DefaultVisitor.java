@@ -3,7 +3,7 @@ package com.github.math4tots.crossj;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 
-import crossj.XError;
+import crossj.base.XError;
 
 import org.eclipse.jdt.core.dom.*;
 

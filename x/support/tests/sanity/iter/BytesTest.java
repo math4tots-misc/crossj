@@ -1,9 +1,9 @@
 package sanity.iter;
 
-import crossj.Assert;
-import crossj.Bytes;
-import crossj.List;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Bytes;
+import crossj.base.List;
+import crossj.base.Test;
 
 public final class BytesTest {
     @Test

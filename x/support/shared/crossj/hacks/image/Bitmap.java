@@ -1,11 +1,11 @@
 package crossj.hacks.image;
 
-import crossj.Assert;
-import crossj.Bytes;
-import crossj.IntArray;
-import crossj.List;
-import crossj.XIterable;
-import crossj.XIterator;
+import crossj.base.Assert;
+import crossj.base.Bytes;
+import crossj.base.IntArray;
+import crossj.base.List;
+import crossj.base.XIterable;
+import crossj.base.XIterator;
 
 /**
  * Quick and dirty class for playing with bitmaps

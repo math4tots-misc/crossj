@@ -1,9 +1,9 @@
 package sanity.hacks.ray;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.Pair;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.Pair;
+import crossj.base.Test;
 import crossj.hacks.ray.math.Matrix;
 
 public final class LinMapTest {

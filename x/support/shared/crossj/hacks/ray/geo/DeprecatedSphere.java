@@ -1,7 +1,7 @@
 package crossj.hacks.ray.geo;
 
-import crossj.Assert;
-import crossj.M;
+import crossj.base.Assert;
+import crossj.base.M;
 import crossj.hacks.ray.math.Matrix;
 
 // @Deprecated

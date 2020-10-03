@@ -1,6 +1,6 @@
 package com.github.math4tots.crossj.ir;
 
-import crossj.Tuple;
+import crossj.base.Tuple;
 
 public final class Block implements Stmt {
     private final int lineno;

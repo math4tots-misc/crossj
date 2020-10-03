@@ -1,8 +1,8 @@
 package crossj.hacks;
 
-import crossj.Bytes;
-import crossj.Int;
-import crossj.IntArray;
+import crossj.base.Bytes;
+import crossj.base.Int;
+import crossj.base.IntArray;
 
 /**
  * Basic CRC32 implementation

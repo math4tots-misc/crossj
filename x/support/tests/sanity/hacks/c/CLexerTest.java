@@ -1,8 +1,8 @@
 package sanity.hacks.c;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.Test;
 import crossj.hacks.c.CLexer;
 import crossj.hacks.c.Source;
 

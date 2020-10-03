@@ -1,11 +1,11 @@
 package sanity.cls;
 
-import crossj.Assert;
-import crossj.Func1;
-import crossj.Func2;
-import crossj.List;
-import crossj.Pair;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Func1;
+import crossj.base.Func2;
+import crossj.base.List;
+import crossj.base.Pair;
+import crossj.base.Test;
 
 public final class ClassTest {
     public static int staticField = 123;

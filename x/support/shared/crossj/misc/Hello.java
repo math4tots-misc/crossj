@@ -1,6 +1,6 @@
 package crossj.misc;
 
-import crossj.IO;
+import crossj.base.IO;
 
 public final class Hello {
     public static void main(String[] args) {

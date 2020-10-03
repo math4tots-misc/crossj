@@ -1,9 +1,9 @@
 package crossj.hacks.cas.expr;
 
-import crossj.BigInt;
-import crossj.List;
-import crossj.Optional;
-import crossj.Pair;
+import crossj.base.BigInt;
+import crossj.base.List;
+import crossj.base.Optional;
+import crossj.base.Pair;
 
 /**
  * A fraction of two expressions.

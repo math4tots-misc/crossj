@@ -1,7 +1,7 @@
 package sanity.hacks.ray;
 
-import crossj.Assert;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Test;
 import crossj.hacks.ray.geo.Ray;
 import crossj.hacks.ray.geo.Triangle;
 import crossj.hacks.ray.math.Matrix;

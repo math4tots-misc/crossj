@@ -1,9 +1,9 @@
 package sanity.io;
 
-import crossj.Assert;
-import crossj.Bytes;
-import crossj.IO;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Bytes;
+import crossj.base.IO;
+import crossj.base.Test;
 
 public final class FileTest {
 

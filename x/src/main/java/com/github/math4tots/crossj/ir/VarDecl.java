@@ -1,7 +1,7 @@
 package com.github.math4tots.crossj.ir;
 
-import crossj.Optional;
-import crossj.Tuple;
+import crossj.base.Optional;
+import crossj.base.Tuple;
 
 public final class VarDecl implements Stmt {
     private final int lineno;

@@ -1,8 +1,8 @@
 package crossj.hacks.cas.algo;
 
-import crossj.BigInt;
-import crossj.Optional;
-import crossj.Pair;
+import crossj.base.BigInt;
+import crossj.base.Optional;
+import crossj.base.Pair;
 import crossj.hacks.cas.AlgebraContext;
 import crossj.hacks.cas.expr.Expression;
 import crossj.hacks.cas.expr.ExpressionVisitor;

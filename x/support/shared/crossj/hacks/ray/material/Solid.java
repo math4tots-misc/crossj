@@ -1,7 +1,7 @@
 package crossj.hacks.ray.material;
 
-import crossj.Pair;
-import crossj.Rand;
+import crossj.base.Pair;
+import crossj.base.Rand;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.geo.Ray;
 import crossj.hacks.ray.math.Matrix;

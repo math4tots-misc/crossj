@@ -1,10 +1,10 @@
 package sanity.iter;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.Repr;
-import crossj.Str;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.Repr;
+import crossj.base.Str;
+import crossj.base.Test;
 
 public final class StringTest {
     @Test

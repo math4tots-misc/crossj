@@ -1,9 +1,9 @@
 package crossj.hacks.ray.main.ch04;
 
-import crossj.IO;
-import crossj.List;
-import crossj.M;
-import crossj.Pair;
+import crossj.base.IO;
+import crossj.base.List;
+import crossj.base.M;
+import crossj.base.Pair;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.math.Matrix;

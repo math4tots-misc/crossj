@@ -1,10 +1,10 @@
 package crossj.hacks.c;
 
-import crossj.BigInt;
-import crossj.IntArray;
-import crossj.Num;
-import crossj.Str;
-import crossj.XError;
+import crossj.base.BigInt;
+import crossj.base.IntArray;
+import crossj.base.Num;
+import crossj.base.Str;
+import crossj.base.XError;
 
 public final class CLexerState {
     private final static int BACK_SLASH = (int) '\\';

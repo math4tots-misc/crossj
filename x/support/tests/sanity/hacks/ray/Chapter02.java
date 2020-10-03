@@ -1,9 +1,9 @@
 package sanity.hacks.ray;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.Str;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.Str;
+import crossj.base.Test;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 

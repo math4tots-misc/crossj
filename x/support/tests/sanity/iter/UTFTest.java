@@ -1,11 +1,11 @@
 package sanity.iter;
 
-import crossj.Assert;
-import crossj.Bytes;
-import crossj.IntArray;
-import crossj.List;
-import crossj.Str;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Bytes;
+import crossj.base.IntArray;
+import crossj.base.List;
+import crossj.base.Str;
+import crossj.base.Test;
 
 /**
  * Content here could all conceivably also live in StringTest

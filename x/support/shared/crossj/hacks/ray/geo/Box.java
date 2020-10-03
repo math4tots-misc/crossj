@@ -1,9 +1,9 @@
 package crossj.hacks.ray.geo;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.M;
-import crossj.Optional;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.M;
+import crossj.base.Optional;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.material.Lambertian;
 import crossj.hacks.ray.material.Material;

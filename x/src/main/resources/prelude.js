@@ -161,7 +161,7 @@ function $stringToUTF8(string) {
             arr.push(0x80 | (c & 0x3F));
         }
     }
-    return C$crossj$Bytes.M$fromU8s(arr);
+    return C$crossj$base$Bytes.M$fromU8s(arr);
 }
 /**
  * @param {string} string
@@ -178,7 +178,7 @@ function $codePointsToString(codePoints) {
 }
 /**
  *
- * @param {C$crossj$IntArray} codePoints
+ * @param {C$crossj$base$IntArray} codePoints
  * @param {number} start
  * @param {number} end
  */
@@ -186,7 +186,7 @@ function $sliceOfcodePointsToString(codePoints, start, end) {
     return String.fromCodePoint(...codePoints.arr.subarray(start, end));
 }
 function repr(x) {
-    return C$crossj$Repr.M$of(x);
+    return C$crossj$base$Repr.M$of(x);
 }
 function $bigintGCD(a, b) {
     while (b) {
@@ -202,14 +202,14 @@ function* $ITERfromParts(hasNext, getNext) {
     }
 }
 function $ITERlist(items) {
-    return C$crossj$List.M$of(...items);
+    return C$crossj$base$List.M$of(...items);
 }
 function* $ITERchunk(items, n) {
     let chunk = [];
     for (let item of items) {
         chunk.push(item);
         if (chunk.length >= n) {
-            yield new C$crossj$List(chunk);
+            yield new C$crossj$base$List(chunk);
             chunk = [];
         }
     }
@@ -251,7 +251,7 @@ function $ITERpop(items, n) {
             }
         }
     }
-    return new C$crossj$List(list);
+    return new C$crossj$base$List(list);
 }
 function* $ITERflatMap(items, f) {
     for (let item of items) {
@@ -311,14 +311,14 @@ function $ITERiter(iterator) {
     return iterator;
 }
 
-class C$crossj$XError extends Error {
+class C$crossj$base$XError extends Error {
     static M$withMessage(message) {
-        return new C$crossj$XError(message);
+        return new C$crossj$base$XError(message);
     }
 }
-$CJ['crossj.XError'] = C$crossj$XError;
+$CJ['crossj.base.XError'] = C$crossj$base$XError;
 
-class C$crossj$IO {
+class C$crossj$base$IO {
     static M$println(x) {
         console.log('' + x);
     }
@@ -348,7 +348,7 @@ class C$crossj$IO {
         require('fs').writeFileSync(filepath, data);
     }
     static M$writeFileBytes(filepath, bytes) {
-        C$crossj$IO.M$writeFile(filepath, bytes.M$asU8s());
+        C$crossj$base$IO.M$writeFile(filepath, bytes.M$asU8s());
     }
     static M$readFile(filepath) {
         return require('fs').readFileSync(filepath, 'utf-8');
@@ -356,7 +356,7 @@ class C$crossj$IO {
     static M$readFileBytes(filepath) {
         const b = require('fs').readFileSync(filepath);
         const arraybuffer = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
-        return new C$crossj$Bytes(arraybuffer, b.byteLength);
+        return new C$crossj$base$Bytes(arraybuffer, b.byteLength);
     }
     static M$readStdin() {
         return require('fs').readFileSync(0, 'utf-8');
@@ -364,12 +364,12 @@ class C$crossj$IO {
     static M$readStdinBytes() {
         const b = require('fs').readFileSync(0);
         const arraybuffer = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
-        return new C$crossj$Bytes(arraybuffer, b.byteLength);
+        return new C$crossj$base$Bytes(arraybuffer, b.byteLength);
     }
 }
-$CJ['crossj.IO'] = C$crossj$IO;
+$CJ['crossj.base.IO'] = C$crossj$base$IO;
 
-class C$crossj$Magic {
+class C$crossj$base$Magic {
     /**
      * @param {object} a
      * @param {object} b
@@ -378,9 +378,9 @@ class C$crossj$Magic {
         return a && b && a.constructor === b.constructor;
     }
 };
-$CJ['crossj.Magic'] = C$crossj$Magic;
+$CJ['crossj.base.Magic'] = C$crossj$base$Magic;
 
-class C$crossj$Range {
+class C$crossj$base$Range {
     static *M$of(start, end) {
         for (let i = start; i < end; i++) {
             yield i;
@@ -392,15 +392,15 @@ class C$crossj$Range {
         }
     }
     static M$upto(end) {
-        return C$crossj$Range.M$of(0, end);
+        return C$crossj$base$Range.M$of(0, end);
     }
 };
-$CJ['crossj.Range'] = C$crossj$Range;
+$CJ['crossj.base.Range'] = C$crossj$base$Range;
 
 /**
  * @template T
  */
-class C$crossj$List {
+class C$crossj$base$List {
     /**
      * @param {Array<T>} arr
      */
@@ -412,41 +412,41 @@ class C$crossj$List {
      * @param  {...T} args
      */
     static M$of(...args) {
-        return new C$crossj$List(args);
+        return new C$crossj$base$List(args);
     }
     /**
      * @param  {...number} args
      */
     static M$ofDoubles(...args) {
-        return new C$crossj$List(args);
+        return new C$crossj$base$List(args);
     }
     static M$fromJavaArray(args) {
-        return C$crossj$List.M$fromIterable(args);
+        return C$crossj$base$List.M$fromIterable(args);
     }
     static M$ofSize(n, f) {
         const arr = [];
         for (let i = 0; i < n; i++) {
             arr.push(f());
         }
-        return new C$crossj$List(arr);
+        return new C$crossj$base$List(arr);
     }
     static M$fromIterable(iterable) {
-        return new C$crossj$List(Array.from(iterable));
+        return new C$crossj$base$List(Array.from(iterable));
     }
     static M$reversed(iterable) {
         const arr = Array.from(iterable);
         arr.reverse();
-        return new C$crossj$List(arr);
+        return new C$crossj$base$List(arr);
     }
     static M$sorted(iterable) {
         const arr = Array.from(iterable);
         arr.sort($CMP);
-        return new C$crossj$List(arr);
+        return new C$crossj$base$List(arr);
     }
     static M$sortedBy(iterable, f) {
         const arr = Array.from(iterable);
         arr.sort(f);
-        return new C$crossj$List(arr);
+        return new C$crossj$base$List(arr);
     }
     M$add(x) {
         this.arr.push(x);
@@ -476,7 +476,7 @@ class C$crossj$List {
         return this.arr.pop();
     }
     M$slice(start, end) {
-        return new C$crossj$List(this.arr.slice(start, end));
+        return new C$crossj$base$List(this.arr.slice(start, end));
     }
     M$sliceFrom(start) {
         return this.M$slice(start, this.M$size());
@@ -494,7 +494,7 @@ class C$crossj$List {
         return this.arr.length;
     }
     M$equals(other) {
-        if (!(other instanceof C$crossj$List)) {
+        if (!(other instanceof C$crossj$base$List)) {
             return false;
         }
         if (this.arr.length !== other.arr.length) {
@@ -520,13 +520,13 @@ class C$crossj$List {
                 arr.push(subitem);
             }
         }
-        return new C$crossj$List(arr);
+        return new C$crossj$base$List(arr);
     }
     M$map(f) {
-        return new C$crossj$List(this.arr.map(f));
+        return new C$crossj$base$List(this.arr.map(f));
     }
     M$filter(f) {
-        return new C$crossj$List(this.arr.filter(f));
+        return new C$crossj$base$List(this.arr.filter(f));
     }
     M$fold(init, f) {
         return this.arr.reduce(f, init);
@@ -567,7 +567,7 @@ class C$crossj$List {
         for (let i = 0; i < n; i++) {
             ret.push(...this.arr);
         }
-        return new C$crossj$List(ret);
+        return new C$crossj$base$List(ret);
     }
     M$compareTo(otherList) {
         const aarr = this.arr;
@@ -584,13 +584,13 @@ class C$crossj$List {
         return $CMP(alen, blen);
     }
     M$clone() {
-        return new C$crossj$List([...this.arr]);
+        return new C$crossj$base$List([...this.arr]);
     }
 }
-$CJ['crossj.List'] = C$crossj$List;
+$CJ['crossj.base.List'] = C$crossj$base$List;
 
 // TODO: use BigInt for the 64-bit int ops
-class C$crossj$Bytes {
+class C$crossj$base$Bytes {
     /**
      * @param {ArrayBuffer} buffer
      */
@@ -603,16 +603,16 @@ class C$crossj$Bytes {
 
     static M$withCapacity(capacity) {
         capacity = capacity < 16 ? 16 : capacity;
-        return new C$crossj$Bytes(new ArrayBuffer(capacity), 0);
+        return new C$crossj$base$Bytes(new ArrayBuffer(capacity), 0);
     }
 
     static M$withSize(size) {
-        let ret = new C$crossj$Bytes(new ArrayBuffer(size), size);
+        let ret = new C$crossj$base$Bytes(new ArrayBuffer(size), size);
         return ret;
     }
 
     static M$ofU8s(...u8s) {
-        let ret = C$crossj$Bytes.M$withCapacity(u8s.length);
+        let ret = C$crossj$base$Bytes.M$withCapacity(u8s.length);
         for (let b of u8s) {
             ret.M$addU8(b);
         }
@@ -620,7 +620,7 @@ class C$crossj$Bytes {
     }
 
     static M$ofI8s(...i8s) {
-        let ret = C$crossj$Bytes.M$withCapacity(i8s.length);
+        let ret = C$crossj$base$Bytes.M$withCapacity(i8s.length);
         for (let b of i8s) {
             ret.M$addI8(b);
         }
@@ -628,7 +628,7 @@ class C$crossj$Bytes {
     }
 
     static M$ofI32LEs(...i32les) {
-        let ret = C$crossj$Bytes.M$withCapacity(i32les.length * 4);
+        let ret = C$crossj$base$Bytes.M$withCapacity(i32les.length * 4);
         for (let b of i32les) {
             ret.M$addI32(b);
         }
@@ -636,7 +636,7 @@ class C$crossj$Bytes {
     }
 
     static M$ofI32BEs(...i32bes) {
-        let ret = C$crossj$Bytes.M$withCapacity(i32bes.length * 4);
+        let ret = C$crossj$base$Bytes.M$withCapacity(i32bes.length * 4);
         ret.M$useLittleEndian(false);
         for (let b of i32bes) {
             ret.M$addI32(b);
@@ -645,23 +645,23 @@ class C$crossj$Bytes {
     }
 
     static M$fromI8s(i8s) {
-        return C$crossj$Bytes.M$ofI8s(...i8s);
+        return C$crossj$base$Bytes.M$ofI8s(...i8s);
     }
 
     static M$fromU8s(u8s) {
-        return C$crossj$Bytes.M$ofU8s(...u8s);
+        return C$crossj$base$Bytes.M$ofU8s(...u8s);
     }
 
     static M$fromI32LEs(i32les) {
-        return C$crossj$Bytes.M$ofI32LEs(...i32les);
+        return C$crossj$base$Bytes.M$ofI32LEs(...i32les);
     }
 
     static M$fromI32BEs(i32bes) {
-        return C$crossj$Bytes.M$ofI32BEs(...i32bes);
+        return C$crossj$base$Bytes.M$ofI32BEs(...i32bes);
     }
 
     static M$fromASCII(string) {
-        let ret = C$crossj$Bytes.M$withCapacity(string.length);
+        let ret = C$crossj$base$Bytes.M$withCapacity(string.length);
         for (let i = 0; i < string.length; i++) {
             ret.M$addU8(string.charCodeAt(i));
         }
@@ -745,7 +745,7 @@ class C$crossj$Bytes {
     }
 
     /**
-     * @param {C$crossj$Bytes} bytes
+     * @param {C$crossj$base$Bytes} bytes
      */
     M$addBytes(bytes) {
         let pos = this.siz;
@@ -754,7 +754,7 @@ class C$crossj$Bytes {
     }
 
     M$addASCII(ascii) {
-        this.M$addBytes(C$crossj$Bytes.M$fromASCII(ascii));
+        this.M$addBytes(C$crossj$base$Bytes.M$fromASCII(ascii));
     }
 
     M$setF64(index, value) {
@@ -795,7 +795,7 @@ class C$crossj$Bytes {
 
     /**
      * @param {number} index
-     * @param {C$crossj$Bytes} value
+     * @param {C$crossj$base$Bytes} value
      */
     M$setBytes(index, value) {
         let src = new Uint8Array(value.buffer, 0, value.siz);
@@ -832,11 +832,11 @@ class C$crossj$Bytes {
     }
 
     M$getBytes(start, end) {
-        return new C$crossj$Bytes(this.buffer.slice(start, end), end - start);
+        return new C$crossj$base$Bytes(this.buffer.slice(start, end), end - start);
     }
 
     M$list() {
-        return new C$crossj$List([...new Uint8Array(this.buffer, 0, this.siz)]);
+        return new C$crossj$base$List([...new Uint8Array(this.buffer, 0, this.siz)]);
     }
 
     M$asU8s() {
@@ -855,7 +855,7 @@ class C$crossj$Bytes {
     }
 
     M$equals(other) {
-        if (!(other instanceof C$crossj$Bytes)) {
+        if (!(other instanceof C$crossj$base$Bytes)) {
             return false;
         }
         let len = this.siz;
@@ -875,12 +875,12 @@ class C$crossj$Bytes {
     M$clone() {
         const buf = new ArrayBuffer(this.siz);
         new Uint8Array(buf).set(this.M$asU8s());
-        return new C$crossj$Bytes(buf, this.siz);
+        return new C$crossj$base$Bytes(buf, this.siz);
     }
 }
-$CJ['crossj.Bytes'] = C$crossj$Bytes;
+$CJ['crossj.base.Bytes'] = C$crossj$base$Bytes;
 
-class C$crossj$IntArray {
+class C$crossj$base$IntArray {
     /**
      * @param {Int32Array} arr
      */
@@ -888,36 +888,36 @@ class C$crossj$IntArray {
         this.arr = arr;
     }
     static fromJSArray(arr) {
-        return new C$crossj$IntArray(Int32Array.from(arr))
+        return new C$crossj$base$IntArray(Int32Array.from(arr))
     }
     static M$of(...args) {
-        return C$crossj$IntArray.fromJSArray(args);
+        return C$crossj$base$IntArray.fromJSArray(args);
     }
     static M$fromJavaIntArray(args) {
-        return C$crossj$IntArray.fromJSArray(args);
+        return C$crossj$base$IntArray.fromJSArray(args);
     }
     static M$withSize(size) {
-        return new C$crossj$IntArray(new Int32Array(size));
+        return new C$crossj$base$IntArray(new Int32Array(size));
     }
     static M$fromList(list) {
-        return C$crossj$IntArray.fromJSArray(list.arr);
+        return C$crossj$base$IntArray.fromJSArray(list.arr);
     }
     static M$fromIterable(iterable) {
-        if (iterable instanceof C$crossj$IntArray) {
-            return new C$crossj$IntArray(new Int32Array(iterable.arr));
+        if (iterable instanceof C$crossj$base$IntArray) {
+            return new C$crossj$base$IntArray(new Int32Array(iterable.arr));
         } else {
             const values = [];
             for (const value of iterable) {
                 values.push(value);
             }
-            return C$crossj$IntArray.fromJSArray(values);
+            return C$crossj$base$IntArray.fromJSArray(values);
         }
     }
     static M$convert(iterable) {
-        if (iterable instanceof C$crossj$IntArray) {
+        if (iterable instanceof C$crossj$base$IntArray) {
             return iterable;
         } else {
-            return C$crossj$IntArray.M$fromIterable(iterable);
+            return C$crossj$base$IntArray.M$fromIterable(iterable);
         }
     }
     M$size() {
@@ -930,7 +930,7 @@ class C$crossj$IntArray {
         this.arr[i] = x;
     }
     M$slice(start, end) {
-        return new C$crossj$IntArray(this.arr.slice(start, end));
+        return new C$crossj$base$IntArray(this.arr.slice(start, end));
     }
     M$iter() {
         return this.arr[Symbol.iterator]();
@@ -945,7 +945,7 @@ class C$crossj$IntArray {
         return this.M$toString();
     }
     M$equals(other) {
-        if (!(other instanceof C$crossj$IntArray)) {
+        if (!(other instanceof C$crossj$base$IntArray)) {
             return false;
         }
         const a = this.arr;
@@ -961,12 +961,12 @@ class C$crossj$IntArray {
         return true;
     }
     M$clone() {
-        return new C$crossj$IntArray(new Int32Array(this.arr));
+        return new C$crossj$base$IntArray(new Int32Array(this.arr));
     }
 }
-$CJ['crossj.IntArray'] = C$crossj$IntArray;
+$CJ['crossj.base.IntArray'] = C$crossj$base$IntArray;
 
-class C$crossj$DoubleArray {
+class C$crossj$base$DoubleArray {
     /**
      * @param {Float64Array} arr
      */
@@ -974,36 +974,36 @@ class C$crossj$DoubleArray {
         this.arr = arr;
     }
     static fromJSArray(arr) {
-        return new C$crossj$DoubleArray(Float64Array.from(arr))
+        return new C$crossj$base$DoubleArray(Float64Array.from(arr))
     }
     static M$of(...args) {
-        return C$crossj$DoubleArray.fromJSArray(args);
+        return C$crossj$base$DoubleArray.fromJSArray(args);
     }
     static M$fromJavaDoubleArray(args) {
-        return C$crossj$DoubleArray.fromJSArray(args);
+        return C$crossj$base$DoubleArray.fromJSArray(args);
     }
     static M$withSize(size) {
-        return new C$crossj$DoubleArray(new Float64Array(size));
+        return new C$crossj$base$DoubleArray(new Float64Array(size));
     }
     static M$fromList(list) {
-        return C$crossj$DoubleArray.fromJSArray(list.arr);
+        return C$crossj$base$DoubleArray.fromJSArray(list.arr);
     }
     static M$fromIterable(iterable) {
-        if (iterable instanceof C$crossj$DoubleArray) {
-            return new C$crossj$DoubleArray(new Float64Array(iterable.arr));
+        if (iterable instanceof C$crossj$base$DoubleArray) {
+            return new C$crossj$base$DoubleArray(new Float64Array(iterable.arr));
         } else {
             const values = [];
             for (const value of iterable) {
                 values.push(value);
             }
-            return C$crossj$DoubleArray.fromJSArray(values);
+            return C$crossj$base$DoubleArray.fromJSArray(values);
         }
     }
     static M$convert(iterable) {
-        if (iterable instanceof C$crossj$DoubleArray) {
+        if (iterable instanceof C$crossj$base$DoubleArray) {
             return iterable;
         } else {
-            return C$crossj$DoubleArray.M$fromIterable(iterable);
+            return C$crossj$base$DoubleArray.M$fromIterable(iterable);
         }
     }
     M$size() {
@@ -1016,7 +1016,7 @@ class C$crossj$DoubleArray {
         this.arr[i] = x;
     }
     M$slice(start, end) {
-        return new C$crossj$DoubleArray(this.arr.slice(start, end));
+        return new C$crossj$base$DoubleArray(this.arr.slice(start, end));
     }
     M$scale(factor) {
         const arr = this.arr;
@@ -1025,7 +1025,7 @@ class C$crossj$DoubleArray {
         }
     }
     /**
-     * @param {C$crossj$DoubleArray} other
+     * @param {C$crossj$base$DoubleArray} other
      * @param {number} factor
      */
     M$addWithFactor(other, factor) {
@@ -1055,7 +1055,7 @@ class C$crossj$DoubleArray {
         return this.M$toString();
     }
     M$equals(other) {
-        if (!(other instanceof C$crossj$DoubleArray)) {
+        if (!(other instanceof C$crossj$base$DoubleArray)) {
             return false;
         }
         const a = this.arr;
@@ -1071,27 +1071,27 @@ class C$crossj$DoubleArray {
         return true;
     }
     M$clone() {
-        return new C$crossj$DoubleArray(new Float64Array(this.arr));
+        return new C$crossj$base$DoubleArray(new Float64Array(this.arr));
     }
 }
-$CJ['crossj.DoubleArray'] = C$crossj$DoubleArray;
+$CJ['crossj.base.DoubleArray'] = C$crossj$base$DoubleArray;
 
-class C$crossj$ImplChar {
+class C$crossj$base$ImplChar {
     static M$isWhitespace(ch) {
         return /\s/g.test(ch);
     }
 }
-$CJ['crossj.ImplChar'] = C$crossj$ImplChar;
+$CJ['crossj.base.ImplChar'] = C$crossj$base$ImplChar;
 
-class C$crossj$RandImpl {
+class C$crossj$base$RandImpl {
     static M$getDefault() {
-        return new C$crossj$RandImpl();
+        return new C$crossj$base$RandImpl();
     }
     M$nextDouble() {
         return Math.random();
     }
 }
-$CJ['crossj.RandImpl'] = C$crossj$RandImpl;
+$CJ['crossj.base.RandImpl'] = C$crossj$base$RandImpl;
 
 class C$java$lang$Integer {
     static M$valueOf(x) {
@@ -1129,7 +1129,7 @@ class C$java$lang$StringBuilder {
 }
 $CJ['java.lang.StringBuilder'] = C$java$lang$StringBuilder;
 
-class C$crossj$M {
+class C$crossj$base$M {
     static M$max(...values) {
         return Math.max(...values);
     }
@@ -1227,20 +1227,20 @@ class C$crossj$M {
         return a;
     }
 }
-C$crossj$M.F$E = Math.E;
-C$crossj$M.F$PI = Math.PI;
-C$crossj$M.F$TAU = Math.PI * 2;
-C$crossj$M.F$INFINITY = Infinity;
-$CJ['crossj.M'] = C$crossj$M;
+C$crossj$base$M.F$E = Math.E;
+C$crossj$base$M.F$PI = Math.PI;
+C$crossj$base$M.F$TAU = Math.PI * 2;
+C$crossj$base$M.F$INFINITY = Infinity;
+$CJ['crossj.base.M'] = C$crossj$base$M;
 
-class C$crossj$Time {
+class C$crossj$base$Time {
     static M$now() {
         return Date.now() / 1000;
     }
 }
-$CJ['crossj.Time'] = C$crossj$Time;
+$CJ['crossj.base.Time'] = C$crossj$base$Time;
 
-class C$crossj$TestFinder {
+class C$crossj$base$TestFinder {
     static M$run(packageName) {
         let testCount = 0;
         const prefix = packageName.length ? packageName + '.' : '';
@@ -1253,4 +1253,4 @@ class C$crossj$TestFinder {
         console.log(testCount + ' tests pass (JavaScript)');
     }
 }
-$CJ['crossj.TestFinder'] = C$crossj$TestFinder;
+$CJ['crossj.base.TestFinder'] = C$crossj$base$TestFinder;

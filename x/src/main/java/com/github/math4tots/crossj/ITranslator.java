@@ -8,8 +8,8 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import crossj.List;
-import crossj.XError;
+import crossj.base.List;
+import crossj.base.XError;
 
 public interface ITranslator {
     void setOutputDirectory(String path);

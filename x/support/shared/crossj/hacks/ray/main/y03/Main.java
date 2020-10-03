@@ -1,7 +1,7 @@
 package crossj.hacks.ray.main.y03;
 
-import crossj.IO;
-import crossj.List;
+import crossj.base.IO;
+import crossj.base.List;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.geo.Box;
 import crossj.hacks.ray.RayTracer;

@@ -1,8 +1,8 @@
 package crossj.hacks.c.main;
 
-import crossj.IO;
-import crossj.List;
-import crossj.Str;
+import crossj.base.IO;
+import crossj.base.List;
+import crossj.base.Str;
 import crossj.hacks.c.CLexer;
 import crossj.hacks.c.Source;
 

@@ -1,9 +1,9 @@
 package crossj.hacks.ray.gelim;
 
-import crossj.Assert;
-import crossj.DoubleArray;
-import crossj.List;
-import crossj.M;
+import crossj.base.Assert;
+import crossj.base.DoubleArray;
+import crossj.base.List;
+import crossj.base.M;
 import crossj.hacks.ray.math.Matrix;
 
 /**

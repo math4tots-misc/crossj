@@ -1,9 +1,9 @@
 package crossj.hacks.ray.geo;
 
-import crossj.Optional;
-import crossj.Tuple;
-import crossj.XError;
-import crossj.XIterable;
+import crossj.base.Optional;
+import crossj.base.Tuple;
+import crossj.base.XError;
+import crossj.base.XIterable;
 
 /**
  * Bounding Volume Hierachy.

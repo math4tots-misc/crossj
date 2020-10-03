@@ -1,6 +1,6 @@
 package sanity.iter;
 
-import crossj.Repr;
+import crossj.base.Repr;
 
 public final class ClassWithCustomRepr implements Repr {
     private final int data;

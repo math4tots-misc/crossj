@@ -10,17 +10,17 @@ import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
-import crossj.IO;
-import crossj.List;
-import crossj.M;
-import crossj.Map;
-import crossj.Num;
-import crossj.Optional;
-import crossj.Pair;
-import crossj.Set;
-import crossj.Str;
-import crossj.Time;
-import crossj.XError;
+import crossj.base.IO;
+import crossj.base.List;
+import crossj.base.M;
+import crossj.base.Map;
+import crossj.base.Num;
+import crossj.base.Optional;
+import crossj.base.Pair;
+import crossj.base.Set;
+import crossj.base.Str;
+import crossj.base.Time;
+import crossj.base.XError;
 
 public final class Main {
     public static void main(String[] args) {

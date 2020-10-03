@@ -1,6 +1,6 @@
 package crossj.hacks.c;
 
-import crossj.Map;
+import crossj.base.Map;
 
 /**
  * A table of all symbols in a given scope.

@@ -1,11 +1,11 @@
 package crossj.hacks.ray.geo;
 
-import crossj.Assert;
-import crossj.Eq;
-import crossj.List;
-import crossj.M;
-import crossj.Tuple;
-import crossj.XIterable;
+import crossj.base.Assert;
+import crossj.base.Eq;
+import crossj.base.List;
+import crossj.base.M;
+import crossj.base.Tuple;
+import crossj.base.XIterable;
 import crossj.hacks.ray.math.Matrix;
 
 /**

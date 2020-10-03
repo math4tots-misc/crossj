@@ -1,9 +1,9 @@
 package crossj.hacks.ray.main.x03;
 
-import crossj.IO;
-import crossj.M;
-import crossj.Rand;
-import crossj.Time;
+import crossj.base.IO;
+import crossj.base.M;
+import crossj.base.Rand;
+import crossj.base.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.geo.Camera;

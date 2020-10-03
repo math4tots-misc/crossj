@@ -1,8 +1,8 @@
 package sanity.misc;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.Test;
 
 /**
  * See that java.lang.Comparable and implementations of it work

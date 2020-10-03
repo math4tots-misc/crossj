@@ -1,7 +1,7 @@
 package sanity.hacks.ray;
 
-import crossj.Assert;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Test;
 import crossj.hacks.ray.geo.DeprecatedIntersection;
 import crossj.hacks.ray.geo.DeprecatedIntersections;
 import crossj.hacks.ray.geo.DeprecatedRay;

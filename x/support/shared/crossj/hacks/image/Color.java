@@ -1,10 +1,10 @@
 package crossj.hacks.image;
 
-import crossj.AlmostEq;
-import crossj.Eq;
-import crossj.List;
-import crossj.TypedEq;
-import crossj.XIterable;
+import crossj.base.AlmostEq;
+import crossj.base.Eq;
+import crossj.base.List;
+import crossj.base.TypedEq;
+import crossj.base.XIterable;
 
 /**
  * Color data

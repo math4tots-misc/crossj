@@ -1,7 +1,7 @@
 package crossj.hacks.cas.expr;
 
-import crossj.BigInt;
-import crossj.Optional;
+import crossj.base.BigInt;
+import crossj.base.Optional;
 
 /**
  * An integer literal expression.

@@ -1,7 +1,7 @@
 package crossj.hacks.ray.geo;
 
-import crossj.M;
-import crossj.Optional;
+import crossj.base.M;
+import crossj.base.Optional;
 
 public interface Surface {
     public static final double DEFAULT_T_MIN = 0.0000001;

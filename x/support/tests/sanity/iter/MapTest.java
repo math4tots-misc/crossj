@@ -1,9 +1,9 @@
 package sanity.iter;
 
-import crossj.Assert;
-import crossj.Map;
-import crossj.Pair;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Map;
+import crossj.base.Pair;
+import crossj.base.Test;
 
 public final class MapTest {
 

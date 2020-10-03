@@ -1,9 +1,9 @@
 package crossj.hacks.ray.geo;
 
-import crossj.Optional;
-import crossj.Tuple;
-import crossj.XIterable;
-import crossj.XIterator;
+import crossj.base.Optional;
+import crossj.base.Tuple;
+import crossj.base.XIterable;
+import crossj.base.XIterator;
 
 public final class Surfaces implements Surface, XIterable<Surface> {
     private final Tuple<Surface> tuple;

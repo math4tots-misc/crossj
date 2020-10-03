@@ -1,6 +1,6 @@
 package crossj.hacks.ray.geo;
 
-import crossj.Pair;
+import crossj.base.Pair;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.material.Material;
 import crossj.hacks.ray.math.Matrix;

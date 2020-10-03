@@ -1,7 +1,7 @@
 package crossj.hacks.ray.main.ch06;
 
-import crossj.IO;
-import crossj.Time;
+import crossj.base.IO;
+import crossj.base.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.geo.DeprecatedMaterial;

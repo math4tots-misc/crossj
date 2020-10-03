@@ -1,9 +1,9 @@
 package sanity.iter;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.Tuple;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.Tuple;
+import crossj.base.Test;
 
 public final class TupleTest {
 

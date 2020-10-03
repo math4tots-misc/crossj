@@ -1,8 +1,8 @@
 package crossj.hacks.c;
 
-import crossj.IntArray;
-import crossj.List;
-import crossj.Str;
+import crossj.base.IntArray;
+import crossj.base.List;
+import crossj.base.Str;
 
 /**
  * Some static methods for classifying characters in a C source.

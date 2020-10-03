@@ -1,14 +1,14 @@
 package crossj.hacks.ray.geo;
 
-import crossj.IO;
-import crossj.List;
-import crossj.M;
-import crossj.Map;
-import crossj.Num;
-import crossj.Pair;
-import crossj.Str;
-import crossj.XError;
-import crossj.XIterable;
+import crossj.base.IO;
+import crossj.base.List;
+import crossj.base.M;
+import crossj.base.Map;
+import crossj.base.Num;
+import crossj.base.Pair;
+import crossj.base.Str;
+import crossj.base.XError;
+import crossj.base.XIterable;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.material.Solid;
 import crossj.hacks.ray.math.Matrix;

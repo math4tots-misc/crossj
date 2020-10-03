@@ -1,9 +1,9 @@
 package crossj.hacks.ray.gelim;
 
-import crossj.Assert;
-import crossj.DoubleArray;
-import crossj.List;
-import crossj.Optional;
+import crossj.base.Assert;
+import crossj.base.DoubleArray;
+import crossj.base.List;
+import crossj.base.Optional;
 import crossj.hacks.ray.math.Matrix;
 
 public final class InverseMatrixSolver implements GaussianEliminationListener {

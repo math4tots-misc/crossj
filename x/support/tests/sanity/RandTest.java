@@ -1,10 +1,10 @@
 package sanity;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.M;
-import crossj.Rand;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.M;
+import crossj.base.Rand;
+import crossj.base.Test;
 
 // TODO: Use seeded RNG
 public final class RandTest {

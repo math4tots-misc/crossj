@@ -1,8 +1,8 @@
 package sanity;
 
-import crossj.Assert;
-import crossj.BigInt;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.BigInt;
+import crossj.base.Test;
 
 public final class BigIntTest {
 

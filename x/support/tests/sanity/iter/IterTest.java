@@ -1,6 +1,6 @@
 package sanity.iter;
 
-import crossj.*;
+import crossj.base.*;
 
 public final class IterTest {
 

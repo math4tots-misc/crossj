@@ -1,13 +1,13 @@
 package crossj.hacks.c;
 
-import crossj.Assert;
-import crossj.IntArray;
-import crossj.List;
-import crossj.Repr;
-import crossj.Str;
-import crossj.XError;
-import crossj.XIterable;
-import crossj.XIterator;
+import crossj.base.Assert;
+import crossj.base.IntArray;
+import crossj.base.List;
+import crossj.base.Repr;
+import crossj.base.Str;
+import crossj.base.XError;
+import crossj.base.XIterable;
+import crossj.base.XIterator;
 
 /**
  * String trie for quick keyword lookup.

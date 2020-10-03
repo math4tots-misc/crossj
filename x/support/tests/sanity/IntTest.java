@@ -1,9 +1,9 @@
 package sanity;
 
-import crossj.Assert;
-import crossj.Int;
-import crossj.M;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Int;
+import crossj.base.M;
+import crossj.base.Test;
 
 public final class IntTest {
     @Test

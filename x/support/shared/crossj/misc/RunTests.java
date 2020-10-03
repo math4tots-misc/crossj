@@ -1,6 +1,6 @@
 package crossj.misc;
 
-import crossj.TestFinder;
+import crossj.base.TestFinder;
 
 public final class RunTests {
     public static void main(String[] args) {

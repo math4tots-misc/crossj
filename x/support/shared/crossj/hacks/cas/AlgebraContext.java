@@ -1,8 +1,8 @@
 package crossj.hacks.cas;
 
-import crossj.Map;
-import crossj.Optional;
-import crossj.XError;
+import crossj.base.Map;
+import crossj.base.Optional;
+import crossj.base.XError;
 import crossj.hacks.cas.algo.IsLiteral;
 import crossj.hacks.cas.algo.ReduceToRationalLiteral;
 import crossj.hacks.cas.expr.Expression;

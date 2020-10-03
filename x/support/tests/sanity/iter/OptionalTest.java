@@ -1,8 +1,8 @@
 package sanity.iter;
 
-import crossj.Assert;
-import crossj.Optional;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Optional;
+import crossj.base.Test;
 
 public final class OptionalTest {
     @Test

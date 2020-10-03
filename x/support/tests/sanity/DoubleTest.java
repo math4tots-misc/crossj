@@ -1,8 +1,8 @@
 package sanity;
 
-import crossj.Assert;
-import crossj.Num;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Num;
+import crossj.base.Test;
 
 public final class DoubleTest {
 

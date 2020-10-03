@@ -1,12 +1,12 @@
 package crossj.hacks.ray;
 
-import crossj.IO;
-import crossj.List;
-import crossj.M;
-import crossj.Num;
-import crossj.Str;
-import crossj.Time;
-import crossj.XError;
+import crossj.base.IO;
+import crossj.base.List;
+import crossj.base.M;
+import crossj.base.Num;
+import crossj.base.Str;
+import crossj.base.Time;
+import crossj.base.XError;
 import crossj.hacks.ray.geo.AABB;
 import crossj.hacks.ray.geo.Camera;
 import crossj.hacks.ray.geo.ObjLoader;

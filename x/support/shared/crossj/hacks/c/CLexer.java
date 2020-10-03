@@ -1,8 +1,8 @@
 package crossj.hacks.c;
 
-import crossj.List;
-import crossj.Tuple;
-import crossj.XIterable;
+import crossj.base.List;
+import crossj.base.Tuple;
+import crossj.base.XIterable;
 
 public final class CLexer {
     public static final Tuple<String> OPERATORS = Tuple.of("...", ">>=", "<<=", "+=", "-=", "*=", "/=", "%=", "&=",

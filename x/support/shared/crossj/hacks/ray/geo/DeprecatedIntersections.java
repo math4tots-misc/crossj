@@ -1,11 +1,11 @@
 package crossj.hacks.ray.geo;
 
-import crossj.List;
-import crossj.M;
-import crossj.Optional;
-import crossj.Tuple;
-import crossj.XIterable;
-import crossj.XIterator;
+import crossj.base.List;
+import crossj.base.M;
+import crossj.base.Optional;
+import crossj.base.Tuple;
+import crossj.base.XIterable;
+import crossj.base.XIterator;
 
 public final class DeprecatedIntersections implements XIterable<DeprecatedIntersection> {
     private final Tuple<DeprecatedIntersection> intersections;

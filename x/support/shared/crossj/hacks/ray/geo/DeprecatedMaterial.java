@@ -1,10 +1,10 @@
 package crossj.hacks.ray.geo;
 
-import crossj.AlmostEq;
-import crossj.Assert;
-import crossj.Eq;
-import crossj.M;
-import crossj.TypedEq;
+import crossj.base.AlmostEq;
+import crossj.base.Assert;
+import crossj.base.Eq;
+import crossj.base.M;
+import crossj.base.TypedEq;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.math.Matrix;
 

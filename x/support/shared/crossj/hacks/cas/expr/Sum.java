@@ -1,9 +1,9 @@
 package crossj.hacks.cas.expr;
 
-import crossj.Assert;
-import crossj.List;
-import crossj.Tuple;
-import crossj.XIterable;
+import crossj.base.Assert;
+import crossj.base.List;
+import crossj.base.Tuple;
+import crossj.base.XIterable;
 
 /**
  * A sum of expressions.

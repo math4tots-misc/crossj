@@ -1,6 +1,6 @@
 package crossj.hacks.c;
 
-import crossj.List;
+import crossj.base.List;
 
 /**
  * A C Symbol and associated data.

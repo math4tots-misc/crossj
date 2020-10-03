@@ -1,8 +1,8 @@
 package crossj.hacks.ray.geo;
 
-import crossj.Assert;
-import crossj.M;
-import crossj.Rand;
+import crossj.base.Assert;
+import crossj.base.M;
+import crossj.base.Rand;
 import crossj.hacks.ray.math.Matrix;
 
 /**

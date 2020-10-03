@@ -1,6 +1,6 @@
 package crossj.hacks.ray.main.y05;
 
-import crossj.IO;
+import crossj.base.IO;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.RayTracer;
 import crossj.hacks.ray.geo.Camera;

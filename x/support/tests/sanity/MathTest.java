@@ -1,6 +1,6 @@
 package sanity;
 
-import crossj.*;
+import crossj.base.*;
 
 public final class MathTest {
     @Test

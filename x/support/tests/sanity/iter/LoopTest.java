@@ -1,7 +1,7 @@
 package sanity.iter;
 
-import crossj.Assert;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.Test;
 
 public final class LoopTest {
 

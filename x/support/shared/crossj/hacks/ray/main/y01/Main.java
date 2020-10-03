@@ -1,8 +1,8 @@
 package crossj.hacks.ray.main.y01;
 
-import crossj.IO;
-import crossj.List;
-import crossj.Rand;
+import crossj.base.IO;
+import crossj.base.List;
+import crossj.base.Rand;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.geo.Box;

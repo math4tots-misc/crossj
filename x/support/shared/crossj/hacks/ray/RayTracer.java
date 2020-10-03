@@ -1,11 +1,11 @@
 package crossj.hacks.ray;
 
-import crossj.Func3;
-import crossj.IO;
-import crossj.M;
-import crossj.Num;
-import crossj.Rand;
-import crossj.Time;
+import crossj.base.Func3;
+import crossj.base.IO;
+import crossj.base.M;
+import crossj.base.Num;
+import crossj.base.Rand;
+import crossj.base.Time;
 import crossj.hacks.image.Bitmap;
 import crossj.hacks.image.Color;
 import crossj.hacks.ray.geo.Camera;

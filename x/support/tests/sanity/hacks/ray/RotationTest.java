@@ -1,8 +1,8 @@
 package sanity.hacks.ray;
 
-import crossj.Assert;
-import crossj.M;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.M;
+import crossj.base.Test;
 import crossj.hacks.ray.math.Matrix;
 
 public final class RotationTest {

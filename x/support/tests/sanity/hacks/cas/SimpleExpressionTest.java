@@ -1,9 +1,9 @@
 package sanity.hacks.cas;
 
-import crossj.Assert;
-import crossj.BigInt;
-import crossj.Pair;
-import crossj.Test;
+import crossj.base.Assert;
+import crossj.base.BigInt;
+import crossj.base.Pair;
+import crossj.base.Test;
 import crossj.hacks.cas.AlgebraContext;
 import crossj.hacks.cas.expr.Expression;
 import crossj.hacks.cas.expr.Product;

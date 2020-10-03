@@ -20,9 +20,9 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-import crossj.Assert;
-import crossj.Func1;
-import crossj.Pair;
+import crossj.base.Assert;
+import crossj.base.Func1;
+import crossj.base.Pair;
 
 public final class Parser {
     private final ASTParser parser = ASTParser.newParser(AST.JLS14);
