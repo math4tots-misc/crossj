@@ -1240,6 +1240,88 @@ class C$crossj$base$Time {
 }
 $CJ['crossj.base.Time'] = C$crossj$base$Time;
 
+class C$crossj$hacks$gameio$DefaultGameHost {
+    static M$getDefault() {
+        return new C$crossj$hacks$gameio$DefaultGameHost();
+    }
+    M$run(game) {
+        if (typeof window === 'undefined') {
+            throw new Error("GameHost is not currently available in a node.js environment");
+        }
+        game.M$init();
+        document.body.innerHTML = `
+        <style>
+            html, body {
+                overflow: hidden;
+                margin: 0px;
+            }
+        </style>
+        <canvas id="canvas">
+        </canvas>
+        `;
+        /** @type {HTMLCanvasElement} */
+        const canvas = document.getElementById('canvas');
+        canvas.width = document.body.clientWidth;
+        canvas.height = document.body.clientHeight;
+        game.M$resize(canvas.width, canvas.height);
+
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        canvas.onclick = function(ev) {
+            game.M$click(ev.button, ev.clientX, ev.clientY);
+        };
+        canvas.oncontextmenu = canvas.onclick;
+        document.body.onresize = function() {
+            canvas.width = document.body.clientWidth;
+            canvas.height = document.body.clientHeight;
+            game.M$resize(canvas.width, canvas.height);
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        };
+        document.body.onkeydown = function(ev) {
+            game.M$keydown(ev.key);
+        };
+        document.body.onkeyup = function(ev) {
+            game.M$keyup(ev.key);
+        };
+
+        function convertColor(color) {
+            const [r, g, b, a] = color.M$toIntegerList();
+            return "rgb(" + r + ","+ + g + "," + b + ")";
+        }
+        class Brush {
+            M$setColor(color) {
+                const c = convertColor(color);
+                ctx.fillStyle = c;
+            }
+            M$fillRect(x, y, width, height) {
+                ctx.fillRect(x, y, width, height);
+            }
+        }
+        const brush = new Brush();
+
+        var lastTimestamp = performance.now();
+        function tick(timestamp) {
+            const status = game.M$update(timestamp - lastTimestamp);
+            lastTimestamp = timestamp;
+            if (status & 2) {
+                // exit
+                console.log('exiting...');
+            } else {
+                if (status & 4) {
+                    // Only draw if a redraw was requested
+                    game.M$draw(brush);
+                }
+                requestAnimationFrame(tick);
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+}
+$CJ['crossj.hacks.gameio.DefaultGameHost'] = C$crossj$hacks$gameio$DefaultGameHost;
+
 class C$crossj$base$TestFinder {
     static M$run(packageName) {
         let testCount = 0;

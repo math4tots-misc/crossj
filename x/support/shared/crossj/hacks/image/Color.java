@@ -133,6 +133,22 @@ public final class Color implements AlmostEq<Color>, TypedEq<Color> {
         return split(x).map(i -> intToFloatChannel(i));
     }
 
+    public double getRed() {
+        return r;
+    }
+
+    public double getGreen() {
+        return g;
+    }
+
+    public double getBlue() {
+        return b;
+    }
+
+    public double getAlpha() {
+        return a;
+    }
+
     @Override
     public String toString() {
         return "Color.of(" + r + ", " + g + ", " + b + ", " + a + ")";

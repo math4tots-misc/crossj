@@ -91,6 +91,10 @@ public final class Main {
                             translator = Optional.of(new JavascriptTranslator());
                             break;
                         }
+                        case "web": {
+                            translator = Optional.of(new WebTranslator());
+                            break;
+                        }
                         default: {
                             throw new RuntimeException("Unrecognized target name " + arg);
                         }

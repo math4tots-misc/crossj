@@ -68,7 +68,7 @@ import crossj.base.Set;
 import crossj.base.XError;
 
 public final class JavascriptTranslator implements ITranslator {
-    private String outputDirectory;
+    private String outputFile;
     private Optional<String> main = Optional.empty();
     private StringBuilder sb = new StringBuilder();
     private String filepath;
@@ -83,7 +83,11 @@ public final class JavascriptTranslator implements ITranslator {
 
     @Override
     public void setOutputDirectory(String path) {
-        outputDirectory = path;
+        setOutputPath(path + File.separator + "bundle.js");
+    }
+
+    public void setOutputPath(String path) {
+        outputFile = path;
     }
 
     @Override
@@ -134,8 +138,7 @@ public final class JavascriptTranslator implements ITranslator {
         return packageName + ".<unknown>";
     }
 
-    @Override
-    public void commit() {
+    public String emitString() {
         sb.append("const $TESTS=[\n");
         for (Pair<String, String> test : tests) {
             sb.append("['" + test.get1() + "','" + test.get2() + "'],\n");
@@ -147,15 +150,20 @@ public final class JavascriptTranslator implements ITranslator {
         }
         sb.append("return $CJ;\n");
         sb.append("})();\n");
-        if (!Files.isDirectory(Paths.get(outputDirectory))) {
+        return sb.toString();
+    }
+
+    @Override
+    public void commit() {
+        var outputDirectory = Paths.get(outputFile).getParent();
+        if (!Files.isDirectory(outputDirectory)) {
             try {
-                Files.createDirectories(Paths.get(outputDirectory));
+                Files.createDirectories(outputDirectory);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        String outputFile = outputDirectory + File.separator + "bundle.js";
-        IO.writeFile(outputFile, sb.toString());
+        IO.writeFile(outputFile, emitString());
     }
 
     private void setCurrentTypeDeclaration(TypeDeclaration currentTypeDeclaration) {
