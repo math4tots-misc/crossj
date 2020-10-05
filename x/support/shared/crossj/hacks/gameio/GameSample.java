@@ -24,7 +24,7 @@ public final class GameSample implements Game {
         var kind = "unknown";
         switch (button) {
             case MouseButton.LEFT: kind = "left"; break;
-            case MouseButton.MIDDLE: kind = "left"; break;
+            case MouseButton.MIDDLE: kind = "middle"; break;
             case MouseButton.RIGHT: kind = "right"; break;
         }
         IO.println("Click " + kind + " x = " + x + " y = " + y);
