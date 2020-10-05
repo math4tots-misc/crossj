@@ -18,7 +18,7 @@ public interface Game {
      */
     public static final int STATUS_DRAW = 4;
 
-    default void init() {
+    default void init(GameIO io) {
     }
 
     default void pause() {
@@ -27,8 +27,7 @@ public interface Game {
     default void resume() {
     }
 
-    default int update(double dt) {
-        return STATUS_DRAW;
+    default void update(double dt) {
     }
 
     default void draw(Brush brush) {

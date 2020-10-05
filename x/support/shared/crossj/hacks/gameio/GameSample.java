@@ -4,16 +4,21 @@ import crossj.base.IO;
 import crossj.hacks.image.Color;
 
 public final class GameSample implements Game {
+    private GameIO io;
     private int width, height;
-    private boolean dirty = true;
 
     public static void main(String[] args) {
         GameHost.getDefault().run(new GameSample());
     }
 
     @Override
+    public void init(GameIO io) {
+        this.io = io;
+    }
+
+    @Override
     public void resize(int width, int height) {
-        dirty = true;
+        io.requestDraw();
         IO.println("resize " + width + " " + height);
         this.width = width;
         this.height = height;
@@ -33,16 +38,17 @@ public final class GameSample implements Game {
     @Override
     public void keydown(String key) {
         IO.println("keydown " + key);
+        if (key.equals("Escape")) {
+            io.requestExit();
+        }
     }
 
     @Override
-    public int update(double dt) {
-        return dirty ? Game.STATUS_DRAW : 0;
+    public void update(double dt) {
     }
 
     @Override
     public void draw(Brush brush) {
-        dirty = false;
         IO.println("draw " + brush);
         brush.setColor(Color.BLACK);
         brush.fillRect(0, 0, width, height);

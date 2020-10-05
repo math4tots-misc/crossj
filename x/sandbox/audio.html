@@ -1,0 +1,67 @@
+<html>
+    <body>
+        <button onclick="startSound()">
+            Start
+        </button>
+        <script>
+            function startSound() {
+                const audioContext = new AudioContext();
+
+                // {
+                //     let oscillator = audioContext.createOscillator();
+                //     oscillator.frequency.value = 262;
+                //     let gain = audioContext.createGain();
+                //     gain.gain.value = 0.3;
+                //     oscillator.connect(gain);
+                //     gain.connect(audioContext.destination);
+                //     // oscillator.connect(audioContext.destination);
+
+                //     oscillator.start(audioContext.currentTime + 0.01);
+                // }
+
+                // clicking is still an issue due to gain changes that don't
+                // wait for a zero crossing.
+                // See:
+                // https://stackoverflow.com/questions/29378875/
+                // (how-can-i-avoid-this-clicking-sound-when-i-stop-playing-a-sound)
+                // https://github.com/WebAudio/web-audio-api-v2/issues/9
+
+                {
+                    const oscillator = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    gain.gain.value = 0.3;
+                    oscillator.connect(gain);
+                    gain.connect(audioContext.destination);
+                    let lastPlayTime = 0;
+                    let counter = 0;
+
+                    oscillator.start();
+
+                    function tick(time) {
+                        if (time > lastPlayTime + 500) {
+                            lastPlayTime = time;
+                            counter++;
+
+                            const freq = (counter % 2 === 0) ? 262 : 440;
+                            const gval = (counter % 3 === 0) ? 0 : 0.4;
+
+                            if (gval > 0) {
+                                console.log('playing new note with freq ' + freq);
+                            } else {
+                                console.log('rest');
+                            }
+
+                            oscillator.frequency.value = freq;
+                            gain.gain.setValueAtTime(gval, audioContext.currentTime + 0.05);
+                            // gain.gain.linearRampToValueAtTime(
+                            //     gval, audioContext.currentTime + 0.05);
+                        }
+                        requestAnimationFrame(tick);
+                    }
+
+                    requestAnimationFrame(tick);
+                }
+            }
+        </script>
+    </body>
+</html>

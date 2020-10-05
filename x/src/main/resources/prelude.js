@@ -1248,7 +1248,20 @@ class C$crossj$hacks$gameio$DefaultGameHost {
         if (typeof window === 'undefined') {
             throw new Error("GameHost is not currently available in a node.js environment");
         }
-        game.M$init();
+        let exitRequested = false;
+        let drawRequested = true;
+        class GameIO {
+            M$requestExit() {
+                exitRequested = true;
+            }
+            M$requestDraw() {
+                drawRequested = true;
+            }
+            toString() {
+                return '<GameIO>';
+            }
+        }
+        game.M$init(new GameIO());
         document.body.innerHTML = `
         <style>
             html, body {
@@ -1304,13 +1317,14 @@ class C$crossj$hacks$gameio$DefaultGameHost {
 
         var lastTimestamp = performance.now();
         function tick(timestamp) {
-            const status = game.M$update(timestamp - lastTimestamp);
+            game.M$update(timestamp - lastTimestamp);
             lastTimestamp = timestamp;
-            if (status & 2) {
+            if (exitRequested) {
                 // exit
                 console.log('exiting...');
             } else {
-                if (status & 4) {
+                if (drawRequested) {
+                    drawRequested = false;
                     // Only draw if a redraw was requested
                     game.M$draw(brush);
                 }
