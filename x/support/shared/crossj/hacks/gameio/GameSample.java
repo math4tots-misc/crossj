@@ -45,11 +45,13 @@ public final class GameSample implements Game {
 
     @Override
     public void update(double dt) {
+        // redraw on every frame
+        io.requestDraw();
     }
 
     @Override
     public void draw(Brush brush) {
-        IO.println("draw " + brush);
+        // IO.println("draw " + brush);
         brush.setColor(Color.BLACK);
         brush.fillRect(0, 0, width, height);
         brush.setColor(Color.RED);
