@@ -335,6 +335,6 @@ public final class Main {
         } else if (path.endsWith(".crossj")) {
             path = path.substring(0, path.length() - ".crossj".length());
         }
-        return path.replace("/", ".");
+        return path.replace(File.separator, ".");
     }
 }
