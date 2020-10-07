@@ -1,5 +1,10 @@
 #!/bin/bash
 #
+# Usage:
+#
+#   run-class-gdx <QualifiedGameClassName>
+#
+#
 # "gdx-setup" is basically "java -jar gdx-setup.jar "$@""
 #
 mkdir -p out && \
@@ -10,7 +15,11 @@ gdx-setup --dir out/gdx \
     --mainClass Main \
     --excludeModules "android;ios" && \
 rm -rf out/gdx/core/src/crossj && \
+cp -r support/java/* out/gdx/core/src && \
+cp -r support/shared/* out/gdx/core/src && \
 cp -r support/gdx/* out/gdx/core/src && \
+sed -i '' "s/crossj\.hacks\.gameio\.placeholder\.GamePlaceholder/$1/" \
+    out/gdx/core/src/crossj/hacks/gameio/Main.java && \
 rm -rf ~/.m2/repository/com/badlogicgames/gdx/gdx-platform/1.9.11/ && \
 sed -i '' \
     's/sourceCompatibility = 1\.7/sourceCompatibility = 11/' \

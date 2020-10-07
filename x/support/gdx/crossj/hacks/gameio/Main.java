@@ -5,6 +5,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 
 public final class Main extends ApplicationAdapter {
+    private final Game game = new crossj.hacks.gameio.placeholder.GamePlaceholder();
+
+    @Override
+    public void create() {
+        game.init(new GameIO(){
+            @Override
+            public void requestExit() {
+            }
+
+            @Override
+            public void requestDraw() {
+            }
+        });
+    }
 
     @Override
     public void render() {
