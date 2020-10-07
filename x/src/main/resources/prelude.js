@@ -127,6 +127,10 @@ function $CASTIF(value, ifaceTag) {
         throw new Error("Could not cast " + value + " to " + ifaceTag.substring(2).replace('$', '.'));
     }
 }
+/**
+ * @param {string} string
+ * @returns {C$crossj$base$Bytes}
+ */
 function $stringToUTF8(string) {
     // More or less based on snippet here:
     // https://stackoverflow.com/a/18729931/956134
@@ -163,6 +167,17 @@ function $stringToUTF8(string) {
     }
     return C$crossj$base$Bytes.M$fromU8s(arr);
 }
+
+/**
+ * @param {C$crossj$base$Bytes} bytes
+ * @returns {string}
+ */
+function $stringFromUTF8(bytes) {
+    // TODO: Don't depend on TextDecoder which isn't standardized yet
+    const decoder = new TextDecoder('utf-8');
+    return decoder.decode(bytes.M$asU8s());
+}
+
 /**
  * @param {string} string
  */

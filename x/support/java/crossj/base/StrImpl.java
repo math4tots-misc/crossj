@@ -24,6 +24,10 @@ public final class StrImpl {
         return Bytes.fromByteBuffer(StandardCharsets.UTF_8.encode(string));
     }
 
+    public static String fromUTF8(Bytes bytes) {
+        return StandardCharsets.UTF_8.decode(bytes.getUnderlyingByteBuffer()).toString();
+    }
+
     public static XIterator<Integer> toCodePoints(String string) {
         return XIterator.fromIterator(new Iterator<Integer>() {
             int i = 0;

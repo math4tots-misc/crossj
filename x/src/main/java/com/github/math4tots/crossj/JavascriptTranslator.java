@@ -659,6 +659,12 @@ public final class JavascriptTranslator implements ITranslator {
                             sb.append(")");
                             break;
                         }
+                        case "crossj.base.StrImpl.fromUTF8": {
+                            sb.append("$stringFromUTF8(");
+                            translateExpression((Expression) node.arguments().get(0));
+                            sb.append(")");
+                            break;
+                        }
                         case "crossj.base.StrImpl.toCodePoints": {
                             sb.append("$stringToCodePoints(");
                             translateExpression((Expression) node.arguments().get(0));

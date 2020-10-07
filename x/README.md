@@ -4,6 +4,15 @@ mvn clean package && \
 
 NOTES
 
+Implementation notes:
+* "assets" or "resources" are bundled Rust style, by generating a Java class that
+    has a static `getData` method that will return a `Bytes` object with the
+    associated file's data.
+    Currently all data is directly embedded into the generated source, but it
+    should be possible in the future to modify the asset generator to use
+    a different implementation (e.g. read from from the file at runtime
+    instead of returning a preloaded value).
+
 Java version:
 
 * Originally I was limiting myself to Java 8, but I really wanted local variable type

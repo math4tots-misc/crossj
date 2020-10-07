@@ -25,6 +25,13 @@ public final class UTFTest {
     }
 
     @Test
+    public static void fromUTF8() {
+        Assert.equals(Str.fromUTF8(Bytes.ofU8s(230, 151, 165)), "日");
+        Assert.equals(Str.fromUTF8(Bytes.ofU8s(230, 156, 172)), "本");
+        Assert.equals(Str.fromUTF8(Bytes.ofU8s(230, 151, 165, 230, 156, 172)), "日本");
+    }
+
+    @Test
     public static void toUTF32() {
         Assert.equals(Str.toUTF32("日"), IntArray.of(26085));
         Assert.equals(Str.toUTF32("本"), IntArray.of(26412));

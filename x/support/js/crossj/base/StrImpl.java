@@ -10,6 +10,8 @@ public final class StrImpl {
 
     public static native Bytes toUTF8(String string);
 
+    public static native String fromUTF8(Bytes bytes);
+
     public static native XIterator<Integer> toCodePoints(String string);
 
     public static native String fromCodePoints(XIterable<Integer> codePoints);

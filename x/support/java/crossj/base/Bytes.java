@@ -358,6 +358,10 @@ public final class Bytes {
         return array;
     }
 
+    ByteBuffer getUnderlyingByteBuffer() {
+        return buffer;
+    }
+
     public Bytes clone() {
         return getBytes(0, size());
     }

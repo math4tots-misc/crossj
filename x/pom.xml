@@ -57,6 +57,7 @@
                         </goals>
                         <configuration>
                             <sources>
+                                <source>out/generated</source>
                                 <source>support/java</source>
                                 <source>support/gdx</source>
                                 <source>support/shared</source>

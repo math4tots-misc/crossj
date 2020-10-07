@@ -1,10 +1,13 @@
 #!/bin/bash
-mkdir -p out && \
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+mkdir -p out/generated && \
 rm -rf out/crossj && \
 rm -rf out/sanity && \
+"$DIR/run-assetpkg" --use-java-default-roots support/tests -o out/generated && \
 javac -d out \
-    $(find support/java -type f | grep '\.java$') \
-    $(find support/shared -type f | grep '\.java$') \
-    $(find support/tests -type f | grep '\.java$') \
+    $(find support/java -type f -name "*.java") \
+    $(find support/shared -type f -name "*.java") \
+    $(find support/tests -type f -name "*.java") \
+    $(find out/generated -type f -name "*.java") \
     && \
 java -cp out crossj.misc.RunTests

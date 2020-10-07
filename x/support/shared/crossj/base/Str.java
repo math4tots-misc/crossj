@@ -215,6 +215,18 @@ public final class Str {
     }
 
     /**
+     * Converts UTF8 bytes into a String object.
+     *
+     * The behavior is undefined if bytes is not valid UTF8.
+     *
+     * (It may throw an exception, or invalid values may be replaced with
+     * placeholders)
+     */
+    public static String fromUTF8(Bytes bytes) {
+        return StrImpl.fromUTF8(bytes);
+    }
+
+    /**
      * Iterate over the codepoints of a string.
      */
     public static XIterator<Integer> toCodePoints(String string) {

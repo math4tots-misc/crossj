@@ -1,6 +1,8 @@
 #!/bin/bash
-# mvn -q clean package && \
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+rm -rf out/generated && \
+"$DIR/run-assetpkg" --use-js-default-roots support/tests -o out/generated && \
 java -jar target/crossj-1.0-SNAPSHOT-jar-with-dependencies.jar \
-    -r support/js -r support/shared -r support/tests \
+    -r support/js -r support/shared -r support/tests -r out/generated \
     -m crossj.misc.RunTests --no-prune "$@" && \
 node out/bundle.js
