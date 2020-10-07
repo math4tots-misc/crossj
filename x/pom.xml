@@ -22,6 +22,21 @@
             <artifactId>org.eclipse.jdt.core</artifactId>
             <version>3.22.0</version>
         </dependency>
+
+        <!--
+        this is not an actual dependency, but makes it easier to maintain support/gdx
+        if I can get IDE support for it.
+        -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-platform</artifactId>
+            <version>1.9.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-backend-lwjgl</artifactId>
+            <version>1.9.11</version>
+        </dependency>
     </dependencies>
 
     <!-- This blob of configuration tells Maven to make the jar executable. You can run it with:
@@ -43,6 +58,7 @@
                         <configuration>
                             <sources>
                                 <source>support/java</source>
+                                <source>support/gdx</source>
                                 <source>support/shared</source>
                                 <source>support/tests</source>
                             </sources>

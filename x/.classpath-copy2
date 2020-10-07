@@ -18,6 +18,12 @@
 			<attribute name="maven.pomderived" value="false"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" output="target/classes" path="support/gdx">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="false"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
 		<attributes>
 			<attribute name="optional" value="true"/>

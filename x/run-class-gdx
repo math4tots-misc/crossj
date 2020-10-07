@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# "gdx-setup" is basically "java -jar gdx-setup.jar "$@""
+#
+mkdir -p out && \
+rm -rf out/gdx && \
+gdx-setup --dir out/gdx \
+    --name Sample \
+    --package crossj.hacks.gameio \
+    --mainClass Main \
+    --excludeModules "android;ios" && \
+rm -rf out/gdx/core/src/crossj && \
+cp -r support/gdx/* out/gdx/core/src && \
+rm -rf ~/.m2/repository/com/badlogicgames/gdx/gdx-platform/1.9.11/ && \
+sed -i '' \
+    's/sourceCompatibility = 1\.7/sourceCompatibility = 11/' \
+    $(find out/gdx/ -name "build.gradle") && \
+(cd out/gdx && ./gradlew desktop:run)
