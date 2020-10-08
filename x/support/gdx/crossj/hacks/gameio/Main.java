@@ -2,6 +2,7 @@ package crossj.hacks.gameio;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import crossj.base.Bytes;
 import crossj.hacks.image.Color;
 
-public final class Main implements ApplicationListener {
+public final class Main implements ApplicationListener, InputProcessor {
     private final Game game = new crossj.hacks.gameio.placeholder.GamePlaceholder();
     private final GraphicsContext graphics = new GraphicsContext() {
         public crossj.hacks.gameio.Texture newTexture(Bytes data) {
@@ -46,6 +47,71 @@ public final class Main implements ApplicationListener {
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         }
     };
+    private final AudioContext audio = new AudioContext() {
+
+        @Override
+        public Music newMusicFromAsset(String assetPath) {
+            var music = Gdx.audio.newMusic(Gdx.files.internal(assetPath));
+            return new Music() {
+                @Override
+                public void dispose() {
+                    music.dispose();
+                }
+
+                @Override
+                public void play() {
+                    music.play();
+                }
+
+                @Override
+                public void stop() {
+                    music.stop();
+                }
+
+                @Override
+                public void pause() {
+                    music.pause();
+                }
+
+                @Override
+                public void setLooping(boolean looping) {
+                    music.setLooping(looping);
+                }
+
+                @Override
+                public void setVolume(double volume) {
+                    music.setVolume((float) volume);
+                }
+
+                @Override
+                public boolean isPlaying() {
+                    return music.isPlaying();
+                }
+
+                @Override
+                public boolean isLooping() {
+                    return music.isLooping();
+                }
+            };
+        }
+
+        @Override
+        public Sound newSoundFromAsset(String assetPath) {
+            var sound = Gdx.audio.newSound(Gdx.files.internal(assetPath));
+
+            return new Sound() {
+                @Override
+                public void dispose() {
+                    sound.dispose();
+                }
+
+                @Override
+                public void play(double volume) {
+                    sound.play((float) volume);
+                }
+            };
+        }
+    };
     private final GameIO io = new GameIO() {
         public void requestExit() {
             Gdx.app.exit();
@@ -54,11 +120,16 @@ public final class Main implements ApplicationListener {
         public GraphicsContext getGraphics() {
             return graphics;
         };
+
+        public AudioContext getAudio() {
+            return audio;
+        }
     };
 
     @Override
     public void create() {
         game.init(io);
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
@@ -89,5 +160,51 @@ public final class Main implements ApplicationListener {
     @Override
     public void dispose() {
         game.dispose();
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return game.keyDown(keycode);
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return game.touchUp(screenX, screenY, pointer, button);
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

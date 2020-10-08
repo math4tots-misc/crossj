@@ -13,4 +13,9 @@ public interface GameIO {
      * Returns a graphics context you can use to draw on the screen
      */
     GraphicsContext getGraphics();
+
+    /**
+     * Returns an audio context you can use to make sounds
+     */
+    AudioContext getAudio();
 }

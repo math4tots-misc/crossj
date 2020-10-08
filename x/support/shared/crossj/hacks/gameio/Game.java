@@ -28,6 +28,19 @@ public interface Game extends Disposable {
     default void resize(int width, int height) {
     }
 
+    default boolean keyDown(int keycode) {
+        return false;
+    }
+
+    /**
+     * Called when finger is lifted or mouse is released.
+     *
+     * Returns true if this event was handled.
+     */
+    default boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
     @Override
     default void dispose() {
     }
