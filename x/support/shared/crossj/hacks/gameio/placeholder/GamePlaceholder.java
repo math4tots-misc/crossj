@@ -1,6 +1,5 @@
 package crossj.hacks.gameio.placeholder;
 
-import crossj.base.FS;
 import crossj.base.IO;
 import crossj.hacks.gameio.Batch;
 import crossj.hacks.gameio.Game;
