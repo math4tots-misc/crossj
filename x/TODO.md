@@ -6,11 +6,7 @@ I'm starting to notice my IDE's quality starting to degrade a bit
 
 --
 
-Asset package should be done by the translator.
-Currently, the asset packager scans the entire directory tree, causing every file to be checked.
-As the source roots get bigger this is going to be unscalable.
-
-In the future, asset packaging should be done as needed by the translator.
+Some way to package assets/binary resources
 
 --
 
