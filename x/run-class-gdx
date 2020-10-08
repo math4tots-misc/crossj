@@ -9,7 +9,6 @@
 # Use of 'sed' with '-i' as done here kinda means it needs
 # to be modified for use on e.g. linux.
 #
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 mkdir -p out && \
 rm -rf out/gdx && \
 gdx-setup --dir out/gdx \
@@ -21,7 +20,6 @@ rm -rf out/gdx/core/src/crossj && \
 cp -r support/java/* out/gdx/core/src && \
 cp -r support/shared/* out/gdx/core/src && \
 cp -r support/gdx/* out/gdx/core/src && \
-"$DIR/run-assetpkg" --use-gdx-default-roots -o out/gdx/core/src && \
 sed -i '' "s/crossj\.hacks\.gameio\.placeholder\.GamePlaceholder/$1/" \
     out/gdx/core/src/crossj/hacks/gameio/Main.java && \
 rm -rf ~/.m2/repository/com/badlogicgames/gdx/gdx-platform/1.9.11/ && \

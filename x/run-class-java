@@ -1,8 +1,5 @@
 #!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 mkdir -p out && \
-rm -rf out/crossj out/generated && \
-"$DIR/run-assetpkg" --use-java-default-roots support/tests -o out/generated && \
 javac -d out \
     $(find support/java -type f | grep '\.java$') \
     $(find support/shared -type f | grep '\.java$') \
