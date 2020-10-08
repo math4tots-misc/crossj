@@ -5,12 +5,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import crossj.base.Bytes;
+import crossj.hacks.image.Color;
 
 public final class Main implements ApplicationListener {
     private final Game game = new crossj.hacks.gameio.placeholder.GamePlaceholder();
-    private final GraphicsContext graphics = new GraphicsContext(){
+    private final GraphicsContext graphics = new GraphicsContext() {
         public crossj.hacks.gameio.Texture newTexture(Bytes data) {
             var buffer = data.getUnderlyingByteBuffer();
             Pixmap pixmap = null;
@@ -28,8 +30,19 @@ public final class Main implements ApplicationListener {
             }
             return new GdxTexture(new Texture(pixmap));
         }
+
+        @Override
+        public Batch newBatchWithSize(int size) {
+            return new GdxBatch(new SpriteBatch(size));
+        }
+
+        @Override
+        public void clear(Color color) {
+            Gdx.gl.glClearColor((float) color.r, (float) color.g, (float) color.b, (float) color.a);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        }
     };
-    private final GameIO io = new GameIO(){
+    private final GameIO io = new GameIO() {
         public void requestExit() {
             Gdx.app.exit();
         }

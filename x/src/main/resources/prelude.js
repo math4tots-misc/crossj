@@ -384,6 +384,18 @@ class C$crossj$base$IO {
 }
 $CJ['crossj.base.IO'] = C$crossj$base$IO;
 
+class C$crossj$base$FSImpl {
+    static M$getSeparator() {
+        return require('path').sep;
+    }
+    static M$getWorkingDirectory() {
+        return process.cwd();
+    }
+    static M$joinPaths(paths) {
+        return require('path').join(...paths);
+    }
+}
+
 class C$crossj$base$Magic {
     /**
      * @param {object} a
