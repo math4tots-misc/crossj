@@ -10,7 +10,7 @@ public interface GameIO {
     void requestExit();
 
     /**
-     * Ask the host to call redraw on the next frame.
+     * Returns a graphics context you can use to draw on the screen
      */
-    void requestDraw();
+    GraphicsContext getGraphics();
 }

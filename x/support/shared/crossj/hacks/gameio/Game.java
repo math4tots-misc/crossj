@@ -1,9 +1,11 @@
 package crossj.hacks.gameio;
 
+import crossj.base.Disposable;
+
 /**
  * An interface for a Game that can be run by a GameHost.
  */
-public interface Game {
+public interface Game extends Disposable {
     default void init(GameIO io) {
     }
 
@@ -13,21 +15,20 @@ public interface Game {
     default void resume() {
     }
 
+    /**
+     * Update the state of the game
+     * @param dt seconds since last update. Zero if update was never called before
+     */
     default void update(double dt) {
     }
 
-    default void draw(Brush brush) {
+    default void render() {
     }
 
     default void resize(int width, int height) {
     }
 
-    default void keydown(String key) {
-    }
-
-    default void keyup(String key) {
-    }
-
-    default void click(int button, int x, int y) {
+    @Override
+    default void dispose() {
     }
 }

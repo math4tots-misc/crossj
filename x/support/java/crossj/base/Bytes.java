@@ -358,7 +358,7 @@ public final class Bytes {
         return array;
     }
 
-    ByteBuffer getUnderlyingByteBuffer() {
+    public ByteBuffer getUnderlyingByteBuffer() {
         return buffer;
     }
 
