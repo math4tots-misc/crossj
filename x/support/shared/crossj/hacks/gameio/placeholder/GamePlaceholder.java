@@ -1,6 +1,5 @@
 package crossj.hacks.gameio.placeholder;
 
-import crossj.base.IO;
 import crossj.hacks.gameio.Batch;
 import crossj.hacks.gameio.Game;
 import crossj.hacks.gameio.GameIO;
@@ -19,8 +18,7 @@ public final class GamePlaceholder implements Game {
         this.io = io;
         var graphics = io.getGraphics();
         batch = graphics.newBatch();
-        // working directory is out/gdx/core/assets
-        texture = graphics.newTexture(IO.readFileBytes("../../../demo.bmp"));
+        texture = graphics.newTextureFromAsset("demo.bmp");
         sprite = texture.newSpriteFromEntireTexture();
     }
 

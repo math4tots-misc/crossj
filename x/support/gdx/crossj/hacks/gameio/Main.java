@@ -31,6 +31,10 @@ public final class Main implements ApplicationListener {
             return new GdxTexture(new Texture(pixmap));
         }
 
+        public crossj.hacks.gameio.Texture newTextureFromAsset(String assetPath) {
+            return new GdxTexture(new Texture(assetPath));
+        }
+
         @Override
         public Batch newBatchWithSize(int size) {
             return new GdxBatch(new SpriteBatch(size));

@@ -20,6 +20,7 @@ rm -rf out/gdx/core/src/crossj && \
 cp -r support/java/* out/gdx/core/src && \
 cp -r support/shared/* out/gdx/core/src && \
 cp -r support/gdx/* out/gdx/core/src && \
+cp -r support/assets/"$1"/* out/gdx/core/assets/ && \
 sed -i '' "s/crossj\.hacks\.gameio\.placeholder\.GamePlaceholder/$1/" \
     out/gdx/core/src/crossj/hacks/gameio/Main.java && \
 rm -rf ~/.m2/repository/com/badlogicgames/gdx/gdx-platform/1.9.11/ && \
