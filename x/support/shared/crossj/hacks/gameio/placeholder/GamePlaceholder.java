@@ -20,6 +20,10 @@ public final class GamePlaceholder implements Game {
     private Sound sound;
     private String message;
     private GameFont font;
+    private Texture blueRectTexture;
+    private Sprite blueRect;
+    private Texture redRectTexture;
+    private Sprite redRect;
 
     @Override
     public void init(GameIO io) {
@@ -30,6 +34,12 @@ public final class GamePlaceholder implements Game {
         sprite = texture.newSpriteFromEntireTexture();
         music = io.getAudio().newMusicFromAsset("bach.mp3");
         sound = io.getAudio().newSoundFromAsset("sine1k.wav");
+
+        blueRectTexture = graphics.newTextureFromColors(10, 10, (x, y) -> Color.BLUE);
+        blueRect = blueRectTexture.newSpriteFromEntireTexture();
+
+        redRectTexture = graphics.newTextureFromColors(1, 1, (x, y) -> Color.RED);
+        redRect = redRectTexture.newSpriteFromEntireTexture();
 
         var fs = io.getFileSystem();
         message = fs.readAsset("foo.txt");
@@ -51,6 +61,11 @@ public final class GamePlaceholder implements Game {
         batch.drawText(font, "height = " + font.getLineHeight(), 50, io.getGraphics().getHeight() / 2);
         batch.drawText(font, "width = " + font.getWidth(message), 50,
                 io.getGraphics().getHeight() / 2 + font.getLineHeight());
+
+        batch.drawStretched(redRect, (double) (io.getGraphics().getWidth() - 100),
+                (double) (io.getGraphics().getHeight() - 100), 100, 100);
+        batch.draw(blueRect, (double) (io.getGraphics().getWidth() - 100),
+                (double) (io.getGraphics().getHeight() - 100));
         batch.end();
     }
 
@@ -61,6 +76,8 @@ public final class GamePlaceholder implements Game {
         music.dispose();
         sound.dispose();
         font.dispose();
+        blueRectTexture.dispose();
+        redRectTexture.dispose();
     }
 
     @Override

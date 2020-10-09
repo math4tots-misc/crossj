@@ -1,6 +1,7 @@
 package crossj.hacks.gameio;
 
 import crossj.base.Bytes;
+import crossj.base.Func2;
 import crossj.hacks.image.Color;
 
 /**
@@ -25,6 +26,11 @@ public interface GraphicsContext {
      * @return
      */
     Texture newTextureFromAsset(String assetPath);
+
+    /**
+     * Create a new texture with a function that returns a color for each pixel.
+     */
+    Texture newTextureFromColors(int width, int height, Func2<Color, Integer, Integer> f);
 
     /**
      * Create a new SpriteBatch with the given buffer size.

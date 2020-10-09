@@ -39,11 +39,26 @@ public final class Main implements ApplicationListener, InputProcessor {
                 }
                 pixmap = new Pixmap(array, 0, array.length);
             }
-            return new GdxTexture(new Texture(pixmap));
+            var texture = new Texture(pixmap);
+            pixmap.dispose();
+            return new GdxTexture(texture);
         }
 
         public crossj.hacks.gameio.Texture newTextureFromAsset(String assetPath) {
             return new GdxTexture(new Texture(assetPath));
+        }
+
+        public crossj.hacks.gameio.Texture newTextureFromColors(int width, int height, crossj.base.Func2<Color,Integer,Integer> f) {
+            var pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    var color = f.apply(x, y);
+                    pixmap.drawPixel(x, y, color.toI32RGBA());
+                }
+            }
+            var texture = new Texture(pixmap);
+            pixmap.dispose();
+            return new GdxTexture(texture);
         }
 
         @Override
