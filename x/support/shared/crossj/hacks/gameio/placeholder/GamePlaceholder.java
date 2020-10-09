@@ -3,6 +3,7 @@ package crossj.hacks.gameio.placeholder;
 import crossj.base.IO;
 import crossj.hacks.gameio.Batch;
 import crossj.hacks.gameio.Game;
+import crossj.hacks.gameio.GameFont;
 import crossj.hacks.gameio.GameIO;
 import crossj.hacks.gameio.Music;
 import crossj.hacks.gameio.Sound;
@@ -17,6 +18,8 @@ public final class GamePlaceholder implements Game {
     private Sprite sprite;
     private Music music;
     private Sound sound;
+    private String message;
+    private GameFont font;
 
     @Override
     public void init(GameIO io) {
@@ -29,7 +32,10 @@ public final class GamePlaceholder implements Game {
         sound = io.getAudio().newSoundFromAsset("sine1k.wav");
 
         var fs = io.getFileSystem();
-        IO.println("foot.txt => " + fs.readAsset("foo.txt"));
+        message = fs.readAsset("foo.txt");
+        IO.println("foot.txt => " + message);
+
+        font = graphics.getDefaultFont();
 
         music.play();
     }
@@ -40,14 +46,18 @@ public final class GamePlaceholder implements Game {
         graphics.clear(Color.GREEN);
         batch.begin();
         batch.draw(sprite, 0, 0);
+        batch.drawText(font, message, 50, 50);
+        batch.drawText(font, message, io.getGraphics().getWidth() / 2, io.getGraphics().getHeight() / 2);
         batch.end();
     }
 
     @Override
     public void dispose() {
+        batch.dispose();
         texture.dispose();
         music.dispose();
         sound.dispose();
+        font.dispose();
     }
 
     @Override

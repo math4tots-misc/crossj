@@ -27,4 +27,14 @@ public final class GdxBatch implements Batch {
     private static GdxSprite cast(Sprite sprite) {
         return (GdxSprite) sprite;
     }
+
+    @Override
+    public void drawText(GameFont font, String text, double x, double y) {
+        ((GdxFont) font).getFont().draw(batch, text, (float) x, (float) y);
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+    }
 }

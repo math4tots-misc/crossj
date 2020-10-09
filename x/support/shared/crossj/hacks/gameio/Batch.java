@@ -1,9 +1,11 @@
 package crossj.hacks.gameio;
 
+import crossj.base.Disposable;
+
 /**
  * For batch drawing sprites
  */
-public interface Batch {
+public interface Batch extends Disposable {
 
     /**
      * Sets up the batch for drawing
@@ -20,4 +22,6 @@ public interface Batch {
     }
 
     void drawStretched(Sprite sprite, double x, double y, double width, double height);
+
+    void drawText(GameFont font, String text, double x, double y);
 }

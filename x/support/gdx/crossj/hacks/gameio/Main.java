@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import crossj.base.Bytes;
@@ -14,6 +15,15 @@ import crossj.hacks.image.Color;
 public final class Main implements ApplicationListener, InputProcessor {
     private final Game game = new crossj.hacks.gameio.placeholder.GamePlaceholder();
     private final GraphicsContext graphics = new GraphicsContext() {
+
+        public int getWidth() {
+            return Gdx.graphics.getWidth();
+        }
+
+        public int getHeight() {
+            return Gdx.graphics.getHeight();
+        }
+
         public crossj.hacks.gameio.Texture newTexture(Bytes data) {
             var buffer = data.getUnderlyingByteBuffer();
             Pixmap pixmap = null;
@@ -45,6 +55,17 @@ public final class Main implements ApplicationListener, InputProcessor {
         public void clear(Color color) {
             Gdx.gl.glClearColor((float) color.r, (float) color.g, (float) color.b, (float) color.a);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        }
+
+        @Override
+        public GameFont getDefaultFont() {
+            return new GdxFont(new BitmapFont());
+        }
+
+        @Override
+        public GameFont newFontFromAsset(String assetPath) {
+            var handle = Gdx.files.internal(assetPath);
+            return new GdxFont(new BitmapFont(handle));
         }
     };
     private final AudioContext audio = new AudioContext() {

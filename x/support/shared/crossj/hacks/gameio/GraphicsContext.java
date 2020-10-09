@@ -7,6 +7,11 @@ import crossj.hacks.image.Color;
  * Context used for rendering stuff to the screen.
  */
 public interface GraphicsContext {
+
+    int getWidth();
+
+    int getHeight();
+
     /**
      * Creates a new Texture from PNG, JPEG or BMP bytes.
      * @param data
@@ -41,4 +46,14 @@ public interface GraphicsContext {
      * @param color
      */
     void clear(Color color);
+
+    /**
+     * Gets a default font available in the environment.
+     */
+    GameFont getDefaultFont();
+
+    /**
+     * Loads a font from an asset file.
+     */
+    GameFont newFontFromAsset(String assetPath);
 }
