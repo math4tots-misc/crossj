@@ -217,7 +217,11 @@ function* $ITERfromParts(hasNext, getNext) {
     }
 }
 function $ITERlist(items) {
-    return C$crossj$base$List.M$of(...items);
+    const array = [];
+    for (const item of items) {
+        array.push(item);
+    }
+    return C$crossj$base$List.M$fromJavaArray(array);
 }
 function* $ITERchunk(items, n) {
     let chunk = [];

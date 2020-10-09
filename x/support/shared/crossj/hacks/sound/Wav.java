@@ -38,8 +38,20 @@ public final class Wav {
     }
 
     /**
-     * @param duration duration of the returned Wav object.
-     * @param f function mapping time (in seconds) to amplitude in range [-1, 1].
+     * Returns a recording of silence for the given duration.
+     * @param duration
+     * @return
+     */
+    public static Wav silence(double duration) {
+        var nsamples = (int) (duration * SAMPLE_RATE);
+        return new Wav(List.ofSize(nsamples, () -> 0));
+    }
+
+    /**
+     * Create a new Wav by specifying the periodic function.
+     * @param duration duration of the returned Wav object in seconds.
+     * @param f        function mapping time (in seconds) to amplitude in range [-1,
+     *                 1].
      */
     public static Wav ofFunction(double duration, Func1<Double, Double> f) {
         var nsamples = (int) (duration * SAMPLE_RATE);
@@ -54,15 +66,55 @@ public final class Wav {
 
     /**
      * Construct a sine wave given frequency, amplitude and duration.
-     * @param freq frequency of the wave in Hz
-     * @param amp the amplitude of the wave (clamped to lie between 0 and 1)
+     *
+     * @param freq     frequency of the wave in Hz
+     * @param amp      the amplitude of the wave (clamped to lie between 0 and 1)
      * @param duration number of seconds of data to generate
      * @return
      */
-    public static Wav ofSineWave(double freq, double amp, double duration) {
+    public static Wav sine(double freq, double amp, double duration) {
         var adjustedAmp = M.max(0, M.min(1, amp));
         var freqTau = freq * M.TAU;
         return ofFunction(duration, t -> adjustedAmp * M.sin(t * freqTau));
+    }
+
+    /**
+     * Mixes sound by adding each component.
+     *
+     * Any value that goes above or below will be hard-clipped.
+     */
+    public static Wav mixList(List<Wav> wavs) {
+        var len = wavs.iter().fold(0, (ln, wav) -> M.imax(ln, wav.sampleData.size()));
+        var list = List.ofSize(len, () -> 0);
+        for (int i = 0; i < len; i++) {
+            for (var wav : wavs) {
+                if (i < wav.sampleData.size()) {
+                    list.set(i, list.get(i) + wav.sampleData.get(i));
+                }
+            }
+        }
+        return new Wav(list);
+    }
+
+    /**
+     * Mixes sound by adding each component.
+     *
+     * Any value that goes above or below will be hard-clipped.
+     */
+    public static Wav mix(Wav... wavs) {
+        return mixList(List.fromJavaArray(wavs));
+    }
+
+    /**
+     * Concatenates a list of Wavs into a single Wav
+     */
+    public static Wav catList(List<Wav> wavs) {
+        var list = wavs.iter().flatMap(wav -> wav.sampleData.iter()).list();
+        return new Wav(list);
+    }
+
+    public static Wav cat(Wav... wavs) {
+        return catList(List.fromJavaArray(wavs));
     }
 
     /**
