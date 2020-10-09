@@ -48,6 +48,9 @@ public final class GamePlaceholder implements Game {
         batch.draw(sprite, 0, 0);
         batch.drawText(font, message, 50, 50);
         batch.drawText(font, message, io.getGraphics().getWidth() / 2, io.getGraphics().getHeight() / 2);
+        batch.drawText(font, "height = " + font.getLineHeight(), 50, io.getGraphics().getHeight() / 2);
+        batch.drawText(font, "width = " + font.getWidth(message), 50,
+                io.getGraphics().getHeight() / 2 + font.getLineHeight());
         batch.end();
     }
 
