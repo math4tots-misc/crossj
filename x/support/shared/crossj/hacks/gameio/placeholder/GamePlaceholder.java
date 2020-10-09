@@ -28,6 +28,9 @@ public final class GamePlaceholder implements Game {
         music = io.getAudio().newMusicFromAsset("bach.mp3");
         sound = io.getAudio().newSoundFromAsset("sine1k.wav");
 
+        var fs = io.getFileSystem();
+        IO.println("foot.txt => " + fs.readAsset("foo.txt"));
+
         music.play();
     }
 

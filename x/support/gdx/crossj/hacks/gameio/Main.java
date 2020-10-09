@@ -112,6 +112,17 @@ public final class Main implements ApplicationListener, InputProcessor {
             };
         }
     };
+    private final FileSystemContext fileSystem = new FileSystemContext(){
+        @Override
+        public String readAsset(String path) {
+            return Gdx.files.internal(path).readString();
+        }
+
+        @Override
+        public Bytes readAssetBytes(String path) {
+            return Bytes.wrapByteArray(Gdx.files.internal(path).readBytes());
+        }
+    };
     private final GameIO io = new GameIO() {
         public void requestExit() {
             Gdx.app.exit();
@@ -123,6 +134,11 @@ public final class Main implements ApplicationListener, InputProcessor {
 
         public AudioContext getAudio() {
             return audio;
+        }
+
+        @Override
+        public FileSystemContext getFileSystem() {
+            return fileSystem;
         }
     };
 

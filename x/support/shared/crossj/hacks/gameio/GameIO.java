@@ -10,6 +10,11 @@ public interface GameIO {
     void requestExit();
 
     /**
+     * Returns a file system context you can use to read files.
+     */
+    FileSystemContext getFileSystem();
+
+    /**
      * Returns a graphics context you can use to draw on the screen
      */
     GraphicsContext getGraphics();
