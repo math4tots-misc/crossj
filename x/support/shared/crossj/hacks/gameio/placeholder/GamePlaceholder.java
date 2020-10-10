@@ -5,6 +5,7 @@ import crossj.hacks.gameio.Batch;
 import crossj.hacks.gameio.Game;
 import crossj.hacks.gameio.GameFont;
 import crossj.hacks.gameio.GameIO;
+import crossj.hacks.gameio.Key;
 import crossj.hacks.gameio.Music;
 import crossj.hacks.gameio.Sound;
 import crossj.hacks.gameio.Sprite;
@@ -82,7 +83,7 @@ public final class GamePlaceholder implements Game {
 
     @Override
     public boolean keyDown(int keycode) {
-        IO.println("keycode = " + keycode);
+        IO.println("keycode = " + keycode + " (" + Key.toString(keycode) + ")");
         sound.play(0.2);
         return true;
     }

@@ -1,5 +1,6 @@
 @echo off
 dir /s /B support\java\*.java > sources.txt
+dir /s /B support\nogameio\*.java > sources.txt
 dir /s /B support\shared\*.java >> sources.txt
 dir /s /B support\tests\*.java >> sources.txt
 javac @sources.txt -encoding "UTF-8" -Xlint:unchecked -d out
