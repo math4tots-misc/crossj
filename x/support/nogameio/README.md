@@ -1,15 +1,15 @@
-Some classes can't be implemented without a gameio backend.
+Dummy gameio classes for when a real gameio backend is not available
 
-But some tests will require these classes to exist for testing.
+Not that useful for running programs, but there are 2 use cases:
 
-Blanket compilations will require all classes to be compilable.
+    * for testing, when we want to make sure all files at least compile, and
+    * some backends where selective incremental compilation is not yet available
+        and all files have to be compiled (e.g. default Java target)
 
-To accomodate those cases when a gameio backend is not available,
-dummy classes are provided here.
+Most classes/interfaces are still left as interfaces. This should allow for
+easier testing in the future.
 
-===
-
-For running and packaging programs, these really shouldn't come into
-play since there is no backend available for use.
-
-However, for tests, we want these classes to exist.
+The ones that really need to be here are those where the backend feature can't
+be abstracted with Java interfaces -- e.g. key constants. If constants
+were hidden behind interface methods, Java would no longer consider those values
+constants and we would not be able to switch/case with them.

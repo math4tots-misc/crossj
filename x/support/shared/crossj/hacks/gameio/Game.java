@@ -22,23 +22,16 @@ public interface Game extends Disposable {
     default void update(double dt) {
     }
 
+    /**
+     * Called when a frame needs to be rendered
+     */
     default void render() {
     }
 
-    default void resize(int width, int height) {
-    }
-
-    default boolean keyDown(int keycode) {
-        return false;
-    }
-
     /**
-     * Called when finger is lifted or mouse is released.
-     *
-     * Returns true if this event was handled.
+     * Called when the dimensions of the window changes
      */
-    default boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+    default void resize(int width, int height) {
     }
 
     @Override

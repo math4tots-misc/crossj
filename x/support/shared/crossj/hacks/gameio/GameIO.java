@@ -23,4 +23,9 @@ public interface GameIO {
      * Returns an audio context you can use to make sounds
      */
     AudioContext getAudio();
+
+    /**
+     * Returns an input context you can use to listen for input
+     */
+    InputContext getInput();
 }

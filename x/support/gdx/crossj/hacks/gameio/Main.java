@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import crossj.base.Bytes;
 import crossj.hacks.image.Color;
 
-public final class Main implements ApplicationListener, InputProcessor {
+public final class Main implements ApplicationListener {
     private final Game game = new crossj.hacks.gameio.placeholder.GamePlaceholder();
     private final GraphicsContext graphics = new GraphicsContext() {
 
@@ -48,7 +48,8 @@ public final class Main implements ApplicationListener, InputProcessor {
             return new GdxTexture(new Texture(assetPath));
         }
 
-        public crossj.hacks.gameio.Texture newTextureFromColors(int width, int height, crossj.base.Func2<Color,Integer,Integer> f) {
+        public crossj.hacks.gameio.Texture newTextureFromColors(int width, int height,
+                crossj.base.Func2<Color, Integer, Integer> f) {
             var pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
@@ -148,7 +149,7 @@ public final class Main implements ApplicationListener, InputProcessor {
             };
         }
     };
-    private final FileSystemContext fileSystem = new FileSystemContext(){
+    private final FileSystemContext fileSystem = new FileSystemContext() {
         @Override
         public String readAsset(String path) {
             return Gdx.files.internal(path).readString();
@@ -157,6 +158,78 @@ public final class Main implements ApplicationListener, InputProcessor {
         @Override
         public Bytes readAssetBytes(String path) {
             return Bytes.wrapByteArray(Gdx.files.internal(path).readBytes());
+        }
+    };
+    private final InputContext input = new InputContext() {
+
+        @Override
+        public void setInputHandler(InputHandler handler) {
+            Gdx.input.setInputProcessor(new InputProcessor() {
+
+                @Override
+                public boolean keyDown(int keycode) {
+                    return handler.keyDown(keycode);
+                }
+
+                @Override
+                public boolean keyUp(int keycode) {
+                    return handler.keyUp(keycode);
+                }
+
+                @Override
+                public boolean keyTyped(char character) {
+                    return handler.keyTyped(character);
+                }
+
+                @Override
+                public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                    screenY = Gdx.graphics.getHeight() - screenY;
+                    return handler.touchDown(screenX, screenY, pointer, button);
+                }
+
+                @Override
+                public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                    screenY = Gdx.graphics.getHeight() - screenY;
+                    return handler.touchUp(screenX, screenY, pointer, button);
+                }
+
+                @Override
+                public boolean touchDragged(int screenX, int screenY, int pointer) {
+                    screenY = Gdx.graphics.getHeight() - screenY;
+                    return handler.touchDragged(screenX, screenY, pointer);
+                }
+
+                @Override
+                public boolean mouseMoved(int screenX, int screenY) {
+                    screenY = Gdx.graphics.getHeight() - screenY;
+                    return handler.mouseMoved(screenX, screenY);
+                }
+
+                @Override
+                public boolean scrolled(int amount) {
+                    return handler.scrolled(amount);
+                }
+            });
+        }
+
+        @Override
+        public int getX() {
+            return Gdx.input.getX();
+        }
+
+        @Override
+        public int getY() {
+            return Gdx.graphics.getHeight() - Gdx.input.getY();
+        }
+
+        @Override
+        public boolean isMouseButtonPressed(int mouseButton) {
+            return Gdx.input.isButtonPressed(mouseButton);
+        }
+
+        @Override
+        public boolean isKeyPressed(int keyPressed) {
+            return Gdx.input.isKeyPressed(keyPressed);
         }
     };
     private final GameIO io = new GameIO() {
@@ -176,12 +249,16 @@ public final class Main implements ApplicationListener, InputProcessor {
         public FileSystemContext getFileSystem() {
             return fileSystem;
         }
+
+        @Override
+        public InputContext getInput() {
+            return input;
+        }
     };
 
     @Override
     public void create() {
         game.init(io);
-        Gdx.input.setInputProcessor(this);
     }
 
     @Override
@@ -212,51 +289,5 @@ public final class Main implements ApplicationListener, InputProcessor {
     @Override
     public void dispose() {
         game.dispose();
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return game.keyDown(keycode);
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return game.touchUp(screenX, screenY, pointer, button);
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        // TODO Auto-generated method stub
-        return false;
     }
 }

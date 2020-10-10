@@ -3,7 +3,7 @@ package crossj.hacks.gameio;
 import com.badlogic.gdx.Input;
 
 /**
- *
+ * Key codes (for gameio inputs)
  */
 public final class Key {
     private Key() {
