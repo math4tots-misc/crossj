@@ -3,7 +3,7 @@ package crossj.hacks.gameio.placeholder;
 import crossj.base.IO;
 import crossj.hacks.gameio.Batch;
 import crossj.hacks.gameio.Game;
-import crossj.hacks.gameio.GameFont;
+import crossj.hacks.gameio.BMFont;
 import crossj.hacks.gameio.GameIO;
 import crossj.hacks.gameio.Key;
 import crossj.hacks.gameio.Music;
@@ -20,7 +20,7 @@ public final class GamePlaceholder implements Game {
     private Music music;
     private Sound sound;
     private String message;
-    private GameFont font;
+    private BMFont font;
     private Texture blueRectTexture;
     private Sprite blueRect;
     private Texture redRectTexture;

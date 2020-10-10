@@ -56,10 +56,10 @@ public interface GraphicsContext {
     /**
      * Gets a default font available in the environment.
      */
-    GameFont getDefaultFont();
+    BMFont getDefaultFont();
 
     /**
      * Loads a font from an asset file.
      */
-    GameFont newFontFromAsset(String assetPath);
+    BMFont newFontFromAsset(String assetPath);
 }

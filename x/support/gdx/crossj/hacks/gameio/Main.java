@@ -73,12 +73,12 @@ public final class Main implements ApplicationListener, InputProcessor {
         }
 
         @Override
-        public GameFont getDefaultFont() {
+        public BMFont getDefaultFont() {
             return new GdxFont(new BitmapFont());
         }
 
         @Override
-        public GameFont newFontFromAsset(String assetPath) {
+        public BMFont newFontFromAsset(String assetPath) {
             var handle = Gdx.files.internal(assetPath);
             return new GdxFont(new BitmapFont(handle));
         }

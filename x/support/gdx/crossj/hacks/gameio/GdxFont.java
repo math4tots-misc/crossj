@@ -3,7 +3,7 @@ package crossj.hacks.gameio;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
-public final class GdxFont implements GameFont {
+public final class GdxFont implements BMFont {
     private final BitmapFont font;
     private GlyphLayout layout = null;
 

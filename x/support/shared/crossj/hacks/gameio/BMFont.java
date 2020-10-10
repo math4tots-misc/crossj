@@ -2,7 +2,7 @@ package crossj.hacks.gameio;
 
 import crossj.base.Disposable;
 
-public interface GameFont extends Disposable {
+public interface BMFont extends Disposable {
     /**
      * Gets the distance from one line of text to the next
      */

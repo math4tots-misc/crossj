@@ -23,5 +23,5 @@ public interface Batch extends Disposable {
 
     void drawStretched(Sprite sprite, double x, double y, double width, double height);
 
-    void drawText(GameFont font, String text, double x, double y);
+    void drawText(BMFont font, String text, double x, double y);
 }
