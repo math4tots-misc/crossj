@@ -14,7 +14,7 @@ import crossj.hacks.gameio.Sprite;
 import crossj.hacks.gameio.Texture;
 import crossj.hacks.image.Color;
 
-public final class GamePlaceholder implements Game, InputHandler {
+public final class PlaceholderGame implements Game, InputHandler {
     private GameIO io;
     private Batch batch;
     private Texture texture;

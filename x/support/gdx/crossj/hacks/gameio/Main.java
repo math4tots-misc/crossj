@@ -13,7 +13,7 @@ import crossj.base.Bytes;
 import crossj.hacks.image.Color;
 
 public final class Main implements ApplicationListener {
-    private final Game game = new crossj.hacks.gameio.placeholder.GamePlaceholder();
+    private final Game game = new crossj.hacks.gameio.placeholder.PlaceholderGame();
     private final GraphicsContext graphics = new GraphicsContext() {
 
         public int getWidth() {
