@@ -7,9 +7,7 @@ import crossj.base.Disposable;
  * both the state of all entities in the game as well as user settings.
  */
 public interface GameModel extends Disposable {
-    /**
-     * Update the game model, given 'dt' seconds have passed.
-     * @param dt
-     */
-    public void tick(double dt);
+    @Override
+    default void dispose() {
+    }
 }

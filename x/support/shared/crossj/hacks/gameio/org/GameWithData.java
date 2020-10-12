@@ -21,7 +21,7 @@ public final class GameWithData<M extends GameModel, D extends GameData<M>> impl
         return new GameWithData<M, D>(data, startScene);
     }
 
-    public GameIO getIo() {
+    public GameIO getIO() {
         return io;
     }
 
@@ -35,6 +35,7 @@ public final class GameWithData<M extends GameModel, D extends GameData<M>> impl
 
     @Override
     public void init(GameIO io) {
+        data.setIO(io);
         this.io = io;
     }
 
