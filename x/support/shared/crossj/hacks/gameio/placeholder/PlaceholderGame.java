@@ -30,6 +30,10 @@ public final class PlaceholderGame implements Game, InputHandler {
     private Texture yellowRectTexture;
     private Sprite yellowRect;
 
+    public static Game newGame() {
+        return new PlaceholderGame();
+    }
+
     @Override
     public void init(GameIO io) {
         this.io = io;
