@@ -18,6 +18,9 @@ public final class TetrisData implements GameData<TetrisModel> {
     private Sprite white;
     private Sprite blue;
 
+    private Texture livePieceTexture;
+    private Sprite livePieceSprite;
+
     private TetrisData() {
     }
 
@@ -31,6 +34,9 @@ public final class TetrisData implements GameData<TetrisModel> {
         white = whiteTexture.newSpriteFromEntireTexture();
         blueTexture = graphics.newTextureFromColors(1, 1, (x, y) -> Color.rgb(0.2, 0.2, 0.8));
         blue = blueTexture.newSpriteFromEntireTexture();
+
+        livePieceTexture = graphics.newTextureFromColors(1, 1, (x, y) -> Color.rgb(0.2, 0.5, 0.5));
+        livePieceSprite = livePieceTexture.newSpriteFromEntireTexture();
     }
 
     public static TetrisData getDefault() {
@@ -63,11 +69,15 @@ public final class TetrisData implements GameData<TetrisModel> {
         return red;
     }
 
-    public Sprite getWhite() {
+    public Sprite getEmptyBoardColorSprite() {
         return white;
     }
 
-    public Sprite getBlue() {
+    public Sprite getFillColorSprite() {
         return blue;
+    }
+
+    public Sprite getLivePieceColorSprite() {
+        return livePieceSprite;
     }
 }

@@ -1,6 +1,7 @@
 package sanity.iter;
 
 import crossj.base.Assert;
+import crossj.base.Pair;
 import crossj.base.Set;
 import crossj.base.Test;
 
@@ -20,5 +21,14 @@ public final class SetTest {
             out += s;
         }
         Assert.equals(out, "abc");
+    }
+
+    @Test
+    public static void contains() {
+        var set = Set.of(Pair.of(0, 2), Pair.of(3, 2), Pair.of(2, 2), Pair.of(1, 2));
+        Assert.that(set.contains(Pair.of(0, 2)));
+        Assert.that(set.contains(Pair.of(3, 2)));
+        Assert.that(set.contains(Pair.of(2, 2)));
+        Assert.that(set.contains(Pair.of(1, 2)));
     }
 }

@@ -3,6 +3,7 @@ package crossj.hacks.gameio.org;
 import crossj.base.List;
 import crossj.hacks.gameio.Game;
 import crossj.hacks.gameio.GameIO;
+import crossj.hacks.gameio.InputHandler;
 
 /**
  * A Game with GameData using Scenes.
@@ -10,6 +11,7 @@ import crossj.hacks.gameio.GameIO;
 public final class GameWithData<M extends GameModel, D extends GameData<M>> implements Game {
     private final D data;
     private final List<Scene<M, D>> sceneStack;
+    private final List<InputHandler> inputHandlerStack = List.of();
     private GameIO io;
 
     private GameWithData(D data, Scene<M, D> startScene) {
@@ -49,9 +51,15 @@ public final class GameWithData<M extends GameModel, D extends GameData<M>> impl
 
     public void popScene() {
         getSceneStack().pop().end(this);
+
+        if (inputHandlerStack.size() > 0) {
+            io.getInput().setInputHandler(inputHandlerStack.pop());
+        }
     }
 
     public void pushScene(Scene<M, D> scene) {
+        inputHandlerStack.add(io.getInput().getInputHandler());
+
         getSceneStack().add(scene);
         scene.start(this);
     }

@@ -48,4 +48,20 @@ public final class Set<T> implements XIterable<T> {
     public XIterator<T> iter() {
         return map.keys();
     }
+
+    @Override
+    public String toString() {
+        var sb = new StringBuilder();
+        sb.append("Set.of(");
+        var first = true;
+        for (var key : this) {
+            if (!first) {
+                sb.append(", ");
+            }
+            first = false;
+            sb.append("" + key);
+        }
+        sb.append(")");
+        return sb.toString();
+    }
 }

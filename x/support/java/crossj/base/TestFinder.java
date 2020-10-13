@@ -55,6 +55,7 @@ public final class TestFinder {
                     Pair.of(Paths.get("support", "tests", "sanity", "iter"), "sanity.iter."),
                     Pair.of(Paths.get("support", "tests", "sanity", "io"), "sanity.io."),
                     Pair.of(Paths.get("support", "tests", "sanity", "gameio"), "sanity.gameio."),
+                    Pair.of(Paths.get("support", "tests", "sanity", "games", "tetris"), "sanity.games.tetris."),
                     Pair.of(Paths.get("support", "tests", "sanity", "misc"), "sanity.misc."),
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks"), "sanity.hacks."),
                     Pair.of(Paths.get("support", "tests", "sanity", "hacks", "cas"), "sanity.hacks.cas."),

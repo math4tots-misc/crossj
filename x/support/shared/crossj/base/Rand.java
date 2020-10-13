@@ -70,4 +70,12 @@ public final class Rand {
             return v1 * multiplier;
         }
     }
+
+    public <T> T inList(List<T> list) {
+        return list.get(nextInt(0, list.size()));
+    }
+
+    public <T> T inTuple(Tuple<T> tuple) {
+        return tuple.get(nextInt(0, tuple.size()));
+    }
 }

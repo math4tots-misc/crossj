@@ -162,8 +162,21 @@ public final class Main implements ApplicationListener {
     };
     private final InputContext input = new InputContext() {
 
+        InputHandler handler;
+
+        public InputHandler getInputHandler() {
+            return handler;
+        }
+
         @Override
         public void setInputHandler(InputHandler handler) {
+            this.handler = handler;
+
+            if (handler == null) {
+                Gdx.input.setInputProcessor(null);
+                return;
+            }
+
             Gdx.input.setInputProcessor(new InputProcessor() {
 
                 @Override
@@ -230,6 +243,16 @@ public final class Main implements ApplicationListener {
         @Override
         public boolean isKeyPressed(int keyPressed) {
             return Gdx.input.isKeyPressed(keyPressed);
+        }
+
+        @Override
+        public boolean isKeyJustPressed(int keyPressed) {
+            return Gdx.input.isKeyJustPressed(keyPressed);
+        }
+
+        @Override
+        public boolean isMouseButtonJustPressed(int mouseButton) {
+            return Gdx.input.isButtonJustPressed(mouseButton);
         }
     };
     private final GameIO io = new GameIO() {

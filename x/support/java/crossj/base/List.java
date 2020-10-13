@@ -137,6 +137,11 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     }
 
     @Override
+    public int hashCode() {
+        return list.hashCode();
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('[');

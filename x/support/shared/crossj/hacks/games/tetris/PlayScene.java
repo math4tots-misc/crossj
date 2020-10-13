@@ -2,6 +2,7 @@ package crossj.hacks.games.tetris;
 
 import crossj.base.IO;
 import crossj.hacks.gameio.Batch;
+import crossj.hacks.gameio.Key;
 import crossj.hacks.gameio.MouseButton;
 import crossj.hacks.gameio.Sprite;
 import crossj.hacks.gameio.org.GameWithData;
@@ -29,7 +30,27 @@ public final class PlayScene implements Scene<TetrisModel, TetrisData> {
 
     @Override
     public void update(GameWithData<TetrisModel, TetrisData> game, double dt) {
-        game.getModel().tick(dt);
+        var input = game.getIO().getInput();
+        var model = game.getModel();
+
+        if (input.isKeyJustPressed(Key.ESCAPE)) {
+            game.getIO().requestExit();
+            return;
+        }
+
+        if (input.isKeyJustPressed(Key.A) || input.isKeyJustPressed(Key.LEFT)) {
+            model.movePieceLeft();
+        } else if (input.isKeyJustPressed(Key.D) || input.isKeyJustPressed(Key.RIGHT)) {
+            model.movePieceRight();
+        } else if (input.isKeyJustPressed(Key.S) || input.isKeyJustPressed(Key.DOWN)) {
+            model.movePieceDown();
+        } else if (input.isKeyJustPressed(Key.W) || input.isKeyJustPressed(Key.UP)) {
+            model.rotatePiece();
+        } else if (input.isKeyJustPressed(Key.SPACE)) {
+            model.hardDrop();
+        }
+
+        model.tick(dt);
     }
 
     @Override
@@ -70,17 +91,29 @@ public final class PlayScene implements Scene<TetrisModel, TetrisData> {
                 var pixelX = column * cellPixelWidth;
                 var cell = board.getCell(row, column);
                 Sprite cellColor = null;
-                if (row < 2) {
-                    cell = 2;
-                } else if ((row + column) % 2 == 0) {
-                    cell = 1;
-                }
                 switch (cell) {
-                    case 0: cellColor = data.getWhite(); break;
-                    case 1: cellColor = data.getBlue(); break;
-                    default: cellColor = data.getRed();
+                    case 0:
+                        cellColor = data.getEmptyBoardColorSprite();
+                        break;
+                    case 1:
+                        cellColor = data.getFillColorSprite();
+                        break;
+                    default:
+                        cellColor = data.getRed();
                 }
                 batch.drawStretched(cellColor, pixelX, pixelY, cellPixelWidth, cellPixelHeight);
+            }
+        }
+
+        var livePiece = model.getLivePiece();
+        var livePieceColor = data.getLivePieceColorSprite();
+        if (livePiece != null) {
+            for (var cell : livePiece.cells()) {
+                var row = cell.get1();
+                var column = cell.get2();
+                var pixelY = pixelHeight - (row + 1) * cellPixelHeight;
+                var pixelX = column * cellPixelWidth;
+                batch.drawStretched(livePieceColor, pixelX, pixelY, cellPixelWidth, cellPixelHeight);
             }
         }
     }

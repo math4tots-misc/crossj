@@ -4,7 +4,17 @@ package crossj.hacks.gameio;
  * Interface for input functionality
  */
 public interface InputContext {
+    /**
+     * Sets a new input handler for handling user input events.
+     *
+     * Can be set to null to stop listening to new events.
+     */
     public void setInputHandler(InputHandler handler);
+
+    /**
+     * Gets the last set input handler
+     */
+    public InputHandler getInputHandler();
 
     /**
      * The X position of the current mouse position or the last touch on touch
@@ -33,4 +43,14 @@ public interface InputContext {
      * Checks if the given key is currently pressed
      */
     public boolean isKeyPressed(int keyPressed);
+
+    /**
+     * Checks if the given key was pressed in the last frame
+     */
+    public boolean isKeyJustPressed(int keyPressed);
+
+    /**
+     * Checks if the given mouse button was pressed in the last frame
+     */
+    public boolean isMouseButtonJustPressed(int mouseButton);
 }
