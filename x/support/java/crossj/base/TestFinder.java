@@ -51,7 +51,6 @@ public final class TestFinder {
         try {
             List<Pair<Path, String>> basePaths = List.of(
                     Pair.of(Paths.get("support", "tests", "sanity", "cls"), "sanity.cls."),
-                    Pair.of(Paths.get("support", "tests", "sanity", "res"), "sanity.res."),
                     Pair.of(Paths.get("support", "tests", "sanity", "iter"), "sanity.iter."),
                     Pair.of(Paths.get("support", "tests", "sanity", "io"), "sanity.io."),
                     Pair.of(Paths.get("support", "tests", "sanity", "gameio"), "sanity.gameio."),

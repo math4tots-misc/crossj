@@ -1,9 +1,9 @@
 #!/bin/bash
+rm -rf out && \
 java -jar target/crossj-1.0-SNAPSHOT-jar-with-dependencies.jar \
     -r support/js \
     -r support/shared \
     -r support/nogameio \
     -r support/tests \
-    -r out/generated \
     -m crossj.misc.RunTests --no-prune "$@" && \
 node out/bundle.js

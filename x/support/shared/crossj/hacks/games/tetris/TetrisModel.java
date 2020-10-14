@@ -1,7 +1,6 @@
 package crossj.hacks.games.tetris;
 
-import java.util.List;
-
+import crossj.base.List;
 import crossj.base.Rand;
 import crossj.hacks.gameio.org.GameModel;
 

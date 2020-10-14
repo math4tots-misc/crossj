@@ -1,11 +1,9 @@
 #!/bin/bash
-rm -rf out/crossj && \
-rm -rf out/sanity && \
-javac -d out \
+rm -rf out && \
+javac -d out/clss \
     $(find support/java -type f -name "*.java") \
     $(find support/nogameio -type f -name "*.java") \
     $(find support/shared -type f -name "*.java") \
     $(find support/tests -type f -name "*.java") \
-    $(find out/generated -type f -name "*.java") \
     && \
-java -cp out crossj.misc.RunTests
+java -cp out/clss crossj.misc.RunTests
