@@ -9,6 +9,7 @@
 # Use of 'sed' with '-i' as done here kinda means it needs
 # to be modified for use on e.g. linux.
 #
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 mkdir -p out && \
 rm -rf out/gdx && \
 gdx-setup --dir out/gdx \
@@ -17,9 +18,14 @@ gdx-setup --dir out/gdx \
     --mainClass Main \
     --excludeModules "android;ios" && \
 rm -rf out/gdx/core/src/crossj && \
-cp -r support/java/* out/gdx/core/src && \
-cp -r support/shared/* out/gdx/core/src && \
-cp -r support/gdx/* out/gdx/core/src && \
+"$DIR"/cpdeps \
+    -o out/gdx/core/src \
+    -r support/java \
+    -r support/shared \
+    -r support/gdx \
+    -c "crossj.hacks.gameio.Main" \
+    -c "$1" \
+    && \
 mkdir -p out/gx/core/assets && \
 cp -r support/assets/"$1"/ out/gdx/core/assets/ && \
 sed -i '' "s/crossj\.hacks\.gameio\.placeholder\.PlaceholderGame/$1/" \

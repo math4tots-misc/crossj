@@ -1,0 +1,103 @@
+#!/usr/bin/python3
+#
+# Little script for copying a Java class and all its dependent Java classes.
+#
+#
+import argparse
+import os
+import shutil
+import re
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--out', '-o', required=True, help='the output Java directory to copy the files to')
+    parser.add_argument(
+        '--root', '-r', nargs='+', help='Java source root directories', action='append')
+    parser.add_argument(
+        '--cls', '-c', nargs='+', help='Java class to start crawling for dependencies', action='append')
+    args = parser.parse_args()
+
+    ctx = Ctx([root for roots in args.root for root in roots], args.out)
+
+    for clss in args.cls:
+        for cls in clss:
+            ctx.add(cls)
+
+    ctx.commit()
+
+
+def cp(src, dst):
+    """Copy a file to a given destination path.
+    dst is always assumed to be a file name and not a directory.
+    """
+    dstdir = os.path.dirname(dst)
+    os.makedirs(dstdir, exist_ok=True)
+    shutil.copyfile(src, dst)
+
+
+def pkg_of(cls: str):
+    return cls[:cls.rindex('.')]
+
+
+# IMPORTS_RE = re.compile(r'^import\s+([a-zA-Z0-9.]+)\s*;')
+IMPORTS_RE = re.compile(r'^import\s+([a-zA-Z0-9.]+)\s*;', re.MULTILINE)
+
+class Ctx:
+    def __init__(self, roots, outdir: str):
+        self.roots = list(roots)
+        self.outdir = outdir
+        self.visited_pkgs = set()
+        self.cp_map = dict()
+
+    def file_for_class(self, cls: str) -> str:
+        relpath = cls.replace('.', os.sep) + '.java'
+        for root in self.roots:
+            path = os.path.join(root, relpath)
+            if os.path.isfile(path):
+                return path
+        raise Exception(f'Class {cls} not found')
+
+    def dep_pkgs_for_class(self, cls: str):
+        yield pkg_of(cls)
+        path = self.file_for_class(cls)
+        with open(path) as f:
+            data = f.read()
+        for depcls in re.findall(IMPORTS_RE, data):
+            yield pkg_of(depcls)
+
+    def classes_in_pkg(self, pkg: str):
+        relpath = pkg.replace('.', os.sep)
+        for root in self.roots:
+            dirpath = os.path.join(root, relpath)
+            if os.path.isdir(dirpath):
+                for filename in os.listdir(dirpath):
+                    if filename.endswith('.java'):
+                        shortname = filename[:filename.rindex('.java')]
+                        clsname = pkg + '.' + shortname
+                        yield clsname
+
+    def add(self, cls: str):
+        if cls in self.cp_map:
+            return
+
+        self.cp_map[cls] = os.path.join(self.outdir, cls.replace('.', os.sep) + '.java')
+
+        for pkg in self.dep_pkgs_for_class(cls):
+            if pkg in self.visited_pkgs:
+                continue
+
+            self.visited_pkgs.add(pkg)
+
+            for depcls in self.classes_in_pkg(pkg):
+                self.add(depcls)
+
+    def commit(self):
+        for cls, dst in self.cp_map.items():
+            cp(self.file_for_class(cls), dst)
+
+
+if __name__ == '__main__':
+    main()
+
