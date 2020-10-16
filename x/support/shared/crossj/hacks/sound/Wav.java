@@ -113,6 +113,9 @@ public final class Wav {
         return new Wav(list);
     }
 
+    /**
+     * Concatenates a list of Wavs into a single Wav
+     */
     public static Wav cat(Wav... wavs) {
         return catList(List.fromJavaArray(wavs));
     }
@@ -120,7 +123,7 @@ public final class Wav {
     /**
      * Add the sample value to all channels.
      */
-    public void addMono(int sample) {
+    private void addMono(int sample) {
         sampleData.add(sample);
         sampleData.add(sample);
     }
