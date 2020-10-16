@@ -2,9 +2,8 @@ package crossj.hacks.games.tetris;
 
 import crossj.base.List;
 import crossj.base.Rand;
-import crossj.hacks.gameio.org.GameModel;
 
-public final class TetrisModel implements GameModel {
+public final class TetrisModel {
     private final double DEFAULT_FALL_RATE = 1.0;
     private Board board = Board.getDefault();
     private Piece piece = null;

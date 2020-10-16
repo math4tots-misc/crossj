@@ -10,12 +10,12 @@
 # to be modified for use on e.g. linux.
 #
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+rm -rf out && \
 mkdir -p out && \
-rm -rf out/gdx && \
 gdx-setup --dir out/gdx \
     --name Sample \
-    --package crossj.hacks.gameio \
-    --mainClass Main \
+    --package "${1%.*}" \
+    --mainClass "${1##*.}" \
     --excludeModules "android;ios" && \
 rm -rf out/gdx/core/src/crossj && \
 "$DIR"/cpdeps \
@@ -23,13 +23,10 @@ rm -rf out/gdx/core/src/crossj && \
     -r support/java \
     -r support/shared \
     -r support/gdx \
-    -c "crossj.hacks.gameio.Main" \
     -c "$1" \
     && \
-mkdir -p out/gx/core/assets && \
+mkdir -p out/gdx/core/assets && \
 cp -r support/assets/"$1"/ out/gdx/core/assets/ && \
-sed -i '' "s/crossj\.hacks\.gameio\.placeholder\.PlaceholderGame/$1/" \
-    out/gdx/core/src/crossj/hacks/gameio/Main.java && \
 rm -rf ~/.m2/repository/com/badlogicgames/gdx/gdx-platform/1.9.11/ && \
 sed -i '' \
     's/sourceCompatibility = 1\.7/sourceCompatibility = 11/' \
