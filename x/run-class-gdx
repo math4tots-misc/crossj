@@ -10,25 +10,4 @@
 # to be modified for use on e.g. linux.
 #
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-rm -rf out && \
-mkdir -p out && \
-gdx-setup --dir out/gdx \
-    --name Sample \
-    --package "${1%.*}" \
-    --mainClass "${1##*.}" \
-    --excludeModules "android;ios" && \
-rm -rf out/gdx/core/src/crossj && \
-"$DIR"/cpdeps \
-    -o out/gdx/core/src \
-    -r support/java \
-    -r support/shared \
-    -r support/gdx \
-    -c "$1" \
-    && \
-mkdir -p out/gdx/core/assets && \
-cp -r support/assets/"$1"/ out/gdx/core/assets/ && \
-rm -rf ~/.m2/repository/com/badlogicgames/gdx/gdx-platform/1.9.11/ && \
-sed -i '' \
-    's/sourceCompatibility = 1\.7/sourceCompatibility = 11/' \
-    $(find out/gdx/ -name "build.gradle") && \
-(cd out/gdx && ./gradlew desktop:run)
+python3 "$DIR/scripts/run-class-gdx.py" "$@"
