@@ -1,3 +1,4 @@
 {
-    "name": "Demo App"
+    "name": "Demo App",
+    "extensions": ["freetype"]
 }

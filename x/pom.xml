@@ -37,6 +37,11 @@
             <artifactId>gdx-backend-lwjgl</artifactId>
             <version>1.9.11</version>
         </dependency>
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-freetype</artifactId>
+            <version>1.9.11</version>
+        </dependency>
     </dependencies>
 
     <!-- This blob of configuration tells Maven to make the jar executable. You can run it with:
