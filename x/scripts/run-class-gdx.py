@@ -36,11 +36,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--verbose', '-v', default=False, action='store_true')
     parser.add_argument('--quiet', '-q', dest='verbose', default=False, action='store_false')
+    parser.add_argument('--target', '-t', default='desktop', choices=('desktop', 'android'))
     parser.add_argument(
         'key',
         help='qualified class name of the game to run')
     args = parser.parse_args()
     VERBOSE = args.verbose
+    target = args.target
     key: str = args.key
     pkg = key[:key.rindex('.')]
     clsn = key[len(pkg) + 1:]
@@ -116,25 +118,40 @@ def main():
                 with open(path, 'w') as f:
                     f.write(data)
 
-            ####
-            # Update android version. By default, 1.7 is set, but we want at least 8
-            # or even 11.
-            ####
             if filename == 'build.gradle':
                 path = join(dirpath, filename)
                 with open(path) as f:
                     data = f.read()
+                ####
+                # Update the used Java version. By default, 1.7 is set, but we want at least 8
+                # or sometimes even 11.
+                ####
                 # data = data.replace(
                 #     'sourceCompatibility = 1.7',
                 #     'sourceCompatibility = 11')
                 data = data.replace(
                     'sourceCompatibility = 1.7',
-                    'sourceCompatibility = 1.8')
+                    'sourceCompatibility = JavaVersion.VERSION_1_10')
+                ###
+                # minSdkVersion
+                #   at least 24 is needed for static interface methods
+                #   at least 26 is needed for lambda expressions
+                ###
+                data = data.replace(
+                    'minSdkVersion 14\n',
+                    'minSdkVersion 26\n',
+                )
                 with open(path, 'w') as f:
                     f.write(data)
 
     os.chdir(join(REPO, 'out', 'gdx'))
-    run([join(os.getcwd(), 'gradlew'), 'desktop:run'])
+
+    if target == 'desktop':
+        run([join(os.getcwd(), 'gradlew'), 'desktop:run'])
+    elif target == 'android':
+        run([join(os.getcwd(), 'gradlew'), 'android:installDebug'])
+    else:
+        raise Exception(f'Unrecognized target {target}')
 
 
 if __name__ == '__main__':
