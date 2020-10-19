@@ -50,6 +50,7 @@ def main():
         config: dict = json.load(f)
     app_name = config.pop('name')
     extensions: list = config.pop('extensions', [])
+    screen_orientation = config.pop('screen-orientation', 'landscape')
 
     info(f'App name = {app_name}')
 
@@ -95,18 +96,40 @@ def main():
         'gdx-platform',
         '1.9.11'))
 
+    if screen_orientation != 'landscape':
+        # If non-default screen orientation is picked, we need to
+        pass
+
     for dirpath, dirnames, filenames in os.walk(join(REPO, 'out', 'gdx')):
         for filename in filenames:
+            if filename == 'AndroidManifest.xml':
+                path = join(dirpath, filename)
+                with open(path) as f:
+                    data = f.read()
+                ####
+                # Make sure that screen orientation is set
+                ####
+                data = data.replace(
+                    'android:screenOrientation="landscape"',
+                    f'android:screenOrientation="{screen_orientation}"',
+                )
+                with open(path, 'w') as f:
+                    f.write(data)
+
+            ####
+            # Update android version. By default, 1.7 is set, but we want at least 8
+            # or even 11.
+            ####
             if filename == 'build.gradle':
                 path = join(dirpath, filename)
                 with open(path) as f:
                     data = f.read()
-                data = data.replace(
-                    'sourceCompatibility = 1.7',
-                    'sourceCompatibility = 11')
                 # data = data.replace(
                 #     'sourceCompatibility = 1.7',
-                #     'sourceCompatibility = 1.8')
+                #     'sourceCompatibility = 11')
+                data = data.replace(
+                    'sourceCompatibility = 1.7',
+                    'sourceCompatibility = 1.8')
                 with open(path, 'w') as f:
                     f.write(data)
 

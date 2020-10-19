@@ -1,4 +1,5 @@
 {
     "name": "Hanja Hero",
+    "screen-orientation": "portrait",
     "extensions": ["freetype"]
 }
