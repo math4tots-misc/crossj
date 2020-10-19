@@ -56,6 +56,9 @@ def main():
     if config:
         err(f'Unrecognized keys in config.json: {list(config.keys())}')
 
+    android_root = os.environ.get("ANDROID_SDK_ROOT")
+    exclude_modules = 'ios' if android_root else 'android;ios'
+
     rmtree(join(REPO, 'out'))
     run([
         'gdx-setup',
@@ -63,8 +66,10 @@ def main():
         '--name', app_name,
         '--package', pkg,
         '--mainClass', clsn,
-        '--excludeModules', 'android;ios',
+        '--excludeModules', exclude_modules,
     ] + ([
+        '--sdkLocation', android_root,
+    ] if android_root else []) + ([
         '--extensions', ';'.join(extensions),
     ] if extensions else []))
     run([
@@ -78,7 +83,7 @@ def main():
     if os.path.isdir(join(appdir, 'assets')):
         copytree(
             join(appdir, 'assets'),
-            join(REPO, 'out', 'gdx', 'core', 'assets'))
+            join(REPO, 'out', 'gdx', 'android' if android_root else 'core', 'assets'))
 
     rmtree(join(
         HOME,
@@ -99,6 +104,9 @@ def main():
                 data = data.replace(
                     'sourceCompatibility = 1.7',
                     'sourceCompatibility = 11')
+                # data = data.replace(
+                #     'sourceCompatibility = 1.7',
+                #     'sourceCompatibility = 1.8')
                 with open(path, 'w') as f:
                     f.write(data)
 
