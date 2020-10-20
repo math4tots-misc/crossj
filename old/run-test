@@ -1,6 +1,0 @@
-#!/bin/bash
-./build-and-run \
-    -cp sample/root -cp support/js \
-    -t js -r sample/root -r support/shared -o sample/out \
-    -m sanity.Main \
-    && node sample/out/bundle.js
