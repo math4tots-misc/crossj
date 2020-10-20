@@ -3,7 +3,10 @@
 /.classpath
 /target
 /.project
-/data/srczip/
-/sample/out
+/out
 /sources.txt
 .DS_Store
+data/ray/*.obj
+data/ray/*.mtl
+out.bmp
+data/ray/save
