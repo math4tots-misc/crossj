@@ -9,6 +9,8 @@ REPO = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 HOME = os.environ.get('HOME')
 join = os.path.join
 VERBOSE = False
+XREPO = join(HOME, 'git', 'crossjx')
+
 
 def run(*args, **kwargs):
     subprocess.run(*args, check=True, **kwargs)
@@ -28,7 +30,8 @@ def err(message):
 
 
 def info(message):
-    pass
+    if VERBOSE:
+        print(message)
 
 
 def main():
@@ -47,7 +50,15 @@ def main():
     pkg = key[:key.rindex('.')]
     clsn = key[len(pkg) + 1:]
 
-    appdir = join(REPO, 'support', 'app', key)
+    # If an appdir with given key does not exist in the crossj repo,
+    # check the crossjx repo.
+    open_appdir = join(REPO, 'support', 'app', key)
+    alt_appdir = join(XREPO, 'support', 'app', key)
+    if not os.path.isdir(open_appdir) and os.path.isdir(alt_appdir):
+        appdir = alt_appdir
+    else:
+        appdir = open_appdir
+
     with open(join(appdir, 'config.json')) as f:
         config: dict = json.load(f)
     app_name = config.pop('name')
@@ -75,12 +86,24 @@ def main():
     ] if android_root else []) + ([
         '--extensions', ';'.join(extensions),
     ] if extensions else []))
+
+    optdirs = [
+        join(XREPO, 'support', 'java'),
+        join(XREPO, 'support', 'shared'),
+        join(XREPO, 'support', 'gdx'),
+    ]
+    xsrcdirs = []
+    for optdir in optdirs:
+        if os.path.isdir(optdir):
+            xsrcdirs.extend(['-r', optdir])
+
     run([
         'python3', 'cpdeps',
         '-o', join(REPO, 'out', 'gdx', 'core', 'src'),
         '-r', join(REPO, 'support', 'java'),
         '-r', join(REPO, 'support', 'shared'),
         '-r', join(REPO, 'support', 'gdx'),
+    ] + xsrcdirs + [
         '-c', key,
     ])
     if os.path.isdir(join(appdir, 'assets')):

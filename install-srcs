@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# Installs sources jar so that it's visible from the crossjx
+# repository
+# (For IDE support only)
+#
+mvn clean && mvn source:jar install

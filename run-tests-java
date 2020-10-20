@@ -1,8 +1,0 @@
-#!/bin/bash
-rm -rf out && \
-javac -d out/clss \
-    $(find support/java -type f -name "*.java") \
-    $(find support/shared -type f -name "*.java") \
-    $(find support/tests -type f -name "*.java") \
-    && \
-java -cp out/clss crossj.misc.RunTests
