@@ -154,7 +154,8 @@ def main():
                 ####
                 # Use retrolambda so that compiled code can be run on Android
                 ####
-                data = data.replace(
+                if target == 'android':
+                    data = data.replace(
                     "allprojects {",
                     """plugins {
    id "me.tatarka.retrolambda" version "3.7.1"
@@ -165,21 +166,21 @@ retrolambda {
     incremental true
 }
 allprojects {""",
-                )
-                data = data.replace(
+                    )
+                    data = data.replace(
                     '''project(":android") {
     apply plugin: "com.android.application"''',
                     '''project(":android") {
     apply plugin: "com.android.application"
     apply plugin: "me.tatarka.retrolambda"''',
-                )
-                data = data.replace(
+                    )
+                    data = data.replace(
                     '''project(":core") {
     apply plugin: "java-library"''',
                     '''project(":core") {
     apply plugin: "java-library"
     apply plugin: "me.tatarka.retrolambda"''',
-                )
+                    )
                 ###
                 # minSdkVersion
                 #   at least 24 is needed for static interface methods
