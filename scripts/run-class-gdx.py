@@ -121,10 +121,6 @@ def main():
         'gdx-platform',
         '1.9.11'))
 
-    if screen_orientation != 'landscape':
-        # If non-default screen orientation is picked, we need to
-        pass
-
     for dirpath, dirnames, filenames in os.walk(join(REPO, 'out', 'gdx')):
         for filename in filenames:
             if filename == 'AndroidManifest.xml':
