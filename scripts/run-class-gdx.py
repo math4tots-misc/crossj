@@ -155,6 +155,35 @@ def main():
                 data = data.replace(
                     'sourceCompatibility = 1.7',
                     'sourceCompatibility = JavaVersion.VERSION_1_10')
+                ####
+                # Use retrolambda so that compiled code can be run on Android
+                ####
+                data = data.replace(
+                    "allprojects {",
+                    """plugins {
+   id "me.tatarka.retrolambda" version "3.7.1"
+}
+retrolambda {
+    javaVersion JavaVersion.VERSION_1_6
+    defaultMethods false
+    incremental true
+}
+allprojects {""",
+                )
+                data = data.replace(
+                    '''project(":android") {
+    apply plugin: "com.android.application"''',
+                    '''project(":android") {
+    apply plugin: "com.android.application"
+    apply plugin: "me.tatarka.retrolambda"''',
+                )
+                data = data.replace(
+                    '''project(":core") {
+    apply plugin: "java-library"''',
+                    '''project(":core") {
+    apply plugin: "java-library"
+    apply plugin: "me.tatarka.retrolambda"''',
+                )
                 ###
                 # minSdkVersion
                 #   at least 24 is needed for static interface methods
