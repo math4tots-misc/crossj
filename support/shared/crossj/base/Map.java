@@ -76,6 +76,13 @@ public final class Map<K, V> {
             return null;
         }
         int hash = key.hashCode();
+        return getTripleOrNullWithHash(key, hash);
+    }
+
+    private Tuple3<Integer, K, V> getTripleOrNullWithHash(K key, int hash) {
+        if (list == null) {
+            return null;
+        }
         int index = getIndex(hash, list.size());
         List<Tuple3<Integer, K, V>> bucket = list.get(index);
         for (Tuple3<Integer, K, V> triple : bucket) {
@@ -168,6 +175,34 @@ public final class Map<K, V> {
 
     private static int getIndex(int hash, int size) {
         return (hash % size + size) % size;
+    }
+
+    @Override
+    public int hashCode() {
+        throw XError.withMessage("Maps are not hashable");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Map<?, ?>)) {
+            return false;
+        }
+        var map = (Map<K, ?>) obj;
+        if (map.siz != siz) {
+            return false;
+        }
+        var triples = list.iter().flatMap(bucket -> bucket);
+        for (var triple : triples) {
+            var hash = triple.get1();
+            var k = triple.get2();
+            var v = triple.get3();
+            var otherTriple = map.getTripleOrNullWithHash(k, hash);
+            if (!Eq.of(otherTriple.get3(), v)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

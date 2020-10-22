@@ -31,4 +31,10 @@ public final class SetTest {
         Assert.that(set.contains(Pair.of(2, 2)));
         Assert.that(set.contains(Pair.of(1, 2)));
     }
+
+    @Test
+    public static void equality() {
+        Assert.equals(Set.of(1, 2), Set.of(1, 2));
+        Assert.notEquals(Set.of(1, 2), Set.of(1, 2, 3));
+    }
 }

@@ -64,4 +64,14 @@ public final class Set<T> implements XIterable<T> {
         sb.append(")");
         return sb.toString();
     }
+
+    @Override
+    public int hashCode() {
+        throw XError.withMessage("Sets are not hashable");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof Set<?>) && (map.equals(((Set<?>) obj).map));
+    }
 }

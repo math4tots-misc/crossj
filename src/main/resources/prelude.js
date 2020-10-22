@@ -579,6 +579,24 @@ class C$crossj$base$List {
             this.removeIndex(index);
         }
     }
+    M$indexOf(value) {
+        const arr = this.arr;
+        for (let i = 0; i < arr.length; i++) {
+            if ($EQ(arr[i], value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    M$lastIndexOf(value) {
+        const arr = this.arr;
+        for (let i = arr.length - 1; i >= 0; i--) {
+            if ($EQ(arr[i], value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
     M$hashCode() {
         // More or less follows openjdk7 AbstractList.hashCode()
         let h = 1;

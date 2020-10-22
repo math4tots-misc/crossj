@@ -48,6 +48,8 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     public native void addAll(XIterable<T> t);
     public native T removeIndex(int i);
     public native void removeValue(T t);
+    public native int indexOf(T t);
+    public native int lastIndexOf(T t);
 
     @Override
     public native XIterator<T> iter();

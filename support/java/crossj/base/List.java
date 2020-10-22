@@ -236,6 +236,22 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         list.remove(t);
     }
 
+    /**
+     * Returns the lowest index i such that <code>Objects.equals(this.get(i), t)</code>
+     * Returns -1 if no such index exists.
+     */
+    public int indexOf(T t) {
+        return list.indexOf(t);
+    }
+
+    /**
+     * Returns the highest index i such that <code>Objects.equals(this.get(i), t)</code>
+     * Returns -1 if no such index exists.
+     */
+    public int lastIndexOf(T t) {
+        return list.lastIndexOf(t);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public int compareTo(List<T> o) {

@@ -3,6 +3,7 @@ package sanity.iter;
 import crossj.base.Assert;
 import crossj.base.Default;
 import crossj.base.List;
+import crossj.base.Set;
 import crossj.base.Test;
 
 public final class ListTest {
@@ -49,5 +50,28 @@ public final class ListTest {
         List<Integer> b = List.fromIterable(a);
         Assert.that(a != b);
         Assert.equals(a, b);
+    }
+
+    @Test
+    public static void indexOf() {
+        var list = List.of("a", "aa", "b", "def", "aa");
+        Assert.equals(list.indexOf("b"), 2);
+        Assert.equals(list.indexOf("aa"), 1);
+        Assert.equals(list.indexOf("aa"), 1);
+        Assert.equals(list.lastIndexOf("b"), 2);
+        Assert.equals(list.lastIndexOf("aa"), 4);
+        Assert.equals(list.lastIndexOf("asdfasdf"), -1);
+    }
+
+    @Test
+    public static void indexOfWithCustomEqualityClass() {
+        var list = List.of(Set.of(1, 2), Set.of(55), Set.of(5, 6, 7, 8), Set.of(1, 2));
+        Assert.equals(Set.of(1, 2), Set.of(1, 2));
+        Assert.equals(list.indexOf(Set.of(1, 2)), 0);
+        Assert.equals(list.indexOf(Set.of(5, 6, 7, 8)), 2);
+        Assert.equals(list.indexOf(Set.of(1, 2, 3)), -1);
+        Assert.equals(list.lastIndexOf(Set.of(1, 2)), 3);
+        Assert.equals(list.lastIndexOf(Set.of(5, 6, 7, 8)), 2);
+        Assert.equals(list.lastIndexOf(Set.of(1, 2, 3)), -1);
     }
 }
