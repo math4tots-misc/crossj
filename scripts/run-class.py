@@ -265,7 +265,11 @@ def main_gdx(*, app_type, target, key, pkg, clsn, config, appdir):
         err(f'Unrecognized keys in config.json: {list(config.keys())}')
 
     android_root = os.environ.get("ANDROID_SDK_ROOT")
-    exclude_modules = 'ios' if android_root else 'android;ios'
+
+    if app_type == 'gdx-android':
+        exclude_modules = 'ios;desktop'
+    else:
+        exclude_modules = 'ios' if android_root else 'android;ios'
 
     rmtree(join(REPO, 'out'))
     run([
@@ -281,18 +285,48 @@ def main_gdx(*, app_type, target, key, pkg, clsn, config, appdir):
         '--extensions', ';'.join(extensions),
     ] if extensions else []))
 
+    if app_type == 'gdx-android':
+        # If an application is explicitly marked 'gdx-android',
+        # it should be passed the starting Activity and Bundle
+        for dirpath, dirnames, filenames in os.walk(join(REPO, 'out', 'gdx', 'android', 'src')):
+            for filename in filenames:
+                if filename == 'AndroidLauncher.java':
+                    path = join(dirpath, filename)
+                    with open(path) as f:
+                        data = f.read()
+                    data = data.replace(
+                        f'initialize(new {clsn}(), config);',
+                        f'initialize(new {clsn}(this, savedInstanceState), config);')
+                    with open(path, 'w') as f:
+                        f.write(data)
+
     optdirs = [
         join(XREPO, 'support', 'java'),
         join(XREPO, 'support', 'shared'),
         join(XREPO, 'support', 'gdx'),
-    ]
+    ] + (
+        [join(XREPO, 'support', 'gdx-android')]
+        if app_type == 'gdx-android' else
+        []
+    )
+
+    target_src_dir = join(
+        REPO,
+        'out',
+        'gdx',
+        'android' if app_type == 'gdx-android' else 'core',
+        'src')
     cpdeps(
-        outdir=join(REPO, 'out', 'gdx', 'core', 'src'),
+        outdir=target_src_dir,
         srcdirs=[
             join(REPO, 'support', 'java'),
             join(REPO, 'support', 'shared'),
             join(REPO, 'support', 'gdx'),
-        ] + [optdir for optdir in optdirs if os.path.isdir(optdir)],
+        ] + (
+            [join(REPO, 'support', 'gdx-android')]
+            if app_type == 'gdx-android' else
+            []
+        ) + [optdir for optdir in optdirs if os.path.isdir(optdir)],
         mainclss=[key],
     )
 
