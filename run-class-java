@@ -1,9 +1,0 @@
-#!/bin/bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-mkdir -p out && \
-rm -rf out/src out/clss && \
-"$DIR/cpdeps" -o out/src -r support/java -r support/shared -c "$1" && \
-javac -d out/clss \
-    $(find out/src -type f -name "*.java") \
-    && \
-java -cp out/clss "$1" "${@:2}"
