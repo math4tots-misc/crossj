@@ -261,6 +261,15 @@ def main_gdx(*, app_type, target, key, pkg, clsn, config, appdir):
 
     info(f'App name = {app_name}')
 
+    if app_type == 'gdx-android':
+        android_config = config.pop('android', dict())
+        android_permissions = android_config.pop('permissions', [])
+        android_services = android_config.pop('services', [])
+        if android_config:
+            err(f"""Unrecognized android keys in config.json: {(
+                list(android_config.keys())
+            )}""")
+
     if config:
         err(f'Unrecognized keys in config.json: {list(config.keys())}')
 
@@ -358,6 +367,43 @@ def main_gdx(*, app_type, target, key, pkg, clsn, config, appdir):
                     'android:screenOrientation="landscape"',
                     f'android:screenOrientation="{screen_orientation}"',
                 )
+                if app_type == 'gdx-android':
+                    ####
+                    # Permissions
+                    ####
+                    parts = []
+                    for permission in android_permissions:
+                        parts.append(f"""<uses-permission android:name="{(
+                            permission
+                        )}"/>\n""")
+                    data = data.replace(
+                        '<application ',
+                        ''.join(parts) + '<application ',
+                    )
+
+                    ####
+                    # Declare components (e.g. service, activity, ...)
+                    ####
+                    parts = []
+                    for service in android_services:
+                        service_name = service.pop('name')
+                        exported = service.pop('exported', True)
+                        exported_str = "true" if exported else "false"
+                        parts.append(
+                            '<service \n'
+                            f'   android:name="{service_name}"\n'
+                            f'   android:exported="{exported_str}"\n'
+                            '>\n'
+                            '</service>\n'
+                        )
+                        if service:
+                            err(f"""Unrecognized android service keys: {
+                                list(service.keys())
+                            }""")
+                    data = data.replace(
+                        '<activity',
+                        ''.join(parts) + '<activity',
+                    )
                 with open(path, 'w') as f:
                     f.write(data)
 
