@@ -1,0 +1,8 @@
+{
+    "type": "maven",
+    "groupId": "crossj",
+    "artifactId": "hellomaven",
+    "classes": [
+        "crossj.misc.hellomaven.Main"
+    ]
+}

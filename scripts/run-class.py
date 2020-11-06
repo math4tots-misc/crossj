@@ -12,8 +12,8 @@ VERBOSE = False
 XREPO = join(HOME, 'git', 'crossjx')
 
 
-def run(*args, **kwargs):
-    subprocess.run(*args, check=True, **kwargs)
+def run(cmd, *, cwd=None):
+    subprocess.run(cmd, check=True, cwd=cwd)
 
 
 def rmtree(*args, **kwargs):
@@ -72,6 +72,8 @@ def main():
                 target = 'desktop'
             elif app_type == 'gdx-android':
                 target = 'android'
+            elif app_type == 'maven':
+                target = 'java'
             else:
                 err(f'Could not determine default target for {app_type}')
     else:
@@ -107,6 +109,12 @@ def main():
         main_java(
             key=key,
             extra=extra,
+        )
+    elif app_type == 'maven':
+        main_maven(
+            key=key,
+            appdir=appdir,
+            config=config,
         )
     else:
         err(f'Unrecognized app type {app_type}')
@@ -219,10 +227,7 @@ def main_web(*, key, extra):
     ])
 
 
-def main_java(*, key, extra):
-    src_out_dir = join(REPO, 'out', 'java', 'src')
-    cls_out_dir = join(REPO, 'out', 'java', 'cls')
-    rmtree(join(REPO, 'out'))
+def cpdeps_for_java(*, mainclss, src_out_dir):
     cpdeps(
         outdir=src_out_dir,
         srcdirs=[
@@ -232,7 +237,17 @@ def main_java(*, key, extra):
             join(XREPO, 'support', 'java'),
             join(XREPO, 'support', 'shared'),
         ] if os.path.isdir(optdir)],
+        mainclss=mainclss,
+    )
+
+
+def main_java(*, key, extra):
+    src_out_dir = join(REPO, 'out', 'java', 'src')
+    cls_out_dir = join(REPO, 'out', 'java', 'cls')
+    rmtree(join(REPO, 'out'))
+    cpdeps_for_java(
         mainclss=[key],
+        src_out_dir=src_out_dir,
     )
 
     srcs = []
@@ -248,6 +263,78 @@ def main_java(*, key, extra):
     run([
         'java', '-cp', cls_out_dir, key, '--',
     ] + extra)
+
+
+def main_maven(*, key, appdir, config):
+    rmtree(join(REPO, 'out'))
+
+    pomdir = join(REPO, 'out', 'maven')
+    src_out_dir = join(pomdir, 'src', 'main', 'java')
+    pompath = join(pomdir, 'pom.xml')
+
+    cpdeps_for_java(
+        mainclss=config.pop('classes'),
+        src_out_dir=src_out_dir,
+    )
+
+    appresdir = join(appdir, 'resources')
+    if os.path.isdir(appresdir):
+        copytree(appresdir, join(pomdir, 'src', 'main', 'resources'))
+
+    group_id = config.pop('groupId')
+    artifact_id = config.pop('artifactId')
+    version = config.pop('version', '1.0-SNAPSHOT')
+
+    pomdata = f"""
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>{group_id}</groupId>
+    <artifactId>{artifact_id}</artifactId>
+    <version>{version}</version>
+
+    <properties>
+        <!-- Tell Maven we want to use Java 11 -->
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <!-- Tell Maven to treat all source files as UTF-8 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.github.math4tots.crossj.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+"""
+    with open(pompath, 'w') as f:
+        f.write(pomdata)
+
+    run(['mvn', 'install'], cwd=pomdir)
 
 
 def main_gdx(*, app_type, target, key, pkg, clsn, config, appdir):
