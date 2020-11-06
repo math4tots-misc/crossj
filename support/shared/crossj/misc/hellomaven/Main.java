@@ -1,4 +1,4 @@
 package crossj.misc.hellomaven;
 
-public class Main {
+public final class Main {
 }
