@@ -2,6 +2,7 @@ package crossj.base;
 
 public final class FrozenSet<T> implements XIterable<T> {
     private final Set<T> set;
+    private int hash = 0;
 
     private FrozenSet(Set<T> set) {
         this.set = set;
@@ -61,6 +62,9 @@ public final class FrozenSet<T> implements XIterable<T> {
 
     @Override
     public int hashCode() {
-        return set.iter().map(obj -> obj.hashCode()).fold(0, (a, b) -> a + b);
+        if (hash == 0) {
+            hash = 1 + set.iter().map(obj -> obj.hashCode()).fold(0, (a, b) -> a + b);
+        }
+        return hash;
     }
 }

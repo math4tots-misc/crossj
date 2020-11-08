@@ -36,6 +36,12 @@ public final class Set<T> implements XIterable<T> {
         map.put(key, true);
     }
 
+    public void addAll(XIterable<T> iterable) {
+        for (T t : iterable) {
+            add(t);
+        }
+    }
+
     public boolean removeOrFalse(T key) {
         return map.removeOrFalse(key);
     }
