@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+import org.eclipse.jdt.core.dom.ArrayAccess;
+import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BooleanLiteral;
@@ -1025,6 +1027,63 @@ public final class JavascriptTranslator implements ITranslator {
             }
 
             @Override
+            public boolean visit(ArrayCreation node) {
+                var type = node.resolveTypeBinding();
+                if (type.getDimensions() != 1) {
+                    throw err("Multi-dimensional arrays are not supported", node);
+                }
+                switch (type.getQualifiedName()) {
+                    case "int[]": {
+                        sb.append("new Int32Array(");
+
+                        var initializer = node.getInitializer();
+
+                        if (initializer == null) {
+                            // the array length must be explicitly set
+                            var dimensionExpression = (Expression) node.dimensions().get(0);
+                            var length = (int) dimensionExpression.resolveConstantExpressionValue();
+                            sb.append(length);
+                        } else {
+                            // values are explicitly provided
+                            if (!node.dimensions().isEmpty()) {
+                                throw err(
+                                        "If an array is initialized with values, " +
+                                                "it's length cannot be explicitly specified",
+                                        node);
+                            }
+                            sb.append("[");
+                            var expressions = initializer.expressions();
+                            for (int i = 0; i < expressions.size(); i++) {
+                                if (i > 0) {
+                                    sb.append(",");
+                                }
+                                var expression = (Expression) expressions.get(i);
+                                expression.accept(this);
+                            }
+                            sb.append("]");
+                        }
+
+                        sb.append(")");
+                        break;
+                    }
+                    default: {
+                        throw err(type.getQualifiedName() + " types are not supported", node);
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public boolean visit(ArrayAccess node) {
+                sb.append("((");
+                node.getArray().accept(this);
+                sb.append(")[");
+                node.getIndex().accept(this);
+                sb.append("])");
+                return false;
+            }
+
+            @Override
             public boolean visit(SimpleName node) {
                 IBinding binding = node.resolveBinding();
                 if (binding instanceof IVariableBinding) {
@@ -1068,10 +1127,19 @@ public final class JavascriptTranslator implements ITranslator {
                     sb.append(".F$" + varb.getName());
                 } else {
                     // instance field
+                    var owningType = node.getExpression().resolveTypeBinding();
                     node.getExpression().accept(this);
-                    sb.append(".F$" + varb.getName());
+                    sb.append(getFieldAccessSuffix(owningType, varb.getName()));
                 }
                 return false;
+            }
+
+            private String getFieldAccessSuffix(ITypeBinding owningType, String fieldName) {
+                if (owningType.isArray() && fieldName.equals("length")) {
+                    return ".length";
+                } else {
+                    return ".F$" + fieldName;
+                }
             }
 
             @Override
@@ -1086,8 +1154,10 @@ public final class JavascriptTranslator implements ITranslator {
                         sb.append(".F$" + varb.getName());
                     } else {
                         // instance field
-                        translateExpression(node.getQualifier());
-                        sb.append(".F$" + varb.getName());
+                        node.getQualifier().accept(this);
+                        sb.append(getFieldAccessSuffix(
+                                node.getQualifier().resolveTypeBinding(),
+                                varb.getName()));
                     }
                 } else {
                     throw err("Unrecognized QualfiedName type: " + node.getClass(), node);
