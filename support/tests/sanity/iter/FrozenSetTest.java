@@ -23,4 +23,19 @@ public final class FrozenSetTest {
         Assert.that(set2.contains(FrozenSet.of(1, 2, 3, 3)));
         Assert.that(!set2.contains(FrozenSet.of(1, 2, 3, 4)));
     }
+
+    @Test
+    public static void join() {
+        var set = FrozenSet.join(
+            FrozenSet.of("a", "b", "c"),
+            FrozenSet.of("c", "d", "e")
+        );
+        Assert.equals(set.size(), 5);
+        Assert.that(set.contains("a"));
+        Assert.that(set.contains("b"));
+        Assert.that(set.contains("c"));
+        Assert.that(set.contains("d"));
+        Assert.that(set.contains("e"));
+        Assert.that(!set.contains("f"));
+    }
 }

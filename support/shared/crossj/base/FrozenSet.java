@@ -20,6 +20,11 @@ public final class FrozenSet<T> implements XIterable<T> {
         }
     }
 
+    @SafeVarargs
+    public static <T> FrozenSet<T> join(XIterable<T>... iterable) {
+        return fromIterable(List.fromJavaArray(iterable).iter().flatMap(i -> i));
+    }
+
     @Override
     public XIterator<T> iter() {
         return set.iter();
