@@ -136,6 +136,9 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         return list.equals(olist.list);
     }
 
+    /**
+     * TODO: Lists should not be hashable, but Tuples still should be.
+     */
     @Override
     public int hashCode() {
         return list.hashCode();

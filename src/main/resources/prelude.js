@@ -601,7 +601,7 @@ class C$crossj$base$List {
         // More or less follows openjdk7 AbstractList.hashCode()
         let h = 1;
         for (let x of this.arr) {
-            h = 31 * h + $HASH(x);
+            h = (31 * h + $HASH(x)) | 0;
         }
         return h;
     }
