@@ -638,6 +638,100 @@ class C$crossj$base$List {
 }
 $CJ['crossj.base.List'] = C$crossj$base$List;
 
+class C$crossj$base$StrIter {
+    /**
+     * @param {string} string
+     */
+    constructor(string) {
+        this.string = string;
+        this.i = 0;
+        this.marker = 0;
+    }
+
+    static M$of(string) {
+        return new C$crossj$base$StrIter(string);
+    }
+
+    M$mark() {
+        this.marker = this.i;
+    }
+
+    M$slice() {
+        return this.string.substring(this.i, this.marker)
+    }
+
+    M$getCodePoint() {
+        return this.string.codePointAt(this.i);
+    }
+
+    M$incr() {
+        const s = this.string;
+        const i = this.i;
+        if (s.charCodeAt(i) === s.codePointAt(i)) {
+            this.i++;
+        } else {
+            this.i += 2;
+        }
+    }
+
+    M$decr() {
+        const s = this.string;
+        const i = this.i;
+        if (i > 1 && s.charCodeAt(i - 2) === s.codePointAt(i - 2)) {
+            this.i--;
+        } else {
+            this.i -= 2;
+        }
+    }
+
+    /**
+     * @param {number} n
+     */
+    M$incrN(n) {
+        while (n > 0) {
+            this.M$incr();
+            n--;
+        }
+    }
+
+    /**
+     * @param {number} n
+     */
+    M$decrN(n) {
+        while (n > 0) {
+            this.M$decr();
+            n--;
+        }
+    }
+
+    M$hasCodePoint() {
+        return this.i < this.string.length;
+    }
+
+    /**
+     * @param {string} prefix
+     */
+    M$startsWith(prefix) {
+        return this.string.startsWith(prefix, this.i);
+    }
+
+    M$seekToStart() {
+        this.i = 0;
+    }
+
+    M$seekToEnd() {
+        this.i = this.string.length;
+    }
+
+    /**
+     * @param {string} suffix
+     */
+    M$endsWith(suffix) {
+        return this.string.endsWith(suffix, this.i);
+    }
+}
+$CJ['crossj.base.StrIter'] = C$crossj$base$StrIter;
+
 // TODO: use BigInt for the 64-bit int ops
 class C$crossj$base$Bytes {
     /**

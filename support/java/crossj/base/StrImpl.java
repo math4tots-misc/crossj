@@ -3,7 +3,7 @@ package crossj.base;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
-public final class StrImpl {
+final class StrImpl {
     private StrImpl() {
     }
 

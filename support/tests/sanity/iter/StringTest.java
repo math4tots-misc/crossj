@@ -127,4 +127,66 @@ public final class StringTest {
         var chars = Str.toUTF32("hello world");
         Assert.equals(Str.fromSliceOfCodePoints(chars, 6, chars.size()), "world");
     }
+
+    @Test
+    public static void strIter() {
+        var iter = Str.iter("Hello world");
+
+        Assert.that(iter.hasCodePoint());
+        Assert.that(iter.startsWith("Hello"));
+        Assert.that(!iter.endsWith("Hello"));
+        Assert.that(!iter.endsWith("world"));
+        Assert.that(iter.endsWith(""));
+        Assert.that(iter.startsWith(""));
+
+        iter.incrN("Hello".length());
+        Assert.that(iter.hasCodePoint());
+        Assert.that(iter.endsWith("Hello"));
+        Assert.that(iter.startsWith(" world"));
+        Assert.that(iter.startsWith(""));
+
+        iter.seekToEnd();
+        Assert.that(!iter.hasCodePoint());
+        Assert.that(iter.endsWith("world"));
+        Assert.that(iter.startsWith(""));
+        Assert.that(!iter.startsWith("Hello"));
+
+        iter.decr();
+        Assert.equals(iter.getCodePoint(), (int) 'd');
+        Assert.that(iter.startsWith("d"));
+        Assert.that(iter.endsWith(" worl"));
+    }
+
+    @Test
+    public static void strIterSlice() {
+        var iter = Str.iter("Hello world!");
+        iter.seekToEnd();
+        iter.decrN(" world!".length());
+        Assert.equals(iter.slice(), "Hello");
+
+        iter.mark();
+        Assert.equals(iter.slice(), "");
+
+        iter.seekToEnd();
+        Assert.equals(iter.slice(), " world!");
+
+        iter.seekToStart();
+        iter.mark();
+        Assert.equals(iter.slice(), "");
+    }
+
+    @Test
+    public static void strIterUnicode() {
+        var iter = Str.iter("日本");
+
+        Assert.that(iter.hasCodePoint());
+        Assert.equals(iter.getCodePoint(), 0x65E5); // 日
+
+        iter.incr();
+        Assert.that(iter.hasCodePoint());
+        Assert.equals(iter.getCodePoint(), 0x672c);  // 本
+
+        iter.incr();
+        Assert.that(!iter.hasCodePoint());
+    }
 }

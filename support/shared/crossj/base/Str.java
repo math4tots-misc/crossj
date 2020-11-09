@@ -32,6 +32,10 @@ public final class Str {
         return StrImpl.charCode(c);
     }
 
+    public static StrIter iter(String string) {
+        return StrIter.of(string);
+    }
+
     public static String unescape(String escaped) {
         final int DEFAULT = 0;
         final int ESCAPE = 1;
