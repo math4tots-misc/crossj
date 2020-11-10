@@ -81,7 +81,8 @@ public final class StringTest {
         //
         // Right now, all targets are UTF-16, so I assume it everywhere.
         //
-        // NOTE: on some platforms (e.g. windows) "-encoding "UTF-8"" needs to be explicitly
+        // NOTE: on some platforms (e.g. windows) "-encoding "UTF-8"" needs to be
+        // explicitly
         // passed to javac to ensure
         //
         {
@@ -184,9 +185,30 @@ public final class StringTest {
 
         iter.incr();
         Assert.that(iter.hasCodePoint());
-        Assert.equals(iter.getCodePoint(), 0x672c);  // 本
+        Assert.equals(iter.getCodePoint(), 0x672c); // 本
 
         iter.incr();
         Assert.that(!iter.hasCodePoint());
     }
+
+    // This is not yet supported
+    // @Test
+    // public static void strSwitch() {
+    //     int flag = 0;
+    //     switch ("Hello") {
+    //         case "abc":
+    //         case "hello":
+    //             Assert.unreachable();
+    //         case "Hello":
+    //             flag |= 1;
+    //         case "world":
+    //             flag |= 2;
+    //             break;
+    //         default: {
+    //             Assert.unreachable();
+    //         }
+    //     }
+    //     Assert.that((flag & 1) != 0);
+    //     Assert.that((flag & 2) != 0);
+    // }
 }

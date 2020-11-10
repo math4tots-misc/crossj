@@ -10,6 +10,10 @@ public final class Assert {
         }
     }
 
+    public static void unreachable() {
+        throw XError.withMessage("Unreachable assertion failed");
+    }
+
     public static void withMessage(boolean cond, String message) {
         if (!cond) {
             throw XError.withMessage("Assertion failed: " + message);
