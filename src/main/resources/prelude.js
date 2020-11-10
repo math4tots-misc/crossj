@@ -1240,7 +1240,7 @@ class C$crossj$base$StrBuilder {
         return this.parts.join('');
     }
     M$obj(object) {
-        this.parts.push(object);
+        this.parts.push('' + object);
         return this;
     }
     M$c(c) {
