@@ -660,8 +660,14 @@ class C$crossj$base$StrIter {
         return this.string.substring(this.i, this.marker)
     }
 
-    M$getCodePoint() {
+    M$peekCodePoint() {
         return this.string.codePointAt(this.i);
+    }
+
+    M$nextCodePoint() {
+        const codePoint = this.M$peekCodePoint();
+        this.M$incr();
+        return codePoint;
     }
 
     M$incr() {

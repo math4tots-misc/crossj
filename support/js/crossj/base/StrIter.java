@@ -23,7 +23,14 @@ public final class StrIter {
      * the 'hasCodePoint()' method to check that we haven't moved past the end of
      * the string.
      */
-    native public int getCodePoint();
+    native public int peekCodePoint();
+
+    /**
+     * Returns the codePoint at the current position, and increments the position.
+     * You should call 'hashCodePoint()' to check that we are not yet past the
+     * end of the string.
+     */
+    native public int nextCodePoint();
 
     /**
      * Increments this iterator to the next codepoint in the string.

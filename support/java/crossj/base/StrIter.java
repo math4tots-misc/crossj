@@ -37,8 +37,19 @@ public final class StrIter {
      * the 'hasCodePoint()' method to check that we haven't moved past the end of
      * the string.
      */
-    public int getCodePoint() {
+    public int peekCodePoint() {
         return string.codePointAt(i);
+    }
+
+    /**
+     * Returns the codePoint at the current position, and increments the position.
+     * You should call 'hashCodePoint()' to check that we are not yet past the
+     * end of the string.
+     */
+    public int nextCodePoint() {
+        var codePoint = peekCodePoint();
+        incr();
+        return codePoint;
     }
 
     /**

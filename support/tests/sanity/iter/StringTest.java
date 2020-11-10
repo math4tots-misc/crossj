@@ -153,7 +153,7 @@ public final class StringTest {
         Assert.that(!iter.startsWith("Hello"));
 
         iter.decr();
-        Assert.equals(iter.getCodePoint(), (int) 'd');
+        Assert.equals(iter.peekCodePoint(), (int) 'd');
         Assert.that(iter.startsWith("d"));
         Assert.that(iter.endsWith(" worl"));
     }
@@ -181,11 +181,11 @@ public final class StringTest {
         var iter = Str.iter("日本");
 
         Assert.that(iter.hasCodePoint());
-        Assert.equals(iter.getCodePoint(), 0x65E5); // 日
+        Assert.equals(iter.peekCodePoint(), 0x65E5); // 日
 
         iter.incr();
         Assert.that(iter.hasCodePoint());
-        Assert.equals(iter.getCodePoint(), 0x672c); // 本
+        Assert.equals(iter.peekCodePoint(), 0x672c); // 本
 
         iter.incr();
         Assert.that(!iter.hasCodePoint());
