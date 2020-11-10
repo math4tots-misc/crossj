@@ -2,6 +2,7 @@ package crossj.hacks.cas.expr;
 
 import crossj.base.Assert;
 import crossj.base.List;
+import crossj.base.Str;
 import crossj.base.Tuple;
 import crossj.base.XIterable;
 
@@ -61,11 +62,11 @@ public final class Product implements Expression {
 
     @Override
     public String toString() {
-        var sb = new StringBuilder();
+        var sb = Str.builder();
         for (var factor : factors) {
-            sb.append("(" + factor + ")");
+            sb.s("(" + factor + ")");
         }
-        return sb.toString();
+        return sb.build();
     }
 
     @Override

@@ -2,7 +2,6 @@ package crossj.hacks.c;
 
 import crossj.base.IntArray;
 import crossj.base.List;
-import crossj.base.Str;
 
 /**
  * Some static methods for classifying characters in a C source.
@@ -52,24 +51,24 @@ public final class CChar {
 
     private static IntArray buildMap() {
         var map = IntArray.withSize(128);
-        var blanks = List.of(Str.code(' '));
-        var newlines = List.of(Str.code('\n'));
-        var others = List.of(';').map(c -> Str.code(c));
+        var blanks = List.of(' ').map(c -> (int) c);
+        var newlines = List.of('\n').map(c -> (int) c);
+        var others = List.of(';').map(c -> (int) c);
         for (int codePoint = 0; codePoint < 128; codePoint++) {
             var flag = 0;
-            if (codePoint >= Str.code('A') && codePoint <= Str.code('Z')
-                    || codePoint >= Str.code('a') && codePoint <= Str.code('z')) {
+            if (codePoint >= 'A' && codePoint <= 'Z'
+                    || codePoint >= 'a' && codePoint <= 'z') {
                 flag |= LETTER;
             }
-            if (codePoint >= Str.code('0') && codePoint <= Str.code('9')) {
+            if (codePoint >= '0' && codePoint <= '9') {
                 flag |= DIGIT;
             }
-            if (codePoint == Str.code('_')) {
+            if (codePoint == '_') {
                 flag |= UNDERSCORE;
             }
-            if (codePoint >= Str.code('A') && codePoint <= Str.code('F')
-                    || codePoint >= Str.code('a') && codePoint <= Str.code('f')
-                    || codePoint >= Str.code('0') && codePoint <= Str.code('9')) {
+            if (codePoint >= 'A' && codePoint <= 'F'
+                    || codePoint >= 'a' && codePoint <= 'f'
+                    || codePoint >= '0' && codePoint <= '9') {
                 flag |= HEX;
             }
             if (others.contains(codePoint)) {

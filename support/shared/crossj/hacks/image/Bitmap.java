@@ -4,6 +4,7 @@ import crossj.base.Assert;
 import crossj.base.Bytes;
 import crossj.base.IntArray;
 import crossj.base.List;
+import crossj.base.Str;
 import crossj.base.XIterable;
 import crossj.base.XIterator;
 
@@ -120,22 +121,22 @@ public final class Bitmap {
      * Primarily for testing
      */
     public String toP3() {
-        StringBuilder sb = new StringBuilder();
+        var sb = Str.builder();
         int width = getWidth();
         int height = getHeight();
-        sb.append("P3\n");
-        sb.append(width + " " + height + "\n");
-        sb.append("255\n");
+        sb.s("P3\n");
+        sb.s(width + " " + height + "\n");
+        sb.s("255\n");
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (x > 0) {
-                    sb.append(" ");
+                    sb.s(" ");
                 }
                 Color color = getColor(x, y);
                 List<Integer> channels = color.toIntegerList();
-                sb.append(channels.get(0) + " " + channels.get(1) + " " + channels.get(2));
+                sb.s(channels.get(0) + " " + channels.get(1) + " " + channels.get(2));
             }
-            sb.append("\n");
+            sb.s("\n");
         }
         return sb.toString();
     }

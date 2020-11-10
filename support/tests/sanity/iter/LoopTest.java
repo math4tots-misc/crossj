@@ -1,6 +1,7 @@
 package sanity.iter;
 
 import crossj.base.Assert;
+import crossj.base.Str;
 import crossj.base.Test;
 
 public final class LoopTest {
@@ -30,21 +31,21 @@ public final class LoopTest {
     @Test
     public static void classicForLoop() {
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = Str.builder();
             for (int i = 9; i >= 0; i--) {
-                sb.append(i);
+                sb.i(i);
             }
-            Assert.equals(sb.toString(), "9876543210");
+            Assert.equals(sb.build(), "9876543210");
         }
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = Str.builder();
             for (int i = 9;; i--) {
                 if (i < 6) {
                     break;
                 }
-                sb.append(i);
+                sb.i(i);
             }
-            Assert.equals(sb.toString(), "9876");
+            Assert.equals(sb.build(), "9876");
         }
     }
 

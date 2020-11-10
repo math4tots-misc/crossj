@@ -32,6 +32,10 @@ public final class Str {
         return StrImpl.charCode(c);
     }
 
+    public static StrBuilder builder() {
+        return new StrBuilder();
+    }
+
     public static StrIter iter(String string) {
         return StrIter.of(string);
     }
@@ -41,7 +45,7 @@ public final class Str {
         final int ESCAPE = 1;
         final int HEX_SEQ_1 = 2;
         final int HEX_SEQ_2 = 3;
-        StringBuilder sb = new StringBuilder();
+        var sb = Str.builder();
         int state = 0;
         int byteSeqPart = 0;
         for (var ch : toCodePoints(escaped)) {
@@ -51,7 +55,7 @@ public final class Str {
                     if (ch == (int) '\\') {
                         state = ESCAPE;
                     } else {
-                        sb.appendCodePoint(ch);
+                        sb.codePoint(ch);
                     }
                     break;
                 }
@@ -59,31 +63,31 @@ public final class Str {
                 case ESCAPE: {
                     switch (ch) {
                         case (int) '\0':
-                            sb.appendCodePoint((int) '\0');
+                            sb.codePoint('\0');
                             state = DEFAULT;
                             break;
                         case (int) '\\':
-                            sb.appendCodePoint((int) '\\');
+                            sb.codePoint('\\');
                             state = DEFAULT;
                             break;
                         case (int) 'r':
-                            sb.appendCodePoint((int) '\r');
+                            sb.codePoint('\r');
                             state = DEFAULT;
                             break;
                         case (int) 'n':
-                            sb.appendCodePoint((int) '\n');
+                            sb.codePoint('\n');
                             state = DEFAULT;
                             break;
                         case (int) 't':
-                            sb.appendCodePoint((int) '\t');
+                            sb.codePoint('\t');
                             state = DEFAULT;
                             break;
                         case (int) '"':
-                            sb.appendCodePoint((int) '\"');
+                            sb.codePoint('\"');
                             state = DEFAULT;
                             break;
                         case (int) '\'':
-                            sb.appendCodePoint((int) '\'');
+                            sb.codePoint('\'');
                             state = DEFAULT;
                             break;
                         case (int) 'x':
@@ -99,7 +103,7 @@ public final class Str {
                     state = HEX_SEQ_2;
                     break;
                 case HEX_SEQ_2: {
-                    sb.appendCodePoint(hexCodeFromDigits(byteSeqPart, ch));
+                    sb.codePoint(hexCodeFromDigits(byteSeqPart, ch));
                     state = DEFAULT;
                     break;
                 }
@@ -110,7 +114,7 @@ public final class Str {
         if (state != DEFAULT) {
             throw XError.withMessage("Incomplete escape (" + escaped + ")");
         }
-        return sb.toString();
+        return sb.build();
     }
 
     private static int hexDigitToValue(int codePoint) {
@@ -130,16 +134,16 @@ public final class Str {
     }
 
     public static String join(String separator, XIterable<?> iterable) {
-        StringBuilder sb = new StringBuilder();
+        var sb = Str.builder();
         boolean first = true;
         for (Object obj : iterable) {
             if (!first) {
-                sb.append(separator);
+                sb.s(separator);
             }
             first = false;
-            sb.append(obj);
+            sb.obj(obj);
         }
-        return sb.toString();
+        return sb.build();
     }
 
     public static List<String> split(String string, String separator) {

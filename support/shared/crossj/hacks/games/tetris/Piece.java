@@ -131,18 +131,18 @@ public final class Piece {
     }
 
     public String dump() {
-        var sb = new StringBuilder();
+        var sb = Str.builder();
         var cells = Set.fromIterable(cells());
         for (int row = 0; row < 4; row++) {
             for (int column = 0; column < 4; column++) {
                 if (cells.contains(Pair.of(row + this.row, column + this.column))) {
-                    sb.append("x");
+                    sb.s("x");
                 } else {
-                    sb.append(" ");
+                    sb.s(" ");
                 }
             }
-            sb.append("\n");
+            sb.s("\n");
         }
-        return sb.toString();
+        return sb.build();
     }
 }

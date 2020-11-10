@@ -9,20 +9,20 @@ import crossj.base.Test;
 public final class StringTest {
     @Test
     public static void stringBuilder() {
-        StringBuilder sb = new StringBuilder();
+        var sb = Str.builder();
         for (int i = 0; i < 10; i++) {
-            sb.append(i);
+            sb.i(i);
         }
-        Assert.equals(sb.toString(), "0123456789");
+        Assert.equals(sb.build(), "0123456789");
     }
 
     @Test
     public static void stringBuilderCustomStr() {
-        StringBuilder sb = new StringBuilder();
+        var sb = Str.builder();
         for (int i = 0; i < 10; i++) {
-            sb.append(new ClassWithCustomStr(i));
+            sb.obj(new ClassWithCustomStr(i));
         }
-        Assert.equals(sb.toString(), "C(0)C(1)C(2)C(3)C(4)C(5)C(6)C(7)C(8)C(9)");
+        Assert.equals(sb.build(), "C(0)C(1)C(2)C(3)C(4)C(5)C(6)C(7)C(8)C(9)");
     }
 
     @Test

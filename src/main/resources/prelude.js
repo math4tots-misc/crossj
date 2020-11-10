@@ -1221,10 +1221,50 @@ $CJ['crossj.base.DoubleArray'] = C$crossj$base$DoubleArray;
 
 class C$crossj$base$ImplChar {
     static M$isWhitespace(ch) {
-        return /\s/g.test(ch);
+        return /\s/g.test(String.fromCodePoint(ch));
     }
 }
 $CJ['crossj.base.ImplChar'] = C$crossj$base$ImplChar;
+
+class C$crossj$base$StrBuilder {
+    constructor() {
+        this.parts = [];
+    }
+    M$build() {
+        return this.parts.join('');
+    }
+    M$obj(object) {
+        this.parts.push(object);
+        return this;
+    }
+    M$c(c) {
+        this.parts.push(String.fromCodePoint(c));
+        return this;
+    }
+    M$codePoint(codePoint) {
+        this.parts.push(String.fromCodePoint(codePoint));
+        return this;
+    }
+    M$i(i) {
+        this.parts.push(i);
+        return this;
+    }
+    M$d(d) {
+        this.parts.push(d);
+        return this;
+    }
+    M$s(s) {
+        this.parts.push(s);
+        return this;
+    }
+    M$toString() {
+        return this.toString();
+    }
+    toString() {
+        return this.M$build();
+    }
+}
+$CJ['crossj.base.StrBuilder'] = C$crossj$base$StrBuilder;
 
 class C$crossj$base$RandImpl {
     static M$getDefault() {

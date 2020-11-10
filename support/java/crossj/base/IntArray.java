@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 /**
  * For when a List just feels too inefficient, and Bytes is too untyped.
+ *
+ * TODO: Deprecate this infavor of just using 'int[]'
  */
 public final class IntArray implements XIterable<Integer> {
     private final int[] buffer;

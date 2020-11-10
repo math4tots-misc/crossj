@@ -5,6 +5,7 @@ import crossj.base.IntArray;
 import crossj.base.List;
 import crossj.base.Repr;
 import crossj.base.Str;
+import crossj.base.StrBuilder;
 import crossj.base.XError;
 import crossj.base.XIterable;
 import crossj.base.XIterator;
@@ -136,25 +137,25 @@ public final class ASCIITrie implements XIterable<String> {
      * Dump the trie's internal data structure for debugging purposes
      */
     public String dump() {
-        var sb = new StringBuilder();
+        var sb = Str.builder();
         dumpSB(sb);
         return sb.toString();
     }
 
-    private void dumpSB(StringBuilder sb) {
-        sb.append("(");
+    private void dumpSB(StrBuilder sb) {
+        sb.s("(");
         if (value != null) {
-            sb.append(value);
+            sb.s(value);
         }
         if (children != null) {
             for (int i = 0; i < children.size(); i++) {
                 var child = children.get(i);
                 if (child != null) {
-                    sb.append("[" + i + "]:");
+                    sb.s("[" + i + "]:");
                     child.dumpSB(sb);
                 }
             }
         }
-        sb.append(")");
+        sb.s(")");
     }
 }

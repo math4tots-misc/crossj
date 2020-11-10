@@ -2,6 +2,7 @@ package crossj.hacks.cas.expr;
 
 import crossj.base.Assert;
 import crossj.base.List;
+import crossj.base.Str;
 import crossj.base.Tuple;
 import crossj.base.XIterable;
 
@@ -63,12 +64,12 @@ public final class Sum implements Expression {
 
     @Override
     public String toString() {
-        var sb = new StringBuilder();
-        sb.append("" + summands.get(0));
+        var sb = Str.builder();
+        sb.s("" + summands.get(0));
         for (int i = 1; i < summands.size(); i++) {
-            sb.append(" + " + summands.get(i));
+            sb.s(" + " + summands.get(i));
         }
-        return sb.toString();
+        return sb.build();
     }
 
     @Override

@@ -57,17 +57,17 @@ public final class Set<T> implements XIterable<T> {
 
     @Override
     public String toString() {
-        var sb = new StringBuilder();
-        sb.append("Set.of(");
+        var sb = Str.builder();
+        sb.s("Set.of(");
         var first = true;
         for (var key : this) {
             if (!first) {
-                sb.append(", ");
+                sb.s(", ");
             }
             first = false;
-            sb.append("" + key);
+            sb.s("" + key);
         }
-        sb.append(")");
+        sb.s(")");
         return sb.toString();
     }
 

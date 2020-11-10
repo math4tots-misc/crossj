@@ -16,22 +16,22 @@ public interface Repr {
     }
 
     public static String reprstr(String s) {
-        StringBuilder sb = new StringBuilder();
-        sb.append('"');
+        var sb = Str.builder();
+        sb.c('"');
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             switch (c) {
-                case '\t': sb.append("\\t"); break;
-                case '\r': sb.append("\\r"); break;
-                case '\n': sb.append("\\n"); break;
-                case '\0': sb.append("\\0"); break;
-                case '\\': sb.append("\\\\"); break;
-                case '\"': sb.append("\\\""); break;
-                case '\'': sb.append("\\\'"); break;
-                default: sb.append(c);
+                case '\t': sb.s("\\t"); break;
+                case '\r': sb.s("\\r"); break;
+                case '\n': sb.s("\\n"); break;
+                case '\0': sb.s("\\0"); break;
+                case '\\': sb.s("\\\\"); break;
+                case '\"': sb.s("\\\""); break;
+                case '\'': sb.s("\\\'"); break;
+                default: sb.c(c);
             }
         }
-        sb.append('"');
-        return sb.toString();
+        sb.c('"');
+        return sb.build();
     }
 }

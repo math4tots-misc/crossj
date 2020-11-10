@@ -41,17 +41,17 @@ public final class FrozenSet<T> implements XIterable<T> {
 
     @Override
     public String toString() {
-        var sb = new StringBuilder();
-        sb.append("FrozenSet.of(");
+        var sb = Str.builder();
+        sb.s("FrozenSet.of(");
         var first = true;
         for (var key : this) {
             if (!first) {
-                sb.append(", ");
+                sb.s(", ");
             }
             first = false;
-            sb.append("" + key);
+            sb.s("" + key);
         }
-        sb.append(")");
+        sb.s(")");
         return sb.toString();
     }
 

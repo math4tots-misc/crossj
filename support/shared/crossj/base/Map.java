@@ -207,21 +207,21 @@ public final class Map<K, V> {
 
     @Override
     public String toString() {
-        var sb = new StringBuilder();
-        sb.append("Map.of(");
+        var sb = Str.builder();
+        sb.s("Map.of(");
         boolean first = true;
         for (K key : keys()) {
             if (!first) {
-                sb.append(", ");
+                sb.s(", ");
             }
             first = false;
-            sb.append("Pair.of(");
-            sb.append(Repr.of(key));
-            sb.append(", ");
-            sb.append(Repr.of(get(key)));
-            sb.append(")");
+            sb.s("Pair.of(");
+            sb.s(Repr.of(key));
+            sb.s(", ");
+            sb.s(Repr.of(get(key)));
+            sb.s(")");
         }
-        sb.append(")");
+        sb.s(")");
         return sb.toString();
     }
 }

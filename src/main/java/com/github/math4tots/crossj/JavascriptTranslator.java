@@ -652,7 +652,6 @@ public final class JavascriptTranslator implements ITranslator {
                         }
                         case "crossj.base.StrImpl.charCode": {
                             translateExpression((Expression) node.arguments().get(0));
-                            sb.append(".charCodeAt(0)");
                             break;
                         }
                         case "crossj.base.StrImpl.toUTF8": {
@@ -789,7 +788,7 @@ public final class JavascriptTranslator implements ITranslator {
                             }
                             case "java.lang.String.charAt": {
                                 translateExpression(owner);
-                                sb.append(".charAt(");
+                                sb.append(".charCodeAt(");
                                 translateExpression((Expression) node.arguments().get(0));
                                 sb.append(")");
                                 break;
@@ -1016,7 +1015,8 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(CharacterLiteral node) {
-                sb.append(node.getEscapedValue());
+                // Character literals are represented as ints.
+                sb.append((int) node.charValue());
                 return false;
             }
 
@@ -1211,10 +1211,9 @@ public final class JavascriptTranslator implements ITranslator {
                             // In this case, let's just replace the expression with
                             // the actual integer value.
                             char ch = (Character) node.getExpression().resolveConstantExpressionValue();
-                            sb.append("" + (int) ch);
+                            sb.append((int) ch);
                         } else if (node.getExpression().resolveTypeBinding().getQualifiedName().equals("char")) {
                             node.getExpression().accept(this);
-                            sb.append(".codePointAt(0)");
                         } else {
                             sb.append("$INTCAST(");
                             node.getExpression().accept(this);
