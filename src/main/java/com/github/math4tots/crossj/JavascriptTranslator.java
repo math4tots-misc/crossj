@@ -1041,8 +1041,7 @@ public final class JavascriptTranslator implements ITranslator {
                         if (initializer == null) {
                             // the array length must be explicitly set
                             var dimensionExpression = (Expression) node.dimensions().get(0);
-                            var length = (int) dimensionExpression.resolveConstantExpressionValue();
-                            sb.append(length);
+                            dimensionExpression.accept(this);
                         } else {
                             // values are explicitly provided
                             if (!node.dimensions().isEmpty()) {
