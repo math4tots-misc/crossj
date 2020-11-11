@@ -68,6 +68,11 @@ public final class Optional<T> implements TypedEq<Optional<T>>, XIterable<T> {
     }
 
     @Override
+    public int hashCode() {
+        return value == null ? 761 : value.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return rawEquals(obj);
     }

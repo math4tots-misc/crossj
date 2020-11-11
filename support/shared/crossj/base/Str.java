@@ -7,6 +7,10 @@ public final class Str {
     private Str() {
     }
 
+    public static String of(Object value) {
+        return value.toString();
+    }
+
     /**
      * Returns a UTF code unit.
      *
