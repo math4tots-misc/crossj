@@ -3,7 +3,7 @@ package crossj.books.dragon.ch03;
 /**
  * Describes the components of a regular expression.
  *
- * NOTE: In "dragon.ch03" regular expressions, all non-ASCII values are mapped
+ * NOTE: In [dragon.ch03] regular expressions, all non-ASCII values are mapped
  * to the value 127.
  */
 public interface RegexNode {
