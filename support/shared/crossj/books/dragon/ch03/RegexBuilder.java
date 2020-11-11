@@ -1,4 +1,4 @@
-package crossj.books.dragon.ch03.nfa;
+package crossj.books.dragon.ch03;
 
 /**
  * class that allows creating various RegexNodes.

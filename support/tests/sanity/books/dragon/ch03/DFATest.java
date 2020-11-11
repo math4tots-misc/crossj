@@ -3,8 +3,8 @@ package sanity.books.dragon.ch03;
 import crossj.base.Assert;
 import crossj.base.IO;
 import crossj.base.Test;
-import crossj.books.dragon.ch03.nfa.DFA;
-import crossj.books.dragon.ch03.nfa.RegexNode;
+import crossj.books.dragon.ch03.DFA;
+import crossj.books.dragon.ch03.RegexNode;
 
 public final class DFATest {
     @Test

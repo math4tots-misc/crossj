@@ -2,8 +2,8 @@ package sanity.books.dragon.ch03;
 
 import crossj.base.Assert;
 import crossj.base.Test;
-import crossj.books.dragon.ch03.nfa.NFA;
-import crossj.books.dragon.ch03.nfa.RegexNode;
+import crossj.books.dragon.ch03.NFA;
+import crossj.books.dragon.ch03.RegexNode;
 
 public final class NFATest {
     @Test

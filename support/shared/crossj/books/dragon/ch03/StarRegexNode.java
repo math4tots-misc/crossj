@@ -1,4 +1,4 @@
-package crossj.books.dragon.ch03.nfa;
+package crossj.books.dragon.ch03;
 
 final class StarRegexNode implements RegexNode {
     public static final int BINDING_PRECEDENCE = 50;

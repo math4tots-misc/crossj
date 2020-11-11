@@ -1,4 +1,4 @@
-package crossj.books.dragon.ch03.nfa;
+package crossj.books.dragon.ch03;
 
 /**
  * The set of alphabets that dragon.ch03 works on.
