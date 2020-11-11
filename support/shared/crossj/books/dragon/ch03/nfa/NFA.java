@@ -1,40 +1,46 @@
 package crossj.books.dragon.ch03.nfa;
 
 import crossj.base.Compare;
-import crossj.base.Func1;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;
 import crossj.base.Repr;
 import crossj.base.Set;
 import crossj.base.Str;
+import crossj.base.XIterable;
 
 public final class NFA {
-
-    public static NFA withRegexBuilder(Func1<RegexNode, RegexBuilder> f) {
-        var builder = new RegexBuilder();
-        var node = f.apply(builder);
-        return NFABuilder.buildFromRegexNode(node);
+    public static NFA fromRegexNodeList(List<RegexNode> nodes) {
+        return NFABuilder.buildFromRegexNodeList(nodes);
     }
 
-    private final int startState;
-    private final int acceptState;
-    private final List<Map<Optional<Integer>, Set<Integer>>> transitionMap;
+    public static NFA fromRegexNodes(RegexNode... nodes) {
+        return fromRegexNodeList(List.fromJavaArray(nodes));
+    }
 
-    NFA(int startState, int acceptState, List<Map<Optional<Integer>, Set<Integer>>> transitionMap) {
-        this.startState = startState;
-        this.acceptState = acceptState;
+    private final List<Map<Optional<Integer>, Set<Integer>>> transitionMap;
+    private final int acceptState;
+
+    NFA(List<Map<Optional<Integer>, Set<Integer>>> transitionMap, int acceptState) {
         this.transitionMap = transitionMap;
+        this.acceptState = acceptState;
     }
 
     public int getStartState() {
-        return startState;
+        return acceptState + 1;
     }
 
     public int getAcceptState() {
         return acceptState;
     }
 
+    public int getNumberOfAlternatives() {
+        return acceptState;
+    }
+
+    /**
+     * Given a set of states, returns the epsilon-closure of those states.
+     */
     public Set<Integer> epsilonClosureOf(Set<Integer> states) {
         var todo = List.fromIterable(states);
         var closure = Set.fromIterable(states);
@@ -50,10 +56,35 @@ public final class NFA {
         return closure;
     }
 
-    public Set<Integer> transitionOf(Set<Integer> states, int letter) {
+    /**
+     * Given a set of states and an input letter, returns a new set of states after
+     * the given letter is accepted.
+     *
+     * The returned set accounts for an epsilon closure after the transition.
+     */
+    public Set<Integer> transitionOf(XIterable<Integer> states, int letter) {
+        if (letter < 0 || letter >= Alphabet.COUNT) {
+            letter = Alphabet.CATCH_ALL;
+        }
         var transition = Optional.of(letter);
         return epsilonClosureOf(Set.fromIterable(
                 states.iter().flatMap(state -> transitionMap.get(state).getOrElse(transition, () -> Set.of()))));
+    }
+
+    /**
+     * Given a set of states, returns a set of letters that appears as an edge
+     * coming out from at least one of those states.
+     */
+    Set<Integer> lettersFromStates(XIterable<Integer> states) {
+        var letters = Set.<Integer>of();
+        for (var state : states) {
+            for (var transition : transitionMap.get(state).keys()) {
+                if (transition.isPresent()) {
+                    letters.add(transition.get());
+                }
+            }
+        }
+        return letters;
     }
 
     public NFARun start() {
@@ -62,7 +93,7 @@ public final class NFA {
 
     public String inspect() {
         var sb = Str.builder();
-        sb.s("start = ").i(startState).s(", accept = ").i(acceptState).s("\n");
+        sb.s("start = ").i(getStartState()).s(", accept = ").i(acceptState).s("\n");
         for (int state = 0; state < transitionMap.size(); state++) {
             sb.i(state).s("\n");
             var localMap = transitionMap.get(state);

@@ -22,6 +22,21 @@ public final class NFARun {
     }
 
     /**
+     * If isMatching is true, returns the index of the first matching RegexNode.
+     * Otherwise, returns -1
+     */
+    public int getMatchingAlternative() {
+        int n = nfa.getNumberOfAlternatives();
+        for (int i = 0; i < n; i++) {
+            if (currentStates.contains(i)) {
+                return i;
+            }
+        }
+        // No match was found
+        return -1;
+    }
+
+    /**
      * Returns true if our set of states is currently empty, and it's
      * impossible to enter the accepting state.
      */

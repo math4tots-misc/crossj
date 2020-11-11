@@ -1,6 +1,7 @@
 package crossj.books.dragon.ch03.nfa;
 
 import crossj.base.Str;
+import crossj.base.XError;
 
 final class LetterRegexNode implements RegexNode {
     public static final int BINIDNG_PRECEDENCE = 90;
@@ -8,6 +9,9 @@ final class LetterRegexNode implements RegexNode {
     final int letter;
 
     LetterRegexNode(int letter) {
+        if (letter < 0 || letter >= Alphabet.COUNT) {
+            throw XError.withMessage("Only ASCII values are allowed but got: " + Str.fromCodePoint(letter));
+        }
         this.letter = letter;
     }
 

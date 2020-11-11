@@ -28,10 +28,6 @@ public final class RegexBuilder {
         return first;
     }
 
-    public RegexNode star(RegexNode inner) {
-        return new StarRegexNode(inner);
-    }
-
     static String wrap(RegexNode node, int outerPrecedence) {
         return node.getBindingPrecedence() < outerPrecedence ? "(" + node.toPattern() + ")" : node.toPattern();
     }

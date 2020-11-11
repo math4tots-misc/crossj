@@ -1,5 +1,6 @@
 package crossj.books.dragon.ch03.nfa;
 
+import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;
@@ -8,10 +9,33 @@ import crossj.base.XError;
 
 final class NFABuilder {
 
-    public static NFA buildFromRegexNode(RegexNode node) {
-        var instance = new NFABuilder();
-        var block = instance.buildBlock(node, -1, -1);
-        return new NFA(block.startState, block.acceptState, instance.transitionMap);
+    static NFA buildFromRegexNode(RegexNode node) {
+        return buildFromRegexNodeList(List.of(node));
+    }
+
+    static NFA buildFromRegexNodeList(List<RegexNode> nodes) {
+        var builder = new NFABuilder();
+
+        // The first nodes.size() states are all accepting states,
+        // each corresponding to the accepting state of the corresponding RegexNode.
+        // The state 'nodes.size()' is the universal accepting state (i.e. all other accepting
+        // states have an epsilon transition into it),
+        // and state 'nodes.size() + 1' is the start state.
+        for (int i = 0; i < nodes.size(); i++) {
+            Assert.equals(builder.newState(), i);
+        }
+        var joinAcceptState = builder.newState();
+        var startState = builder.newState();
+
+        for (int i = 0; i < nodes.size(); i++) {
+            var node = nodes.get(i);
+            builder.buildBlock(node, startState, i);
+            builder.connect(i, Optional.empty(), joinAcceptState);
+        }
+
+        Assert.equals(joinAcceptState + 1, startState);
+        Assert.equals(joinAcceptState, nodes.size());
+        return new NFA(builder.transitionMap, joinAcceptState);
     }
 
     private List<Map<Optional<Integer>, Set<Integer>>> transitionMap = List.of();
