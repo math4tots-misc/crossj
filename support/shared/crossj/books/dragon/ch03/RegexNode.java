@@ -8,7 +8,7 @@ import crossj.base.Try;
  * NOTE: In [dragon.ch03] regular expressions, all non-ASCII values are mapped
  * to the value 127.
  */
-public interface RegexNode {
+interface RegexNode {
     /**
      * Returns an integer indicating how tightly the node's operation binds. For
      * determining where to put parentheses in toString()

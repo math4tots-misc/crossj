@@ -1,6 +1,6 @@
 package crossj.books.dragon.ch03;
 
-public final class DFARun {
+final class DFARun {
     private final DFA dfa;
     private int state;
 

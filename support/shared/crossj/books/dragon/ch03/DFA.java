@@ -7,7 +7,7 @@ import crossj.base.Map;
 import crossj.base.Set;
 import crossj.base.Str;
 
-public final class DFA {
+final class DFA {
     private final int[] transitionMap;
     private final int[] acceptMap;
 

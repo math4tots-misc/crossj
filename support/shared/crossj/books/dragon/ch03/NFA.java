@@ -9,7 +9,7 @@ import crossj.base.Set;
 import crossj.base.Str;
 import crossj.base.XIterable;
 
-public final class NFA {
+final class NFA {
     public static NFA fromRegexNodeList(List<RegexNode> nodes) {
         return NFABuilder.buildFromRegexNodeList(nodes);
     }

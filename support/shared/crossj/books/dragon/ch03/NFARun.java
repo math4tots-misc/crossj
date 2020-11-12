@@ -5,7 +5,7 @@ import crossj.base.Set;
 /**
  * A running instance of an NFA
  */
-public final class NFARun {
+final class NFARun {
     private final NFA nfa;
     private Set<Integer> currentStates;
 
