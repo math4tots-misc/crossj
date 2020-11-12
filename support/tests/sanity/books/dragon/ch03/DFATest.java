@@ -1,7 +1,6 @@
 package sanity.books.dragon.ch03;
 
 import crossj.base.Assert;
-import crossj.base.IO;
 import crossj.base.Test;
 import crossj.books.dragon.ch03.DFA;
 import crossj.books.dragon.ch03.RegexNode;
@@ -30,7 +29,6 @@ public final class DFATest {
         {
             var re = RegexNode.ofChar('x').and(RegexNode.ofChar('y').star());
             var dfa = DFA.fromRegexNodes(re);
-            IO.print("\n" + dfa.inspect());
             Assert.equals(dfa.match("xy"), 2);
             Assert.equals(dfa.match("xx"), 1);
             Assert.equals(dfa.match("xxxy"), 1);
