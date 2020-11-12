@@ -27,6 +27,10 @@ public interface RegexNode {
         return new StarRegexNode(this);
     }
 
+    default RegexNode plus() {
+        return new PlusRegexNode(this);
+    }
+
     default RegexNode and(RegexNode other) {
         if (this instanceof EpsilonRegexNode) {
             return other;

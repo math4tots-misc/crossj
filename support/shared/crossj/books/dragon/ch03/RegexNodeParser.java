@@ -49,7 +49,7 @@ final class RegexNodeParser {
 
     private Try<RegexNode> parseCatExpr() {
         var tryNode = Try.ok(RegexNode.epsilon());
-        while (tryNode.isOk() && iter.hasCodePoint() && !at(')')) {
+        while (tryNode.isOk() && iter.hasCodePoint() && !at(')') && !at('|')) {
             tryNode = tryNode.flatMap(lhs -> parsePostfix().map(rhs -> lhs.and(rhs)));
         }
         return tryNode;
@@ -61,7 +61,8 @@ final class RegexNodeParser {
             int op = iter.nextCodePoint();
             switch (op) {
                 case '+':
-                    throw XError.withMessage("TODO: Regex '+' operator");
+                    tryNode = tryNode.map(node -> node.plus());
+                    break;
                 case '*':
                     tryNode = tryNode.map(node -> node.star());
                     break;
@@ -112,6 +113,8 @@ final class RegexNodeParser {
             case '*':
             case '+':
                 return Try.fail("Misplaced postfix operator in regex: " + iter.getString());
+            case '|':
+                throw XError.withMessage("Internal regex parsing issue (|): " + iter.getString());
             case ')':
                 return Try.fail("Unexpected close parenthesis in regex: " + iter.getString());
             case '[':

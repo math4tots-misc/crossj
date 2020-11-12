@@ -1,6 +1,7 @@
 package sanity.books.dragon.ch03;
 
 import crossj.base.Assert;
+import crossj.base.IO;
 import crossj.base.Test;
 import crossj.books.dragon.ch03.Regex;
 
@@ -51,5 +52,27 @@ public final class RegexTest {
         Assert.that(re.matches("x"));
         Assert.that(re.matches("xx"));
         Assert.that(!re.matches("y"));
+    }
+
+    @Test
+    public static void matchPlus() {
+        var re = Regex.fromPatterns("x+").get();
+        Assert.that(!re.matches(""));
+        Assert.that(re.matches("x"));
+        Assert.that(re.matches("xx"));
+        Assert.that(!re.matches("y"));
+    }
+
+    @Test
+    public static void misc() {
+        {
+            var re = Regex.fromPatterns("aaa|bb").get();
+            IO.println(re.inspect());
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("aa"));
+            Assert.that(!re.matches("b"));
+            Assert.that(re.matches("aaa"));
+            Assert.that(re.matches("bb"));
+        }
     }
 }

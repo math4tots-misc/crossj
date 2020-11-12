@@ -90,11 +90,13 @@ final class NFABuilder {
             buildBlock(right, leftBlock.acceptState, acceptState);
         } else if (node instanceof StarRegexNode) {
             var innerNode = ((StarRegexNode) node).child;
-            var innerBlock = buildBlock(innerNode, -1, -1);
+            buildBlock(innerNode, startState, acceptState);
             connect(startState, Optional.empty(), acceptState);
-            connect(startState, Optional.empty(), innerBlock.startState);
-            connect(innerBlock.acceptState, Optional.empty(), acceptState);
-            connect(innerBlock.acceptState, Optional.empty(), innerBlock.startState);
+            connect(acceptState, Optional.empty(), startState);
+        } else if (node instanceof PlusRegexNode) {
+            var innerNode = ((PlusRegexNode) node).child;
+            buildBlock(innerNode, startState, acceptState);
+            connect(acceptState, Optional.empty(), startState);
         } else {
             throw XError.withMessage("Unrecognized NFARegexNode type: " + node);
         }
