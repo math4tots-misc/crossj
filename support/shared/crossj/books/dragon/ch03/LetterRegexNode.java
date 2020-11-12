@@ -1,5 +1,6 @@
 package crossj.books.dragon.ch03;
 
+import crossj.base.Optional;
 import crossj.base.Str;
 import crossj.base.XError;
 
@@ -28,5 +29,10 @@ final class LetterRegexNode implements RegexNode {
             case (int) ')': return "\\)";
             default: return Str.fromCodePoint(letter);
         }
+    }
+
+    @Override
+    public void buildBlock(NFABuilder builder, int startState, int acceptState) {
+        builder.connect(startState, Optional.of(letter), acceptState);
     }
 }

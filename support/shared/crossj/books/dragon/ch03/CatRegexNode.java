@@ -20,4 +20,10 @@ final class CatRegexNode implements RegexNode {
     public String toPattern() {
         return RegexNodeHelper.wrap(left, BINDING_PRECEDENCE) + RegexNodeHelper.wrap(right, BINDING_PRECEDENCE);
     }
+
+    @Override
+    public void buildBlock(NFABuilder builder, int startState, int acceptState) {
+        var leftBlock = builder.buildBlock(left, startState, -1);
+        builder.buildBlock(right, leftBlock.acceptState, acceptState);
+    }
 }

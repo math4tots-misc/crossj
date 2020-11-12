@@ -5,7 +5,6 @@ import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;
 import crossj.base.Set;
-import crossj.base.XError;
 
 final class NFABuilder {
 
@@ -49,7 +48,7 @@ final class NFABuilder {
         return state;
     }
 
-    private void connect(int startState, Optional<Integer> label, int acceptState) {
+    void connect(int startState, Optional<Integer> label, int acceptState) {
         var localTransitions = transitionMap.get(startState);
         if (!localTransitions.containsKey(label)) {
             localTransitions.put(label, Set.of());
@@ -59,47 +58,14 @@ final class NFABuilder {
 
     // More or less as described in pages 159 - 161 for how to create a NFA
     // from a regex syntax tree.
-    private NFABlock buildBlock(RegexNode node, int startState, int acceptState) {
+    NFABlock buildBlock(RegexNode node, int startState, int acceptState) {
         if (startState == -1) {
             startState = newState();
         }
         if (acceptState == -1) {
             acceptState = newState();
         }
-
-        if (node instanceof EpsilonRegexNode) {
-            connect(startState, Optional.empty(), acceptState);
-        } else if (node instanceof LetterRegexNode) {
-            int letter = ((LetterRegexNode) node).letter;
-            connect(startState, Optional.of(letter), acceptState);
-        } else if (node instanceof OrRegexNode) {
-            var orNode = (OrRegexNode) node;
-            var left = orNode.left;
-            var right = orNode.right;
-            var leftBlock = buildBlock(left, -1, -1);
-            var rightBlock = buildBlock(right, -1, -1);
-            connect(startState, Optional.empty(), leftBlock.startState);
-            connect(startState, Optional.empty(), rightBlock.startState);
-            connect(leftBlock.acceptState, Optional.empty(), acceptState);
-            connect(rightBlock.acceptState, Optional.empty(), acceptState);
-        } else if (node instanceof CatRegexNode) {
-            var catNode = (CatRegexNode) node;
-            var left = catNode.left;
-            var right = catNode.right;
-            var leftBlock = buildBlock(left, startState, -1);
-            buildBlock(right, leftBlock.acceptState, acceptState);
-        } else if (node instanceof StarRegexNode) {
-            var innerNode = ((StarRegexNode) node).child;
-            buildBlock(innerNode, startState, acceptState);
-            connect(startState, Optional.empty(), acceptState);
-            connect(acceptState, Optional.empty(), startState);
-        } else if (node instanceof PlusRegexNode) {
-            var innerNode = ((PlusRegexNode) node).child;
-            buildBlock(innerNode, startState, acceptState);
-            connect(acceptState, Optional.empty(), startState);
-        } else {
-            throw XError.withMessage("Unrecognized NFARegexNode type: " + node);
-        }
+        node.buildBlock(this, startState, acceptState);
         return new NFABlock(startState, acceptState);
     }
 }

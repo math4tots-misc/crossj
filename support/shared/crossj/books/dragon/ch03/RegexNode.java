@@ -10,8 +10,8 @@ import crossj.base.Try;
  */
 public interface RegexNode {
     /**
-     * Returns an integer indicating how tightly the node's operation binds.
-     * For determining where to put parentheses in toString()
+     * Returns an integer indicating how tightly the node's operation binds. For
+     * determining where to put parentheses in toString()
      */
     int getBindingPrecedence();
 
@@ -19,6 +19,17 @@ public interface RegexNode {
      * Returns a regex pattern corresponding to this RegexNode
      */
     String toPattern();
+
+    /**
+     * -- should be package-private --
+     *
+     * Builds a block of an NFA by making connections between the startState and
+     * acceptState as implied by this RegexNode.
+     *
+     * Both startState and acceptState must already exist.
+     * If not, use NFABuilder.buildBlock() with -1 for states that need to be created.
+     */
+    void buildBlock(NFABuilder builder, int startState, int acceptState);
 
     /**
      * Returns a new regex pattern that matches this RegexNode zero or more times
