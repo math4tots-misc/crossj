@@ -42,6 +42,10 @@ public interface RegexNode {
         return new PlusRegexNode(this);
     }
 
+    default RegexNode qmark() {
+        return new QuestionMarkRegexNode(this);
+    }
+
     default RegexNode and(RegexNode other) {
         if (this instanceof EpsilonRegexNode) {
             return other;

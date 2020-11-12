@@ -57,17 +57,20 @@ final class RegexNodeParser {
 
     private Try<RegexNode> parsePostfix() {
         var tryNode = parseAtom();
-        if (tryNode.isOk() && (at('+') || at('*'))) {
-            int op = iter.nextCodePoint();
-            switch (op) {
+        if (tryNode.isOk() && iter.hasCodePoint()) {
+            switch (iter.peekCodePoint()) {
                 case '+':
                     tryNode = tryNode.map(node -> node.plus());
+                    iter.nextCodePoint();
                     break;
                 case '*':
                     tryNode = tryNode.map(node -> node.star());
+                    iter.nextCodePoint();
                     break;
-                default:
-                    throw XError.withMessage("Unrecognized postfix op: " + Str.fromCodePoint(op));
+                case '?':
+                    tryNode = tryNode.map(node -> node.qmark());
+                    iter.nextCodePoint();
+                    break;
             }
         }
         return tryNode;
@@ -88,6 +91,8 @@ final class RegexNodeParser {
                         case ')':
                         case '[':
                         case ']':
+                        case '{':
+                        case '}':
                         case '|':
                         case '.':
                             return Try.ok(RegexNode.ofCodePoint(escape));
@@ -112,6 +117,9 @@ final class RegexNodeParser {
             }
             case '*':
             case '+':
+            case '?':
+            case '{':
+            case '}':
                 return Try.fail("Misplaced postfix operator in regex: " + iter.getString());
             case '|':
                 throw XError.withMessage("Internal regex parsing issue (|): " + iter.getString());
