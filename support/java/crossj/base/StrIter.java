@@ -1,12 +1,11 @@
 package crossj.base;
 
 /**
- * Utility for iterating over and interacting with subslices of a string
+ * Utility for iterating over a string
  */
 public final class StrIter {
     private final String string;
     private int i = 0;
-    private int marker = 0;
 
     private StrIter(String string) {
         this.string = string;
@@ -17,19 +16,11 @@ public final class StrIter {
     }
 
     /**
-     * Marks the current position in the string. For use with the 'slice()' method.
-     */
-    public void mark() {
-        marker = i;
-    }
-
-    /**
-     * Returns a string by slicing from the position when 'mark()' was last called
-     * (or the beginning of the string if mark() was never called), to the current
+     * Returns a string by slicing from the given start position to the current
      * position.
      */
-    public String slice() {
-        return string.substring(marker, i);
+    public String sliceFrom(int start) {
+        return string.substring(start, i);
     }
 
     /**
@@ -43,8 +34,8 @@ public final class StrIter {
 
     /**
      * Returns the codePoint at the current position, and increments the position.
-     * You should call 'hashCodePoint()' to check that we are not yet past the
-     * end of the string.
+     * You should call 'hashCodePoint()' to check that we are not yet past the end
+     * of the string.
      */
     public int nextCodePoint() {
         var codePoint = peekCodePoint();
@@ -95,7 +86,7 @@ public final class StrIter {
     }
 
     /**
-     * Returns true, there are still more characters to process and getCodePoint()
+     * Returns true if there are still more characters to process and getCodePoint()
      * will return a valid value. Otherwise, we have seeked past the end of the
      * given string.
      */
@@ -126,11 +117,32 @@ public final class StrIter {
     }
 
     /**
+     * Returns an integer that represents the current position in the string.
+     */
+    public int getPosition() {
+        return i;
+    }
+
+    /**
+     * Sets the current position in the string.
+     *
+     * Only return values from getPosition() of the same instance of StrIter should
+     * be passed to this method.
+     */
+    public void setPosition(int i) {
+        this.i = i;
+    }
+
+    /**
      * Checks if the substring starting from the beginning of the string to the
      * current position ends with the given suffix.
      */
     public boolean endsWith(String suffix) {
         int len = suffix.length();
         return string.regionMatches(i - len, suffix, 0, len);
+    }
+
+    public String getString() {
+        return string;
     }
 }

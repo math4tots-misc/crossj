@@ -6,17 +6,7 @@ package crossj.base;
 public final class StrIter {
     native static StrIter of(String string);
 
-    /**
-     * Marks the current position in the string. For use with the 'slice()' method.
-     */
-    native public void mark();
-
-    /**
-     * Returns a string by slicing from the position when 'mark()' was last called
-     * (or the beginning of the string if mark() was never called), to the current
-     * position.
-     */
-    native public String slice();
+    native public String sliceFrom(int start);
 
     /**
      * Returns the codePoint at the current position in the string. You should call
@@ -75,9 +65,15 @@ public final class StrIter {
      */
     native public void seekToEnd();
 
+    native public int getPosition();
+
+    native public void setPosition(int i);
+
     /**
      * Checks if the substring starting from the beginning of the string to the
      * current position ends with the given suffix.
      */
     native public boolean endsWith(String suffix);
+
+    native public String getString();
 }

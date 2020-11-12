@@ -163,17 +163,16 @@ public final class StringTest {
         var iter = Str.iter("Hello world!");
         iter.seekToEnd();
         iter.decrN(" world!".length());
-        Assert.equals(iter.slice(), "Hello");
+        Assert.equals(iter.sliceFrom(0), "Hello");
 
-        iter.mark();
-        Assert.equals(iter.slice(), "");
+        int mark = iter.getPosition();
+        Assert.equals(iter.sliceFrom(mark), "");
 
         iter.seekToEnd();
-        Assert.equals(iter.slice(), " world!");
+        Assert.equals(iter.sliceFrom(mark), " world!");
 
         iter.seekToStart();
-        iter.mark();
-        Assert.equals(iter.slice(), "");
+        Assert.equals(iter.sliceFrom(iter.getPosition()), "");
     }
 
     @Test

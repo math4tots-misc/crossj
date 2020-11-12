@@ -18,6 +18,6 @@ final class CatRegexNode implements RegexNode {
 
     @Override
     public String toPattern() {
-        return RegexBuilder.wrap(left, BINDING_PRECEDENCE) + RegexBuilder.wrap(right, BINDING_PRECEDENCE);
+        return RegexNodeHelper.wrap(left, BINDING_PRECEDENCE) + RegexNodeHelper.wrap(right, BINDING_PRECEDENCE);
     }
 }

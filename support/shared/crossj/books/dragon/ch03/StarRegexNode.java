@@ -21,6 +21,6 @@ final class StarRegexNode implements RegexNode {
 
     @Override
     public String toPattern() {
-        return RegexBuilder.wrap(child, BINDING_PRECEDENCE) + "*";
+        return RegexNodeHelper.wrap(child, BINDING_PRECEDENCE) + "*";
     }
 }

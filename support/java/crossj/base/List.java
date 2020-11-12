@@ -81,6 +81,10 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         return list.get(list.size() - 1);
     }
 
+    public void setLast(T t) {
+        list.set(list.size() - 1, t);
+    }
+
     public void set(int i, T t) {
         list.set(i, t);
     }

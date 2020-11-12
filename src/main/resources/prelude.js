@@ -494,6 +494,9 @@ class C$crossj$base$List {
     M$last() {
         return this.arr[this.arr.length - 1];
     }
+    M$setLast(t) {
+        this.arr[this.arr.length - 1] = t;
+    }
     M$reverse() {
         this.arr.reverse();
     }
@@ -645,19 +648,14 @@ class C$crossj$base$StrIter {
     constructor(string) {
         this.string = string;
         this.i = 0;
-        this.marker = 0;
     }
 
     static M$of(string) {
         return new C$crossj$base$StrIter(string);
     }
 
-    M$mark() {
-        this.marker = this.i;
-    }
-
-    M$slice() {
-        return this.string.substring(this.i, this.marker)
+    M$sliceFrom(start) {
+        return this.string.substring(start, this.i);
     }
 
     M$peekCodePoint() {
@@ -729,11 +727,26 @@ class C$crossj$base$StrIter {
         this.i = this.string.length;
     }
 
+    M$getPosition() {
+        return this.i;
+    }
+
+    /**
+     * @param {number} i
+     */
+    M$setPosition(i) {
+        this.i = i;
+    }
+
     /**
      * @param {string} suffix
      */
     M$endsWith(suffix) {
         return this.string.endsWith(suffix, this.i);
+    }
+
+    M$getString() {
+        return this.string;
     }
 }
 $CJ['crossj.base.StrIter'] = C$crossj$base$StrIter;

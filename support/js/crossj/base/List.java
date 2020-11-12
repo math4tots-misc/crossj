@@ -21,6 +21,7 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
     public native int size();
     public native T get(int i);
     public native T last();
+    public native void setLast(T t);
     public native void set(int i, T t);
     public native T pop();
     public native List<T> slice(int start, int end);
