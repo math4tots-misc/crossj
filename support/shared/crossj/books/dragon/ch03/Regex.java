@@ -59,4 +59,13 @@ public final class Regex {
     public boolean matches(String string) {
         return matcher(string).matchAll();
     }
+
+    /**
+     * For debugging purposes.
+     *
+     * Returns a string describing the underlying DFA.
+     */
+    public String inspect() {
+        return dfa.inspect();
+    }
 }
