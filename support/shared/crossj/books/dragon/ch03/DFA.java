@@ -88,10 +88,10 @@ public final class DFA {
 
     public String inspect() {
         var sb = Str.builder();
-        sb.s("start = ").i(getStartState()).s(", accept = ").i(-1).s("\n");
+        sb.s("start = ").i(getStartState()).s("\n");
 
         for (int state = 0; state < acceptMap.length; state++) {
-            sb.i(state);
+            sb.s("  ").i(state);
             if (acceptMap[state] >= 0) {
                 sb.s(" (").i(acceptMap[state]).s(")");
             }
@@ -99,7 +99,7 @@ public final class DFA {
             for (int letter = 0; letter < Alphabet.COUNT; letter++) {
                 int newState = transitionMap[state * Alphabet.COUNT + letter];
                 if (newState >= 0) {
-                    sb.s("  ").s(Str.fromCodePoint(letter)).s(" -> ").i(newState).s("\n");
+                    sb.s("    ").s(Str.fromCodePoint(letter)).s(" -> ").i(newState).s("\n");
                 }
             }
         }
