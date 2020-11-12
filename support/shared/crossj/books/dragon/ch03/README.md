@@ -3,7 +3,7 @@ A basic lexical analyzer generator based on content in chapter 3 of the dragon b
 The analyzer is basically only able to distinguish between ASCII types. All unicode
 codepoints outside the ASCII range are mapped to `127`.
 
-There are 3 public classes in this package:
+There are 5 public classes in this package:
 
 * `Regex`
     A class that holds compiled regular expressions.
@@ -29,3 +29,10 @@ There are 3 public classes in this package:
 
 * `Alphabet`
     Some metadata about the alphabet used in the matchers.
+
+* `Lexer`
+    A utility built on top of `Regex` for quickly implementing
+    lexical analyzers.
+
+* `LexerBuilder`
+    Helper class for building `Lexer` instances.

@@ -33,7 +33,7 @@ public final class Try<T> {
 
     public T get() {
         if (isFail()) {
-            throw XError.withMessage("Get from a failed Try");
+            throw XError.withMessage("Get from a failed Try: " + getErrorMessageWithContext());
         }
         return value;
     }
@@ -58,7 +58,7 @@ public final class Try<T> {
         for (var entry : LinkedList.fromNode(context)) {
             sb.s("  ").s(entry).s("\n");
         }
-        sb.s(message).s("\n");
+        sb.s("ERROR: ").s(message).s("\n");
         return sb.build();
     }
 

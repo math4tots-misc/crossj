@@ -1,6 +1,7 @@
 package crossj.books.dragon.ch03;
 
 import crossj.base.Assert;
+import crossj.base.IO;
 import crossj.base.Test;
 
 public final class RegexTest {
@@ -85,6 +86,46 @@ public final class RegexTest {
             Assert.that(!re.matches(""));
             Assert.that(!re.matches("a"));
             Assert.that(!re.matches("a\\?"));
+        }
+    }
+
+    @Test
+    public static void multiway() {
+        {
+            var re = Regex.fromPatterns(
+                "1|2|3|4|5|6|7|8|9|0",
+                "a|b|c|d|e|f|g"
+            ).get();
+            Assert.that(!re.matches(""));
+            Assert.that(re.matches("2"));
+            Assert.that(re.matcher("24").match());
+            Assert.that(re.matches("a"));
+            Assert.that(re.matcher("a").match());
+            Assert.that(re.matcher("abb").match());
+        }
+        {
+            var re = Regex.fromPatterns(
+                "(1|2|3|4|5|6|7|8|9|0)+",
+                "(a|b|c|d|e|f|g)+"
+            ).get();
+            Assert.that(!re.matches(""));
+            Assert.that(re.matches("2"));
+            Assert.that(re.matcher("24").match());
+            Assert.that(re.matches("a"));
+            Assert.that(re.matcher("a").match());
+            Assert.that(re.matcher("abb").match());
+
+            var matcher = re.matcher("224abc99");
+            IO.println(re.inspect());
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 0);
+            Assert.equals(matcher.getMatchText(), "224");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 1);
+            Assert.equals(matcher.getMatchText(), "abc");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 1);
+            Assert.equals(matcher.getMatchText(), "abc");
         }
     }
 }
