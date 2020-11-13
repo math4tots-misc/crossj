@@ -1,7 +1,6 @@
 package crossj.books.dragon.ch03;
 
 import crossj.base.Assert;
-import crossj.base.IO;
 import crossj.base.Test;
 
 public final class RegexTest {
@@ -116,7 +115,6 @@ public final class RegexTest {
             Assert.that(re.matcher("abb").match());
 
             var matcher = re.matcher("224abc99");
-            IO.println(re.inspect());
             Assert.that(matcher.match());
             Assert.equals(matcher.getMatchIndex(), 0);
             Assert.equals(matcher.getMatchText(), "224");
@@ -124,8 +122,9 @@ public final class RegexTest {
             Assert.equals(matcher.getMatchIndex(), 1);
             Assert.equals(matcher.getMatchText(), "abc");
             Assert.that(matcher.match());
-            Assert.equals(matcher.getMatchIndex(), 1);
-            Assert.equals(matcher.getMatchText(), "abc");
+            Assert.equals(matcher.getMatchIndex(), 0);
+            Assert.equals(matcher.getMatchText(), "99");
+            Assert.that(!matcher.match());
         }
     }
 }

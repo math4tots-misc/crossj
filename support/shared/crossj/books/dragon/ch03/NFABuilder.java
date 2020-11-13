@@ -28,7 +28,8 @@ final class NFABuilder {
 
         for (int i = 0; i < nodes.size(); i++) {
             var node = nodes.get(i);
-            builder.buildBlock(node, startState, i);
+            var block = builder.buildBlock(node, -1, i);
+            builder.connect(startState, Optional.empty(), block.startState);
             builder.connect(i, Optional.empty(), joinAcceptState);
         }
 

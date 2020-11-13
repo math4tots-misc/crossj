@@ -4,15 +4,19 @@ import crossj.base.Assert;
 import crossj.base.FrozenSet;
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Repr;
 import crossj.base.Set;
 import crossj.base.Str;
 
 final class DFA {
+    private final int startState;
     private final int[] transitionMap;
     private final int[] acceptMap;
 
-    private DFA(int[] transitionMap, int[] acceptMap) {
+    DFA(int startState, int[] transitionMap, int[] acceptMap) {
+        Assert.equals(startState, 0);
         Assert.equals(transitionMap.length, acceptMap.length * Alphabet.COUNT);
+        this.startState = startState;
         this.transitionMap = transitionMap;
         this.acceptMap = acceptMap;
     }
@@ -25,7 +29,7 @@ final class DFA {
      * Returns the start state of this DFA
      */
     public int getStartState() {
-        return 0;
+        return startState;
     }
 
     /**
@@ -88,10 +92,13 @@ final class DFA {
 
     public String inspect() {
         var sb = Str.builder();
-        sb.s("start = ").i(getStartState()).s("\n");
+        sb.s("=== DFA TRANSITIONS === (start = ").i(getStartState()).s(")\n");
 
         for (int state = 0; state < acceptMap.length; state++) {
             sb.s("  ").i(state);
+            if (state == startState) {
+                sb.s(" [START]");
+            }
             if (acceptMap[state] >= 0) {
                 sb.s(" (").i(acceptMap[state]).s(")");
             }
@@ -99,7 +106,7 @@ final class DFA {
             for (int letter = 0; letter < Alphabet.COUNT; letter++) {
                 int newState = transitionMap[state * Alphabet.COUNT + letter];
                 if (newState >= 0) {
-                    sb.s("    ").s(Str.fromCodePoint(letter)).s(" -> ").i(newState).s("\n");
+                    sb.s("    ").s(Repr.reprstr(Str.fromCodePoint(letter))).s(" -> ").i(newState).s("\n");
                 }
             }
         }
@@ -134,7 +141,9 @@ final class DFA {
                     break;
                 }
             }
-            acceptMap.put(state, acceptingAlternative);
+            if (acceptingAlternative != -1) {
+                acceptMap.put(state, acceptingAlternative);
+            }
 
             var letters = nfa.lettersFromStates(state);
             for (var letter : letters) {
@@ -147,30 +156,7 @@ final class DFA {
             }
         }
 
-        var frozenSetToIndex = Map.<FrozenSet<Integer>, Integer>of();
-        for (int i = 0; i < allStates.size(); i++) {
-            frozenSetToIndex.put(allStates.get(i), i);
-        }
-
-        // Convert the information in transitionMap and acceptMap to use
-        // integers to represent the states rather than FrozenSets
-        var newTransitionMap = new int[allStates.size() * Alphabet.COUNT];
-        var newAcceptMap = new int[allStates.size()];
-        for (int i = 0; i < newAcceptMap.length; i++) {
-            newAcceptMap[i] = acceptMap.getOrElse(allStates.get(i), () -> -1);
-        }
-        for (int i = 0; i < newTransitionMap.length; i++) {
-            newTransitionMap[i] = -1;
-        }
-        for (int state = 0; state < newAcceptMap.length; state++) {
-            var localMap = transitionMap.get(allStates.get(state));
-            for (var letter : localMap.keys()) {
-                var destinationState = localMap.get(letter);
-                var destinationStateIndex = frozenSetToIndex.get(destinationState);
-                newTransitionMap[state * Alphabet.COUNT + letter] = destinationStateIndex;
-            }
-        }
-
-        return new DFA(newTransitionMap, newAcceptMap);
+        var dfair = DFAIR.fromFrozenSetDescription(allStates, startState, transitionMap, acceptMap);
+        return dfair.withMinimumNumberOfStates();
     }
 }

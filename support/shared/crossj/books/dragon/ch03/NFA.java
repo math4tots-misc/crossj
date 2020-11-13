@@ -93,9 +93,17 @@ final class NFA {
 
     public String inspect() {
         var sb = Str.builder();
-        sb.s("start = ").i(getStartState()).s(", accept = ").i(acceptState).s("\n");
+        sb.s("=== NFA TRANSITIONS === (start = ").i(getStartState()).s(", accept = ").i(acceptState).s(")\n");
         for (int state = 0; state < transitionMap.size(); state++) {
-            sb.i(state).s("\n");
+            sb.i(state);
+            if (state < acceptState) {
+                sb.s(" <accept ").i(state).s(">");
+            } else if (state == acceptState) {
+                sb.s(" <universal accept>");
+            } else if (state == getStartState()) {
+                sb.s(" <START>");
+            }
+            sb.s("\n");
             var localMap = transitionMap.get(state);
             var keys = List.sortedBy(localMap.keys(), (a, b) -> Compare.optionals(a, b));
             for (var key : keys) {

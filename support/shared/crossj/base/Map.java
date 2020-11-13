@@ -93,6 +93,22 @@ public final class Map<K, V> {
         return null;
     }
 
+    /**
+     * If the key is present in this map, the behavior is identical to get().
+     * Otherwise, the given callback is used to create a value, is inserted,
+     * and this inserted value is returned.
+     */
+    public V getOrInsert(K key, Func0<V> f) {
+        Tuple3<Integer, K, V> triple = getTripleOrNull(key);
+        if (triple != null) {
+            return triple.get3();
+        } else {
+            V value = f.apply();
+            put(key, value);
+            return value;
+        }
+    }
+
     public V getOrNull(K key) {
         if (list == null) {
             return null;
@@ -123,6 +139,11 @@ public final class Map<K, V> {
     public V getOrElse(K key, Func0<V> f) {
         Tuple3<Integer, K, V> triple = getTripleOrNull(key);
         return triple == null ? f.apply() : triple.get3();
+    }
+
+    public Optional<V> getOptional(K key) {
+        Tuple3<Integer, K, V> triple = getTripleOrNull(key);
+        return triple == null ? Optional.empty() : Optional.of(triple.get3());
     }
 
     private Tuple3<Integer, K, V> removeTripleOrNull(K key) {
@@ -170,6 +191,14 @@ public final class Map<K, V> {
             return List.<V>of().iter();
         } else {
             return list.iter().flatMap(bucket -> bucket.map(triple -> triple.get3()));
+        }
+    }
+
+    public XIterator<Pair<K, V>> pairs() {
+        if (list == null) {
+            return List.<Pair<K, V>>of().iter();
+        } else {
+            return list.iter().flatMap(bucket -> bucket.map(triple -> Pair.of(triple.get2(), triple.get3())));
         }
     }
 

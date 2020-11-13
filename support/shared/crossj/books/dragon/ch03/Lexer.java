@@ -1,7 +1,6 @@
 package crossj.books.dragon.ch03;
 
 import crossj.base.Func1;
-import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.Try;
 
@@ -36,7 +35,6 @@ public final class Lexer<Token> {
             if (tryTokenList.isFail()) {
                 return tryTokenList;
             }
-            IO.println("tryTokenList.get() = " + tryTokenList.get());
             tokens.addAll(tryTokenList.get());
         }
         if (matcher.getStrIter().hasCodePoint()) {
