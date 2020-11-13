@@ -205,6 +205,9 @@ public final class StringTest {
 
         // backspace
         Assert.equals(Repr.of(Str.fromCodePoint(127)), "\"\\x7F\"");
+
+        // space should not be affected
+        Assert.equals(Repr.of(" "), "\" \"");
     }
 
     // This is not yet supported
