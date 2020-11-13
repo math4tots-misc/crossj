@@ -12,6 +12,7 @@ import crossj.base.Set;
 final class CharSetRegexNode implements RegexNode {
     public final static int BINDING_PRECEDENCE = LetterRegexNode.BINIDNG_PRECEDENCE;
 
+    public final static CharSetRegexNode ALL = new CharSetRegexNode(".", Range.of(0, Alphabet.COUNT).list());
     public final static CharSetRegexNode DIGITS = new CharSetRegexNode("\\d", Range.of('0', '9' + 1).list());
     public final static CharSetRegexNode NON_DIGITS = DIGITS.negate("\\D");
     public final static CharSetRegexNode WORD = new CharSetRegexNode("\\w",

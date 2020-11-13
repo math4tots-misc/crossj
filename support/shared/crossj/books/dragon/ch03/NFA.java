@@ -1,6 +1,5 @@
 package crossj.books.dragon.ch03;
 
-import crossj.base.Compare;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;

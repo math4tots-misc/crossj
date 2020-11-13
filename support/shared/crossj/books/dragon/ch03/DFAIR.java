@@ -119,8 +119,6 @@ final class DFAIR {
 
         // split the partitions
         while (true) {
-            boolean splitFound = false;
-
             // we store the partition size because we will add to the partition
             // in the loop itself.
             int startPartitionSize = partition.size();
@@ -136,21 +134,28 @@ final class DFAIR {
 
                     if (statesByTransitionGroupIds.size() != 1) {
                         // the transition on this letter has split this group.
-                        splitFound = true;
                         var resultingGroups = List.sorted(statesByTransitionGroupIds.values());
 
-                        // let the first resulting group take the place of the old group.
+                        // let the first resulting group takes the place of the old group.
                         partition.set(groupId, resultingGroups.get(0));
 
                         // add the remaining groups at the end of the partition.
                         for (int i = 1; i < resultingGroups.size(); i++) {
+                            int newGroupId = partition.size();
                             partition.add(resultingGroups.get(i));
+
+                            // the 'stateToGroupId' table also needs to be updated to reflect the new
+                            // groups that these states belong in.
+                            for (var movedState : resultingGroups.get(i)) {
+                                stateToGroupId.set(movedState, newGroupId);
+                            }
                         }
                     }
                 }
             }
 
-            if (!splitFound) {
+            if (partition.size() == startPartitionSize) {
+                // if no new groups were added to the partition, we're done
                 break;
             }
         }
@@ -190,28 +195,33 @@ final class DFAIR {
         return new DFA(newStartState, newTransitionMap, newAcceptMap);
     }
 
-    // public DFA toDFA() {
-    //     // compute newTransitionMap
-    //     var newTransitionMap = new int[nStates * Alphabet.COUNT];
-    //     for (int i = 0; i < newTransitionMap.length; i++) {
-    //         newTransitionMap[i] = -1;
-    //     }
-    //     for (var pair : transitionMap.pairs()) {
-    //         int state1 = pair.get1();
-    //         var localTransitionMap = pair.get2();
-    //         for (var innerPair : localTransitionMap.pairs()) {
-    //             int letter = innerPair.get1();
-    //             int state2 = innerPair.get2();
-    //             newTransitionMap[state1 * Alphabet.COUNT + letter] = state2;
-    //         }
-    //     }
+    /**
+     * Used every now and then for debugging purposes.
+     *
+     * Converts this DFAIR directly into a DFA without minimizing state count.
+     */
+    public DFA toDFA() {
+        // compute newTransitionMap
+        var newTransitionMap = new int[nStates * Alphabet.COUNT];
+        for (int i = 0; i < newTransitionMap.length; i++) {
+            newTransitionMap[i] = -1;
+        }
+        for (var pair : transitionMap.pairs()) {
+            int state1 = pair.get1();
+            var localTransitionMap = pair.get2();
+            for (var innerPair : localTransitionMap.pairs()) {
+                int letter = innerPair.get1();
+                int state2 = innerPair.get2();
+                newTransitionMap[state1 * Alphabet.COUNT + letter] = state2;
+            }
+        }
 
-    //     // compute newAcceptMap
-    //     var newAcceptMap = new int[nStates];
-    //     for (int i = 0; i < nStates; i++) {
-    //         newAcceptMap[i] = acceptMap.getOrElse(i, () -> -1);
-    //     }
+        // compute newAcceptMap
+        var newAcceptMap = new int[nStates];
+        for (int i = 0; i < nStates; i++) {
+            newAcceptMap[i] = acceptMap.getOrElse(i, () -> -1);
+        }
 
-    //     return new DFA(startState, newTransitionMap, newAcceptMap);
-    // }
+        return new DFA(startState, newTransitionMap, newAcceptMap);
+    }
 }

@@ -121,6 +121,8 @@ final class RegexNodeParser {
                 } else {
                     return Try.fail("Regex pattern ends in unterminated escape sequence: " + iter.getString());
                 }
+            case '.':
+                return Try.ok(CharSetRegexNode.ALL);
             case '(': {
                 var tryNode = parseAltExpr();
                 if (tryNode.isOk() && (!iter.hasCodePoint() || iter.nextCodePoint() != ')')) {

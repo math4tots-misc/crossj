@@ -1045,10 +1045,8 @@ public final class JavascriptTranslator implements ITranslator {
                         } else {
                             // values are explicitly provided
                             if (!node.dimensions().isEmpty()) {
-                                throw err(
-                                        "If an array is initialized with values, " +
-                                                "it's length cannot be explicitly specified",
-                                        node);
+                                throw err("If an array is initialized with values, "
+                                        + "it's length cannot be explicitly specified", node);
                             }
                             sb.append("[");
                             var expressions = initializer.expressions();
@@ -1110,9 +1108,62 @@ public final class JavascriptTranslator implements ITranslator {
 
             @Override
             public boolean visit(Assignment node) {
-                node.getLeftHandSide().accept(this);
+                var lhs = node.getLeftHandSide();
+                var lhsType = lhs.resolveTypeBinding();
+                var lhsTypeStr = lhsType.toString();
+                var rhs = node.getRightHandSide();
+                var rhsType = rhs.resolveTypeBinding();
+                var rhsTypeStr = rhsType.toString();
+                var operator = node.getOperator();
+                var operatorStr = operator.toString();
+                switch (lhsTypeStr) {
+                    case "int":
+                        switch (operatorStr) {
+                            case "/=":
+                                // in this case, we need to handle things a bit specially.
+                                // we require an inplace integer division, but such an operator
+                                // is not available in JS right now.
+
+                                // For some special cases though, we can handle it.
+                                if (lhs instanceof SimpleName) {
+                                    var simpleName = (SimpleName) lhs;
+                                    var binding = simpleName.resolveBinding();
+                                    if (binding instanceof IVariableBinding) {
+                                        var varb = (IVariableBinding) binding;
+                                        if (varb.isField()) {
+                                            // TOOD
+                                        } else {
+                                            // local variable
+                                            sb.append(varb.getName());
+                                            sb.append("=(");
+                                            sb.append(varb.getName());
+                                            sb.append("/(");
+                                            node.getRightHandSide().accept(this);
+                                            sb.append(")|0)");
+                                            return false;
+                                        }
+                                    }
+                                }
+
+                                throw err("(int/=<*>) operator is not currently supported for JS", node);
+
+                            case "+=":
+                            case "-=":
+                            case "*=":
+                            case "%=":
+                                // these operators or ok with other integers, but
+                                // can mess things up when combined with doubles
+                                if (!rhsTypeStr.equals("int")) {
+                                    throw err("int" + operatorStr + "<non-int> is not currently supported for JS",
+                                            node);
+                                }
+                        }
+                        break;
+                }
+                // if we fallthrough here, we assume we do things "normally".
+                lhs.accept(this);
                 sb.append(node.getOperator());
-                node.getRightHandSide().accept(this);
+                rhs.accept(this);
                 return false;
             }
 
@@ -1154,9 +1205,7 @@ public final class JavascriptTranslator implements ITranslator {
                     } else {
                         // instance field
                         node.getQualifier().accept(this);
-                        sb.append(getFieldAccessSuffix(
-                                node.getQualifier().resolveTypeBinding(),
-                                varb.getName()));
+                        sb.append(getFieldAccessSuffix(node.getQualifier().resolveTypeBinding(), varb.getName()));
                     }
                 } else {
                     throw err("Unrecognized QualfiedName type: " + node.getClass(), node);

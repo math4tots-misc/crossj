@@ -1,6 +1,7 @@
 package crossj.books.dragon.ch03;
 
 import crossj.base.Assert;
+import crossj.base.IO;
 import crossj.base.Test;
 
 public final class RegexTest {
@@ -241,6 +242,27 @@ public final class RegexTest {
             Assert.that(re.matches("ddxfd"));
             Assert.that(re.matches("-"));
             Assert.that(re.matches("d-d"));
+        }
+        {
+            // should match any one character
+            var re = Regex.fromPatterns(".").get();
+            Assert.that(!re.matches(""));
+            Assert.that(re.matches("x"));
+            Assert.that(re.matches("."));
+            Assert.that(!re.matches("xx"));
+        }
+        {
+            var re = Regex.fromPatterns("..\\d+").get();
+            IO.println(RegexNode.fromPattern("..\\d+").get().toPattern());
+            IO.println(NFA.fromPatterns("..\\d+").get().inspect());
+            IO.println(re.inspect());
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("a"));
+            Assert.that(re.matches("^&3"));
+            Assert.that(re.matches("a 8484"));
+            Assert.that(re.matches("  8484"));
+            Assert.that(re.matches("12345"));
+            Assert.that(re.matches(" y1235"));
         }
     }
 }
