@@ -102,6 +102,18 @@ final class RegexNodeParser {
                             return Try.ok(RegexNode.ofChar('\r'));
                         case 't':
                             return Try.ok(RegexNode.ofChar('\t'));
+                        case 'd':
+                            return Try.ok(CharSetRegexNode.DIGITS);
+                        case 'D':
+                            return Try.ok(CharSetRegexNode.NON_DIGITS);
+                        case 'w':
+                            return Try.ok(CharSetRegexNode.WORD);
+                        case 'W':
+                            return Try.ok(CharSetRegexNode.NON_WORD);
+                        case 's':
+                            return Try.ok(CharSetRegexNode.WHITESPACE);
+                        case 'S':
+                            return Try.ok(CharSetRegexNode.NON_WHITESPACE);
                         default:
                             return Try.fail("Invalid escape character " + escape + " in :" + iter.getString());
                     }

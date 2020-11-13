@@ -175,4 +175,31 @@ public final class RegexTest {
             Assert.that(!matcher.match());
         }
     }
+
+    @Test
+    public static void characterClasses() {
+        {
+            var re = Regex.fromPatterns("a\\d+").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("a"));
+            Assert.that(!re.matches("55"));
+            Assert.that(!re.matches("b09876123445"));
+            Assert.that(!re.matches("bb"));
+            Assert.that(re.matches("a1"));
+            Assert.that(re.matches("a23"));
+            Assert.that(re.matches("a09876123445"));
+        }
+        {
+            var re = Regex.fromPatterns("\\w\\d+").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("a"));
+            Assert.that(!re.matches("bb"));
+            Assert.that(re.matches("b09876123445"));
+            Assert.that(re.matches("55"));
+            Assert.that(re.matches("a1"));
+            Assert.that(re.matches("a23"));
+            Assert.that(re.matches("a09876123445"));
+            Assert.that(re.matches("_09876123445"));
+        }
+    }
 }

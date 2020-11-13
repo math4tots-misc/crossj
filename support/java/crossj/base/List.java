@@ -51,19 +51,19 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         return ret;
     }
 
-    public static <T> List<T> reversed(Iterable<T> iterable) {
+    public static <T> List<T> reversed(XIterable<T> iterable) {
         List<T> ret = List.fromIterable(iterable);
         Collections.reverse(ret.list);
         return ret;
     }
 
-    public static <T extends Comparable<T>> List<T> sorted(Iterable<T> iterable) {
+    public static <T extends Comparable<T>> List<T> sorted(XIterable<T> iterable) {
         List<T> ret = List.fromIterable(iterable);
         Collections.sort(ret.list);
         return ret;
     }
 
-    public static <T> List<T> sortedBy(Iterable<T> iterable, Func2<Integer, T, T> f) {
+    public static <T> List<T> sortedBy(XIterable<T> iterable, Func2<Integer, T, T> f) {
         List<T> ret = List.fromIterable(iterable);
         ret.sortBy(f);
         return ret;
@@ -172,7 +172,7 @@ public final class List<T> implements XIterable<T>, Comparable<List<T>> {
         return ret;
     }
 
-    public <R> List<R> flatMap(Func1<Iterable<R>, T> f) {
+    public <R> List<R> flatMap(Func1<XIterable<R>, T> f) {
         ArrayList<R> ret = new ArrayList<>();
         for (T t: list) {
             for (R r: f.apply(t)) {
