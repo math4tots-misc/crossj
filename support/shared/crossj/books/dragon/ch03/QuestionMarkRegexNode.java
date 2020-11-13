@@ -1,14 +1,14 @@
 package crossj.books.dragon.ch03;
 
-import crossj.base.Optional;
-
 final class QuestionMarkRegexNode implements RegexNode {
     public static final int BINDING_PRECEDENCE = StarRegexNode.BINDING_PRECEDENCE;
 
     private final RegexNode inner;
+    private final IntervalRegexNode proxy;
 
     QuestionMarkRegexNode(RegexNode inner) {
         this.inner = inner;
+        this.proxy = new IntervalRegexNode(inner, 0, 1);
     }
 
     @Override
@@ -23,7 +23,6 @@ final class QuestionMarkRegexNode implements RegexNode {
 
     @Override
     public void buildBlock(NFABuilder builder, int startState, int acceptState) {
-        inner.buildBlock(builder, startState, acceptState);
-        builder.connect(startState, Optional.empty(), acceptState);
+        proxy.buildBlock(builder, startState, acceptState);
     }
 }

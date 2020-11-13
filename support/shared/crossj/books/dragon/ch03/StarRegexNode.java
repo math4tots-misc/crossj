@@ -1,19 +1,19 @@
 package crossj.books.dragon.ch03;
 
-import crossj.base.Optional;
-
 final class StarRegexNode implements RegexNode {
     public static final int BINDING_PRECEDENCE = 50;
 
-    final RegexNode child;
+    private final RegexNode inner;
+    private final IntervalRegexNode proxy;
 
-    StarRegexNode(RegexNode child) {
-        this.child = child;
+    StarRegexNode(RegexNode inner) {
+        this.inner = inner;
+        this.proxy = new IntervalRegexNode(inner, 0, -1);
     }
 
     @Override
     public String toString() {
-        return child + "*";
+        return inner + "*";
     }
 
     @Override
@@ -23,13 +23,11 @@ final class StarRegexNode implements RegexNode {
 
     @Override
     public String toPattern() {
-        return RegexNodeHelper.wrap(child, BINDING_PRECEDENCE) + "*";
+        return RegexNodeHelper.wrap(inner, BINDING_PRECEDENCE) + "*";
     }
 
     @Override
     public void buildBlock(NFABuilder builder, int startState, int acceptState) {
-        builder.buildBlock(child, startState, acceptState);
-        builder.connect(startState, Optional.empty(), acceptState);
-        builder.connect(acceptState, Optional.empty(), startState);
+        proxy.buildBlock(builder, startState, acceptState);
     }
 }

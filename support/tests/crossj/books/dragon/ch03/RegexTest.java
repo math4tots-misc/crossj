@@ -261,4 +261,74 @@ public final class RegexTest {
             Assert.that(re.matches(" y1235"));
         }
     }
+
+    @Test
+    public static void intervals() {
+        {
+            // basic
+            var re = Regex.fromPatterns("x{3}").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("x"));
+            Assert.that(!re.matches("xx"));
+            Assert.that(re.matches("xxx"));
+            Assert.that(!re.matches("yyy"));
+            Assert.that(!re.matches("xxxx"));
+            Assert.that(!re.matches("xxxxx"));
+        }
+        {
+            // mixed patterns
+            var re = Regex.fromPatterns("(x|y){3}").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("x"));
+            Assert.that(!re.matches("xx"));
+            Assert.that(re.matches("xxx"));
+            Assert.that(re.matches("yyy"));
+            Assert.that(re.matches("yxy"));
+            Assert.that(re.matches("yxx"));
+            Assert.that(!re.matches("xxxx"));
+            Assert.that(!re.matches("yyyy"));
+            Assert.that(!re.matches("xxxxx"));
+        }
+        {
+            // min count, no upper limit
+            var re = Regex.fromPatterns("(x|y){3,}").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("x"));
+            Assert.that(!re.matches("xx"));
+            Assert.that(!re.matches("xy"));
+            Assert.that(!re.matches("yy"));
+            Assert.that(re.matches("xxx"));
+            Assert.that(re.matches("yyy"));
+            Assert.that(re.matches("yxy"));
+            Assert.that(re.matches("yxx"));
+            Assert.that(re.matches("xxxx"));
+            Assert.that(re.matches("yyyy"));
+            Assert.that(re.matches("xxxxx"));
+        }
+        {
+            // 0 count
+            var re = Regex.fromPatterns("(x|y){0}").get();
+            Assert.that(re.matches(""));
+            Assert.that(!re.matches("x"));
+            Assert.that(!re.matches("xy"));
+            Assert.that(!re.matches("yy"));
+            Assert.that(!re.matches("xxx"));
+            Assert.that(!re.matches("yyyy"));
+            Assert.that(!re.matches("xxxxx"));
+        }
+        {
+            // non-zero lower and finite upper
+            var re = Regex.fromPatterns("(x|y){2,3}").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("x"));
+            Assert.that(re.matches("xx"));
+            Assert.that(re.matches("xxx"));
+            Assert.that(re.matches("yyy"));
+            Assert.that(re.matches("yxy"));
+            Assert.that(re.matches("yxx"));
+            Assert.that(!re.matches("xxxx"));
+            Assert.that(!re.matches("yyyy"));
+            Assert.that(!re.matches("xxxxx"));
+        }
+    }
 }

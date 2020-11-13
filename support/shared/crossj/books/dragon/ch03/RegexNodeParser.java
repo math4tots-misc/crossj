@@ -1,5 +1,7 @@
 package crossj.books.dragon.ch03;
 
+import crossj.base.Char;
+import crossj.base.Num;
 import crossj.base.Set;
 import crossj.base.Str;
 import crossj.base.StrIter;
@@ -33,7 +35,7 @@ final class RegexNodeParser {
 
     private Try<RegexNode> parseAll() {
         var tryNode = parseAltExpr();
-        if (iter.hasCodePoint()) {
+        if (tryNode.isOk() && iter.hasCodePoint()) {
             return Try.fail("Invalid trailing data in regex pattern: " + iter.getString());
         } else {
             return tryNode;
@@ -56,6 +58,19 @@ final class RegexNodeParser {
         return tryNode;
     }
 
+    private Try<Integer> parseDigits() {
+        if (!iter.hasCodePoint()) {
+            return Try.fail("Expected digit but got end of string");
+        } else if (!Char.isDigit(iter.peekCodePoint())) {
+            return Try.fail("Expected digit but got " + Str.fromCodePoint(iter.nextCodePoint()));
+        }
+        int start = iter.getPosition();
+        while (iter.hasCodePoint() && Char.isDigit(iter.peekCodePoint())) {
+            iter.nextCodePoint();
+        }
+        return Try.ok(Num.parseInt(iter.sliceFrom(start)));
+    }
+
     private Try<RegexNode> parsePostfix() {
         var tryNode = parseAtom();
         if (tryNode.isOk() && iter.hasCodePoint()) {
@@ -71,6 +86,33 @@ final class RegexNodeParser {
                 case '?':
                     tryNode = tryNode.map(node -> node.qmark());
                     iter.nextCodePoint();
+                    break;
+                case '{':
+                    iter.nextCodePoint();
+                    var tryMin = parseDigits();
+                    if (tryMin.isFail()) {
+                        return tryMin.withContext("while parsing lower limit in interval syntax {}").castFail();
+                    }
+                    int min = tryMin.get();
+                    int vmax = min;
+                    if (consume(',')) {
+                        if (consume('}')) {
+                            vmax = -1;
+                        } else {
+                            var tryMax = parseDigits();
+                            if (tryMax.isFail()) {
+                                return tryMax.withContext("while parsing upper limit in interval syntax {}").castFail();
+                            }
+                            if (!consume('}')) {
+                                return Try.fail("Expected closing '}'");
+                            }
+                            vmax = tryMax.get();
+                        }
+                    } else if (!consume('}')) {
+                        return Try.fail("Expected closing '}'");
+                    }
+                    int max = vmax;
+                    tryNode = tryNode.map(node -> new IntervalRegexNode(node, min, max));
                     break;
             }
         }

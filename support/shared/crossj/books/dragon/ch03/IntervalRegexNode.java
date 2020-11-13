@@ -31,24 +31,40 @@ final class IntervalRegexNode implements RegexNode {
 
     @Override
     public void buildBlock(NFABuilder builder, int startState, int acceptState) {
-        if (min == max || max == -1) {
-            // if max == -1, it means repeat
-            if (min == 0) {
-                if (max == -1) {
-                    // this is basically just kleene star
-                    new StarRegexNode(inner).buildBlock(builder, startState, acceptState);
-                    return;
-                } else {
-                    // this is basically just a zero length match
+        switch (max) {
+            case -1:
+                if (min == 0) {
+                    // case 1: max is infinite and min = 0
+                    // this is equivalent to '*' (kleene star)
+                    builder.buildBlock(inner, startState, acceptState);
                     builder.connect(startState, Optional.empty(), acceptState);
-                    return;
+                    builder.connect(acceptState, Optional.empty(), startState);
+                } else {
+                    // case 2: max is infinite and min > 0
+                    // we build min blocks, with the last one using the overall acceptState
+                    // as its acceptState.
+                    // when min = 1, this is equivalent to '+'
+                    for (int i = 0; i + 1 < min; i++) {
+                        startState = builder.buildBlock(inner, startState, -1).acceptState;
+                    }
+                    builder.buildBlock(inner, startState, acceptState);
+                    builder.connect(acceptState, Optional.empty(), startState);
                 }
-            }
-            // we can assume from here that min >= 1
-            int rep = min;
-            for (int i = 0; i < rep; i++) {
-                builder.buildBlock(inner, -1, -1);
-            }
+                break;
+            case 0:
+                // case 3: max = 0
+                builder.connect(startState, Optional.empty(), acceptState);
+                break;
+            default:
+                // case 4: max is finite, max > 0
+                // when min = 0 and max = 1 this is '?'
+                for (int i = 0; i < max; i++) {
+                    if (i >= min) {
+                        builder.connect(startState, Optional.empty(), acceptState);
+                    }
+                    startState = builder.buildBlock(inner, startState, i + 1 == max ? acceptState : -1).acceptState;
+                }
+                break;
         }
     }
 }

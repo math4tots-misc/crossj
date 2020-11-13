@@ -50,6 +50,12 @@ final class NFABuilder {
     }
 
     void connect(int startState, Optional<Integer> label, int acceptState) {
+        if (startState == acceptState && label.isEmpty()) {
+            // there's always an epsilon transition from a state to itself, so
+            // there's no need to explicitly create one.
+            return;
+        }
+
         var localTransitions = transitionMap.get(startState);
         if (!localTransitions.containsKey(label)) {
             if (label.isPresent()) {
