@@ -62,6 +62,16 @@ public final class RegexTest {
     }
 
     @Test
+    public static void emptyMatch() {
+        var re = Regex.fromPatterns("x*").get();
+        var matcher = re.matcher("xxx");
+        Assert.that(matcher.match());
+        Assert.equals(matcher.getMatchText(), "xxx");
+        Assert.that(matcher.match());
+        Assert.equals(matcher.getMatchText(), "");
+    }
+
+    @Test
     public static void misc() {
         {
             var re = Regex.fromPatterns("aaa|bb").get();
@@ -85,6 +95,44 @@ public final class RegexTest {
             Assert.that(!re.matches(""));
             Assert.that(!re.matches("a"));
             Assert.that(!re.matches("a\\?"));
+        }
+        {
+            var re = Regex.fromPatterns(
+                "abc|(01|2|3)+|(x|y|z)+",
+                "777|888|999",
+                "(j*|(rt+)+)*"
+            ).get();
+            var matcher = re.matcher("abc7770101888jrtrtttjjabcxxyzz");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 0);
+            Assert.equals(matcher.getMatchText(), "abc");
+            Assert.equals(matcher.getStrIter().getPosition(), 3);
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 1);
+            Assert.equals(matcher.getMatchText(), "777");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 0);
+            Assert.equals(matcher.getMatchText(), "0101");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 1);
+            Assert.equals(matcher.getMatchText(), "888");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 2);
+            Assert.equals(matcher.getMatchText(), "jrtrtttjj");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 0);
+            Assert.equals(matcher.getMatchText(), "abc");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 0);
+            Assert.equals(matcher.getMatchText(), "xxyzz");
+
+            // empty match ... gets stuck here
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 2);
+            Assert.equals(matcher.getMatchText(), "");
+            Assert.that(matcher.match());
+            Assert.equals(matcher.getMatchIndex(), 2);
+            Assert.equals(matcher.getMatchText(), "");
         }
     }
 

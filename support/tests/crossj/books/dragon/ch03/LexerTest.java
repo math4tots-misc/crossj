@@ -19,4 +19,16 @@ public final class LexerTest {
 
         Assert.equals(tokens, List.of("digits:24", "letters:baef", "digits:44"));
     }
+
+    @Test
+    public static void emptyMatch() {
+        var lexer = Lexer.<String>builder()
+            .add("(1|2|3|4|5|6|7|8|9|0)+", m -> Try.ok(List.of("digits:" + m.getMatchText())))
+            .add(" +", m -> Try.ok(List.of()))
+            .add("a|", m -> Try.ok(List.of(m.getMatchText())))
+            .build()
+            .get();
+
+        var tokens = lexer.lexAll("843  43").get();
+    }
 }

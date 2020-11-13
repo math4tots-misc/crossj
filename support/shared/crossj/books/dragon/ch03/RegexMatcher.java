@@ -2,6 +2,7 @@ package crossj.books.dragon.ch03;
 
 import crossj.base.Str;
 import crossj.base.StrIter;
+import crossj.base.XError;
 
 public final class RegexMatcher {
     private DFA dfa;
@@ -94,11 +95,22 @@ public final class RegexMatcher {
         return matchIndex;
     }
 
+    public int getMatchLength() {
+        return iter.getPosition() - matchStartPosition;
+    }
+
+    public boolean atZeroLengthMatch() {
+        return getMatchLength() == 0;
+    }
+
     /**
      * After a successful match(), calling this method returns the matching section
      * of the text.
      */
     public String getMatchText() {
+        if (matchIndex == -1) {
+            throw XError.withMessage("getMatchText() after a failed match");
+        }
         return iter.sliceFrom(matchStartPosition);
     }
 }

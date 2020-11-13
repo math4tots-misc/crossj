@@ -31,6 +31,10 @@ public final class Lexer<Token> {
         var matcher = regex.matcher(string);
         while (matcher.match()) {
             var matchIndex = matcher.getMatchIndex();
+            if (matcher.atZeroLengthMatch()) {
+                return Try.<List<Token>>fail("Zero length match (pattern " + matchIndex + ")")
+                        .withContext("while lexing " + string);
+            }
             var tryTokenList = callbacks.get(matchIndex).apply(matcher);
             if (tryTokenList.isFail()) {
                 return tryTokenList;

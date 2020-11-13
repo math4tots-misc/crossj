@@ -181,28 +181,28 @@ final class DFAIR {
         return new DFA(newStartState, newTransitionMap, newAcceptMap);
     }
 
-    public DFA toDFA() {
-        // compute newTransitionMap
-        var newTransitionMap = new int[nStates * Alphabet.COUNT];
-        for (int i = 0; i < newTransitionMap.length; i++) {
-            newTransitionMap[i] = -1;
-        }
-        for (var pair : transitionMap.pairs()) {
-            int state1 = pair.get1();
-            var localTransitionMap = pair.get2();
-            for (var innerPair : localTransitionMap.pairs()) {
-                int letter = innerPair.get1();
-                int state2 = innerPair.get2();
-                newTransitionMap[state1 * Alphabet.COUNT + letter] = state2;
-            }
-        }
+    // public DFA toDFA() {
+    //     // compute newTransitionMap
+    //     var newTransitionMap = new int[nStates * Alphabet.COUNT];
+    //     for (int i = 0; i < newTransitionMap.length; i++) {
+    //         newTransitionMap[i] = -1;
+    //     }
+    //     for (var pair : transitionMap.pairs()) {
+    //         int state1 = pair.get1();
+    //         var localTransitionMap = pair.get2();
+    //         for (var innerPair : localTransitionMap.pairs()) {
+    //             int letter = innerPair.get1();
+    //             int state2 = innerPair.get2();
+    //             newTransitionMap[state1 * Alphabet.COUNT + letter] = state2;
+    //         }
+    //     }
 
-        // compute newAcceptMap
-        var newAcceptMap = new int[nStates];
-        for (int i = 0; i < nStates; i++) {
-            newAcceptMap[i] = acceptMap.getOrElse(i, () -> -1);
-        }
+    //     // compute newAcceptMap
+    //     var newAcceptMap = new int[nStates];
+    //     for (int i = 0; i < nStates; i++) {
+    //         newAcceptMap[i] = acceptMap.getOrElse(i, () -> -1);
+    //     }
 
-        return new DFA(startState, newTransitionMap, newAcceptMap);
-    }
+    //     return new DFA(startState, newTransitionMap, newAcceptMap);
+    // }
 }
