@@ -21,6 +21,18 @@ public final class LexerTest {
     }
 
     @Test
+    public static void sample2() {
+        var lexer = Lexer.<String>builder()
+            .add("(1|2|3|4|5|6|7|8|9|0)+", m -> Try.ok(List.of("digits:" + m.getMatchText())))
+            .add(" +", m -> Try.ok(List.of()))
+            .add("a|x+", m -> Try.ok(List.of(m.getMatchText())))
+            .build()
+            .get();
+        var tokens = lexer.lexAll("843  43 x").get();
+        Assert.equals(tokens, List.of("digits:843", "digits:43", "x"));
+    }
+
+    @Test
     public static void emptyMatch() {
         var lexer = Lexer.<String>builder()
             .add("(1|2|3|4|5|6|7|8|9|0)+", m -> Try.ok(List.of("digits:" + m.getMatchText())))
@@ -28,7 +40,7 @@ public final class LexerTest {
             .add("a|", m -> Try.ok(List.of(m.getMatchText())))
             .build()
             .get();
-
-        var tokens = lexer.lexAll("843  43").get();
+        Assert.that(lexer.lexAll("843  43").isFail());
+        Assert.equals(lexer.lexAll("843  43").getErrorMessage(), "Zero length match (pattern 2)");
     }
 }
