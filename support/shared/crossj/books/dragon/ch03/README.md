@@ -34,5 +34,11 @@ There are 5 public classes in this package:
     A utility built on top of `Regex` for quickly implementing
     lexical analyzers.
 
+    The basic usage involves providing pairs of patterns and callbacks
+    where callbacks are called whenever the matching pattern is found.
+    The callbacks return a `Try<List<Token>>` allowing them to control
+    the error message returned as well as which and how many `Token`s
+    are produced from the pattern.
+
 * `LexerBuilder`
     Helper class for building `Lexer` instances.
