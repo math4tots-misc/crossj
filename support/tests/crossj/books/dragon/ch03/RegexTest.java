@@ -221,6 +221,7 @@ public final class RegexTest {
             Assert.that(!re.matches("fdaa"));
             Assert.that(re.matches("fd"));
             Assert.that(re.matches("ddxfd"));
+            Assert.that(!re.matches("-"));
         }
         {
             var re = Regex.fromPatterns("[d-z\\s]+").get();
@@ -233,6 +234,13 @@ public final class RegexTest {
             Assert.that(re.matches("fdxx  qwer"));
             Assert.that(re.matches("fd"));
             Assert.that(re.matches("ddxfd"));
+            Assert.that(!re.matches("-"));
+        }
+        {
+            var re = Regex.fromPatterns("[d-z\\s-]+").get();
+            Assert.that(re.matches("ddxfd"));
+            Assert.that(re.matches("-"));
+            Assert.that(re.matches("d-d"));
         }
     }
 }
