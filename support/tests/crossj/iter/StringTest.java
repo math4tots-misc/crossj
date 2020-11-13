@@ -190,6 +190,23 @@ public final class StringTest {
         Assert.that(!iter.hasCodePoint());
     }
 
+    @Test
+    public static void strFromIntWithBase() {
+        Assert.equals(Str.fromIntWithBase(2000, 2), "11111010000");
+        Assert.equals(Str.hex(82), "52");
+        Assert.equals(Str.hex(10), "A");
+        Assert.equals(Str.hex(15), "F");
+        Assert.equals(Str.hex(16), "10");
+    }
+
+    @Test
+    public static void reprForNonPrintableASCII() {
+        Assert.equals(Repr.of(Str.fromCodePoint(7)), "\"\\x07\"");
+
+        // backspace
+        Assert.equals(Repr.of(Str.fromCodePoint(127)), "\"\\x7F\"");
+    }
+
     // This is not yet supported
     // @Test
     // public static void strSwitch() {

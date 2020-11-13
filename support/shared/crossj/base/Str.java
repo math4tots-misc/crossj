@@ -320,4 +320,27 @@ public final class Str {
         }
         return string;
     }
+
+    public static String fromIntWithBase(int value, int base) {
+        Assert.lessThanOrEqual(base, 10 + 26);
+        var sb = builder();
+        if (value == 0) {
+            sb.c('0');
+        } else {
+            var digits = List.<Integer>of();
+            for (; value > 0; value /= base) {
+                int digitValue = value % base;
+                int digit = digitValue < 10 ? '0' + digitValue : 'A' + digitValue - 10;
+                digits.add(digit);
+            }
+            for (int i = digits.size() - 1; i >= 0; i--) {
+                sb.codePoint(digits.get(i));
+            }
+        }
+        return sb.build();
+    }
+
+    public static String hex(int value) {
+        return fromIntWithBase(value, 16);
+    }
 }

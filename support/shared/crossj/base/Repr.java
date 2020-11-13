@@ -28,7 +28,13 @@ public interface Repr {
                 case '\\': sb.s("\\\\"); break;
                 case '\"': sb.s("\\\""); break;
                 case '\'': sb.s("\\\'"); break;
-                default: sb.c(c);
+                default:
+                    if (c < 32 || c == 127) {
+                        // non-printable ASCII
+                        sb.s("\\x").s(Str.lpad(Str.hex(c), 2, "0"));
+                    } else {
+                        sb.c(c);
+                    }
             }
         }
         sb.c('"');
