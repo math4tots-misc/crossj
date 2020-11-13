@@ -1,4 +1,4 @@
-package crossj.hacks.c;
+package crossj.hacks.deprecated.c;
 
 import crossj.base.Map;
 

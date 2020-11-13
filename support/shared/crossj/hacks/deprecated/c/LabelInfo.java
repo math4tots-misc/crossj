@@ -1,4 +1,4 @@
-package crossj.hacks.c;
+package crossj.hacks.deprecated.c;
 
 public final class LabelInfo {
     private final int label;

@@ -1,4 +1,4 @@
-package crossj.hacks.c;
+package crossj.hacks.deprecated.c;
 
 /**
  * A lexical token for when we process C source code.

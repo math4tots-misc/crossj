@@ -1,4 +1,4 @@
-package crossj.hacks.c;
+package crossj.hacks.deprecated.c;
 
 /**
  * Enum of possible storage class values.

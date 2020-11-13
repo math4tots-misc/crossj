@@ -1,4 +1,4 @@
-package crossj.hacks.c;
+package crossj.hacks.deprecated.c;
 
 /**
  * Size and alignment information for a primitive type.

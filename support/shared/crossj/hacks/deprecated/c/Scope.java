@@ -1,4 +1,4 @@
-package crossj.hacks.c;
+package crossj.hacks.deprecated.c;
 
 /**
  * Basically an enum containing the various scopes in the C language.

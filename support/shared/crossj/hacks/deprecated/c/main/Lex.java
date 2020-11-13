@@ -1,10 +1,10 @@
-package crossj.hacks.c.main;
+package crossj.hacks.deprecated.c.main;
 
 import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.Str;
-import crossj.hacks.c.CLexer;
-import crossj.hacks.c.Source;
+import crossj.hacks.deprecated.c.CLexer;
+import crossj.hacks.deprecated.c.Source;
 
 public final class Lex {
 
