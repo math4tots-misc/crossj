@@ -100,13 +100,26 @@ final class DFA {
                 sb.s(" [START]");
             }
             if (acceptMap[state] >= 0) {
-                sb.s(" (").i(acceptMap[state]).s(")");
+                sb.s(" (accept ").i(acceptMap[state]).s(")");
             }
             sb.s("\n");
             for (int letter = 0; letter < Alphabet.COUNT; letter++) {
                 int newState = transitionMap[state * Alphabet.COUNT + letter];
                 if (newState >= 0) {
-                    sb.s("    ").s(Repr.reprstr(Str.fromCodePoint(letter))).s(" -> ").i(newState).s("\n");
+                    int end = letter;
+                    while (end < Alphabet.COUNT && transitionMap[state * Alphabet.COUNT + end] == newState) {
+                        end++;
+                    }
+                    int last = end - 1;
+                    sb.s("    ");
+                    if (letter < last) {
+                        // Consecutive runs of characters transition to the same state
+                        sb.s(Repr.reprchar(letter)).s("-").s(Repr.reprchar(last));
+                        letter = last;
+                    } else {
+                        sb.s(Repr.reprchar(letter));
+                    }
+                    sb.s(" -> ").i(newState).s("\n");
                 }
             }
         }

@@ -7,6 +7,7 @@ import crossj.base.Optional;
 import crossj.base.Repr;
 import crossj.base.Set;
 import crossj.base.Str;
+import crossj.base.Try;
 import crossj.base.XIterable;
 
 final class NFA {
@@ -16,6 +17,22 @@ final class NFA {
 
     public static NFA fromRegexNodes(RegexNode... nodes) {
         return fromRegexNodeList(List.fromJavaArray(nodes));
+    }
+
+    public static Try<NFA> fromPatternList(List<String> patterns) {
+        var nodes = List.<RegexNode>of();
+        for (var pattern : patterns) {
+            var tryNode = RegexNode.fromPattern(pattern);
+            if (tryNode.isFail()) {
+                return tryNode.castFail();
+            }
+            nodes.add(tryNode.get());
+        }
+        return Try.ok(fromRegexNodeList(nodes));
+    }
+
+    public static Try<NFA> fromPatterns(String... patterns) {
+        return fromPatternList(List.fromJavaArray(patterns));
     }
 
     private final List<Map<Optional<Integer>, Set<Integer>>> transitionMap;
@@ -95,7 +112,7 @@ final class NFA {
         var sb = Str.builder();
         sb.s("=== NFA TRANSITIONS === (start = ").i(getStartState()).s(", accept = ").i(acceptState).s(")\n");
         for (int state = 0; state < transitionMap.size(); state++) {
-            sb.i(state);
+            sb.s("  ").i(state);
             if (state < acceptState) {
                 sb.s(" <accept ").i(state).s(">");
             } else if (state == acceptState) {
@@ -105,10 +122,26 @@ final class NFA {
             }
             sb.s("\n");
             var localMap = transitionMap.get(state);
-            var keys = List.sortedBy(localMap.keys(), (a, b) -> Compare.optionals(a, b));
-            for (var key : keys) {
-                sb.s("  ").obj(key.map(i -> Repr.of(Str.fromCodePoint(i))).getOrElse("epsilon")).s(" -> ")
-                        .obj(List.sorted(localMap.get(key))).s("\n");
+
+            if (localMap.containsKey(Optional.empty())) {
+                sb.s("    epsilon -> ").obj(List.sorted(localMap.get(Optional.empty()))).s("\n");
+            }
+            for (int key = 0; key < Alphabet.COUNT; key++) {
+                var newStates = localMap.getOrNull(Optional.of(key));
+                if (newStates == null) {
+                    continue;
+                }
+                int end = key + 1;
+                while (end < Alphabet.COUNT && localMap.getOptional(Optional.of(end)).equals(Optional.of(newStates))) {
+                    end++;
+                }
+                sb.s("    ").s(Repr.reprchar(key));
+                if (key + 1 < end) {
+                    // there are consecutive runs of keys that lead to the same states
+                    sb.s("-").s(Repr.reprchar(end - 1));
+                    key = end - 1;
+                }
+                sb.obj(List.sorted(newStates)).s("\n");
             }
         }
         return sb.build();
