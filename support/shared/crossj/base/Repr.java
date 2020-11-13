@@ -15,6 +15,10 @@ public interface Repr {
         }
     }
 
+    public static String reprchar(int codePoint) {
+        return reprstr(Str.fromCodePoint(codePoint));
+    }
+
     public static String reprstr(String s) {
         var sb = Str.builder();
         sb.c('"');
