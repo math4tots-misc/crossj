@@ -14,7 +14,6 @@ final class DFA {
     private final int[] acceptMap;
 
     DFA(int startState, int[] transitionMap, int[] acceptMap) {
-        // Assert.equals(startState, 0);
         Assert.equals(transitionMap.length, acceptMap.length * Alphabet.COUNT);
         this.startState = startState;
         this.transitionMap = transitionMap;
