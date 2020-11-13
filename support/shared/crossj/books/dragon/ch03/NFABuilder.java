@@ -52,6 +52,10 @@ final class NFABuilder {
     void connect(int startState, Optional<Integer> label, int acceptState) {
         var localTransitions = transitionMap.get(startState);
         if (!localTransitions.containsKey(label)) {
+            if (label.isPresent()) {
+                int letter = label.get();
+                Assert.that(Alphabet.contains(letter));
+            }
             localTransitions.put(label, Set.of());
         }
         localTransitions.get(label).add(acceptState);

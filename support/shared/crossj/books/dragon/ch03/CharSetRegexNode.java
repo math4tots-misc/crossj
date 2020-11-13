@@ -1,5 +1,6 @@
 package crossj.books.dragon.ch03;
 
+import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Optional;
 import crossj.base.Range;
@@ -32,7 +33,10 @@ final class CharSetRegexNode implements RegexNode {
     private final List<Integer> letterList;
     private final Set<Integer> letterSet;
 
-    private CharSetRegexNode(String name, List<Integer> letterList) {
+    CharSetRegexNode(String name, List<Integer> letterList) {
+        for (int letter : letterList) {
+            Assert.that(Alphabet.contains(letter));
+        }
         this.name = name;
         this.letterList = List.sorted(letterList);
         this.letterSet = Set.fromIterable(letterList);
@@ -55,7 +59,11 @@ final class CharSetRegexNode implements RegexNode {
         }
     }
 
-    private CharSetRegexNode negate(String name) {
+    CharSetRegexNode negate(String name) {
         return new CharSetRegexNode(name, Range.of(0, Alphabet.COUNT).filter(c -> !letterSet.contains(c)).list());
+    }
+
+    public List<Integer> getLetterList() {
+        return letterList;
     }
 }

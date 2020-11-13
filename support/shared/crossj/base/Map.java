@@ -221,6 +221,9 @@ public final class Map<K, V> {
         if (map.siz != siz) {
             return false;
         }
+        if (siz == 0) {
+            return map.siz == 0;
+        }
         var triples = list.iter().flatMap(bucket -> bucket);
         for (var triple : triples) {
             var hash = triple.get1();

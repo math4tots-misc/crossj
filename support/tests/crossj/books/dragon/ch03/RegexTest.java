@@ -201,5 +201,38 @@ public final class RegexTest {
             Assert.that(re.matches("a09876123445"));
             Assert.that(re.matches("_09876123445"));
         }
+        {
+            var re = Regex.fromPatterns("[adf]+").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("b"));
+            Assert.that(!re.matches("c"));
+            Assert.that(!re.matches("xx"));
+            Assert.that(re.matches("d"));
+            Assert.that(re.matches("fdaa"));
+            Assert.that(re.matches("ddafd"));
+        }
+        {
+            var re = Regex.fromPatterns("[d-z]+").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("b"));
+            Assert.that(!re.matches("c"));
+            Assert.that(re.matches("dd"));
+            Assert.that(re.matches("d"));
+            Assert.that(!re.matches("fdaa"));
+            Assert.that(re.matches("fd"));
+            Assert.that(re.matches("ddxfd"));
+        }
+        {
+            var re = Regex.fromPatterns("[d-z\\s]+").get();
+            Assert.that(!re.matches(""));
+            Assert.that(!re.matches("b"));
+            Assert.that(!re.matches("c"));
+            Assert.that(re.matches("dd"));
+            Assert.that(re.matches("d"));
+            Assert.that(!re.matches("fdaa"));
+            Assert.that(re.matches("fdxx  qwer"));
+            Assert.that(re.matches("fd"));
+            Assert.that(re.matches("ddxfd"));
+        }
     }
 }

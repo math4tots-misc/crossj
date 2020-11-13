@@ -1,5 +1,6 @@
 package crossj.books.dragon.ch03;
 
+import crossj.base.Set;
 import crossj.base.Str;
 import crossj.base.StrIter;
 import crossj.base.Try;
@@ -137,11 +138,91 @@ final class RegexNodeParser {
                 throw XError.withMessage("Internal regex parsing issue (|): " + iter.getString());
             case ')':
                 return Try.fail("Unexpected close parenthesis in regex: " + iter.getString());
-            case '[':
+            case '[': {
+                var startPosition = iter.getPosition();
+                var negate = consume('^');
+                var letters = Set.<Integer>of();
+                while (iter.hasCodePoint() && !at(']')) {
+                    int letter = iter.nextCodePoint();
+                    if (isRangeableLetter(letter) && consume('-')) {
+                        if (isRangeableLetter(iter.peekCodePoint())) {
+                            // range (e.g. 0-9 or A-H)
+                            var upper = iter.nextCodePoint();
+                            for (int i = letter; i <= upper; i++) {
+                                letters.add(i);
+                            }
+                        } else if (at(']')) {
+                            // ends with '-'
+                            // it's just another letter
+                            letters.add(letter);
+                            letters.add((int) '-');
+                        } else {
+                            return Try.fail("Range starting " + Str.fromCodePoint(letter) + "- never terminated");
+                        }
+                    } else {
+                        if (letter == '\\' && iter.hasCodePoint()) {
+                            int escape = iter.nextCodePoint();
+                            switch (escape) {
+                                case 'd':
+                                    letters.addAll(CharSetRegexNode.DIGITS.getLetterList());
+                                    break;
+                                case 'D':
+                                    letters.addAll(CharSetRegexNode.NON_DIGITS.getLetterList());
+                                    break;
+                                case 'w':
+                                    letters.addAll(CharSetRegexNode.WORD.getLetterList());
+                                    break;
+                                case 'W':
+                                    letters.addAll(CharSetRegexNode.NON_WORD.getLetterList());
+                                    break;
+                                case 's':
+                                    letters.addAll(CharSetRegexNode.WHITESPACE.getLetterList());
+                                    break;
+                                case 'S':
+                                    letters.addAll(CharSetRegexNode.NON_WHITESPACE.getLetterList());
+                                    break;
+                                case '\\':
+                                case '+':
+                                case '*':
+                                case '?':
+                                case '(':
+                                case ')':
+                                case '[':
+                                case ']':
+                                case '{':
+                                case '}':
+                                case '|':
+                                case '.':
+                                case '-':
+                                    letters.add(escape);
+                                    break;
+                                default:
+                                    return Try.fail("Unexpected character escaped in character class: " + letter + ", "
+                                            + iter.getString());
+                            }
+                        } else {
+                            letters.add(letter);
+                        }
+                    }
+                }
+                var name = "[" + iter.sliceFrom(startPosition) + "]";
+                if (!consume(']')) {
+                    return Try.fail("Unmatched open bracket in regex: " + iter.getString());
+                }
+                var charClass = new CharSetRegexNode(name, letters.iter().list());
+                if (negate) {
+                    charClass = charClass.negate(name);
+                }
+                return Try.ok(charClass);
+            }
             case ']':
-                return Try.fail("Unsupported regex feature \"[]\": " + iter.getString());
+                return Try.fail("Unexpected close bracket in regex: " + iter.getString());
             default:
                 return Try.ok(RegexNode.ofCodePoint(code));
         }
+    }
+
+    private static boolean isRangeableLetter(int letter) {
+        return ('a' <= letter && letter <= 'z') || ('A' <= letter && letter <= 'Z') || ('0' <= letter && letter <= '9');
     }
 }

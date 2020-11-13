@@ -19,4 +19,8 @@ public final class Alphabet {
      * The catch-all value that non-ASCII values will be mapped to.
      */
     public static final int CATCH_ALL = 127;
+
+    public static boolean contains(int letter) {
+        return 0 <= letter && letter < COUNT;
+    }
 }
