@@ -18,14 +18,6 @@ public final class Lexer<Token> {
         this.callbacks = callbacks;
     }
 
-    Regex getRegex() {
-        return regex;
-    }
-
-    List<Func1<Try<List<Token>>, RegexMatcher>> getCallbacks() {
-        return callbacks;
-    }
-
     public Try<List<Token>> lexAll(String string) {
         var tokens = List.<Token>of();
         var matcher = regex.matcher(string);
@@ -45,5 +37,9 @@ public final class Lexer<Token> {
             return Try.fail("Unrecognized token while lexing at position " + matcher.getStrIter().getPosition());
         }
         return Try.ok(tokens);
+    }
+
+    public TokenStream<Token> lex(String string) {
+        return new LexerTokenStream<>(regex.matcher(string), callbacks);
     }
 }

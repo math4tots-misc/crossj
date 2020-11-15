@@ -43,4 +43,20 @@ public final class LexerTest {
         Assert.that(lexer.lexAll("843  43").isFail());
         Assert.equals(lexer.lexAll("843  43").getErrorMessage(), "Zero length match (pattern 2)");
     }
+
+    @Test
+    public static void sample3() {
+        var lexer = Lexer.<String>builder()
+            .add("\\d+", m -> Try.ok(List.of("digits:" + m.getMatchText())))
+            .add(" +", m -> Try.ok(List.of()))
+            .add("a|x+", m -> Try.ok(List.of(m.getMatchText())))
+            .build()
+            .get();
+        var stream = lexer.lex("843  43 x");
+        var tokens = List.<String>of();
+        while (stream.hasNext()) {
+            tokens.add(stream.next().get());
+        }
+        Assert.equals(tokens, List.of("digits:843", "digits:43", "x"));
+    }
 }
