@@ -9,6 +9,10 @@ public final class RegexMatcher {
     private final StrIter iter;
     private int matchIndex = -1;
     private int matchStartPosition = -1;
+    private int matchLineNumber = -1;
+    private int matchColumnNumber = -1;
+    private int currentLineNumber = 1;
+    private int currentColumnNumber = 1;
 
     RegexMatcher(DFA dfa, String string) {
         this.dfa = dfa;
@@ -41,14 +45,29 @@ public final class RegexMatcher {
     public boolean match() {
         int state = dfa.getStartState();
         int startPosition = iter.getPosition();
+        int startLineNumber = currentLineNumber;
+        int startColumnNumber = currentColumnNumber;
         int lastMatchIndex = dfa.getMatchIndex(state);
         int lastMatchPosition = lastMatchIndex >= 0 ? startPosition : -1;
+        int lastMatchEndLineNumber = -1;
+        int lastMatchEndColumnNumber = -1;
+        int runningLineNumber = currentLineNumber;
+        int runningColumnNumber = currentColumnNumber;
         while (iter.hasCodePoint() && !dfa.isDeadState(state)) {
-            state = dfa.transition(state, iter.nextCodePoint());
+            var codePoint = iter.nextCodePoint();
+            if (codePoint == '\n') {
+                runningLineNumber++;
+                runningColumnNumber = 1;
+            } else {
+                runningColumnNumber++;
+            }
+            state = dfa.transition(state, codePoint);
             int matchIndex = dfa.getMatchIndex(state);
             if (matchIndex >= 0) {
                 lastMatchPosition = iter.getPosition();
                 lastMatchIndex = matchIndex;
+                lastMatchEndLineNumber = runningLineNumber;
+                lastMatchEndColumnNumber = runningColumnNumber;
             }
         }
         if (lastMatchPosition == -1) {
@@ -56,12 +75,20 @@ public final class RegexMatcher {
             iter.setPosition(startPosition);
             matchStartPosition = -1;
             matchIndex = -1;
+            matchLineNumber = -1;
+            matchColumnNumber = -1;
+            currentLineNumber = startLineNumber;
+            currentColumnNumber = startColumnNumber;
             return false;
         } else {
             // match found
             iter.setPosition(lastMatchPosition);
             matchStartPosition = startPosition;
             matchIndex = lastMatchIndex;
+            matchLineNumber = startLineNumber;
+            matchColumnNumber = startColumnNumber;
+            currentLineNumber = lastMatchEndLineNumber;
+            currentColumnNumber = lastMatchEndColumnNumber;
             return true;
         }
     }
@@ -112,5 +139,25 @@ public final class RegexMatcher {
             throw XError.withMessage("getMatchText() after a failed match");
         }
         return iter.sliceFrom(matchStartPosition);
+    }
+
+    /**
+     * Returns the line number of the start of the last match
+     *
+     * NOTE: return value of this method is invalidated if the underlying
+     * StrIter is moved externally.
+     */
+    public int getMatchLineNumber() {
+        return matchLineNumber;
+    }
+
+    /**
+     * Returns the column number of the start of the last match
+     *
+     * NOTE: return value of this method is invalidated if the underlying
+     * StrIter is moved externally.
+     */
+    public int getMatchColumnNumber() {
+        return matchColumnNumber;
     }
 }

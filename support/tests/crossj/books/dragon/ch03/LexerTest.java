@@ -2,6 +2,7 @@ package crossj.books.dragon.ch03;
 
 import crossj.base.Assert;
 import crossj.base.List;
+import crossj.base.Pair;
 import crossj.base.Test;
 import crossj.base.Try;
 
@@ -58,5 +59,23 @@ public final class LexerTest {
             tokens.add(stream.next().get());
         }
         Assert.equals(tokens, List.of("digits:843", "digits:43", "x"));
+    }
+
+    @Test
+    public static void lineAndColumnNumbers() {
+        var lexer = Lexer.<Pair<Integer, Integer>>builder()
+            .add("\\d+", m -> Try.ok(List.of(locFromMatcher(m))))
+            .add("\\w+", m -> Try.ok(List.of(locFromMatcher(m))))
+            .add("\\w+-\\w+", m -> Try.ok(List.of(locFromMatcher(m))))
+            .add("\\s+", m -> Try.ok(List.of()))
+            .build().get();
+
+        var tokens = lexer.lexAll("hello world\nnext line\nthird-line").get();
+
+        Assert.equals(tokens, List.of(Pair.of(1, 1), Pair.of(1, 7), Pair.of(2, 1), Pair.of(2, 6), Pair.of(3, 1)));
+    }
+
+    private static Pair<Integer, Integer> locFromMatcher(RegexMatcher matcher) {
+        return Pair.of(matcher.getMatchLineNumber(), matcher.getMatchColumnNumber());
     }
 }
