@@ -470,6 +470,18 @@ public final class CJParserState {
                 var rawText = next().text;
                 return Try.ok(new CJAstLiteralExpression(mark, CJAstLiteralExpression.DOUBLE, rawText));
             }
+            case CJToken.KW_NEW: { // new expressions
+                next();
+                var tryType = parseTypeExpression();
+                if (tryType.isFail()) {
+                    return tryType.castFail();
+                }
+                var tryArgs = parseArguments();
+                if (tryArgs.isFail()) {
+                    return tryArgs.castFail();
+                }
+                return Try.ok(new CJAstNewExpression(mark, tryType.get(), tryArgs.get()));
+            }
             case CJToken.TYPE_ID: { // explicit-type method call
                 var tryType = parseTypeExpression();
                 if (tryType.isFail()) {

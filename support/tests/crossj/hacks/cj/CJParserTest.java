@@ -71,5 +71,32 @@ public final class CJParserTest {
                 "}\n"
           );
         }
+        {
+            var result = CJParser.parseString("<string>",
+                "package foo.bar\n" +
+                "\n" +
+                "import foo.Baz\n" +
+                "\n" +
+                "class MyClass {\n" +
+                "  var x : String\n" +
+                "\n" +
+                "  def doSomething() : MyClass {\n" +
+                "    return new MyClass(\"hi\")\n" +
+                "  }\n" +
+                "}\n"
+            ).get();
+            Assert.equals(result.inspect(),
+                "package foo.bar\n" +
+                "import foo.Baz\n" +
+                "class MyClass {\n" +
+                "  var x : String\n" +
+                "  def doSomething() : MyClass {\n" +
+                "    return new MyClass(\n" +
+                "      \"hi\",\n" +
+                "    )\n" +
+                "  }\n" +
+                "}\n"
+            );
+        }
     }
 }
