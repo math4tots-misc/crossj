@@ -1276,6 +1276,12 @@ class C$crossj$base$StrBuilder {
         this.parts.push(s);
         return this;
     }
+    M$repeatStr(s, n) {
+        for (var i = 0; i < n; i++) {
+            this.parts.push(s);
+        }
+        return this;
+    }
     M$toString() {
         return this.toString();
     }

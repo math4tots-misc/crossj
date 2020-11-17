@@ -1,5 +1,7 @@
 package crossj.hacks.cj;
 
+import crossj.base.StrBuilder;
+
 public final class CJAstExpressionStatement implements CJAstStatement {
     private final CJMark mark;
     private final CJAstExpression expression;
@@ -21,5 +23,10 @@ public final class CJAstExpressionStatement implements CJAstStatement {
     @Override
     public <R, A> R accept(CJAstStatementVisitor<R, A> visitor, A a) {
         return visitor.visitExpression(this, a);
+    }
+
+    @Override
+    public void addInspect0(StrBuilder sb, int depth, boolean indentFirstLine, String suffix) {
+        expression.addInspect0(sb, depth, indentFirstLine, suffix);
     }
 }

@@ -1,6 +1,6 @@
 package crossj.hacks.cj;
 
-public interface CJAstClassMember extends CJAstNode {
+public interface CJAstClassMemberDefinition extends CJAstNode {
     String getName();
 
     int getModifiers();

@@ -1,6 +1,8 @@
 package crossj.hacks.cj;
 
-public final class CJAstFieldDefinition implements CJAstClassMember {
+import crossj.base.StrBuilder;
+
+public final class CJAstFieldDefinition implements CJAstClassMemberDefinition {
     private final CJMark mark;
     private final int modifiers;
     private final String name;
@@ -35,5 +37,13 @@ public final class CJAstFieldDefinition implements CJAstClassMember {
     @Override
     public <R, A> R accept(CJAstClassMemberVisitor<R, A> visitor, A a) {
         return visitor.visitField(this, a);
+    }
+
+    @Override
+    public void addInspect0(StrBuilder sb, int depth, boolean indentFirstLine, String suffix) {
+        if (indentFirstLine) {
+            sb.repeatStr("  ", depth);
+        }
+        sb.s("var ").s(name).s(" : ").s(type.inspect0()).s(suffix).s("\n");
     }
 }

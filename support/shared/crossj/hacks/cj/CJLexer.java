@@ -16,13 +16,14 @@ public final class CJLexer {
         for (int type : CJToken.KEYWORD_TYPES) {
             b.add(CJToken.keywordTypeToString(type), m -> tok(type, m));
         }
+        b.add("[A-Z]\\w*", m -> tok(CJToken.TYPE_ID, m));
         b.add("\\w+", m -> tok(CJToken.ID, m));
         b.add("'\\\\.'", m -> tok(CJToken.CHAR, m));
         b.add("'[^'\\\\]'", m -> tok(CJToken.CHAR, m));
         b.add("\"(\\\\.|[^\"\\\\])*\"", m -> tok(CJToken.STRING, m));
 
         // single character symbol tokens
-        b.add("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|%|\\.|^|&|\\||!|@|=|;|:|\\?", m -> chartok(m));
+        b.add("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|%|\\.|^|&|\\||!|@|=|;|,|:|\\?", m -> chartok(m));
 
         // newline
         b.add("\n\\s*", m -> chartok(m));

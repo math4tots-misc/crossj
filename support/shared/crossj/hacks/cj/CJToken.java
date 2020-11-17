@@ -16,6 +16,7 @@ public final class CJToken {
     public static final int ID = 4;
     public static final int CHAR = 5;
     public static final int STRING = 6;
+    public static final int TYPE_ID = 7;
 
     // token types in the range 32-127 are reserved for ASCII single character
     // token types.
@@ -40,10 +41,12 @@ public final class CJToken {
     public static final int KW_STATIC = 217;
     public static final int KW_PRIVATE = 218;
     public static final int KW_PUBLIC = 219;
+    public static final int KW_PACKAGE = 220;
+    public static final int KW_RETURN = 221;
 
     public static final Tuple<Integer> KEYWORD_TYPES = Tuple.of(KW_DEF, KW_CLASS, KW_TRUE, KW_FALSE, KW_NULL, KW_IF,
             KW_ELSE, KW_IMPORT, KW_WHILE, KW_BREAK, KW_CONTINUE, KW_VAR, KW_VAL, KW_NEW, KW_TRAIT, KW_NATIVE,
-            KW_STATIC, KW_PRIVATE, KW_PUBLIC);
+            KW_STATIC, KW_PRIVATE, KW_PUBLIC, KW_PACKAGE, KW_RETURN);
 
     public final int type;
     public final String text;
@@ -101,6 +104,8 @@ public final class CJToken {
                 return "CJToken.CHAR";
             case STRING:
                 return "CJToken.STRING";
+            case TYPE_ID:
+                return "CJToken.TYPE_ID";
             case KW_DEF:
                 return "CJToken.KW_DEF";
             case KW_CLASS:
@@ -139,6 +144,10 @@ public final class CJToken {
                 return "CJToken.KW_PRIVATE";
             case KW_PUBLIC:
                 return "CJToken.KW_PUBLIC";
+            case KW_PACKAGE:
+                return "CJToken.KW_PACKAGE";
+            case KW_RETURN:
+                return "CJToken.KW_RETURN";
             case '\n':
                 return "'\\n'";
             default:

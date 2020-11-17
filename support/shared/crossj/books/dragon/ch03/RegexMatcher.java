@@ -160,4 +160,12 @@ public final class RegexMatcher {
     public int getMatchColumnNumber() {
         return matchColumnNumber;
     }
+
+    public int getCurrentLineNumber() {
+        return currentLineNumber;
+    }
+
+    public int getCurrentColumnNumber() {
+        return currentColumnNumber;
+    }
 }

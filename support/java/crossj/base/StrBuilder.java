@@ -70,6 +70,13 @@ public final class StrBuilder {
         return this;
     }
 
+    public StrBuilder repeatStr(String string, int count) {
+        for (int i = 0; i < count; i++) {
+            s(string);
+        }
+        return this;
+    }
+
     @Override
     public String toString() {
         return build();

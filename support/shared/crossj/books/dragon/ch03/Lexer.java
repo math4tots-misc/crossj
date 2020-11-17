@@ -34,7 +34,7 @@ public final class Lexer<Token> {
             tokens.addAll(tryTokenList.get());
         }
         if (matcher.getStrIter().hasCodePoint()) {
-            return Try.fail("Unrecognized token while lexing at position " + matcher.getStrIter().getPosition());
+            return Try.fail("Unrecognized token on " + matcher.getCurrentLineNumber() + ":" + matcher.getCurrentColumnNumber());
         }
         return Try.ok(tokens);
     }

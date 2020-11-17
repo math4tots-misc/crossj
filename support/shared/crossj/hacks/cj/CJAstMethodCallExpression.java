@@ -1,7 +1,7 @@
 package crossj.hacks.cj;
 
 import crossj.base.List;
-import crossj.base.Optional;
+import crossj.base.StrBuilder;
 
 /**
  * The basic method call in CJ requires an explicitly specified owner type.
@@ -21,11 +21,11 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
     private final CJMark mark;
     private final CJAstTypeExpression owner;
     private final String name;
-    private final Optional<List<CJAstTypeExpression>> typeArguments;
+    private final List<CJAstTypeExpression> typeArguments;
     private final List<CJAstExpression> args;
 
     CJAstMethodCallExpression(CJMark mark, CJAstTypeExpression owner, String name,
-            Optional<List<CJAstTypeExpression>> typeArguments, List<CJAstExpression> args) {
+            List<CJAstTypeExpression> typeArguments, List<CJAstExpression> args) {
         this.mark = mark;
         this.owner = owner;
         this.name = name;
@@ -46,7 +46,7 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
         return name;
     }
 
-    public Optional<List<CJAstTypeExpression>> getTypeArguments() {
+    public List<CJAstTypeExpression> getTypeArguments() {
         return typeArguments;
     }
 
@@ -57,5 +57,30 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
     @Override
     public <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a) {
         return visitor.visitMethodCall(this, a);
+    }
+
+    @Override
+    public void addInspect0(StrBuilder sb, int depth, boolean indentFirstLine, String suffix) {
+        if (indentFirstLine) {
+            sb.repeatStr("  ", depth);
+        }
+        sb.s(owner.inspect()).s(".").s(name);
+        if (typeArguments.size() > 0) {
+            sb.s("[").s(typeArguments.get(0).inspect());
+            for (int i = 1; i < typeArguments.size(); i++) {
+                sb.s(", ").s(typeArguments.get(i).inspect());
+            }
+            sb.s("]");
+        }
+        if (args.size() > 0) {
+            sb.s("(\n");
+            for (var arg : args) {
+                arg.addInspect0(sb, depth + 1, true, ",");
+            }
+            sb.repeatStr("  ", depth).s(")");
+        } else {
+            sb.s("()");
+        }
+        sb.s(suffix).s("\n");
     }
 }

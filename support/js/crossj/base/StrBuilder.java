@@ -20,4 +20,6 @@ public final class StrBuilder {
     native public StrBuilder d(double d);
 
     native public StrBuilder s(String s);
+
+    native public StrBuilder repeatStr(String s, int count);
 }
