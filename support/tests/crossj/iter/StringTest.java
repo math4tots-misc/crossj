@@ -210,6 +210,12 @@ public final class StringTest {
         Assert.equals(Repr.of(" "), "\" \"");
     }
 
+    @Test
+    public static void upperAndLowerCase() {
+        Assert.equals("ABCdef".toLowerCase(), "abcdef");
+        Assert.equals("ABCdef".toUpperCase(), "ABCDEF");
+    }
+
     // This is not yet supported
     // @Test
     // public static void strSwitch() {

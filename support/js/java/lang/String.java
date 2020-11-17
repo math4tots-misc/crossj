@@ -32,4 +32,8 @@ public final class String implements Comparable<String> {
 
     @Override
     public native int compareTo(String o);
+
+    public native String toLowerCase();
+
+    public native String toUpperCase();
 }

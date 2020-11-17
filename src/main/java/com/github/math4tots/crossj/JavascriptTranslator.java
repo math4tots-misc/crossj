@@ -780,6 +780,16 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(".length");
                                 break;
                             }
+                            case "java.lang.String.toLowerCase": {
+                                translateExpression(owner);
+                                sb.append(".toLowerCase()");
+                                break;
+                            }
+                            case "java.lang.String.toUpperCase": {
+                                translateExpression(owner);
+                                sb.append(".toUpperCase()");
+                                break;
+                            }
                             case "java.lang.String.hashCode": {
                                 sb.append("$STRHASH(");
                                 translateExpression(owner);
