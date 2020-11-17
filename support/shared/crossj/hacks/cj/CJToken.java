@@ -29,9 +29,15 @@ public final class CJToken {
     public static final int KW_NULL = 205;
     public static final int KW_IF = 206;
     public static final int KW_ELSE = 207;
+    public static final int KW_IMPORT = 208;
+    public static final int KW_WHILE = 209;
+    public static final int KW_BREAK = 210;
+    public static final int KW_CONTINUE = 211;
+    public static final int KW_VAR = 212;
+    public static final int KW_VAL = 213;
 
     public static final Tuple<Integer> KEYWORD_TYPES = Tuple.of(KW_DEF, KW_CLASS, KW_TRUE, KW_FALSE, KW_NULL, KW_IF,
-            KW_ELSE);
+            KW_ELSE, KW_IMPORT, KW_WHILE, KW_BREAK, KW_CONTINUE, KW_VAR, KW_VAL);
 
     public final int type;
     public final String text;
@@ -101,8 +107,18 @@ public final class CJToken {
                 return "CJToken.KW_NULL";
             case KW_IF:
                 return "CJToken.KW_IF";
-            case KW_ELSE:
-                return "CJToken.KW_ELSE";
+            case KW_IMPORT:
+                return "CJToken.KW_IMPORT";
+            case KW_WHILE:
+                return "CJToken.KW_WHILE";
+            case KW_BREAK:
+                return "CJToken.KW_BREAK";
+            case KW_CONTINUE:
+                return "CJToken.KW_CONTINUE";
+            case KW_VAR:
+                return "CJToken.KW_VAR";
+            case KW_VAL:
+                return "CJToken.KW_VAL";
             case '\n':
                 return "'\\n'";
             default:
