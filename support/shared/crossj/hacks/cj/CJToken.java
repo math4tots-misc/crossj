@@ -35,9 +35,16 @@ public final class CJToken {
     public static final int KW_CONTINUE = 211;
     public static final int KW_VAR = 212;
     public static final int KW_VAL = 213;
+    public static final int KW_NEW = 214;
+    public static final int KW_TRAIT = 215;
+    public static final int KW_NATIVE = 216;
+    public static final int KW_STATIC = 217;
+    public static final int KW_PRIVATE = 218;
+    public static final int KW_PUBLIC = 219;
 
     public static final Tuple<Integer> KEYWORD_TYPES = Tuple.of(KW_DEF, KW_CLASS, KW_TRUE, KW_FALSE, KW_NULL, KW_IF,
-            KW_ELSE, KW_IMPORT, KW_WHILE, KW_BREAK, KW_CONTINUE, KW_VAR, KW_VAL);
+            KW_ELSE, KW_IMPORT, KW_WHILE, KW_BREAK, KW_CONTINUE, KW_VAR, KW_VAL, KW_NEW, KW_TRAIT, KW_NATIVE,
+            KW_STATIC, KW_PRIVATE, KW_PUBLIC);
 
     public final int type;
     public final String text;
@@ -119,6 +126,18 @@ public final class CJToken {
                 return "CJToken.KW_VAR";
             case KW_VAL:
                 return "CJToken.KW_VAL";
+            case KW_NEW:
+                return "CJToken.KW_NEW";
+            case KW_TRAIT:
+                return "CJToken.KW_TRAIT";
+            case KW_NATIVE:
+                return "CJToken.KW_NATIVE";
+            case KW_STATIC:
+                return "CJToken.KW_STATIC";
+            case KW_PRIVATE:
+                return "CJToken.KW_PRIVATE";
+            case KW_PUBLIC:
+                return "CJToken.KW_PUBLIC";
             case '\n':
                 return "'\\n'";
             default:
