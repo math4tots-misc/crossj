@@ -22,15 +22,15 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
     private final CJAstTypeExpression owner;
     private final String name;
     private final Optional<List<CJAstTypeExpression>> typeArguments;
-    private final List<CJAstExpression> arguments;
+    private final List<CJAstExpression> args;
 
     CJAstMethodCallExpression(CJMark mark, CJAstTypeExpression owner, String name,
-            Optional<List<CJAstTypeExpression>> typeArguments, List<CJAstExpression> arguments) {
+            Optional<List<CJAstTypeExpression>> typeArguments, List<CJAstExpression> args) {
         this.mark = mark;
         this.owner = owner;
         this.name = name;
         this.typeArguments = typeArguments;
-        this.arguments = arguments;
+        this.args = args;
     }
 
     @Override
@@ -51,6 +51,11 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
     }
 
     public List<CJAstExpression> getArguments() {
-        return arguments;
+        return args;
+    }
+
+    @Override
+    public <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a) {
+        return visitor.visitMethodCall(this, a);
     }
 }

@@ -19,4 +19,9 @@ public final class CJAstBlockStatement implements CJAstStatement {
     public List<CJAstStatement> getStatements() {
         return statements;
     }
+
+    @Override
+    public <R, A> R accept(CJAstStatementVisitor<R, A> visitor, A a) {
+        return visitor.visitBlock(this, a);
+    }
 }

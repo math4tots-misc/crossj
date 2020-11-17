@@ -6,12 +6,12 @@ import crossj.base.Optional;
 public final class CJAstTypeExpression implements CJAstNode {
     private final CJMark mark;
     private final String name;
-    private final Optional<List<CJAstTypeExpression>> arguments;
+    private final Optional<List<CJAstTypeExpression>> args;
 
-    CJAstTypeExpression(CJMark mark, String name, Optional<List<CJAstTypeExpression>> arguments) {
+    CJAstTypeExpression(CJMark mark, String name, Optional<List<CJAstTypeExpression>> args) {
         this.mark = mark;
         this.name = name;
-        this.arguments = arguments;
+        this.args = args;
     }
 
     @Override
@@ -24,6 +24,6 @@ public final class CJAstTypeExpression implements CJAstNode {
     }
 
     public Optional<List<CJAstTypeExpression>> getArguments() {
-        return arguments;
+        return args;
     }
 }

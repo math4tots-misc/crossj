@@ -47,4 +47,9 @@ public final class CJAstMethodDefinition implements CJAstClassMember {
     public Optional<CJAstBlockStatement> getBody() {
         return body;
     }
+
+    @Override
+    public <R, A> R accept(CJAstClassMemberVisitor<R, A> visitor, A a) {
+        return visitor.visitMethod(this, a);
+    }
 }

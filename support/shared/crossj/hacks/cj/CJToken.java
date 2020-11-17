@@ -16,7 +16,6 @@ public final class CJToken {
     public static final int ID = 4;
     public static final int CHAR = 5;
     public static final int STRING = 6;
-    public static final int NEWLINE = 7;
 
     // token types in the range 32-127 are reserved for ASCII single character
     // token types.
@@ -114,6 +113,8 @@ public final class CJToken {
                 return "CJToken.KW_NULL";
             case KW_IF:
                 return "CJToken.KW_IF";
+            case KW_ELSE:
+                return "CJToken.KW_ELSE";
             case KW_IMPORT:
                 return "CJToken.KW_IMPORT";
             case KW_WHILE:
@@ -151,7 +152,7 @@ public final class CJToken {
 
     public static String keywordTypeToString(int type) {
         var name = typeToString(type);
-        Assert.that(name.startsWith("CJToken.KW_"));
+        Assert.withMessage(name.startsWith("CJToken.KW_"), name);
         return name.substring("CJToken.KW_".length(), name.length()).toLowerCase();
     }
 }

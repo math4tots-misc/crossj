@@ -12,4 +12,6 @@ public interface CJAstClassMember extends CJAstNode {
     default boolean isPrivate() {
         return (getModifiers() & CJAstClassMemberModifiers.PRIVATE) != 0;
     }
+
+    <R, A> R accept(CJAstClassMemberVisitor<R, A> visitor, A a);
 }

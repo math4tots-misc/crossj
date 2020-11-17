@@ -17,4 +17,9 @@ public final class CJAstNameExpression implements CJAstExpression {
     public String getName() {
         return name;
     }
+
+    @Override
+    public <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a) {
+        return visitor.visitName(this, a);
+    }
 }

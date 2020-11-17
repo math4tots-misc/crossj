@@ -17,4 +17,9 @@ public final class CJAstReturnStatement implements CJAstStatement {
     public CJAstExpression getExpression() {
         return expression;
     }
+
+    @Override
+    public <R, A> R accept(CJAstStatementVisitor<R, A> visitor, A a) {
+        return visitor.visitReturn(this, a);
+    }
 }

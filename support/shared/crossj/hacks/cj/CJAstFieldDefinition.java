@@ -31,4 +31,9 @@ public final class CJAstFieldDefinition implements CJAstClassMember {
     public CJAstTypeExpression getType() {
         return type;
     }
+
+    @Override
+    public <R, A> R accept(CJAstClassMemberVisitor<R, A> visitor, A a) {
+        return visitor.visitField(this, a);
+    }
 }
