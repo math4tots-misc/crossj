@@ -138,6 +138,7 @@ final class RegexNodeParser {
                         case '}':
                         case '|':
                         case '.':
+                        case '$':
                             return Try.ok(RegexNode.ofCodePoint(escape));
                         case 'n':
                             return Try.ok(RegexNode.ofChar('\n'));
