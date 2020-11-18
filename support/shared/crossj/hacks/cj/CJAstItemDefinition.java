@@ -50,6 +50,10 @@ public final class CJAstItemDefinition implements CJAstNode {
         return shortName;
     }
 
+    public String getQualifiedName() {
+        return packageName + "." + shortName;
+    }
+
     public List<CJAstTypeParameter> getTypeParameters() {
         return typeParameters;
     }
