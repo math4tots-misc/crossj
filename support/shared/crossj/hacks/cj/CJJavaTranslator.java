@@ -92,7 +92,7 @@ public final class CJJavaTranslator {
         return "CM" + shortName;
     }
 
-    public static String shortnameToTraitClassName(String shortName) {
+    public static String shortNameToTraitClassName(String shortName) {
         return "CT" + shortName;
     }
 
@@ -102,7 +102,7 @@ public final class CJJavaTranslator {
         translatedPackageName = translatePackageName(packageName);
         dataClassName = shortNameToDataClassName(shortName);
         metaClassName = shortNameToMetaClassName(shortName);
-        traitClassName = shortnameToTraitClassName(shortName);
+        traitClassName = shortNameToTraitClassName(shortName);
         if (item.isTrait()) {
         } else {
             emitClass(item);
@@ -128,7 +128,7 @@ public final class CJJavaTranslator {
                 sb.line("import " + pkg + "." + metaClassName + ";");
             } else if (world.isTrait(qualifiedName)) {
                 var pkg = translatePackageName(pair.get1());
-                var traitClassName = shortnameToTraitClassName(pair.get2());
+                var traitClassName = shortNameToTraitClassName(pair.get2());
                 sb.line("import " + pkg + "." + traitClassName + ";");
             } else {
                 throw XError.withMessage(qualifiedName + " is not a known trait or class");
