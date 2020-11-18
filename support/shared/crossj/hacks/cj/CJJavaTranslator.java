@@ -65,6 +65,8 @@ public final class CJJavaTranslator {
     private static String shortNameToDataClassName(String shortName) {
         if (shortName.equals("Int")) {
             return "int";
+        } else if (shortName.equals("Char")) {
+            return "char";
         } else if (shortName.equals("Double")) {
             return "double";
         } else if (shortName.equals("String")) {
@@ -77,6 +79,8 @@ public final class CJJavaTranslator {
     private static String shortNameToDataClassNameForGeneric(String shortName) {
         if (shortName.equals("Int")) {
             return "Integer";
+        } else if (shortName.equals("Char")) {
+            return "Character";
         } else if (shortName.equals("Double")) {
             return "Double";
         } else {
