@@ -7,9 +7,9 @@ import crossj.base.StrBuilder;
 public final class CJAstTypeParameter implements CJAstNode {
     private final CJMark mark;
     private final String name;
-    private final Optional<CJAstTypeExpression> bound; // trait that the given type must satisfy
+    private final Optional<CJAstTraitExpression> bound; // trait that the given type must satisfy
 
-    CJAstTypeParameter(CJMark mark, String name, Optional<CJAstTypeExpression> bound) {
+    CJAstTypeParameter(CJMark mark, String name, Optional<CJAstTraitExpression> bound) {
         this.mark = mark;
         this.name = name;
         this.bound = bound;
@@ -24,7 +24,7 @@ public final class CJAstTypeParameter implements CJAstNode {
         return name;
     }
 
-    public Optional<CJAstTypeExpression> getBound() {
+    public Optional<CJAstTraitExpression> getBound() {
         return bound;
     }
 
