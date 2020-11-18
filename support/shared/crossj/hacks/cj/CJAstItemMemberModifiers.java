@@ -1,7 +1,7 @@
 package crossj.hacks.cj;
 
-public final class CJAstClassMemberModifiers {
-    private CJAstClassMemberModifiers() {}
+public final class CJAstItemMemberModifiers {
+    private CJAstItemMemberModifiers() {}
 
     public static final int STATIC = 1;
     public static final int PRIVATE = 2;

@@ -85,7 +85,7 @@ public final class CJParserState {
         return found;
     }
 
-    Try<CJAstClassDefinition> parseAll() {
+    Try<CJAstItemDefinition> parseAll() {
         var tryClassDef = parseClassFile();
         consumeDelimiters();
         if (tryClassDef.isFail()) {
@@ -97,7 +97,7 @@ public final class CJParserState {
         return tryClassDef;
     }
 
-    private Try<CJAstClassDefinition> parseClassFile() {
+    private Try<CJAstItemDefinition> parseClassFile() {
         if (!consume(CJToken.KW_PACKAGE)) {
             return fail("Expected 'package'");
         }
@@ -138,11 +138,11 @@ public final class CJParserState {
         return parseClassDefinition(pkg, imports);
     }
 
-    private Try<CJAstClassDefinition> parseClassDefinition(String pkg, List<String> imports) {
+    private Try<CJAstItemDefinition> parseClassDefinition(String pkg, List<String> imports) {
         var mark = getMark();
         var modifiers = parseClassDefinitionModifiers();
         if (consume(CJToken.KW_TRAIT)) {
-            modifiers |= CJAstClassDefinitionModifiers.TRAIT;
+            modifiers |= CJAstItemModifiers.TRAIT;
         } else if (!consume(CJToken.KW_CLASS)) {
             return fail("Expected 'class'");
         }
@@ -177,7 +177,7 @@ public final class CJParserState {
             return fail("Expected '{'");
         }
         consumeDelimiters();
-        var members = List.<CJAstClassMemberDefinition>of();
+        var members = List.<CJAstItemMemberDefinition>of();
         while (!consume('}')) {
             var tryMember = parseClassMember();
             if (tryMember.isFail()) {
@@ -187,7 +187,7 @@ public final class CJParserState {
             consumeDelimiters();
         }
 
-        return Try.ok(new CJAstClassDefinition(mark, pkg, imports, modifiers, name, typeParameters, traits, members));
+        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, modifiers, name, typeParameters, traits, members));
     }
 
     private int parseClassDefinitionModifiers() {
@@ -197,7 +197,7 @@ public final class CJParserState {
             switch (peek().type) {
                 case CJToken.KW_NATIVE: {
                     next();
-                    modifiers |= CJAstClassDefinitionModifiers.NATIVE;
+                    modifiers |= CJAstItemModifiers.NATIVE;
                     modified = true;
                     break;
                 }
@@ -216,19 +216,19 @@ public final class CJParserState {
             switch (peek().type) {
                 case CJToken.KW_STATIC: {
                     next();
-                    modifiers |= CJAstClassMemberModifiers.STATIC;
+                    modifiers |= CJAstItemMemberModifiers.STATIC;
                     modified = true;
                     break;
                 }
                 case CJToken.KW_NATIVE: {
                     next();
-                    modifiers |= CJAstClassMemberModifiers.NATIVE;
+                    modifiers |= CJAstItemMemberModifiers.NATIVE;
                     modified = true;
                     break;
                 }
                 case CJToken.KW_PRIVATE: {
                     next();
-                    modifiers |= CJAstClassMemberModifiers.PRIVATE;
+                    modifiers |= CJAstItemMemberModifiers.PRIVATE;
                     modified = true;
                     break;
                 }
@@ -240,7 +240,7 @@ public final class CJParserState {
         return modifiers;
     }
 
-    private Try<CJAstClassMemberDefinition> parseClassMember() {
+    private Try<CJAstItemMemberDefinition> parseClassMember() {
         int modifiers = parseClassMemberModifiers();
         switch (peek().type) {
             case CJToken.KW_VAR: {

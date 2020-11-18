@@ -3,7 +3,10 @@ package crossj.hacks.cj;
 import crossj.base.List;
 import crossj.base.StrBuilder;
 
-public final class CJAstClassDefinition implements CJAstNode {
+/**
+ * Class or trait definition.
+ */
+public final class CJAstItemDefinition implements CJAstNode {
     private final CJMark mark;
     private final String packageName;
     private final List<String> imports;
@@ -11,11 +14,11 @@ public final class CJAstClassDefinition implements CJAstNode {
     private final String shortName;
     private final List<CJAstTypeParameter> typeParameters;
     private final List<CJAstTraitExpression> traits;
-    private final List<CJAstClassMemberDefinition> members;
+    private final List<CJAstItemMemberDefinition> members;
 
-    public CJAstClassDefinition(CJMark mark, String packageName, List<String> imports, int modifiers, String shortName,
-            List<CJAstTypeParameter> typeParameters, List<CJAstTraitExpression> traits,
-            List<CJAstClassMemberDefinition> members) {
+    public CJAstItemDefinition(CJMark mark, String packageName, List<String> imports, int modifiers, String shortName,
+                               List<CJAstTypeParameter> typeParameters, List<CJAstTraitExpression> traits,
+                               List<CJAstItemMemberDefinition> members) {
         this.mark = mark;
         this.packageName = packageName;
         this.imports = imports;
@@ -40,7 +43,7 @@ public final class CJAstClassDefinition implements CJAstNode {
     }
 
     public boolean isTrait() {
-        return (modifiers & CJAstClassDefinitionModifiers.TRAIT) != 0;
+        return (modifiers & CJAstItemModifiers.TRAIT) != 0;
     }
 
     public String getShortName() {
@@ -55,7 +58,7 @@ public final class CJAstClassDefinition implements CJAstNode {
         return traits;
     }
 
-    public List<CJAstClassMemberDefinition> getMembers() {
+    public List<CJAstItemMemberDefinition> getMembers() {
         return members;
     }
 

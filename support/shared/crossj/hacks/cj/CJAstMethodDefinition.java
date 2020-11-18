@@ -4,7 +4,7 @@ import crossj.base.List;
 import crossj.base.Optional;
 import crossj.base.StrBuilder;
 
-public final class CJAstMethodDefinition implements CJAstClassMemberDefinition {
+public final class CJAstMethodDefinition implements CJAstItemMemberDefinition {
     private final CJMark mark;
     private final int modifiers;
     private final String name;
@@ -56,7 +56,7 @@ public final class CJAstMethodDefinition implements CJAstClassMemberDefinition {
     }
 
     @Override
-    public <R, A> R accept(CJAstClassMemberVisitor<R, A> visitor, A a) {
+    public <R, A> R accept(CJAstItemMemberVisitor<R, A> visitor, A a) {
         return visitor.visitMethod(this, a);
     }
 
