@@ -796,6 +796,15 @@ public final class JavascriptTranslator implements ITranslator {
                                 sb.append(")");
                                 break;
                             }
+                            case "java.lang.String.replace": {
+                                translateExpression(owner);
+                                sb.append(".split(");
+                                translateExpression((Expression) node.arguments().get(0));
+                                sb.append(").join(");
+                                translateExpression((Expression) node.arguments().get(1));
+                                sb.append(")");
+                                break;
+                            }
                             case "java.lang.String.charAt": {
                                 translateExpression(owner);
                                 sb.append(".charCodeAt(");

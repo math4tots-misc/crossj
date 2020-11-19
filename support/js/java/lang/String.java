@@ -36,4 +36,6 @@ public final class String implements Comparable<String> {
     public native String toLowerCase();
 
     public native String toUpperCase();
+
+    public native String replace(String target, String replacement);
 }
