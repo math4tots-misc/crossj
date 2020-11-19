@@ -295,7 +295,7 @@ public final class CJParserState {
         }
         var parameters = tryParameters.get();
         if (!consume(':')) {
-            return fail("Expected ':'");
+            return expectedType(':');
         }
         var tryReturnType = parseTypeExpression();
         if (tryReturnType.isFail()) {

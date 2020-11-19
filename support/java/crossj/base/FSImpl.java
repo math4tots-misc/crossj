@@ -1,6 +1,8 @@
 package crossj.base;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -28,5 +30,23 @@ public final class FSImpl {
             }
         }
         return joined.toString();
+    }
+
+    static List<String> listdir(String dirpath) {
+        try {
+            var list = List.<String>of();
+            Files.list(Paths.get(dirpath)).forEach(path -> list.add(path.getFileName().toString()));
+            return list;
+        } catch (IOException ex) {
+            throw XError.withMessage(ex.toString());
+        }
+    }
+
+    static boolean isFile(String path) {
+        return Files.isRegularFile(Paths.get(path));
+    }
+
+    static boolean isDir(String path) {
+        return Files.isDirectory(Paths.get(path));
     }
 }

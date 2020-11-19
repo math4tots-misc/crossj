@@ -1,6 +1,9 @@
 package crossj.hacks.cj;
 
 import crossj.base.List;
+import crossj.base.Map;
+import crossj.base.Pair;
+import crossj.base.Str;
 import crossj.base.StrBuilder;
 
 /**
@@ -15,6 +18,7 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final List<CJAstTypeParameter> typeParameters;
     private final List<CJAstTraitExpression> traits;
     private final List<CJAstItemMemberDefinition> members;
+    private final Map<String, String> shortToQualifiedNameMap = Map.of();
 
     public CJAstItemDefinition(CJMark mark, String packageName, List<String> imports, int modifiers, String shortName,
                                List<CJAstTypeParameter> typeParameters, List<CJAstTraitExpression> traits,
@@ -27,6 +31,12 @@ public final class CJAstItemDefinition implements CJAstNode {
         this.typeParameters = typeParameters;
         this.traits = traits;
         this.members = members;
+
+        shortToQualifiedNameMap.put(shortName, getQualifiedName());
+        for (var qualifiedName : imports) {
+            var key = splitQualifiedName(qualifiedName).get2();
+            shortToQualifiedNameMap.put(key, qualifiedName);
+        }
     }
 
     @Override
@@ -44,6 +54,10 @@ public final class CJAstItemDefinition implements CJAstNode {
 
     public boolean isTrait() {
         return (modifiers & CJAstItemModifiers.TRAIT) != 0;
+    }
+
+    public boolean isNative() {
+        return (modifiers & CJAstItemModifiers.NATIVE) != 0;
     }
 
     public String getShortName() {
@@ -81,5 +95,17 @@ public final class CJAstItemDefinition implements CJAstNode {
             member.addInspect(sb, depth + 1);
         }
         sb.repeatStr("  ", depth).s("}").s(suffix).s("\n");
+    }
+
+    /**
+     * Given the context of this item definition, qualify a short item name.
+     */
+    public String qualifyName(String shortName) {
+        return shortToQualifiedNameMap.get(shortName);
+    }
+
+    private static Pair<String, String> splitQualifiedName(String qualifiedName) {
+        var parts = Str.split(qualifiedName, ".");
+        return Pair.of(Str.join(".", parts.slice(0, parts.size() - 1)), parts.get(parts.size() - 1));
     }
 }

@@ -398,6 +398,15 @@ class C$crossj$base$FSImpl {
     static M$joinPaths(paths) {
         return require('path').join(...paths);
     }
+    static M$listdir(dirpath) {
+        return C$crossj$base$List.M$fromJavaArray(require('fs').readdirSync(dirpath));
+    }
+    static M$isFile(path) {
+        return require('fs').lstatSync(path).isFile();
+    }
+    static M$isDir(path) {
+        return require('fs').lstatSync(path).isDirectory();
+    }
 }
 
 class C$crossj$base$Magic {
@@ -1237,6 +1246,13 @@ class C$crossj$base$DoubleArray {
     }
 }
 $CJ['crossj.base.DoubleArray'] = C$crossj$base$DoubleArray;
+
+class C$crossj$base$OSImpl {
+    static M$getEnvOrNull(key) {
+        const value = process.env[key];
+        return value === undefined ? null : value;
+    }
+}
 
 class C$crossj$base$ImplChar {
     static M$isWhitespace(ch) {

@@ -2,6 +2,7 @@ package crossj.hacks.cj;
 
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Set;
 import crossj.base.XIterable;
 
 /**
@@ -11,6 +12,7 @@ import crossj.base.XIterable;
  */
 public final class CJIRWorld {
     private final Map<String, CJAstItemDefinition> map = Map.of();
+    private final Map<String, List<CJAstItemDefinition>> traitClosureCache = Map.of();
 
     public void add(CJAstItemDefinition item) {
         map.put(item.getQualifiedName(), item);
@@ -40,5 +42,30 @@ public final class CJIRWorld {
     public boolean isClass(String qualifiedName) {
         var item = getItemOrNull(qualifiedName);
         return item != null && !item.isTrait();
+    }
+
+    public List<CJAstItemDefinition> getTraitClassClosure(String qualifiedName) {
+        var result = traitClosureCache.getOrNull(qualifiedName);
+        if (result == null) {
+            var items = List.<CJAstItemDefinition>of();
+            var seen = Set.<String>of(qualifiedName);
+            var stack = List.of(getItem(qualifiedName));
+            while (stack.size() > 0) {
+                var item = stack.pop();
+                items.add(item);
+                for (var traitExpression : item.getTraits()) {
+                    var qualifiedTraitName = item.qualifyName(traitExpression.getName());
+                    if (!seen.contains(qualifiedTraitName)) {
+                        seen.add(qualifiedTraitName);
+                        var trait = getItem(qualifiedTraitName);
+                        stack.add(trait);
+                    }
+                }
+            }
+            traitClosureCache.put(qualifiedName, items);
+            return items;
+        } else {
+            return result;
+        }
     }
 }
