@@ -20,6 +20,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
      * Quick and dirty CLI for translating cj sources to a javascript blob.
      *
      * E.g. usage:
+     *
      * <pre>
      * ./run-class crossj.hacks.cj.CJJSTranslator -r src/main/cj -m hacks.Sample | node
      * </pre>
@@ -27,6 +28,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     public static void main(String[] args) {
         String qualifiedMainClassName = null;
         var sourceRoots = List.<String>of();
+        String outFile = null;
         for (int i = 0; i < args.length; i++) {
             var arg = args[i];
             if (arg.equals("-m") || arg.equals("--main")) {
@@ -35,6 +37,9 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
             } else if (arg.equals("-r") || arg.equals("--source-root")) {
                 i++;
                 sourceRoots.add(args[i]);
+            } else if (arg.equals("-o")) {
+                i++;
+                outFile = args[i];
             } else if (arg.equals("--")) {
                 // skip
             } else {
@@ -42,8 +47,12 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
             }
         }
         if (qualifiedMainClassName == null) {
-            throw XError.withMessage("No main class specified");
+            throw XError.withMessage("No main class specified (specify with '-m')");
         }
+        if (outFile == null) {
+            throw XError.withMessage("No output file specified (specify with '-o')");
+        }
+
         var world = new CJIRWorld();
         for (var sourceRoot : sourceRoots) {
             for (var path : FS.files(sourceRoot)) {
@@ -53,7 +62,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
                 }
             }
         }
-        IO.print(emitMain(world, qualifiedMainClassName));
+        IO.writeFile(outFile, emitMain(world, qualifiedMainClassName));
     }
 
     public static String emitMain(CJIRWorld world, String qualifiedMainClassName) {
