@@ -159,7 +159,6 @@ public final class CJParserState {
         }
         var typeParameters = tryTypeParameters.get();
 
-        var traits = List.<CJAstTraitExpression>of();
         var conditionalTraits = List.<Pair<CJAstTraitExpression, List<CJAstTypeCondition>>>of();
         consumeDelimiters();
         if (consume(':')) {
@@ -176,7 +175,7 @@ public final class CJParserState {
                     }
                     conditionalTraits.add(Pair.of(tryTrait.get(), tryConditions.get()));
                 } else {
-                    traits.add(tryTrait.get());
+                    conditionalTraits.add(Pair.of(tryTrait.get(), List.of()));
                 }
                 consumeDelimiters();
                 if (!consume(',')) {
@@ -223,7 +222,7 @@ public final class CJParserState {
             consumeDelimiters();
         }
 
-        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, modifiers, name, typeParameters, traits,
+        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, modifiers, name, typeParameters,
                 conditionalTraits, members));
     }
 
