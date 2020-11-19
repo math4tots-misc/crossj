@@ -33,7 +33,16 @@ public final class CJLexer {
 
         // whitespace
         b.add("[^\\S\n]+", m -> none());
-        return b.build().get();
+
+        // NOTE: this must be updated whenever the grammar changes.
+        b.setPrecomputedDFA(CJLexerPrecomputed.DFA);
+
+        var lexer = b.build().get();
+        // var dfa = lexer.getSerializedDFA();
+        // IO.println("LENGTH = " + dfa.length);
+        // IO.println(IntArray.fromJavaIntArray(dfa));
+        // throw XError.withMessage("EXIT");
+        return lexer;
     }
 
     public static Try<List<CJToken>> lex(String string) {

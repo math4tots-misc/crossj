@@ -42,4 +42,8 @@ public final class Lexer<Token> {
     public TokenStream<Token> lex(String string) {
         return new LexerTokenStream<>(regex.matcher(string), callbacks);
     }
+
+    public int[] getSerializedDFA() {
+        return regex.getDfa().toIntArray();
+    }
 }

@@ -25,6 +25,14 @@ public final class Regex {
         this.dfa = dfa;
     }
 
+    public static Regex fromIntArray(int[] arr) {
+        return new Regex(DFA.fromIntArray(arr));
+    }
+
+    public int[] toIntArray() {
+        return dfa.toIntArray();
+    }
+
     public static Try<Regex> fromPatternList(List<String> patterns) {
         var regexNodes = List.<RegexNode>of();
         for (var pattern : patterns) {

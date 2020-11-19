@@ -49,9 +49,9 @@ public final class CJJavaTranslator {
         return "cj." + packageName;
     }
 
-    private static String translateVariableName(String variableName) {
-        return "cv" + variableName;
-    }
+    // private static String translateVariableName(String variableName) {
+    //     return "cv" + variableName;
+    // }
 
     private static String translateFieldName(String fieldName) {
         return "cf" + fieldName;
@@ -241,49 +241,49 @@ public final class CJJavaTranslator {
         return sb.build();
     }
 
-    // Returns the name of the type (including its type parameters), as it would
-    // appear
-    // in its meta class definition, excluding the 'extends...'.
-    // E.g. a (meta) class that's declared, 'public class CMFoo<CDB, CMB, CDC, CMC>
-    // implements ...' will
-    // result in 'CDFoo<CDB, CMB, CDC, CMC>' being returned here.
-    private String translateToSelfMetaType(CJAstItemDefinition item) {
-        var sb = Str.builder();
-        sb.s(shortNameToMetaClassName(item.getShortName()));
-        var parameters = item.getTypeParameters();
-        if (parameters.size() > 0) {
-            sb.s("<").s(shortNameToMetaClassName(parameters.get(0).getName()));
-            sb.s(",").s(shortNameToDataClassName(parameters.get(0).getName()));
-            for (int i = 1; i < parameters.size(); i++) {
-                sb.s(",").s(shortNameToMetaClassName(parameters.get(i).getName()));
-                sb.s(",").s(shortNameToDataClassName(parameters.get(i).getName()));
-            }
-            sb.s(">");
-        }
-        return sb.build();
-    }
+    // // Returns the name of the type (including its type parameters), as it would
+    // // appear
+    // // in its meta class definition, excluding the 'extends...'.
+    // // E.g. a (meta) class that's declared, 'public class CMFoo<CDB, CMB, CDC, CMC>
+    // // implements ...' will
+    // // result in 'CDFoo<CDB, CMB, CDC, CMC>' being returned here.
+    // private String translateToSelfMetaType(CJAstItemDefinition item) {
+    //     var sb = Str.builder();
+    //     sb.s(shortNameToMetaClassName(item.getShortName()));
+    //     var parameters = item.getTypeParameters();
+    //     if (parameters.size() > 0) {
+    //         sb.s("<").s(shortNameToMetaClassName(parameters.get(0).getName()));
+    //         sb.s(",").s(shortNameToDataClassName(parameters.get(0).getName()));
+    //         for (int i = 1; i < parameters.size(); i++) {
+    //             sb.s(",").s(shortNameToMetaClassName(parameters.get(i).getName()));
+    //             sb.s(",").s(shortNameToDataClassName(parameters.get(i).getName()));
+    //         }
+    //         sb.s(">");
+    //     }
+    //     return sb.build();
+    // }
 
-    // Returns the name of the type (including its type parameters), as it would
-    // appear
-    // in its trait interface definition, excluding the 'extends...'.
-    // E.g. a trait interface that's declared, 'public interface CTFoo<Data, CDX,
-    // CMX> extends ...'
-    // will result in 'CDFoo<Data, CDX, CMX>' being returned here.
-    private String translateToSelfTraitType(CJAstItemDefinition item) {
-        var sb = Str.builder();
-        sb.s(shortNameToMetaClassName(item.getShortName()));
-        sb.s("<Data");
-        for (var parameter : item.getTypeParameters()) {
-            sb.s(",").s(shortNameToMetaClassName(parameter.getName()));
-            sb.s(",").s(shortNameToDataClassName(parameter.getName()));
-        }
-        sb.s(">");
-        return sb.build();
-    }
+    // // Returns the name of the type (including its type parameters), as it would
+    // // appear
+    // // in its trait interface definition, excluding the 'extends...'.
+    // // E.g. a trait interface that's declared, 'public interface CTFoo<Data, CDX,
+    // // CMX> extends ...'
+    // // will result in 'CDFoo<Data, CDX, CMX>' being returned here.
+    // private String translateToSelfTraitType(CJAstItemDefinition item) {
+    //     var sb = Str.builder();
+    //     sb.s(shortNameToMetaClassName(item.getShortName()));
+    //     sb.s("<Data");
+    //     for (var parameter : item.getTypeParameters()) {
+    //         sb.s(",").s(shortNameToMetaClassName(parameter.getName()));
+    //         sb.s(",").s(shortNameToDataClassName(parameter.getName()));
+    //     }
+    //     sb.s(">");
+    //     return sb.build();
+    // }
 
-    private String translateTraitExpression(CJAstTraitExpression trait, CJAstTypeExpression self) {
-        return translateTraitExpressionWithDataClass(trait, translateTypeExpressionAsDataTypeForGeneric(self));
-    }
+    // private String translateTraitExpression(CJAstTraitExpression trait, CJAstTypeExpression self) {
+    //     return translateTraitExpressionWithDataClass(trait, translateTypeExpressionAsDataTypeForGeneric(self));
+    // }
 
     private String translateTraitExpressionWithDataClass(CJAstTraitExpression trait, String dataClass) {
         var sb = Str.builder();

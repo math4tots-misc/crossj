@@ -20,6 +20,37 @@ final class DFA {
         this.acceptMap = acceptMap;
     }
 
+    public int[] toIntArray() {
+        var ret = new int[acceptMap.length * (Alphabet.COUNT + 1) + 1];
+        int i = 0;
+        ret[i++] = startState;
+        for (int j = 0; j < transitionMap.length; j++) {
+            ret[i++] = transitionMap[j];
+        }
+        for (int j = 0; j < acceptMap.length; j++) {
+            ret[i++] = acceptMap[j];
+        }
+        Assert.equals(i, ret.length);
+        return RLE.encode(ret);
+    }
+
+    public static DFA fromIntArray(int[] arr) {
+        arr = RLE.decode(arr);
+        Assert.equals(arr.length % (Alphabet.COUNT + 1), 1);
+        int stateCount = (arr.length - 1) / (Alphabet.COUNT + 1);
+        int i = 0;
+        int startState = arr[i++];
+        var transitionMap = new int[stateCount * Alphabet.COUNT];
+        for (int j = 0; j < transitionMap.length; j++) {
+            transitionMap[j] = arr[i++];
+        }
+        var acceptMap = new int[stateCount];
+        for (int j = 0; j < acceptMap.length; j++) {
+            acceptMap[j] = arr[i++];
+        }
+        return new DFA(startState, transitionMap, acceptMap);
+    }
+
     public int getNumberOfStates() {
         return acceptMap.length;
     }
