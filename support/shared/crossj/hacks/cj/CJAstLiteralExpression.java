@@ -10,7 +10,8 @@ public final class CJAstLiteralExpression implements CJAstExpression {
     public static final String CHAR = "Char";
     public static final String INT = "Int";
     public static final String DOUBLE = "Double";
-    public static final List<String> TYPES = List.of(STRING, CHAR, INT, DOUBLE);
+    public static final String BOOL = "Bool";
+    public static final List<String> TYPES = List.of(STRING, CHAR, INT, DOUBLE, BOOL);
 
     private final CJMark mark;
     private final String type;

@@ -410,6 +410,8 @@ public final class CJParserState {
         switch (peek().type) {
             case '{':
                 return parseBlockStatement().map(x -> x);
+            case CJToken.KW_IF:
+                return parseIfStatement().map(x -> x);
             case CJToken.KW_RETURN: {
                 next();
                 var tryExpr = parseExpression();
@@ -417,7 +419,7 @@ public final class CJParserState {
                     return tryExpr.castFail();
                 }
                 if (!atDelimiter()) {
-                    return fail("Expected statement delimiter");
+                    return expectedKind("statement delimiter");
                 }
                 return Try.ok(new CJAstReturnStatement(mark, tryExpr.get()));
             }
@@ -427,10 +429,43 @@ public final class CJParserState {
                     return tryExpr.castFail();
                 }
                 if (!atDelimiter()) {
-                    return fail("Expected statement delimiter");
+                    return expectedKind("statement delimiter");
                 }
                 return Try.ok(new CJAstExpressionStatement(mark, tryExpr.get()));
             }
+        }
+    }
+
+    private Try<CJAstIfStatement> parseIfStatement() {
+        var mark = getMark();
+        if (!consume(CJToken.KW_IF)) {
+            return expectedType(CJToken.KW_IF);
+        }
+        var tryCondition = parseExpression();
+        if (tryCondition.isFail()) {
+            return tryCondition.castFail();
+        }
+        var condition = tryCondition.get();
+        var tryBody = parseBlockStatement();
+        if (tryBody.isFail()) {
+            return tryBody.castFail();
+        }
+        var body = tryBody.get();
+        if (consume(CJToken.KW_ELSE)) {
+            switch (peek().type) {
+                case '{':
+                case CJToken.KW_IF: {
+                    var tryOther = parseStatement();
+                    if (tryOther.isFail()) {
+                        return tryOther.castFail();
+                    }
+                    return Try.ok(new CJAstIfStatement(mark, condition, body, tryOther.get()));
+                }
+                default:
+                    return expectedKind("'if' or '{'");
+            }
+        } else {
+            return Try.ok(new CJAstIfStatement(mark, condition, body, null));
         }
     }
 
@@ -495,7 +530,7 @@ public final class CJParserState {
             }
             list.add(tryParameter.get());
             if (!consume(',') && !at(')')) {
-                return fail("Expected ')");
+                return expectedType(')');
             }
         }
         return Try.ok(list);
@@ -564,6 +599,14 @@ public final class CJParserState {
                 var rawText = next().text;
                 return Try.ok(new CJAstLiteralExpression(mark, CJAstLiteralExpression.CHAR, rawText));
             }
+            case CJToken.KW_TRUE: { // true literal
+                next();
+                return Try.ok(new CJAstLiteralExpression(mark, CJAstLiteralExpression.BOOL, "true"));
+            }
+            case CJToken.KW_FALSE: { // false literal
+                next();
+                return Try.ok(new CJAstLiteralExpression(mark, CJAstLiteralExpression.BOOL, "false"));
+            }
             case CJToken.STRING: { // string literal
                 var rawText = next().text;
                 return Try.ok(new CJAstLiteralExpression(mark, CJAstLiteralExpression.STRING, rawText));
@@ -612,15 +655,19 @@ public final class CJParserState {
                         tryArgs.get()));
             }
             case '(': { // parenthetical expression
+                next();
                 var tryExpr = parseExpression();
+                if (tryExpr.isFail()) {
+                    return tryExpr.castFail();
+                }
                 if (!consume(')')) {
-                    return fail("Expected ')'");
+                    return expectedType(')');
                 }
                 return tryExpr;
             }
         }
 
-        return fail("Expected expression");
+        return expectedKind("expression");
     }
 
     private Try<List<CJAstTypeExpression>> parseTypeArguments() {
@@ -642,7 +689,7 @@ public final class CJParserState {
 
     private Try<List<CJAstExpression>> parseArguments() {
         if (!consume('(')) {
-            return fail("Expected '(");
+            return expectedType('(');
         }
         var list = List.<CJAstExpression>of();
         while (!consume(')')) {
@@ -652,7 +699,7 @@ public final class CJParserState {
             }
             list.add(tryExpr.get());
             if (!consume(',') && !at(')')) {
-                return fail("Expected ')'");
+                return expectedType(')');
             }
         }
         return Try.ok(list);

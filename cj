@@ -18,18 +18,20 @@ def run(cmd, *, cwd=None):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('maincls')
-    parser.add_argument('remainder', nargs=argparse.REMAINDER)
+    parser.add_argument('--use-java', '-j', default=False, action='store_true')
+    # parser.add_argument('remainder', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     jspath = join(REPO, 'out', 'cj.js')
     run([
         'python3',
         join(REPO, 'scripts', 'run-class.py'),
+    ] + (['-t', 'java'] if args.use_java else []) + [
         'crossj.hacks.cj.CJJSTranslator',
         '-r', join(REPO, 'src', 'main', 'cj'),
         '-m', args.maincls,
         '-o', jspath,
     ])
-    run(['node', jspath] + list(args.remainder))
+    run(['node', jspath])
 
 
 if __name__ == '__main__':

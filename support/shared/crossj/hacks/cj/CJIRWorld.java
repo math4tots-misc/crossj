@@ -3,6 +3,7 @@ package crossj.hacks.cj;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Set;
+import crossj.base.Tuple;
 import crossj.base.XIterable;
 
 /**
@@ -13,6 +14,16 @@ import crossj.base.XIterable;
 public final class CJIRWorld {
     private final Map<String, CJAstItemDefinition> map = Map.of();
     private final Map<String, List<CJAstItemDefinition>> traitClosureCache = Map.of();
+
+    /**
+     * Classes that are automatically imported from cj.*
+     */
+    public static final Tuple<String> AUTO_IMPORTED_SHORT_CLASS_NAMES = Tuple.of(
+        "Int",
+        "Double",
+        "String",
+        "List"
+    );
 
     public void add(CJAstItemDefinition item) {
         map.put(item.getQualifiedName(), item);

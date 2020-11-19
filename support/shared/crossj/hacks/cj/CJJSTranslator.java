@@ -170,7 +170,12 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     private void emitItem(CJAstItemDefinition item) {
         // fill itemNameMap such that shortName -> qualifiedName
-        itemNameMap = Map.of(Pair.of(item.getShortName(), item.getQualifiedName()));
+        itemNameMap = Map.of();
+        itemNameMap.put("Self", item.getQualifiedName());
+        for (var shortAutoImportedName : CJIRWorld.AUTO_IMPORTED_SHORT_CLASS_NAMES) {
+            itemNameMap.put(shortAutoImportedName, "cj." + shortAutoImportedName);
+        }
+        itemNameMap.put(item.getShortName(), item.getQualifiedName());
         for (var qualifiedImportName : item.getImports()) {
             var shortImportName = splitQualifiedName(qualifiedImportName).get2();
             itemNameMap.put(shortImportName, qualifiedImportName);
@@ -339,6 +344,19 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         return null;
     }
 
+    @Override
+    public Void visitIf(CJAstIfStatement s, Void a) {
+        sb.lineStart("if (");
+        sb.lineBody(translateExpression(s.getCondition()));
+        sb.lineEnd(")");
+        emitStatement(s.getBody());
+        if (s.getOther() != null) {
+            sb.line("else");
+            emitStatement(s.getOther());
+        }
+        return null;
+    }
+
     private String translateExpression(CJAstExpression expression) {
         return expression.accept(this, null);
     }
@@ -386,6 +404,8 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         } else if (e.getType().equals(CJAstLiteralExpression.INT)) {
             return e.getRawText();
         } else if (e.getType().equals(CJAstLiteralExpression.DOUBLE)) {
+            return e.getRawText();
+        } else if (e.getType().equals(CJAstLiteralExpression.BOOL)) {
             return e.getRawText();
         } else {
             throw XError.withMessage("Unrecognized literal type: " + e.getType());
