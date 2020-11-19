@@ -17,12 +17,14 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final String shortName;
     private final List<CJAstTypeParameter> typeParameters;
     private final List<CJAstTraitExpression> traits;
+    private final List<Pair<CJAstTraitExpression, List<CJAstTypeCondition>>> conditionalTraits;
     private final List<CJAstItemMemberDefinition> members;
     private final Map<String, String> shortToQualifiedNameMap = Map.of();
 
     public CJAstItemDefinition(CJMark mark, String packageName, List<String> imports, int modifiers, String shortName,
-                               List<CJAstTypeParameter> typeParameters, List<CJAstTraitExpression> traits,
-                               List<CJAstItemMemberDefinition> members) {
+            List<CJAstTypeParameter> typeParameters, List<CJAstTraitExpression> traits,
+            List<Pair<CJAstTraitExpression, List<CJAstTypeCondition>>> conditionalTraits,
+            List<CJAstItemMemberDefinition> members) {
         this.mark = mark;
         this.packageName = packageName;
         this.imports = imports;
@@ -30,6 +32,7 @@ public final class CJAstItemDefinition implements CJAstNode {
         this.shortName = shortName;
         this.typeParameters = typeParameters;
         this.traits = traits;
+        this.conditionalTraits = conditionalTraits;
         this.members = members;
 
         shortToQualifiedNameMap.put(shortName, getQualifiedName());
@@ -74,6 +77,10 @@ public final class CJAstItemDefinition implements CJAstNode {
 
     public List<CJAstTraitExpression> getTraits() {
         return traits;
+    }
+
+    public List<Pair<CJAstTraitExpression, List<CJAstTypeCondition>>> getConditionalTraits() {
+        return conditionalTraits;
     }
 
     public List<CJAstItemMemberDefinition> getMembers() {

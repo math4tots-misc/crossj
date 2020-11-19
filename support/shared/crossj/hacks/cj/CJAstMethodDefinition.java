@@ -6,6 +6,7 @@ import crossj.base.StrBuilder;
 
 public final class CJAstMethodDefinition implements CJAstItemMemberDefinition {
     private final CJMark mark;
+    private final List<CJAstTypeCondition> typeConditions;
     private final int modifiers;
     private final String name;
     private final List<CJAstTypeParameter> typeParameters;
@@ -13,9 +14,11 @@ public final class CJAstMethodDefinition implements CJAstItemMemberDefinition {
     private final CJAstTypeExpression returnType;
     private final Optional<CJAstBlockStatement> body;
 
-    CJAstMethodDefinition(CJMark mark, int modifiers, String name, List<CJAstTypeParameter> typeParameters,
-            List<CJAstParameter> parameters, CJAstTypeExpression returnType, Optional<CJAstBlockStatement> body) {
+    CJAstMethodDefinition(CJMark mark, List<CJAstTypeCondition> typeConditions, int modifiers, String name,
+            List<CJAstTypeParameter> typeParameters, List<CJAstParameter> parameters, CJAstTypeExpression returnType,
+            Optional<CJAstBlockStatement> body) {
         this.mark = mark;
+        this.typeConditions = typeConditions;
         this.modifiers = modifiers;
         this.name = name;
         this.typeParameters = typeParameters;
@@ -27,6 +30,10 @@ public final class CJAstMethodDefinition implements CJAstItemMemberDefinition {
     @Override
     public CJMark getMark() {
         return mark;
+    }
+
+    public List<CJAstTypeCondition> getTypeConditions() {
+        return typeConditions;
     }
 
     @Override

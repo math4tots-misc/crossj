@@ -3,6 +3,7 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Optional;
+import crossj.base.Pair;
 import crossj.base.Str;
 import crossj.base.Try;
 
@@ -159,35 +160,117 @@ public final class CJParserState {
         var typeParameters = tryTypeParameters.get();
 
         var traits = List.<CJAstTraitExpression>of();
+        var conditionalTraits = List.<Pair<CJAstTraitExpression, List<CJAstTypeCondition>>>of();
+        consumeDelimiters();
         if (consume(':')) {
             while (true) {
+                consumeDelimiters();
                 var tryTrait = parseTraitExpression();
                 if (tryTrait.isFail()) {
                     return tryTrait.castFail();
                 }
-                traits.add(tryTrait.get());
+                if (at(CJToken.KW_IF)) {
+                    var tryConditions = parseTypeConditions();
+                    if (tryConditions.isFail()) {
+                        return tryConditions.castFail();
+                    }
+                    conditionalTraits.add(Pair.of(tryTrait.get(), tryConditions.get()));
+                } else {
+                    traits.add(tryTrait.get());
+                }
+                consumeDelimiters();
                 if (!consume(',')) {
                     break;
                 }
+                consumeDelimiters();
             }
         }
 
         consumeDelimiters();
         if (!consume('{')) {
-            return fail("Expected '{'");
+            return expectedType('{');
         }
         consumeDelimiters();
         var members = List.<CJAstItemMemberDefinition>of();
         while (!consume('}')) {
-            var tryMember = parseClassMember();
-            if (tryMember.isFail()) {
-                return tryMember.castFail();
+            if (at(CJToken.KW_IF)) {
+                var tryTypeConditions = parseTypeConditions();
+                if (tryTypeConditions.isFail()) {
+                    return tryTypeConditions.castFail();
+                }
+                var typeConditions = tryTypeConditions.get();
+                consumeDelimiters();
+                if (!consume('{')) {
+                    return expectedType('{');
+                }
+                consumeDelimiters();
+                while (!consume('}')) {
+                    int memberModifiers = parseClassMemberModifiers();
+                    var tryMethod = parseMethodDefinition(typeConditions, memberModifiers);
+                    if (tryMethod.isFail()) {
+                        return tryMethod.castFail();
+                    }
+                    members.add(tryMethod.get());
+                    consumeDelimiters();
+                }
+            } else {
+                var tryMember = parseClassMember();
+                if (tryMember.isFail()) {
+                    return tryMember.castFail();
+                }
+                members.add(tryMember.get());
             }
-            members.add(tryMember.get());
             consumeDelimiters();
         }
 
-        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, modifiers, name, typeParameters, traits, members));
+        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, modifiers, name, typeParameters, traits,
+                conditionalTraits, members));
+    }
+
+    private Try<List<CJAstTypeCondition>> parseTypeConditions() {
+        if (!consume(CJToken.KW_IF)) {
+            return expectedType(CJToken.KW_IF);
+        }
+        var conditions = List.<CJAstTypeCondition>of();
+        var tryCondition = parseTypeCondition();
+        if (tryCondition.isFail()) {
+            return tryCondition.castFail();
+        }
+        conditions.add(tryCondition.get());
+        while (consume(CJToken.KW_AND)) {
+            tryCondition = parseTypeCondition();
+            if (tryCondition.isFail()) {
+                return tryCondition.castFail();
+            }
+            conditions.add(tryCondition.get());
+        }
+        return Try.ok(conditions);
+    }
+
+    private Try<CJAstTypeCondition> parseTypeCondition() {
+        var mark = getMark();
+        var tryType = parseTypeExpression();
+        if (tryType.isFail()) {
+            return tryType.castFail();
+        }
+        var type = tryType.get();
+        if (!consume(':')) {
+            return expectedType(':');
+        }
+        var traits = List.<CJAstTraitExpression>of();
+        var tryTrait = parseTraitExpression();
+        if (tryTrait.isFail()) {
+            return tryTrait.castFail();
+        }
+        traits.add(tryTrait.get());
+        while (consume('&')) {
+            tryTrait = parseTraitExpression();
+            if (tryTrait.isFail()) {
+                return tryTrait.castFail();
+            }
+            traits.add(tryTrait.get());
+        }
+        return Try.ok(new CJAstTypeCondition(mark, type, traits));
     }
 
     private int parseClassDefinitionModifiers() {
@@ -247,10 +330,10 @@ public final class CJParserState {
                 return parseFieldDefinition(modifiers).map(x -> x);
             }
             case CJToken.KW_DEF: {
-                return parseMethodDefinition(modifiers).map(x -> x);
+                return parseMethodDefinition(List.of(), modifiers).map(x -> x);
             }
             default: {
-                return fail("Expected 'def' or 'var'");
+                return expectedKind("Expected 'def' or 'var'");
             }
         }
     }
@@ -275,13 +358,13 @@ public final class CJParserState {
         return Try.ok(new CJAstFieldDefinition(mark, modifiers, name, type));
     }
 
-    private Try<CJAstMethodDefinition> parseMethodDefinition(int modifiers) {
+    private Try<CJAstMethodDefinition> parseMethodDefinition(List<CJAstTypeCondition> typeConditions, int modifiers) {
         var mark = getMark();
         if (!consume(CJToken.KW_DEF)) {
-            return fail("Expected 'def'");
+            return expectedType(CJToken.KW_DEF);
         }
         if (!at(CJToken.ID)) {
-            return fail("Expected ID");
+            return expectedType(CJToken.ID);
         }
         var name = parseID();
         var tryTypeParameters = parseTypeParameters();
@@ -310,7 +393,8 @@ public final class CJParserState {
             }
             body = Optional.of(tryBody.get());
         }
-        return Try.ok(new CJAstMethodDefinition(mark, modifiers, name, typeParameters, parameters, returnType, body));
+        return Try.ok(new CJAstMethodDefinition(mark, typeConditions, modifiers, name, typeParameters, parameters,
+                returnType, body));
     }
 
     private Try<CJAstStatement> parseStatement() {
@@ -345,7 +429,7 @@ public final class CJParserState {
     private Try<CJAstBlockStatement> parseBlockStatement() {
         var mark = getMark();
         if (!consume('{')) {
-            return fail("Expected '{'");
+            return expectedType('{');
         }
         consumeDelimiters();
         var list = List.<CJAstStatement>of();

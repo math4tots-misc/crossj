@@ -43,10 +43,12 @@ public final class CJToken {
     public static final int KW_PUBLIC = 219;
     public static final int KW_PACKAGE = 220;
     public static final int KW_RETURN = 221;
+    public static final int KW_AND = 222;
+    public static final int KW_OR = 223;
 
     public static final Tuple<Integer> KEYWORD_TYPES = Tuple.of(KW_DEF, KW_CLASS, KW_TRUE, KW_FALSE, KW_NULL, KW_IF,
             KW_ELSE, KW_IMPORT, KW_WHILE, KW_BREAK, KW_CONTINUE, KW_VAR, KW_VAL, KW_NEW, KW_TRAIT, KW_NATIVE,
-            KW_STATIC, KW_PRIVATE, KW_PUBLIC, KW_PACKAGE, KW_RETURN);
+            KW_STATIC, KW_PRIVATE, KW_PUBLIC, KW_PACKAGE, KW_RETURN, KW_AND, KW_OR);
 
     public final int type;
     public final String text;
@@ -148,6 +150,10 @@ public final class CJToken {
                 return "CJToken.KW_PACKAGE";
             case KW_RETURN:
                 return "CJToken.KW_RETURN";
+            case KW_AND:
+                return "CJToken.KW_AND";
+            case KW_OR:
+                return "CJToken.KW_OR";
             case '\n':
                 return "'\\n'";
             default:
