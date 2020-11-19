@@ -257,6 +257,15 @@ public final class CJParserState {
         if (!consume(':')) {
             return expectedType(':');
         }
+        var tryTraits = parseTraitExpressionSeq();
+        if (tryTraits.isFail()) {
+            return tryTraits.castFail();
+        }
+        var traits = tryTraits.get();
+        return Try.ok(new CJAstTypeCondition(mark, type, traits));
+    }
+
+    private Try<List<CJAstTraitExpression>> parseTraitExpressionSeq() {
         var traits = List.<CJAstTraitExpression>of();
         var tryTrait = parseTraitExpression();
         if (tryTrait.isFail()) {
@@ -270,7 +279,7 @@ public final class CJParserState {
             }
             traits.add(tryTrait.get());
         }
-        return Try.ok(new CJAstTypeCondition(mark, type, traits));
+        return Try.ok(traits);
     }
 
     private int parseClassDefinitionModifiers() {
@@ -464,15 +473,15 @@ public final class CJParserState {
             return expectedType(CJToken.TYPE_ID);
         }
         var name = parseTypeID();
-        var bound = Optional.<CJAstTraitExpression>empty();
+        var bounds = List.<CJAstTraitExpression>of();
         if (consume(':')) {
-            var tryTrait = parseTraitExpression();
-            if (tryTrait.isFail()) {
-                return tryTrait.castFail();
+            var tryTraits = parseTraitExpressionSeq();
+            if (tryTraits.isFail()) {
+                return tryTraits.castFail();
             }
-            bound = Optional.of(tryTrait.get());
+            bounds = tryTraits.get();
         }
-        return Try.ok(new CJAstTypeParameter(mark, name, bound));
+        return Try.ok(new CJAstTypeParameter(mark, name, bounds));
     }
 
     private Try<List<CJAstParameter>> parseParameters() {

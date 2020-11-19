@@ -28,7 +28,8 @@ public final class CJJSTest {
                 ""
             ).get());
 
-            var js = CJJSTranslator.emitMain(world, "foo.Foo");
+            CJJSTranslator.emitMain(world, "foo.Foo");
+            // var js = CJJSTranslator.emitMain(world, "foo.Foo");
             // IO.println("js -> " + js);
             // Assert.equals(js, "asdf");
         }
@@ -63,9 +64,10 @@ public final class CJJSTest {
                 ""
             ).get());
 
-            var js = CJJSTranslator.emitMain(world, "foo.Foo");
-            IO.println("js -> " + js);
-            Assert.equals(js, "asdf");
+            CJJSTranslator.emitMain(world, "foo.Foo");
+            // var js = CJJSTranslator.emitMain(world, "foo.Foo");
+            // IO.println("js -> " + js);
+            // Assert.equals(js, "asdf");
         }
     }
 }
