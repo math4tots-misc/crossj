@@ -216,6 +216,11 @@ public final class StringTest {
         Assert.equals("ABCdef".toUpperCase(), "ABCDEF");
     }
 
+    @Test
+    public static void replace() {
+        Assert.equals("aaTaTaa".replace("aa", "xx"), "xxTaTxx");
+    }
+
     // This is not yet supported
     // @Test
     // public static void strSwitch() {
