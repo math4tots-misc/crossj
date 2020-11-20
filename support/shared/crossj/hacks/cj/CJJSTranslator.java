@@ -62,7 +62,13 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
                 }
             }
         }
-        IO.writeFile(outFile, emitMain(world, qualifiedMainClassName));
+        var tryVoid = CJIRAnnotator.annotate(world);
+        if (tryVoid.isFail()) {
+            IO.eprintln(tryVoid.getErrorMessageWithContext());
+            throw XError.withMessage("Annotation failed");
+        } else {
+            IO.writeFile(outFile, emitMain(world, qualifiedMainClassName));
+        }
     }
 
     public static String emitMain(CJIRWorld world, String qualifiedMainClassName) {
@@ -172,13 +178,13 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         // fill itemNameMap such that shortName -> qualifiedName
         itemNameMap = Map.of();
         itemNameMap.put("Self", item.getQualifiedName());
-        for (var shortAutoImportedName : CJIRWorld.AUTO_IMPORTED_SHORT_CLASS_NAMES) {
+        for (var shortAutoImportedName : CJIRWorld.AUTO_IMPORTED_ITEM_SHORT_NAMES) {
             itemNameMap.put(shortAutoImportedName, "cj." + shortAutoImportedName);
         }
         itemNameMap.put(item.getShortName(), item.getQualifiedName());
-        for (var qualifiedImportName : item.getImports()) {
-            var shortImportName = splitQualifiedName(qualifiedImportName).get2();
-            itemNameMap.put(shortImportName, qualifiedImportName);
+        for (var imp : item.getImports()) {
+            var shortImportName = splitQualifiedName(imp.getQualifiedName()).get2();
+            itemNameMap.put(shortImportName, imp.getQualifiedName());
         }
 
         // remember the names of type parameters at this level
@@ -350,9 +356,9 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         sb.lineBody(translateExpression(s.getCondition()));
         sb.lineEnd(")");
         emitStatement(s.getBody());
-        if (s.getOther() != null) {
+        if (s.getOther().isPresent()) {
             sb.line("else");
-            emitStatement(s.getOther());
+            emitStatement(s.getOther().get());
         }
         return null;
     }

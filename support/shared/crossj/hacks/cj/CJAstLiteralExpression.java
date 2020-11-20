@@ -16,6 +16,7 @@ public final class CJAstLiteralExpression implements CJAstExpression {
     private final CJMark mark;
     private final String type;
     private final String rawText;
+    CJIRType resolvedType;
 
     CJAstLiteralExpression(CJMark mark, String type, String rawText) {
         Assert.that(TYPES.contains(type));
@@ -35,6 +36,12 @@ public final class CJAstLiteralExpression implements CJAstExpression {
 
     public String getRawText() {
         return rawText;
+    }
+
+    @Override
+    public CJIRType getResolvedType() {
+        Assert.that(resolvedType != null);
+        return resolvedType;
     }
 
     @Override

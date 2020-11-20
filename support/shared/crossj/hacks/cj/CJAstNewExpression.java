@@ -7,6 +7,7 @@ public final class CJAstNewExpression implements CJAstExpression {
     private final CJMark mark;
     private final CJAstTypeExpression type;
     private final List<CJAstExpression> args;
+    CJIRType resolvedType;
 
     CJAstNewExpression(CJMark mark, CJAstTypeExpression type, List<CJAstExpression> args) {
         this.mark = mark;
@@ -25,6 +26,11 @@ public final class CJAstNewExpression implements CJAstExpression {
 
     public List<CJAstExpression> getArguments() {
         return args;
+    }
+
+    @Override
+    public CJIRType getResolvedType() {
+        return resolvedType;
     }
 
     @Override

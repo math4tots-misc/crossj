@@ -133,7 +133,8 @@ public final class CJJavaTranslator {
     }
 
     private void emitImports(CJAstItemDefinition item) {
-        for (var qualifiedName : item.getImports()) {
+        for (var imp : item.getImports()) {
+            var qualifiedName = imp.getQualifiedName();
             var pair = splitQualifiedName(qualifiedName);
             if (pair.get1().equals(packageName)) {
                 // items in the same package do not need to be imported.

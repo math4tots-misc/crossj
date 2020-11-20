@@ -3,11 +3,13 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.StrBuilder;
+import crossj.base.XError;
 
 public final class CJAstTraitExpression implements CJAstNode {
     private final CJMark mark;
     private final String name;
     private final List<CJAstTypeExpression> args;
+    private CJIRTrait asIsTrait;
 
     CJAstTraitExpression(CJMark mark, String name, List<CJAstTypeExpression> args) {
         this.mark = mark;
@@ -45,5 +47,23 @@ public final class CJAstTraitExpression implements CJAstNode {
             }
             sb.s("]");
         }
+    }
+
+    public boolean hasAsIsTrait() {
+        return asIsTrait != null;
+    }
+
+    public CJIRTrait getAsIsTrait() {
+        if (asIsTrait == null) {
+            throw XError.withMessage("asIsTrait accessed before being set");
+        }
+        return asIsTrait;
+    }
+
+    public void setAsIsTrait(CJIRTrait asIsTrait) {
+        if (this.asIsTrait != null) {
+            throw XError.withMessage("asIsTrait already set");
+        }
+        this.asIsTrait = asIsTrait;
     }
 }

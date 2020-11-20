@@ -18,7 +18,8 @@ public final class CJIRWorld {
     /**
      * Classes that are automatically imported from cj.*
      */
-    public static final Tuple<String> AUTO_IMPORTED_SHORT_CLASS_NAMES = Tuple.of(
+    public static final Tuple<String> AUTO_IMPORTED_ITEM_SHORT_NAMES = Tuple.of(
+        "Unit",
         "Bool",
         "Int",
         "Double",

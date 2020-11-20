@@ -27,9 +27,14 @@ class MC$cj$Int {
 }
 const MO$cj$Int = new MC$cj$Int();
 
+class MC$cj$String {
+}
+const MO$cj$String = new MC$cj$String();
+
 class MC$cj$IO {
-    M$println(string) {
-        console.log(string);
+    // println[T](t: T) : Unit
+    M$println(metaObject, object) {
+        console.log(object);
     }
 }
 const MO$cj$IO = new MC$cj$IO();

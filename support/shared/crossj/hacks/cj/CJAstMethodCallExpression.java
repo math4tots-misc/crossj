@@ -1,5 +1,6 @@
 package crossj.hacks.cj;
 
+import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.StrBuilder;
 
@@ -23,6 +24,7 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
     private final String name;
     private final List<CJAstTypeExpression> typeArguments;
     private final List<CJAstExpression> args;
+    CJIRType resolvedType;
 
     CJAstMethodCallExpression(CJMark mark, CJAstTypeExpression owner, String name,
             List<CJAstTypeExpression> typeArguments, List<CJAstExpression> args) {
@@ -52,6 +54,12 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
 
     public List<CJAstExpression> getArguments() {
         return args;
+    }
+
+    @Override
+    public CJIRType getResolvedType() {
+        Assert.that(resolvedType != null);
+        return resolvedType;
     }
 
     @Override

@@ -5,6 +5,7 @@ import crossj.base.StrBuilder;
 public final class CJAstNameExpression implements CJAstExpression {
     private final CJMark mark;
     private final String name;
+    CJIRType resolvedType;
 
     CJAstNameExpression(CJMark mark, String name) {
         this.mark = mark;
@@ -18,6 +19,11 @@ public final class CJAstNameExpression implements CJAstExpression {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public CJIRType getResolvedType() {
+        return resolvedType;
     }
 
     @Override

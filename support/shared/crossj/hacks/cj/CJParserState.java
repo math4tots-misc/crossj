@@ -121,8 +121,10 @@ public final class CJParserState {
         var pkg = sb.build();
         consumeDelimiters();
 
-        var imports = List.<String>of();
-        while (consume(CJToken.KW_IMPORT)) {
+        var imports = List.<CJAstImport>of();
+        while (at(CJToken.KW_IMPORT)) {
+            var mark = getMark();
+            next();
             sb = Str.builder();
             while (at(CJToken.ID)) {
                 sb.s(parseID());
@@ -136,14 +138,14 @@ public final class CJParserState {
                 return fail("Expected TYPE_ID");
             }
             sb.s(parseTypeID());
-            imports.add(sb.build());
+            imports.add(new CJAstImport(mark, sb.build()));
             consumeDelimiters();
         }
 
         return parseClassDefinition(pkg, imports);
     }
 
-    private Try<CJAstItemDefinition> parseClassDefinition(String pkg, List<String> imports) {
+    private Try<CJAstItemDefinition> parseClassDefinition(String pkg, List<CJAstImport> imports) {
         var mark = getMark();
         var modifiers = parseClassDefinitionModifiers();
         if (consume(CJToken.KW_TRAIT)) {
@@ -226,8 +228,8 @@ public final class CJParserState {
             consumeDelimiters();
         }
 
-        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, modifiers, name, typeParameters,
-                conditionalTraits, members));
+        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, modifiers, name, typeParameters, conditionalTraits,
+                members));
     }
 
     private Try<List<CJAstTypeCondition>> parseTypeConditions() {
@@ -518,13 +520,13 @@ public final class CJParserState {
                     if (tryOther.isFail()) {
                         return tryOther.castFail();
                     }
-                    return Try.ok(new CJAstIfStatement(mark, condition, body, tryOther.get()));
+                    return Try.ok(new CJAstIfStatement(mark, condition, body, Optional.of(tryOther.get())));
                 }
                 default:
                     return expectedKind("'if' or '{'");
             }
         } else {
-            return Try.ok(new CJAstIfStatement(mark, condition, body, null));
+            return Try.ok(new CJAstIfStatement(mark, condition, body, Optional.empty()));
         }
     }
 
