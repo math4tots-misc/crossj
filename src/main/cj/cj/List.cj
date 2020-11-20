@@ -1,14 +1,10 @@
 package cj
 
-import cj.Eq
-import cj.Hash
-import cj.Ord
-
 native class List[T] :
         Iterable[T],
         Eq if T : Eq,
-        Hash if T : Hash,
-        Ord if T : Ord {
+        Ord if T : Ord,
+        Hash if T : Hash {
 
     if T : Eq {
         def __eq(a: Self, b: Self) : Bool

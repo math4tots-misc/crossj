@@ -19,10 +19,14 @@ public final class CJIRWorld {
      * Classes that are automatically imported from cj.*
      */
     public static final Tuple<String> AUTO_IMPORTED_SHORT_CLASS_NAMES = Tuple.of(
+        "Bool",
         "Int",
         "Double",
         "String",
-        "List"
+        "List",
+        "Eq",
+        "Ord",
+        "Hash"
     );
 
     public void add(CJAstItemDefinition item) {
