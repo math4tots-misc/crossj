@@ -357,6 +357,34 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         return null;
     }
 
+    @Override
+    public Void visitWhile(CJAstWhileStatement s, Void a) {
+        sb.lineStart("while (");
+        sb.lineBody(translateExpression(s.getCondition()));
+        sb.lineEnd(")");
+        emitStatement(s.getBody());
+        return null;
+    }
+
+    @Override
+    public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
+        sb.lineStart("var ");
+        sb.lineBody(nameToLocalVariableName(s.getName()));
+        sb.lineBody(" = ");
+        sb.lineBody(translateExpression(s.getExpression()));
+        sb.lineEnd(";");
+        return null;
+    }
+
+    @Override
+    public Void visitAssignment(CJAstAssignmentStatement s, Void a) {
+        sb.lineStart(nameToLocalVariableName(s.getName()));
+        sb.lineBody(" = ");
+        sb.lineBody(translateExpression(s.getExpression()));
+        sb.lineEnd(";");
+        return null;
+    }
+
     private String translateExpression(CJAstExpression expression) {
         return expression.accept(this, null);
     }

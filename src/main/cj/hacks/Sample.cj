@@ -15,5 +15,11 @@ class Sample {
         if (true) {
             IO.println("true is true")
         }
+
+        var i = 0
+        while (Int.__lt(i, 10)) {
+            IO.println(i)
+            i = Int.__add(i, 1)
+        }
     }
 }

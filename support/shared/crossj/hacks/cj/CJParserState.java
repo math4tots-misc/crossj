@@ -33,6 +33,10 @@ public final class CJParserState {
         return peek().type == tokenType;
     }
 
+    private boolean atOffset(int tokenType, int offset) {
+        return i + offset < tokens.size() && tokens.get(i + offset).type == tokenType;
+    }
+
     private CJMark tokenToMark(CJToken token) {
         return CJMark.fromToken(filename, token);
     }
@@ -412,6 +416,47 @@ public final class CJParserState {
                 return parseBlockStatement().map(x -> x);
             case CJToken.KW_IF:
                 return parseIfStatement().map(x -> x);
+            case CJToken.KW_WHILE: {
+                next();
+                var tryCond = parseExpression();
+                if (tryCond.isFail()) {
+                    return tryCond.castFail();
+                }
+                var cond = tryCond.get();
+                var tryBody = parseBlockStatement();
+                if (tryBody.isFail()) {
+                    return tryBody.castFail();
+                }
+                var body = tryBody.get();
+                return Try.ok(new CJAstWhileStatement(mark, cond, body));
+            }
+            case CJToken.KW_VAR: {
+                next();
+                if (!at(CJToken.ID)) {
+                    return expectedType(CJToken.ID);
+                }
+                var name = parseID();
+                var type = Optional.<CJAstTypeExpression>empty();
+                if (consume(':')) {
+                    var tryType = parseTypeExpression();
+                    if (tryType.isFail()) {
+                        return tryType.castFail();
+                    }
+                    type = Optional.of(tryType.get());
+                }
+                if (!consume('=')) {
+                    return expectedType('=');
+                }
+                var tryExpr = parseExpression();
+                if (tryExpr.isFail()) {
+                    return tryExpr.castFail();
+                }
+                var expr = tryExpr.get();
+                if (!atDelimiter()) {
+                    return expectedKind("statement delimiter");
+                }
+                return Try.ok(new CJAstVariableDeclarationStatement(mark, name, type, expr));
+            }
             case CJToken.KW_RETURN: {
                 next();
                 var tryExpr = parseExpression();
@@ -424,14 +469,28 @@ public final class CJParserState {
                 return Try.ok(new CJAstReturnStatement(mark, tryExpr.get()));
             }
             default: {
-                var tryExpr = parseExpression();
-                if (tryExpr.isFail()) {
-                    return tryExpr.castFail();
+                if (at(CJToken.ID) && atOffset('=', 1)) {
+                    var name = parseID();
+                    next();
+                    var tryExpr = parseExpression();
+                    if (tryExpr.isFail()) {
+                        return tryExpr.castFail();
+                    }
+                    var expr = tryExpr.get();
+                    if (!atDelimiter()) {
+                        return expectedKind("statement delimiter");
+                    }
+                    return Try.ok(new CJAstAssignmentStatement(mark, name, expr));
+                } else {
+                    var tryExpr = parseExpression();
+                    if (tryExpr.isFail()) {
+                        return tryExpr.castFail();
+                    }
+                    if (!atDelimiter()) {
+                        return expectedKind("statement delimiter");
+                    }
+                    return Try.ok(new CJAstExpressionStatement(mark, tryExpr.get()));
                 }
-                if (!atDelimiter()) {
-                    return expectedKind("statement delimiter");
-                }
-                return Try.ok(new CJAstExpressionStatement(mark, tryExpr.get()));
             }
         }
     }
