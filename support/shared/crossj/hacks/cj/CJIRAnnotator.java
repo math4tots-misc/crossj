@@ -394,9 +394,16 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
 
     @Override
     public Void visitNew(CJAstNewExpression e, Void a) {
+        annotateTypeExpression(e.getType());
         for (var arg : e.getArguments()) {
             annotateExpression(arg);
         }
+        var type = e.getType().getAsIsType();
+        if (type instanceof CJIRVariableType) {
+            // TODO: Consider whether I want to allow this.
+            throw err0("'new' cannot be used with variable types", e.getMark());
+        }
+        e.resolvedType = type;
         return null;
     }
 }

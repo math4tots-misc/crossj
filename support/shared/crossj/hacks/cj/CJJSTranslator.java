@@ -7,7 +7,6 @@ import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.OS;
 import crossj.base.Pair;
-import crossj.base.Set;
 import crossj.base.Str;
 import crossj.base.XError;
 
@@ -101,8 +100,6 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     // private final CJIRWorld world;
     private final CJStrBuilder sb = new CJStrBuilder();
     private Map<String, String> itemNameMap = null;
-    private Set<String> itemLevelTypeVariables = null;
-    private Set<String> functionLevelTypeVaraibles = null;
 
     private CJJSTranslator(CJIRWorld world) {
         // this.world = world;
@@ -150,31 +147,6 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         return itemNameMap.get(shortItemName);
     }
 
-    private String shortNameToMetaClassName(String shortItemName) {
-        return qualifiedNameToMetaClassName(shortNameToQualifiedName(shortItemName));
-    }
-
-    private String shortNameToMetaObjectName(String shortItemName) {
-        return qualifiedNameToMetaObjectName(shortNameToQualifiedName(shortItemName));
-    }
-
-    private String shortNameToConstructorName(String shortName) {
-        return qualifiedNameToConstructorName(shortNameToQualifiedName(shortName));
-    }
-
-    private boolean isFunctionLevelTypeVariable(String shortName) {
-        return functionLevelTypeVaraibles != null && functionLevelTypeVaraibles.contains(shortName);
-    }
-
-    private boolean isItemLevelTypeVariable(String shortName) {
-        return itemLevelTypeVariables != null && itemLevelTypeVariables.contains(shortName);
-    }
-
-    // private boolean isTypeVariable(String shortName) {
-    // return isFunctionLevelTypeVariable(shortName) ||
-    // isItemLevelTypeVariable(shortName);
-    // }
-
     private void emitItem(CJAstItemDefinition item) {
         // fill itemNameMap such that shortName -> qualifiedName
         itemNameMap = Map.of();
@@ -188,9 +160,6 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
             itemNameMap.put(shortImportName, imp.getQualifiedName());
         }
 
-        // remember the names of type parameters at this level
-        itemLevelTypeVariables = Set.fromIterable(item.getTypeParameters().map(tp -> tp.getName()));
-
         if (item.isNative()) {
             // nothing to do
         } else if (item.isTrait()) {
@@ -200,7 +169,6 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         }
 
         itemNameMap = null;
-        itemLevelTypeVariables = null;
     }
 
     private void emitTrait(CJAstItemDefinition item) {
@@ -292,33 +260,6 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         sb.dedent();
         sb.line("}");
     }
-
-    // /**
-    //  * Translates the given type expression into a javascript expression that
-    //  * evaluates to the equivalent meta object.
-    //  */
-    // private String translateTypeExpression(CJAstTypeExpression typeExpression) {
-    //     var shortName = typeExpression.getName();
-    //     var args = typeExpression.getArguments();
-    //     if (args.size() == 0) {
-    //         if (isFunctionLevelTypeVariable(shortName)) {
-    //             return nameToFunctionLevelTypeVariableName(shortName);
-    //         } else if (isItemLevelTypeVariable(shortName)) {
-    //             return nameToItemLevelTypeVariableExpression(shortName);
-    //         } else {
-    //             return shortNameToMetaObjectName(shortName);
-    //         }
-    //     } else {
-    //         var sb = Str.builder();
-    //         sb.s("new ").s(shortNameToMetaClassName(shortName)).s("(");
-    //         sb.s(translateTypeExpression(args.get(0)));
-    //         for (int i = 1; i < args.size(); i++) {
-    //             sb.s(",").s(translateTypeExpression(args.get(i)));
-    //         }
-    //         sb.s(")");
-    //         return sb.build();
-    //     }
-    // }
 
     private String translateType(CJIRType type) {
         if (type instanceof CJIRVariableType) {
@@ -441,7 +382,8 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         return translateMethodCall(owner, methodName, typeArguments, args);
     }
 
-    private String translateMethodCall(CJIRType owner, String methodName, List<CJIRType> typeArguments, List<CJAstExpression> args) {
+    private String translateMethodCall(CJIRType owner, String methodName, List<CJIRType> typeArguments,
+            List<CJAstExpression> args) {
         var sb = Str.builder();
         sb.s(translateType(owner)).s(".").s(nameToMethodName(methodName)).s("(");
         {
@@ -493,7 +435,8 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     @Override
     public String visitNew(CJAstNewExpression e, Void a) {
         var sb = Str.builder();
-        var constructorName = shortNameToConstructorName(e.getType().getName());
+        var type = (CJIRClassType) e.getType().getAsIsType();
+        var constructorName = qualifiedNameToConstructorName(type.getDefinition().getQualifiedName());
         var args = e.getArguments();
         sb.s(constructorName).s("(");
         if (args.size() > 0) {
