@@ -697,6 +697,7 @@ public final class CJParserState {
                 if (tryType.isFail()) {
                     return tryType.castFail();
                 }
+                var type = tryType.get();
                 if (!consume('.')) {
                     return fail("Expected '.'");
                 }
@@ -704,16 +705,23 @@ public final class CJParserState {
                     return fail("Expected ID");
                 }
                 var methodName = parseID();
+                var mustInfer = !at('[');
                 var tryTypeArgs = parseTypeArguments();
                 if (tryTypeArgs.isFail()) {
                     return tryTypeArgs.castFail();
                 }
+                var typeArgs = tryTypeArgs.get();
                 var tryArgs = parseArguments();
                 if (tryArgs.isFail()) {
                     return tryArgs.castFail();
                 }
-                return Try.ok(new CJAstMethodCallExpression(mark, tryType.get(), methodName, tryTypeArgs.get(),
-                        tryArgs.get()));
+                var args = tryArgs.get();
+                if (mustInfer) {
+                    Assert.equals(typeArgs.size(), 0);
+                    return Try.ok(new CJAstInferredGenericsMethodCallExpression(mark, type, methodName, args));
+                } else {
+                    return Try.ok(new CJAstMethodCallExpression(mark, type, methodName, typeArgs, args));
+                }
             }
             case '(': { // parenthetical expression
                 next();

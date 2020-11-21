@@ -1,5 +1,6 @@
 package crossj.hacks.cj;
 
+import crossj.base.Assert;
 import crossj.base.FS;
 import crossj.base.IO;
 import crossj.base.List;
@@ -292,30 +293,57 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         sb.line("}");
     }
 
-    /**
-     * Translates the given type expression into a javascript expression that
-     * evaluates to the equivalent meta object.
-     */
-    private String translateTypeExpression(CJAstTypeExpression typeExpression) {
-        var shortName = typeExpression.getName();
-        var args = typeExpression.getArguments();
-        if (args.size() == 0) {
-            if (isFunctionLevelTypeVariable(shortName)) {
-                return nameToFunctionLevelTypeVariableName(shortName);
-            } else if (isItemLevelTypeVariable(shortName)) {
-                return nameToItemLevelTypeVariableExpression(shortName);
+    // /**
+    //  * Translates the given type expression into a javascript expression that
+    //  * evaluates to the equivalent meta object.
+    //  */
+    // private String translateTypeExpression(CJAstTypeExpression typeExpression) {
+    //     var shortName = typeExpression.getName();
+    //     var args = typeExpression.getArguments();
+    //     if (args.size() == 0) {
+    //         if (isFunctionLevelTypeVariable(shortName)) {
+    //             return nameToFunctionLevelTypeVariableName(shortName);
+    //         } else if (isItemLevelTypeVariable(shortName)) {
+    //             return nameToItemLevelTypeVariableExpression(shortName);
+    //         } else {
+    //             return shortNameToMetaObjectName(shortName);
+    //         }
+    //     } else {
+    //         var sb = Str.builder();
+    //         sb.s("new ").s(shortNameToMetaClassName(shortName)).s("(");
+    //         sb.s(translateTypeExpression(args.get(0)));
+    //         for (int i = 1; i < args.size(); i++) {
+    //             sb.s(",").s(translateTypeExpression(args.get(i)));
+    //         }
+    //         sb.s(")");
+    //         return sb.build();
+    //     }
+    // }
+
+    private String translateType(CJIRType type) {
+        if (type instanceof CJIRVariableType) {
+            var variableType = (CJIRVariableType) type;
+            if (variableType.isItemLevel()) {
+                return nameToItemLevelTypeVariableExpression(variableType.getDefinition().getName());
             } else {
-                return shortNameToMetaObjectName(shortName);
+                Assert.that(variableType.isMethodLevel());
+                return nameToFunctionLevelTypeVariableName(variableType.getDefinition().getName());
             }
         } else {
-            var sb = Str.builder();
-            sb.s("new ").s(shortNameToMetaClassName(shortName)).s("(");
-            sb.s(translateTypeExpression(args.get(0)));
-            for (int i = 1; i < args.size(); i++) {
-                sb.s(",").s(translateTypeExpression(args.get(i)));
+            var classType = (CJIRClassType) type;
+            if (classType.getArguments().size() == 0) {
+                return qualifiedNameToMetaObjectName(classType.getDefinition().getQualifiedName());
+            } else {
+                var sb = Str.builder();
+                sb.s("new ").s(qualifiedNameToMetaClassName(classType.getDefinition().getQualifiedName())).s("(");
+                var args = classType.getArguments();
+                sb.s(translateType(args.get(0)));
+                for (int i = 1; i < args.size(); i++) {
+                    sb.s(",").s(translateType(args.get(i)));
+                }
+                sb.s(")");
+                return sb.build();
             }
-            sb.s(")");
-            return sb.build();
         }
     }
 
@@ -396,20 +424,36 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     @Override
+    public String visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Void a) {
+        var owner = e.getOwner().getAsIsType();
+        var methodName = e.getName();
+        var typeArguments = e.getInferredTypeArguments();
+        var args = e.getArguments();
+        return translateMethodCall(owner, methodName, typeArguments, args);
+    }
+
+    @Override
     public String visitMethodCall(CJAstMethodCallExpression e, Void a) {
-        var owner = translateTypeExpression(e.getOwner());
+        var owner = e.getOwner().getAsIsType();
+        var methodName = e.getName();
+        var typeArguments = e.getTypeArguments().map(t -> t.getAsIsType());
+        var args = e.getArguments();
+        return translateMethodCall(owner, methodName, typeArguments, args);
+    }
+
+    private String translateMethodCall(CJIRType owner, String methodName, List<CJIRType> typeArguments, List<CJAstExpression> args) {
         var sb = Str.builder();
-        sb.s(owner).s(".").s(nameToMethodName(e.getName())).s("(");
+        sb.s(translateType(owner)).s(".").s(nameToMethodName(methodName)).s("(");
         {
             boolean first = true;
-            for (var typeArg : e.getTypeArguments()) {
+            for (var typeArg : typeArguments) {
                 if (!first) {
                     sb.s(",");
                 }
                 first = false;
-                sb.s(translateTypeExpression(typeArg));
+                sb.s(translateType(typeArg));
             }
-            for (var arg : e.getArguments()) {
+            for (var arg : args) {
                 if (!first) {
                     sb.s(",");
                 }

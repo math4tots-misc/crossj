@@ -5,20 +5,20 @@ import cj.IO
 class Sample {
     def main() : Unit {
         if (1) {
-            IO.println[String]("1 is true")
+            IO.println("1 is true")
         } else {
-            IO.println[String]("1 is false")
+            IO.println("1 is false")
         }
-        IO.println[Int](Int.__add(2, 3))
-        IO.println[String]("Hello Sample")
+        IO.println(Int.__add(2, 3))
+        IO.println("Hello Sample")
 
         if (true) {
-            IO.println[String]("true is true")
+            IO.println("true is true")
         }
 
         var i = 0
         while (Int.__lt(i, 10)) {
-            IO.println[Int](i)
+            IO.println(i)
             i = Int.__add(i, 1)
         }
 
@@ -26,7 +26,7 @@ class Sample {
     }
 
     def foo(i: Int) : Int {
-        IO.println[String]("Inside foo")
+        IO.println("Inside foo")
         return i
     }
 }

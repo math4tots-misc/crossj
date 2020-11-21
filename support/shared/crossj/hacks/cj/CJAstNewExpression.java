@@ -29,7 +29,7 @@ public final class CJAstNewExpression implements CJAstExpression {
     }
 
     @Override
-    public CJIRType getResolvedType() {
+    public CJIRType getResolvedTypeOrNull() {
         return resolvedType;
     }
 

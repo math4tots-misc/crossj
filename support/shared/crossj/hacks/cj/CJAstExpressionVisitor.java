@@ -5,4 +5,5 @@ public interface CJAstExpressionVisitor<R, A> {
     R visitName(CJAstNameExpression e, A a);
     R visitLiteral(CJAstLiteralExpression e, A a);
     R visitNew(CJAstNewExpression e, A a);
+    R visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, A a);
 }

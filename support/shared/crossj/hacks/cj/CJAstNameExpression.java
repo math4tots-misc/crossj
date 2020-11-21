@@ -22,7 +22,7 @@ public final class CJAstNameExpression implements CJAstExpression {
     }
 
     @Override
-    public CJIRType getResolvedType() {
+    public CJIRType getResolvedTypeOrNull() {
         return resolvedType;
     }
 

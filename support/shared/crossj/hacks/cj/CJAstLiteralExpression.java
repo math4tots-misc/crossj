@@ -39,8 +39,7 @@ public final class CJAstLiteralExpression implements CJAstExpression {
     }
 
     @Override
-    public CJIRType getResolvedType() {
-        Assert.that(resolvedType != null);
+    public CJIRType getResolvedTypeOrNull() {
         return resolvedType;
     }
 

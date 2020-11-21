@@ -2,7 +2,10 @@ package crossj.hacks.cj;
 
 import crossj.base.Assert;
 import crossj.base.List;
+import crossj.base.Map;
 import crossj.base.Pair;
+import crossj.base.Range;
+import crossj.base.Set;
 import crossj.base.Str;
 import crossj.base.Try;
 import crossj.base.XError;
@@ -223,48 +226,140 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     }
 
     void annotateExpression(CJAstExpression expression) {
-        expression.accept(this, null);
+        if (expression.getResolvedTypeOrNull() == null) {
+            expression.accept(this, null);
+        }
+    }
+
+    @Override
+    public Void visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Void a) {
+        var mark = e.getMark();
+        var args = e.getArguments();
+        var ownerType = context.resolveTypeExpression(e.getOwner());
+        var tryMethodDescriptor = ownerType.getMethodDescriptor(e.getName());
+        if (tryMethodDescriptor.isFail()) {
+            throw err0(tryMethodDescriptor.getErrorMessage(), mark);
+        }
+        var methodDescriptor = tryMethodDescriptor.get();
+        var typeArguments = inferTypeArguments(mark, methodDescriptor, args);
+        e.resolvedType = annotateMethodCall0(mark, methodDescriptor, typeArguments, args);
+        e.inferredTypeArguments = typeArguments;
+        return null;
     }
 
     @Override
     public Void visitMethodCall(CJAstMethodCallExpression e, Void a) {
-        var ownerType = context.resolveTypeExpression(e.getOwner());
-        var tryMethodDescriptor = ownerType.getMethodDescriptor(e.getName());
-        if (tryMethodDescriptor.isFail()) {
-            throw err0(tryMethodDescriptor.getErrorMessage(), e.getMark());
-        }
-        var methodDescriptor = tryMethodDescriptor.get();
-        if (methodDescriptor.method.getTypeParameters().size() != e.getTypeArguments().size()) {
-            int argc = e.getTypeArguments().size();
-            int arge = methodDescriptor.method.getTypeConditions().size();
-            if (argc != arge) {
-                throw err0("Expected " + arge + " type args but got " + argc, e.getMark());
-            }
-        }
-        if (methodDescriptor.method.getParameters().size() != e.getArguments().size()) {
-            int argc = e.getArguments().size();
-            int arge = methodDescriptor.method.getParameters().size();
-            if (argc != arge) {
-                throw err0("Expected " + arge + " args but got " + argc, e.getMark());
-            }
-        }
         for (var typeArg : e.getTypeArguments()) {
             context.resolveTypeExpression(typeArg);
         }
-        var methodSignature = methodDescriptor.reify(e.getTypeArguments().map(t -> t.getAsIsType()));
-        for (int i = 0; i < e.getArguments().size(); i++) {
-            var arg = e.getArguments().get(i);
+        var ownerType = context.resolveTypeExpression(e.getOwner());
+        e.resolvedType = annotateMethodCall1(e.getMark(), ownerType, e.getName(),
+                e.getTypeArguments().map(t -> t.getAsIsType()), e.getArguments());
+        return null;
+    }
+
+    private List<CJIRType> inferTypeArguments(CJMark mark, CJIRMethodDescriptor methodDescriptor,
+            List<CJAstExpression> args) {
+        var method = methodDescriptor.method;
+        var parameterTypes = method.getParameters().map(p -> p.getType().getAsIsType());
+
+        if (parameterTypes.size() == 0) {
+            return List.of();
+        }
+
+        var map = Map.<String, CJIRType>of();
+        var unboundVariables = Set.fromIterable(method.getTypeParameters().map(p -> p.getName()));
+
+        // use the arguments from left to right to deduce all the type arguments.
+        int nextArgIndex = 0;
+        while (map.size() < unboundVariables.size() && nextArgIndex < args.size()) {
+            var arg = args.get(nextArgIndex);
+            var paramType = parameterTypes.get(nextArgIndex);
+            nextArgIndex++;
+
+            annotateExpression(arg);
+            var stack = List.of(Pair.of(paramType, arg.getResolvedType()));
+            while (map.size() < unboundVariables.size() && stack.size() > 0) {
+                var pair = stack.pop();
+                var param = pair.get1();
+                var given = pair.get2();
+
+                if (param instanceof CJIRVariableType) {
+                    var variableType = (CJIRVariableType) param;
+                    var variableName = variableType.getDefinition().getName();
+                    if (unboundVariables.contains(variableName) && !map.containsKey(variableName)) {
+                        // we've encountered an unbound variable. we should bind it.
+                        map.put(variableName, given);
+                    }
+                    // if the variable isn't free, for proper unification we would check that
+                    // the concrete types match. However, we silently ignore these cases
+                    // because if the call is actually bad, it should be caught later down
+                    // the line.
+                    // TODO: Throw a 'could not infer types' error when concrete types don't unify.
+                } else if (param instanceof CJIRClassType) {
+                    var classTypeParam = (CJIRClassType) param;
+                    var paramDef = classTypeParam.getDefinition();
+                    if (given instanceof CJIRClassType) {
+                        var classTypeGiven = (CJIRClassType) given;
+                        var givenDef = classTypeGiven.getDefinition();
+                        if (paramDef.getQualifiedName().equals(givenDef.getQualifiedName())
+                                && classTypeParam.getArguments().size() == classTypeGiven.getArguments().size()) {
+                            // the outer part of a reified class type matches.
+                            // this means we can proceed to unify the inner parts.
+                            for (int i = 0; i < classTypeParam.getArguments().size(); i++) {
+                                stack.add(Pair.of(classTypeParam.getArguments().get(i),
+                                        classTypeGiven.getArguments().get(i)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (map.size() < unboundVariables.size()) {
+            throw err0("Could not infer type arguments", mark);
+        }
+        return Range.upto(method.getTypeParameters().size())
+                .map(i -> map.get(method.getTypeParameters().get(i).getName())).list();
+    }
+
+    // convenience: retrieve method descriptor
+    private CJIRType annotateMethodCall1(CJMark mark, CJIRType ownerType, String methodName,
+            List<CJIRType> typeArguments, List<CJAstExpression> args) {
+        var tryMethodDescriptor = ownerType.getMethodDescriptor(methodName);
+        if (tryMethodDescriptor.isFail()) {
+            throw err0(tryMethodDescriptor.getErrorMessage(), mark);
+        }
+        var methodDescriptor = tryMethodDescriptor.get();
+        return annotateMethodCall0(mark, methodDescriptor, typeArguments, args);
+    }
+
+    // all method call types should all ultimately end up here
+    private CJIRType annotateMethodCall0(CJMark mark, CJIRMethodDescriptor methodDescriptor,
+            List<CJIRType> typeArguments, List<CJAstExpression> args) {
+        if (methodDescriptor.method.getTypeParameters().size() != typeArguments.size()) {
+            int argc = typeArguments.size();
+            int arge = methodDescriptor.method.getTypeConditions().size();
+            if (argc != arge) {
+                throw err0("Expected " + arge + " type args but got " + argc, mark);
+            }
+        }
+        if (methodDescriptor.method.getParameters().size() != args.size()) {
+            int argc = args.size();
+            int arge = methodDescriptor.method.getParameters().size();
+            if (argc != arge) {
+                throw err0("Expected " + arge + " args but got " + argc, mark);
+            }
+        }
+        var methodSignature = methodDescriptor.reify(typeArguments);
+        for (int i = 0; i < args.size(); i++) {
+            var arg = args.get(i);
             var argType = methodSignature.argumentTypes.get(i);
             annotateExpression(arg);
             if (!arg.getResolvedType().equals(argType)) {
                 throw err0("Expected " + argType + " expression but got " + arg.getResolvedType(), arg.getMark());
             }
         }
-        for (var arg : e.getArguments()) {
-            annotateExpression(arg);
-        }
-        e.resolvedType = methodSignature.returnType;
-        return null;
+        return methodSignature.returnType;
     }
 
     @Override
