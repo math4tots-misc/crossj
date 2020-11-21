@@ -22,4 +22,9 @@ public final class CJIRMethodDescriptor {
     public CJIRMethodSignature reify(List<CJIRType> methodTypeArguments) {
         return CJIRMethodSignature.compute(item, method, itemTypeArguments, methodTypeArguments);
     }
+
+    @Override
+    public String toString() {
+        return item.getQualifiedName() + "." + method.getName();
+    }
 }

@@ -232,13 +232,31 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     }
 
     @Override
+    public Void visitInstanceMethodCall(CJAstInstanceMethodCallExpression e, Void a) {
+        var mark = e.getMark();
+        var args = e.getArguments();
+        annotateExpression(args.get(0));
+        var ownerType = args.get(0).getResolvedType();
+        var tryMethodDescriptor = ownerType.getMethodDescriptor(e.getName());
+        if (tryMethodDescriptor.isFail()) {
+            throw err0(tryMethodDescriptor.getErrorMessageWithContext(), mark);
+        }
+        var methodDescriptor = tryMethodDescriptor.get();
+        var typeArguments = inferTypeArguments(mark, methodDescriptor, args);
+        e.resolvedType = annotateMethodCall0(mark, methodDescriptor, typeArguments, args);
+        e.inferredTypeArguments = typeArguments;
+        e.inferredOwnerType = ownerType;
+        return null;
+    }
+
+    @Override
     public Void visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Void a) {
         var mark = e.getMark();
         var args = e.getArguments();
         var ownerType = context.resolveTypeExpression(e.getOwner());
         var tryMethodDescriptor = ownerType.getMethodDescriptor(e.getName());
         if (tryMethodDescriptor.isFail()) {
-            throw err0(tryMethodDescriptor.getErrorMessage(), mark);
+            throw err0(tryMethodDescriptor.getErrorMessageWithContext(), mark);
         }
         var methodDescriptor = tryMethodDescriptor.get();
         var typeArguments = inferTypeArguments(mark, methodDescriptor, args);
@@ -340,14 +358,14 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
             int argc = typeArguments.size();
             int arge = methodDescriptor.method.getTypeConditions().size();
             if (argc != arge) {
-                throw err0("Expected " + arge + " type args but got " + argc, mark);
+                throw err0(methodDescriptor.toString() + " expects " + arge + " type arguments but got " + argc, mark);
             }
         }
         if (methodDescriptor.method.getParameters().size() != args.size()) {
             int argc = args.size();
             int arge = methodDescriptor.method.getParameters().size();
             if (argc != arge) {
-                throw err0("Expected " + arge + " args but got " + argc, mark);
+                throw err0(methodDescriptor.toString() + " expects " + arge + " arguments but got " + argc, mark);
             }
         }
         var methodSignature = methodDescriptor.reify(typeArguments);

@@ -64,8 +64,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         }
         var tryVoid = CJIRAnnotator.annotate(world);
         if (tryVoid.isFail()) {
-            IO.eprintln(tryVoid.getErrorMessageWithContext());
-            throw XError.withMessage("Annotation failed");
+            throw XError.withMessage(tryVoid.getErrorMessageWithContext());
         } else {
             IO.writeFile(outFile, emitMain(world, qualifiedMainClassName));
         }
@@ -362,6 +361,15 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     private String translateExpression(CJAstExpression expression) {
         return expression.accept(this, null);
+    }
+
+    @Override
+    public String visitInstanceMethodCall(CJAstInstanceMethodCallExpression e, Void a) {
+        var owner = e.getInferredOwnerType();
+        var methodName = e.getName();
+        var typeArguments = e.getInferredTypeArguments();
+        var args = e.getArguments();
+        return translateMethodCall(owner, methodName, typeArguments, args);
     }
 
     @Override

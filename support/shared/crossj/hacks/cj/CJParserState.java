@@ -641,9 +641,33 @@ public final class CJParserState {
     }
 
     private Try<CJAstExpression> parseExpression() {
-        var tryExpr = parseAtom();
+        var tryExpr = parsePostfix();
         if (tryExpr.isFail()) {
             return tryExpr.castFail();
+        }
+        return tryExpr;
+    }
+
+    private Try<CJAstExpression> parsePostfix() {
+        var tryExpr = parseAtom();
+        while (tryExpr.isOk()) {
+            var mark = getMark();
+            if (consume('.')) {
+                if (!at(CJToken.ID)) {
+                    return expectedType(CJToken.ID);
+                }
+                var name = parseID();
+                var tryArgs = parseArguments();
+                if (tryArgs.isFail()) {
+                    return tryArgs.castFail();
+                }
+                var otherArgs = tryArgs.get();
+                tryExpr = tryExpr.map(arg -> {
+                    var args = List.of(List.of(arg), otherArgs).flatMap(x -> x);
+                    return new CJAstInstanceMethodCallExpression(mark, name, args);
+                });
+            }
+            break;
         }
         return tryExpr;
     }
