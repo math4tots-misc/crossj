@@ -310,12 +310,11 @@ public final class CJParserState {
         while (true) {
             boolean modified = false;
             switch (peek().type) {
-                case CJToken.KW_NATIVE: {
+                case CJToken.KW_NATIVE:
                     next();
                     modifiers |= CJAstItemModifiers.NATIVE;
                     modified = true;
                     break;
-                }
             }
             if (!modified) {
                 break;

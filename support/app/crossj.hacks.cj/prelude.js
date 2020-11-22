@@ -55,6 +55,9 @@ class MC$cj$Int {
         return (a * b)|0;
     }
     M$__div(a, b) {
+        return a / b;
+    }
+    M$__floordiv(a, b) {
         return (a / b)|0;
     }
     M$__mod(a, b) {
@@ -99,6 +102,9 @@ class MC$cj$Double {
     }
     M$__div(a, b) {
         return a / b;
+    }
+    M$__floordiv(a, b) {
+        return (a / b)|0;
     }
     M$__mod(a, b) {
         return a % b;
@@ -243,8 +249,8 @@ class MC$cj$MutableList {
 
 class MC$cj$IO {
     // println[T](t: T) : Unit
-    M$println(metaObject, object) {
-        console.log(metaObject.M$toString(object));
+    M$println(T, t) {
+        console.log(T.M$toString(t));
     }
 }
 const MO$cj$IO = new MC$cj$IO();

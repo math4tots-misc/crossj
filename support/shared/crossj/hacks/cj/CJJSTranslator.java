@@ -121,7 +121,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     private String nameToItemLevelTypeVariableExpression(String shortName) {
         if (currentItem.isTrait()) {
-            return "this.TV$" + currentItem.getQualifiedName().replace(".", "$") + "$" + shortName;
+            return "this.TV$" + currentItem.getQualifiedName().replace(".", "$") + "$" + shortName + "()";
         } else {
             return "this.TV$" + shortName;
         }
