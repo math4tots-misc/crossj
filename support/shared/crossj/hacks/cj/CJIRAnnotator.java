@@ -48,6 +48,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     private final CJIRClassType intType;
     private final CJIRClassType doubleType;
     private final CJIRClassType stringType;
+    private final CJAstItemDefinition mutableListDefinition;
 
     private CJIRAnnotator(CJIRContext context) {
         this.context = context;
@@ -56,12 +57,17 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         this.intType = getSimpleTypeByQualifiedName("cj.Int");
         this.doubleType = getSimpleTypeByQualifiedName("cj.Double");
         this.stringType = getSimpleTypeByQualifiedName("cj.String");
+        this.mutableListDefinition = context.world.getItem("cj.MutableList");
     }
 
     public CJIRClassType getSimpleTypeByQualifiedName(String qualifiedName) {
         var item = context.world.getItem(qualifiedName);
         Assert.equals(item.getTypeParameters().size(), 0);
         return new CJIRClassType(item, List.of());
+    }
+
+    private CJIRClassType getMutableListTypeOf(CJIRType innerType) {
+        return new CJIRClassType(mutableListDefinition, List.of(innerType));
     }
 
     public static CJIRAnnotatorException err0(String message, CJMark mark) {
@@ -414,6 +420,13 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
             throw XError.withMessage("Unrecognized literal type: " + e.getType());
         }
         e.resolvedType = type;
+        return null;
+    }
+
+    @Override
+    public Void visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
+        annotateTypeExpression(e.getType());
+        e.resolvedType = getMutableListTypeOf(e.getType().getAsIsType());
         return null;
     }
 

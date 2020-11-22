@@ -23,6 +23,14 @@ class Sample {
         }
 
         Self.foo(5)
+
+        {
+            var xs = @[Int]
+            IO.println(xs.size())
+            xs.push(42)
+            IO.println(xs)
+            IO.println(xs.size())
+        }
     }
 
     def foo(i: Int) : Int {

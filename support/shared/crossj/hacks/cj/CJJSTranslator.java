@@ -434,6 +434,11 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     @Override
+    public String visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
+        return "[]";
+    }
+
+    @Override
     public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
         return "(!" + translateExpression(e.getInner()) + ")";
     }

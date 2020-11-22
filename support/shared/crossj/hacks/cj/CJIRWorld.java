@@ -24,8 +24,11 @@ public final class CJIRWorld {
         "Int",
         "Double",
         "String",
+        "MutableList",
         "List",
         "Iterable",
+        "ToString",
+        "Repr",
         "Eq",
         "Ord",
         "Hash"

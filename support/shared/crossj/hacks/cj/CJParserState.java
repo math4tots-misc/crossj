@@ -850,6 +850,25 @@ public final class CJParserState {
                 var rawText = next().text;
                 return Try.ok(new CJAstLiteralExpression(mark, CJAstLiteralExpression.DOUBLE, rawText));
             }
+            case '@': { // mutable collection literals
+                next();
+                if (consume('[')) {
+                    if (at(CJToken.TYPE_ID)) {
+                        int savedI = i;
+                        var tryType = parseTypeExpression();
+                        if (tryType.isOk() && consume(']')) {
+                            // empty mutable list
+                            return Try.ok(new CJAstEmptyMutableListExpression(mark, tryType.get()));
+                        } else {
+                            // non-empty mutable list
+                            i = savedI;
+                            return fail("Non-empty mutable lists are not yet supported");
+                        }
+                    }
+                } else {
+                    return expectedType('[');
+                }
+            }
             case CJToken.KW_NEW: { // new expressions
                 next();
                 var tryType = parseTypeExpression();
