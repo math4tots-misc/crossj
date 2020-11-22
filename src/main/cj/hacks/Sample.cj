@@ -4,10 +4,10 @@ import cj.IO
 
 class Sample {
     def main() : Unit {
-        if (1) {
-            IO.println("1 is true")
+        if (1 > 0) {
+            IO.println("1 > 0 is true")
         } else {
-            IO.println("1 is false")
+            IO.println("1 > 0 is false")
         }
         IO.println(2 + 3)
         IO.println("Hello Sample")

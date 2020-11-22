@@ -7,4 +7,5 @@ public interface CJAstExpressionVisitor<R, A> {
     R visitNew(CJAstNewExpression e, A a);
     R visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, A a);
     R visitInstanceMethodCall(CJAstInstanceMethodCallExpression e, A a);
+    R visitLogicalNot(CJAstLogicalNotExpression e, A a);
 }

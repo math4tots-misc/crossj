@@ -133,6 +133,9 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
      */
     void preAnnotateItem(CJAstItemDefinition item) {
         enterItem(item);
+        for (var traitExpression : item.getTraits()) {
+            context.resolveTraitExpression(traitExpression);
+        }
         for (var member : item.getMembers()) {
             if (member instanceof CJAstMethodDefinition) {
                 var method = (CJAstMethodDefinition) member;
@@ -151,6 +154,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     }
 
     void annotateItem(CJAstItemDefinition item) {
+        // TODO: Check for method signature conflicts in the implementing traits.
         enterItem(item);
         for (var member : item.getMembers()) {
             if (member instanceof CJAstMethodDefinition) {
@@ -197,6 +201,9 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     @Override
     public Void visitIf(CJAstIfStatement s, Void a) {
         annotateExpression(s.getCondition());
+        if (!s.getCondition().getResolvedType().equals(boolType)) {
+            throw err0("Expected bool but got " + s.getCondition().getResolvedType(), s.getMark());
+        }
         annotateStatement(s.getBody());
         if (s.getOther().isPresent()) {
             annotateStatement(s.getOther().get());
@@ -407,6 +414,16 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
             throw XError.withMessage("Unrecognized literal type: " + e.getType());
         }
         e.resolvedType = type;
+        return null;
+    }
+
+    @Override
+    public Void visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
+        annotateExpression(e.getInner());
+        if (!e.getInner().getResolvedType().equals(boolType)) {
+            throw err0("Expected bool but got " + e.getInner().getResolvedType(), e.getMark());
+        }
+        e.resolvedType = boolType;
         return null;
     }
 

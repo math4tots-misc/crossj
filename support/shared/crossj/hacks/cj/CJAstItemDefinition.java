@@ -68,6 +68,10 @@ public final class CJAstItemDefinition implements CJAstNode {
         return (modifiers & CJAstItemModifiers.TRAIT) != 0;
     }
 
+    public boolean isClass() {
+        return !isTrait();
+    }
+
     public boolean isNative() {
         return (modifiers & CJAstItemModifiers.NATIVE) != 0;
     }

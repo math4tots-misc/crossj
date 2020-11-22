@@ -4,9 +4,7 @@ import crossj.base.Assert;
 import crossj.base.FS;
 import crossj.base.IO;
 import crossj.base.List;
-import crossj.base.Map;
 import crossj.base.OS;
-import crossj.base.Pair;
 import crossj.base.Str;
 import crossj.base.XError;
 
@@ -98,15 +96,10 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     // private final CJIRWorld world;
     private final CJStrBuilder sb = new CJStrBuilder();
-    private Map<String, String> itemNameMap = null;
+    private CJAstItemDefinition currentItem = null;
 
     private CJJSTranslator(CJIRWorld world) {
         // this.world = world;
-    }
-
-    private static Pair<String, String> splitQualifiedName(String qualifiedName) {
-        var parts = Str.split(qualifiedName, ".");
-        return Pair.of(Str.join(".", parts.slice(0, parts.size() - 1)), parts.get(parts.size() - 1));
     }
 
     private static String qualifiedNameToMetaClassName(String qualifiedItemName) {
@@ -126,8 +119,12 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         return "TV$" + shortName;
     }
 
-    private static String nameToItemLevelTypeVariableExpression(String shortName) {
-        return "this.TV$" + shortName;
+    private String nameToItemLevelTypeVariableExpression(String shortName) {
+        if (currentItem.isTrait()) {
+            return "this.TV$" + currentItem.getQualifiedName().replace(".", "$") + "$" + shortName;
+        } else {
+            return "this.TV$" + shortName;
+        }
     }
 
     private static String nameToFieldName(String name) {
@@ -142,23 +139,8 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         return "M$" + name;
     }
 
-    private String shortNameToQualifiedName(String shortItemName) {
-        return itemNameMap.get(shortItemName);
-    }
-
     private void emitItem(CJAstItemDefinition item) {
-        // fill itemNameMap such that shortName -> qualifiedName
-        itemNameMap = Map.of();
-        itemNameMap.put("Self", item.getQualifiedName());
-        for (var shortAutoImportedName : CJIRWorld.AUTO_IMPORTED_ITEM_SHORT_NAMES) {
-            itemNameMap.put(shortAutoImportedName, "cj." + shortAutoImportedName);
-        }
-        itemNameMap.put(item.getShortName(), item.getQualifiedName());
-        for (var imp : item.getImports()) {
-            var shortImportName = splitQualifiedName(imp.getQualifiedName()).get2();
-            itemNameMap.put(shortImportName, imp.getQualifiedName());
-        }
-
+        currentItem = item;
         if (item.isNative()) {
             // nothing to do
         } else if (item.isTrait()) {
@@ -166,11 +148,22 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         } else {
             emitClass(item);
         }
-
-        itemNameMap = null;
+        currentItem = null;
     }
 
     private void emitTrait(CJAstItemDefinition item) {
+        var qualifiedItemName = item.getQualifiedName();
+        var metaClassName = qualifiedNameToMetaClassName(qualifiedItemName);
+        sb.line("class " + metaClassName + " {");
+        sb.indent();
+        for (var member : item.getMembers()) {
+            if (member instanceof CJAstMethodDefinition) {
+                var method = (CJAstMethodDefinition) member;
+                emitMethod(method);
+            }
+        }
+        sb.dedent();
+        sb.line("}");
     }
 
     private void emitClass(CJAstItemDefinition item) {
@@ -179,7 +172,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     private void emitDataClass(CJAstItemDefinition item) {
-        var qualifiedItemName = shortNameToQualifiedName(item.getShortName());
+        var qualifiedItemName = item.getQualifiedName();
         var constructorName = qualifiedNameToConstructorName(qualifiedItemName);
         var fields = item.getMembers().filter(m -> m instanceof CJAstFieldDefinition)
                 .map(f -> (CJAstFieldDefinition) f);
@@ -206,7 +199,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     private void emitMetaClass(CJAstItemDefinition item) {
-        var qualifiedItemName = shortNameToQualifiedName(item.getShortName());
+        var qualifiedItemName = item.getQualifiedName();
         var metaClassName = qualifiedNameToMetaClassName(qualifiedItemName);
         var typeParameters = item.getTypeParameters();
         sb.line("class " + metaClassName + " {");
@@ -438,6 +431,11 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         } else {
             throw XError.withMessage("Unrecognized literal type: " + e.getType());
         }
+    }
+
+    @Override
+    public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
+        return "(!" + translateExpression(e.getInner()) + ")";
     }
 
     @Override

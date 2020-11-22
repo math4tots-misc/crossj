@@ -645,9 +645,8 @@ public final class CJParserState {
         return parseExpressionWithPrecedence(0);
     }
 
-    // binds just a little bit tigheter than comparisons
-    // private static final int LOGICAL_NOT_BINDING_POWER =
-    // getTokenPrecedence(CJToken.EQ) + 5;
+    // binds just a little bit tighter than comparisons
+    private static final int LOGICAL_NOT_BINDING_POWER = getTokenPrecedence(CJToken.EQ) + 5;
     private static int getTokenPrecedence(int tokenType) {
         // mostly follows Python
         switch (tokenType) {
@@ -711,8 +710,7 @@ public final class CJParserState {
                 case CJToken.NE:
                 case CJToken.LE:
                 case CJToken.GE:
-                case CJToken.KW_IN:
-                {
+                case CJToken.KW_IN: {
                     String methodName = null;
                     switch (next().type) {
                         case '+':
@@ -832,6 +830,15 @@ public final class CJParserState {
                     return tryArgs.castFail();
                 }
                 return Try.ok(new CJAstNewExpression(mark, tryType.get(), tryArgs.get()));
+            }
+            case CJToken.KW_NOT: { // logical not expressions
+                next();
+                var tryInner = parseExpressionWithPrecedence(LOGICAL_NOT_BINDING_POWER);
+                if (tryInner.isFail()) {
+                    return tryInner.castFail();
+                }
+                var inner = tryInner.get();
+                return Try.ok(new CJAstLogicalNotExpression(mark, inner));
             }
             case CJToken.TYPE_ID: { // explicit-type method call
                 var tryType = parseTypeExpression();

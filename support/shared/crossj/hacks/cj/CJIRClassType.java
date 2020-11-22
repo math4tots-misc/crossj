@@ -3,12 +3,15 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Pair;
+import crossj.base.Range;
 import crossj.base.Str;
 import crossj.base.Try;
 
 public final class CJIRClassType implements CJIRType {
     private final CJAstItemDefinition definition;
     private final List<CJIRType> args;
+    private final Map<String, Try<CJIRMethodDescriptor>> methodDescriptorCache = Map.of();
 
     CJIRClassType(CJAstItemDefinition definition, List<CJIRType> args) {
         Assert.that(!definition.isTrait());
@@ -31,6 +34,14 @@ public final class CJIRClassType implements CJIRType {
 
     @Override
     public Try<CJIRMethodDescriptor> getMethodDescriptor(String methodName) {
+        if (!methodDescriptorCache.containsKey(methodName)) {
+            methodDescriptorCache.put(methodName, getMethodDescriptorUncached(methodName));
+        }
+        return methodDescriptorCache.get(methodName);
+    }
+
+    public Try<CJIRMethodDescriptor> getMethodDescriptorUncached(String methodName) {
+        // first search for the method defined directly in this class.
         for (var member : definition.getMembers()) {
             if (member.getName().equals(methodName)) {
                 if (member instanceof CJAstMethodDefinition) {
@@ -41,7 +52,38 @@ public final class CJIRClassType implements CJIRType {
                 }
             }
         }
+        // // find the method in one of the traits
+        // var stack = List.fromIterable(getReifiedTraits());
+        // stack.reverse();
+        // var seen = Set.fromIterable(stack.map(t -> t.getDefinition().getQualifiedName()));
+        // while (stack.size() > 0) {
+        //     var trait = stack.pop();
+        //     for (var indirectTrait : trait.getReifiedTraits()) {
+        //         var qualifiedName = indirectTrait.getQualifiedName();
+        //         if (!seen.contains(qualifiedName)) {
+        //             seen.add(qualifiedName);
+        //             stack.add(indirectTrait);
+        //         }
+        //     }
+        //     for (var member : trait.getDefinition().getMembers()) {
+        //         if (member.getName().equals(methodName)) {
+        //             if (member instanceof CJAstMethodDefinition) {
+        //                 var method = (CJAstMethodDefinition) member;
+        //                 return Try.ok(new CJIRMethodDescriptor(trait.getDefinition(), trait.getArguments(), method));
+        //             } else {
+        //                 return Try.fail(definition.getQualifiedName() + "." + methodName + " (" + trait + ") is not a method");
+        //             }
+        //         }
+        //     }
+        // }
         return Try.fail("Method " + methodName + " not found in " + definition.getQualifiedName());
+    }
+
+    public List<CJIRTrait> getReifiedTraits() {
+        var params = definition.getTypeParameters().map(p -> p.getName());
+        var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
+        map.put("Self", this);
+        return definition.getTraits().map(t -> t.getAsIsTrait().substitute(map));
     }
 
     @Override

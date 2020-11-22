@@ -3,6 +3,9 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Pair;
+import crossj.base.Range;
+import crossj.base.Str;
 import crossj.base.Try;
 
 public final class CJIRTrait {
@@ -11,6 +14,7 @@ public final class CJIRTrait {
 
     CJIRTrait(CJAstItemDefinition definition, List<CJIRType> args) {
         Assert.that(definition.isTrait());
+        Assert.equals(definition.getTypeParameters().size(), args.size());
         this.definition = definition;
         this.args = args;
     }
@@ -21,6 +25,10 @@ public final class CJIRTrait {
 
     public List<CJIRType> getArguments() {
         return args;
+    }
+
+    public String getQualifiedName() {
+        return definition.getQualifiedName();
     }
 
     public CJIRTrait substitute(Map<String, CJIRType> map) {
@@ -39,5 +47,20 @@ public final class CJIRTrait {
             }
         }
         return Try.fail("Method " + methodName + " not found in " + definition.getQualifiedName());
+    }
+
+    public List<CJIRTrait> getReifiedTraits() {
+        var params = definition.getTypeParameters().map(p -> p.getName());
+        var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
+        return definition.getTraits().map(t -> t.getAsIsTrait().substitute(map));
+    }
+
+    @Override
+    public String toString() {
+        if (args.size() == 0) {
+            return definition.getQualifiedName();
+        } else {
+            return definition.getQualifiedName() + "[" + Str.join(",", args) + "]";
+        }
     }
 }
