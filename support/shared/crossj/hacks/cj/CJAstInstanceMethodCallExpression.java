@@ -39,9 +39,10 @@ public final class CJAstInstanceMethodCallExpression implements CJAstExpression 
         }
         sb.s(args.get(0).inspect0()).s(".").s(name).s("(");
         if (args.size() > 1) {
-            sb.s(args.get(1).inspect0());
+            sb.s("\n").s(args.get(1).inspect0());
+            args.get(1).addInspect0(sb, depth + 1, true, ",");
             for (int i = 2; i < args.size(); i++) {
-                sb.s(", ").s(args.get(i).inspect0());
+                args.get(i).addInspect0(sb, depth + 1, true, ",");
             }
         }
         sb.s(")").s(suffix).s("\n");

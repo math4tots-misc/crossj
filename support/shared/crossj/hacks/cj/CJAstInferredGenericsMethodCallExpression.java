@@ -63,7 +63,7 @@ public final class CJAstInferredGenericsMethodCallExpression implements CJAstExp
         } else {
             sb.s("()");
         }
-        sb.s(")").s(suffix).s("\n");
+        sb.s(suffix).s("\n");
     }
 
     @Override

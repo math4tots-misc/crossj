@@ -10,6 +10,8 @@ import crossj.base.Tuple;
  */
 public final class CJToken {
     // various token types
+
+    // general categories (1-16)
     public static final int EOF = 1;
     public static final int DOUBLE = 2;
     public static final int INT = 3;
@@ -17,6 +19,16 @@ public final class CJToken {
     public static final int CHAR = 5;
     public static final int STRING = 6;
     public static final int TYPE_ID = 7;
+
+    // multi-character symbols (17-31)
+    public static final int EQ = 17;
+    public static final int NE = 18;
+    public static final int LE = 19;
+    public static final int GE = 20;
+    public static final int LSHIFT = 21;
+    public static final int RSHIFT = 22;
+    public static final int FLOORDIV = 23;
+    public static final int POWER = 24;
 
     // token types in the range 32-127 are reserved for ASCII single character
     // token types.
@@ -45,10 +57,14 @@ public final class CJToken {
     public static final int KW_RETURN = 221;
     public static final int KW_AND = 222;
     public static final int KW_OR = 223;
+    public static final int KW_IS = 224;
+    public static final int KW_NOT = 225;
+    public static final int KW_IN = 226;
+    public static final int KW_THEN = 227;
 
     public static final Tuple<Integer> KEYWORD_TYPES = Tuple.of(KW_DEF, KW_CLASS, KW_TRUE, KW_FALSE, KW_NULL, KW_IF,
             KW_ELSE, KW_IMPORT, KW_WHILE, KW_BREAK, KW_CONTINUE, KW_VAR, KW_VAL, KW_NEW, KW_TRAIT, KW_NATIVE,
-            KW_STATIC, KW_PRIVATE, KW_PUBLIC, KW_PACKAGE, KW_RETURN, KW_AND, KW_OR);
+            KW_STATIC, KW_PRIVATE, KW_PUBLIC, KW_PACKAGE, KW_RETURN, KW_AND, KW_OR, KW_IS, KW_NOT, KW_IN, KW_THEN);
 
     public final int type;
     public final String text;
@@ -108,6 +124,22 @@ public final class CJToken {
                 return "CJToken.STRING";
             case TYPE_ID:
                 return "CJToken.TYPE_ID";
+            case EQ:
+                return "CJToken.EQ";
+            case NE:
+                return "CJToken.NE";
+            case LE:
+                return "CJToken.LE";
+            case GE:
+                return "CJToken.GE";
+            case LSHIFT:
+                return "CJToken.LSHIFT";
+            case RSHIFT:
+                return "CJToken.RSHIFT";
+            case FLOORDIV:
+                return "CJToken.FLOORDIV";
+            case POWER:
+                return "CJToken.POWER";
             case KW_DEF:
                 return "CJToken.KW_DEF";
             case KW_CLASS:
@@ -154,6 +186,14 @@ public final class CJToken {
                 return "CJToken.KW_AND";
             case KW_OR:
                 return "CJToken.KW_OR";
+            case KW_IS:
+                return "CJToken.KW_IS";
+            case KW_NOT:
+                return "CJToken.KW_NOT";
+            case KW_IN:
+                return "CJToken.KW_IN";
+            case KW_THEN:
+                return "CJToken.KW_THEN";
             case '\n':
                 return "'\\n'";
             default:

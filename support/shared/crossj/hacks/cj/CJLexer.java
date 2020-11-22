@@ -23,7 +23,17 @@ public final class CJLexer {
         b.add("\"(\\\\.|[^\"\\\\])*\"", m -> tok(CJToken.STRING, m));
 
         // single character symbol tokens
-        b.add("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|-|%|\\.|^|&|\\||!|@|=|;|,|:|\\?", m -> chartok(m));
+        b.add("\\(|\\)|\\{|\\}|\\[|\\]|\\+|\\*|/|-|%|~|\\.|^|&|\\||!|@|=|;|,|:|<|>|\\?", m -> chartok(m));
+
+        // multi-character symbol tokens
+        b.add("==", m -> symtok(CJToken.EQ, m));
+        b.add("!=", m -> symtok(CJToken.NE, m));
+        b.add("<=", m -> symtok(CJToken.LE, m));
+        b.add(">=", m -> symtok(CJToken.GE, m));
+        b.add("<<", m -> symtok(CJToken.LSHIFT, m));
+        b.add(">>", m -> symtok(CJToken.RSHIFT, m));
+        b.add("//", m -> symtok(CJToken.FLOORDIV, m));
+        b.add("\\*\\*", m -> symtok(CJToken.POWER, m));
 
         // newline
         b.add("\n\\s*", m -> chartok(m));
@@ -59,15 +69,16 @@ public final class CJLexer {
     }
 
     private static Try<List<CJToken>> chartok(RegexMatcher m) {
-        var text = m.getMatchText();
-        int line = m.getMatchLineNumber();
-        int column = m.getMatchColumnNumber();
-        int type = Str.codeAt(text, 0);
-        return Try.ok(List.of(CJToken.of(type, text, line, column)));
+        int type = Str.codeAt(m.getMatchText(), 0);
+        return Try.ok(List.of(CJToken.of(type, "", m.getMatchLineNumber(), m.getMatchColumnNumber())));
     }
 
     private static Try<List<CJToken>> tok(int type, RegexMatcher m) {
         return Try.ok(List.of(CJToken.of(type, m.getMatchText(), m.getMatchLineNumber(), m.getMatchColumnNumber())));
+    }
+
+    private static Try<List<CJToken>> symtok(int type, RegexMatcher m) {
+        return Try.ok(List.of(CJToken.of(type, "", m.getMatchLineNumber(), m.getMatchColumnNumber())));
     }
 
     private static Try<List<CJToken>> none() {
