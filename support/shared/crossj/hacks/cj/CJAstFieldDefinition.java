@@ -1,15 +1,18 @@
 package crossj.hacks.cj;
 
+import crossj.base.Optional;
 import crossj.base.StrBuilder;
 
 public final class CJAstFieldDefinition implements CJAstItemMemberDefinition {
     private final CJMark mark;
+    private final Optional<String> comment;
     private final int modifiers;
     private final String name;
     private final CJAstTypeExpression type;
 
-    CJAstFieldDefinition(CJMark mark, int modifiers, String name, CJAstTypeExpression type) {
+    CJAstFieldDefinition(CJMark mark, Optional<String> comment, int modifiers, String name, CJAstTypeExpression type) {
         this.mark = mark;
+        this.comment = comment;
         this.modifiers = modifiers;
         this.name = name;
         this.type = type;
@@ -18,6 +21,11 @@ public final class CJAstFieldDefinition implements CJAstItemMemberDefinition {
     @Override
     public CJMark getMark() {
         return mark;
+    }
+
+    @Override
+    public Optional<String> getComment() {
+        return comment;
     }
 
     @Override

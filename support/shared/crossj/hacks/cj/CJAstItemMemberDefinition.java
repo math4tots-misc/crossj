@@ -1,9 +1,13 @@
 package crossj.hacks.cj;
 
+import crossj.base.Optional;
+
 public interface CJAstItemMemberDefinition extends CJAstNode {
     String getName();
 
     int getModifiers();
+
+    Optional<String> getComment();
 
     default boolean isStatic() {
         return (getModifiers() & CJAstItemMemberModifiers.STATIC) != 0;

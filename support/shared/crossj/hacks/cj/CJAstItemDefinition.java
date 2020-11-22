@@ -3,6 +3,7 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Optional;
 import crossj.base.Pair;
 import crossj.base.Str;
 import crossj.base.StrBuilder;
@@ -14,6 +15,7 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final CJMark mark;
     private final String packageName;
     private final List<CJAstImport> imports;
+    private final Optional<String> comment;
     private final int modifiers;
     private final String shortName;
     private final List<CJAstTypeParameter> typeParameters;
@@ -22,13 +24,14 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final Map<String, String> shortToQualifiedNameMap = Map.of();
     private final CJAstTypeParameter selfTypeParameter;
 
-    public CJAstItemDefinition(CJMark mark, String packageName, List<CJAstImport> imports, int modifiers, String shortName,
-            List<CJAstTypeParameter> typeParameters,
+    public CJAstItemDefinition(CJMark mark, String packageName, List<CJAstImport> imports, Optional<String> comment,
+            int modifiers, String shortName, List<CJAstTypeParameter> typeParameters,
             List<Pair<CJAstTraitExpression, List<CJAstTypeCondition>>> conditionalTraits,
             List<CJAstItemMemberDefinition> members) {
         this.mark = mark;
         this.packageName = packageName;
         this.imports = imports;
+        this.comment = comment;
         this.modifiers = modifiers;
         this.shortName = shortName;
         this.typeParameters = typeParameters;
@@ -43,8 +46,7 @@ public final class CJAstItemDefinition implements CJAstNode {
 
         if (isTrait()) {
             var traitExpression = new CJAstTraitExpression(getMark(), getShortName(),
-                getTypeParameters().map(p -> new CJAstTypeExpression(p.getMark(), p.getName(), List.of()))
-            );
+                    getTypeParameters().map(p -> new CJAstTypeExpression(p.getMark(), p.getName(), List.of())));
             selfTypeParameter = new CJAstTypeParameter(getMark(), "Self", List.of(traitExpression));
         } else {
             selfTypeParameter = null;
@@ -62,6 +64,10 @@ public final class CJAstItemDefinition implements CJAstNode {
 
     public List<CJAstImport> getImports() {
         return imports;
+    }
+
+    public Optional<String> getComment() {
+        return comment;
     }
 
     public boolean isTrait() {
@@ -101,26 +107,26 @@ public final class CJAstItemDefinition implements CJAstNode {
     }
 
     /**
-     * Gets the implicit Self type parameter AST node for this item.
-     * This method will throw an exception if this item is not a trait.
+     * Gets the implicit Self type parameter AST node for this item. This method
+     * will throw an exception if this item is not a trait.
      *
      * ========== some background ============
      *
      * 'Self' is a way to refer to the self type from inside a trait.
      *
-     * 'Self' can be used from inside classes too, but it's simpler there.
-     * In classes, 'Self' is more or less an alias for the class with its type parameters
-     * applied with the parameters themselves.
-     * E.g., in `List[T]`, Self is equivalent to 'List[T]'.
+     * 'Self' can be used from inside classes too, but it's simpler there. In
+     * classes, 'Self' is more or less an alias for the class with its type
+     * parameters applied with the parameters themselves. E.g., in `List[T]`, Self
+     * is equivalent to 'List[T]'.
      *
-     * However, in traits, it doesn't work that way.
-     * For one thing, traits themselves cannot be used as types. So in `Iterable[T]`,
-     * 'Iterable[T]' cannot be used as a type (it's a trait). 'Self' should refer
-     * instead to the actual class type that ultimately implements 'Iterable[T]'.
+     * However, in traits, it doesn't work that way. For one thing, traits
+     * themselves cannot be used as types. So in `Iterable[T]`, 'Iterable[T]' cannot
+     * be used as a type (it's a trait). 'Self' should refer instead to the actual
+     * class type that ultimately implements 'Iterable[T]'.
      *
-     * To accomodate this, there's a 'Self' type parameter that is automatically generated
-     * for each trait. Further, all classes must also provide a mechanism for providing
-     * each trait it implements with the 'Self' meta object.
+     * To accomodate this, there's a 'Self' type parameter that is automatically
+     * generated for each trait. Further, all classes must also provide a mechanism
+     * for providing each trait it implements with the 'Self' meta object.
      *
      * This way, the 'Self' type should appear like a type parameter that implements
      * the current trait.
@@ -131,9 +137,9 @@ public final class CJAstItemDefinition implements CJAstNode {
     }
 
     /**
-     * Materialize a trait object using its own type variables as its type arguments.
-     * This is useful in cases when a trait needs to refer to itself inside itself
-     * (i.e. for defining the "Self" alias).
+     * Materialize a trait object using its own type variables as its type
+     * arguments. This is useful in cases when a trait needs to refer to itself
+     * inside itself (i.e. for defining the "Self" alias).
      */
     public CJIRTrait getAsSelfTrait() {
         Assert.that(isTrait());
@@ -141,9 +147,9 @@ public final class CJAstItemDefinition implements CJAstNode {
     }
 
     /**
-     * Materialize a class type object using its own type variables as its type arguments.
-     * This is useful in cases when a class needs to refer to itself inside itself
-     * (i.e. for defining the "Self" alias).
+     * Materialize a class type object using its own type variables as its type
+     * arguments. This is useful in cases when a class needs to refer to itself
+     * inside itself (i.e. for defining the "Self" alias).
      */
     public CJIRClassType getAsSelfClassType() {
         Assert.that(!isTrait());

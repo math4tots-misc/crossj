@@ -91,6 +91,21 @@ public final class CJParserState {
         return found;
     }
 
+    private Optional<String> consumeDelimitersAndComments() {
+        var comments = Optional.<String>empty();
+        while (true) {
+            if (consumeDelimiters()) {
+                continue;
+            }
+            if (at(CJToken.COMMENT)) {
+                comments = Optional.of(next().text);
+                continue;
+            }
+            break;
+        }
+        return comments;
+    }
+
     Try<CJAstItemDefinition> parseAll() {
         var tryClassDef = parseClassFile();
         consumeDelimiters();
@@ -104,6 +119,7 @@ public final class CJParserState {
     }
 
     private Try<CJAstItemDefinition> parseClassFile() {
+        consumeDelimitersAndComments();
         if (!consume(CJToken.KW_PACKAGE)) {
             return fail("Expected 'package'");
         }
@@ -120,7 +136,7 @@ public final class CJParserState {
             }
         }
         var pkg = sb.build();
-        consumeDelimiters();
+        var lastComments = consumeDelimitersAndComments();
 
         var imports = List.<CJAstImport>of();
         while (at(CJToken.KW_IMPORT)) {
@@ -140,13 +156,14 @@ public final class CJParserState {
             }
             sb.s(parseTypeID());
             imports.add(new CJAstImport(mark, sb.build()));
-            consumeDelimiters();
+            lastComments = consumeDelimitersAndComments();
         }
 
-        return parseClassDefinition(pkg, imports);
+        return parseItemDefinition(pkg, imports, lastComments);
     }
 
-    private Try<CJAstItemDefinition> parseClassDefinition(String pkg, List<CJAstImport> imports) {
+    private Try<CJAstItemDefinition> parseItemDefinition(String pkg, List<CJAstImport> imports,
+            Optional<String> itemComments) {
         var mark = getMark();
         var modifiers = parseClassDefinitionModifiers();
         if (consume(CJToken.KW_TRAIT)) {
@@ -196,7 +213,7 @@ public final class CJParserState {
         if (!consume('{')) {
             return expectedType('{');
         }
-        consumeDelimiters();
+        var lastComment = consumeDelimitersAndComments();
         var members = List.<CJAstItemMemberDefinition>of();
         while (!consume('}')) {
             if (at(CJToken.KW_IF)) {
@@ -205,32 +222,32 @@ public final class CJParserState {
                     return tryTypeConditions.castFail();
                 }
                 var typeConditions = tryTypeConditions.get();
-                consumeDelimiters();
+                consumeDelimitersAndComments();
                 if (!consume('{')) {
                     return expectedType('{');
                 }
-                consumeDelimiters();
+                lastComment = consumeDelimitersAndComments();
                 while (!consume('}')) {
                     int memberModifiers = parseClassMemberModifiers();
-                    var tryMethod = parseMethodDefinition(typeConditions, memberModifiers);
+                    var tryMethod = parseMethodDefinition(typeConditions, lastComment, memberModifiers);
                     if (tryMethod.isFail()) {
                         return tryMethod.castFail();
                     }
                     members.add(tryMethod.get());
-                    consumeDelimiters();
+                    lastComment = consumeDelimitersAndComments();
                 }
             } else {
-                var tryMember = parseClassMember();
+                var tryMember = parseClassMember(lastComment);
                 if (tryMember.isFail()) {
                     return tryMember.castFail();
                 }
                 members.add(tryMember.get());
             }
-            consumeDelimiters();
+            lastComment = consumeDelimitersAndComments();
         }
 
-        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, modifiers, name, typeParameters, conditionalTraits,
-                members));
+        return Try.ok(new CJAstItemDefinition(mark, pkg, imports, itemComments, modifiers, name, typeParameters,
+                conditionalTraits, members));
     }
 
     private Try<List<CJAstTypeCondition>> parseTypeConditions() {
@@ -338,14 +355,14 @@ public final class CJParserState {
         return modifiers;
     }
 
-    private Try<CJAstItemMemberDefinition> parseClassMember() {
+    private Try<CJAstItemMemberDefinition> parseClassMember(Optional<String> comment) {
         int modifiers = parseClassMemberModifiers();
         switch (peek().type) {
             case CJToken.KW_VAR: {
-                return parseFieldDefinition(modifiers).map(x -> x);
+                return parseFieldDefinition(comment, modifiers).map(x -> x);
             }
             case CJToken.KW_DEF: {
-                return parseMethodDefinition(List.of(), modifiers).map(x -> x);
+                return parseMethodDefinition(List.of(), comment, modifiers).map(x -> x);
             }
             default: {
                 return expectedKind("Expected 'def' or 'var'");
@@ -353,7 +370,7 @@ public final class CJParserState {
         }
     }
 
-    private Try<CJAstFieldDefinition> parseFieldDefinition(int modifiers) {
+    private Try<CJAstFieldDefinition> parseFieldDefinition(Optional<String> comment, int modifiers) {
         var mark = getMark();
         if (!consume(CJToken.KW_VAR)) {
             return fail("Expected 'var'");
@@ -370,10 +387,11 @@ public final class CJParserState {
             return tryType.castFail();
         }
         var type = tryType.get();
-        return Try.ok(new CJAstFieldDefinition(mark, modifiers, name, type));
+        return Try.ok(new CJAstFieldDefinition(mark, comment, modifiers, name, type));
     }
 
-    private Try<CJAstMethodDefinition> parseMethodDefinition(List<CJAstTypeCondition> typeConditions, int modifiers) {
+    private Try<CJAstMethodDefinition> parseMethodDefinition(List<CJAstTypeCondition> typeConditions,
+            Optional<String> comment, int modifiers) {
         var mark = getMark();
         if (!consume(CJToken.KW_DEF)) {
             return expectedType(CJToken.KW_DEF);
@@ -408,8 +426,8 @@ public final class CJParserState {
             }
             body = Optional.of(tryBody.get());
         }
-        return Try.ok(new CJAstMethodDefinition(mark, typeConditions, modifiers, name, typeParameters, parameters,
-                returnType, body));
+        return Try.ok(new CJAstMethodDefinition(mark, typeConditions, comment, modifiers, name, typeParameters,
+                parameters, returnType, body));
     }
 
     private Try<CJAstStatement> parseStatement() {
@@ -536,7 +554,7 @@ public final class CJParserState {
         if (!consume('{')) {
             return expectedType('{');
         }
-        consumeDelimiters();
+        consumeDelimitersAndComments();
         var list = List.<CJAstStatement>of();
         while (!consume('}')) {
             var tryStatement = parseStatement();
@@ -544,7 +562,7 @@ public final class CJParserState {
                 return tryStatement.castFail();
             }
             list.add(tryStatement.get());
-            consumeDelimiters();
+            consumeDelimitersAndComments();
         }
         return Try.ok(new CJAstBlockStatement(mark, list));
     }
@@ -647,6 +665,7 @@ public final class CJParserState {
 
     // binds just a little bit tighter than comparisons
     private static final int LOGICAL_NOT_BINDING_POWER = getTokenPrecedence(CJToken.EQ) + 5;
+
     private static int getTokenPrecedence(int tokenType) {
         // mostly follows Python
         switch (tokenType) {
