@@ -141,6 +141,20 @@ public final class RegexMatcher {
         return iter.sliceFrom(matchStartPosition);
     }
 
+    public int getFirstCodePointOfMatch() {
+        if (matchIndex == -1) {
+            throw XError.withMessage("getFirstCodePointOfMatch() after a failed match");
+        }
+        if (matchStartPosition >= iter.getPosition()) {
+            throw XError.withMessage("getFirstCodePointOfMatch() on zero length match");
+        }
+        int savedPosition = iter.getPosition();
+        iter.setPosition(matchStartPosition);
+        int codePoint = iter.peekCodePoint();
+        iter.setPosition(savedPosition);
+        return codePoint;
+    }
+
     /**
      * Returns the line number of the start of the last match
      *

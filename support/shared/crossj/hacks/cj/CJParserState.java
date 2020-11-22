@@ -6,6 +6,7 @@ import crossj.base.Optional;
 import crossj.base.Pair;
 import crossj.base.Str;
 import crossj.base.Try;
+import crossj.base.XError;
 
 public final class CJParserState {
     private final String filename;
@@ -641,33 +642,149 @@ public final class CJParserState {
     }
 
     private Try<CJAstExpression> parseExpression() {
-        var tryExpr = parsePostfix();
-        if (tryExpr.isFail()) {
-            return tryExpr.castFail();
-        }
-        return tryExpr;
+        return parseExpressionWithPrecedence(0);
     }
 
-    private Try<CJAstExpression> parsePostfix() {
+    // binds just a little bit tigheter than comparisons
+    // private static final int LOGICAL_NOT_BINDING_POWER =
+    // getTokenPrecedence(CJToken.EQ) + 5;
+    private static int getTokenPrecedence(int tokenType) {
+        // mostly follows Python
+        switch (tokenType) {
+            case '?':
+                return 30;
+            case CJToken.KW_OR:
+                return 40;
+            case CJToken.KW_AND:
+                return 50;
+            case '<':
+            case '>':
+            case CJToken.EQ:
+            case CJToken.NE:
+            case CJToken.GE:
+            case CJToken.LE:
+            case CJToken.KW_IS:
+            case CJToken.KW_IN:
+            case CJToken.KW_NOT:
+                return 60;
+            case '|':
+                return 70;
+            case '&':
+                return 80;
+            case CJToken.LSHIFT:
+            case CJToken.RSHIFT:
+                return 90;
+            case '+':
+            case '-':
+                return 100;
+            case '*':
+            case '/':
+            case '%':
+            case CJToken.FLOORDIV:
+                return 110;
+            case CJToken.POWER:
+                return 120;
+            case '.':
+                return 130;
+            default:
+                return -1;
+        }
+    }
+
+    private Try<CJAstExpression> parseExpressionWithPrecedence(int precedence) {
         var tryExpr = parseAtom();
-        while (tryExpr.isOk()) {
+        int tokenPrecedence = getTokenPrecedence(peek().type);
+        while (tryExpr.isOk() && tokenPrecedence >= precedence) {
             var mark = getMark();
-            if (consume('.')) {
-                if (!at(CJToken.ID)) {
-                    return expectedType(CJToken.ID);
+            switch (peek().type) {
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                case '%':
+                case '<':
+                case '>':
+                case '|':
+                case '&':
+                case CJToken.FLOORDIV:
+                case CJToken.EQ:
+                case CJToken.NE:
+                case CJToken.LE:
+                case CJToken.GE:
+                case CJToken.KW_IN:
+                {
+                    String methodName = null;
+                    switch (next().type) {
+                        case '+':
+                            methodName = "__add";
+                            break;
+                        case '-':
+                            methodName = "__sub";
+                            break;
+                        case '*':
+                            methodName = "__mul";
+                            break;
+                        case '/':
+                            methodName = "__div";
+                            break;
+                        case '%':
+                            methodName = "__mod";
+                            break;
+                        case '<':
+                            methodName = "__lt";
+                            break;
+                        case '>':
+                            methodName = "__gt";
+                            break;
+                        case CJToken.FLOORDIV:
+                            methodName = "__floordiv";
+                            break;
+                        case CJToken.EQ:
+                            methodName = "__eq";
+                            break;
+                        case CJToken.NE:
+                            methodName = "__ne";
+                            break;
+                        case CJToken.LE:
+                            methodName = "__le";
+                            break;
+                        case CJToken.GE:
+                            methodName = "__ge";
+                            break;
+                        case CJToken.KW_IN:
+                            methodName = "__contains";
+                            break;
+                    }
+                    Assert.that(methodName != null);
+                    var lhs = tryExpr.get();
+                    var tryRhs = parseExpressionWithPrecedence(tokenPrecedence + 1);
+                    if (tryRhs.isFail()) {
+                        return tryRhs.castFail();
+                    }
+                    var rhs = tryRhs.get();
+                    tryExpr = Try.ok(new CJAstInstanceMethodCallExpression(mark, methodName, List.of(lhs, rhs)));
+                    break;
                 }
-                var name = parseID();
-                var tryArgs = parseArguments();
-                if (tryArgs.isFail()) {
-                    return tryArgs.castFail();
-                }
-                var otherArgs = tryArgs.get();
-                tryExpr = tryExpr.map(arg -> {
+                case '.': {
+                    next();
+                    if (!at(CJToken.ID)) {
+                        return expectedType(CJToken.ID);
+                    }
+                    var name = parseID();
+                    var tryArgs = parseArguments();
+                    if (tryArgs.isFail()) {
+                        return tryArgs.castFail();
+                    }
+                    var otherArgs = tryArgs.get();
+                    var arg = tryExpr.get();
                     var args = List.of(List.of(arg), otherArgs).flatMap(x -> x);
-                    return new CJAstInstanceMethodCallExpression(mark, name, args);
-                });
+                    tryExpr = Try.ok(new CJAstInstanceMethodCallExpression(mark, name, args));
+                    break;
+                }
+                default:
+                    throw XError.withMessage("TODO: Expression operator " + CJToken.typeToString(peek().type));
             }
-            break;
+            tokenPrecedence = getTokenPrecedence(peek().type);
         }
         return tryExpr;
     }

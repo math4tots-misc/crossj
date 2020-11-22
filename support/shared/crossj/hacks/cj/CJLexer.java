@@ -1,7 +1,6 @@
 package crossj.hacks.cj;
 
 import crossj.base.List;
-import crossj.base.Str;
 import crossj.base.Try;
 import crossj.books.dragon.ch03.Lexer;
 import crossj.books.dragon.ch03.RegexMatcher;
@@ -69,7 +68,7 @@ public final class CJLexer {
     }
 
     private static Try<List<CJToken>> chartok(RegexMatcher m) {
-        int type = Str.codeAt(m.getMatchText(), 0);
+        int type = m.getFirstCodePointOfMatch();
         return Try.ok(List.of(CJToken.of(type, "", m.getMatchLineNumber(), m.getMatchColumnNumber())));
     }
 

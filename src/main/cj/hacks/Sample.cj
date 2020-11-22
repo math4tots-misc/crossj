@@ -9,7 +9,7 @@ class Sample {
         } else {
             IO.println("1 is false")
         }
-        IO.println((2).__add(3))
+        IO.println(2 + 3)
         IO.println("Hello Sample")
 
         if (true) {
@@ -17,9 +17,9 @@ class Sample {
         }
 
         var i = 0
-        while (i.__lt(10)) {
+        while (i < 10) {
             IO.println(i)
-            i = i.__add(1)
+            i = i + 1
         }
 
         Self.foo(5)
