@@ -19,6 +19,7 @@ public final class CJToken {
     public static final int CHAR = 5;
     public static final int STRING = 6;
     public static final int TYPE_ID = 7;
+    public static final int COMMENT = 8;
 
     // multi-character symbols (17-31)
     public static final int EQ = 17;
@@ -124,6 +125,8 @@ public final class CJToken {
                 return "CJToken.STRING";
             case TYPE_ID:
                 return "CJToken.TYPE_ID";
+            case COMMENT:
+                return "CJToken.COMMENT";
             case EQ:
                 return "CJToken.EQ";
             case NE:

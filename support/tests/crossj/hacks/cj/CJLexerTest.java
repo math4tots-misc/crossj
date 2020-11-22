@@ -37,5 +37,13 @@ public final class CJLexerTest {
                             CJToken.of(CJToken.LE, "", 1, 7), CJToken.of(CJToken.RSHIFT, "", 1, 10),
                             CJToken.of(CJToken.EOF, "", 2, 1)));
         }
+        {
+            // comments
+            var tokens = CJLexer.lex("asdf\n#hello!\n  # world!\n").get();
+            Assert.equals(tokens,
+                    List.of(CJToken.of(CJToken.ID, "asdf", 1, 1), CJToken.of('\n', "", 1, 5),
+                            CJToken.of(CJToken.COMMENT, "#hello!\n  # world!", 2, 1), CJToken.of('\n', "", 3, 11),
+                            CJToken.of(CJToken.EOF, "", 4, 1)));
+        }
     }
 }

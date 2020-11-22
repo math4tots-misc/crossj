@@ -38,7 +38,7 @@ public final class CJLexer {
         b.add("\n\\s*", m -> chartok(m));
 
         // comments
-        b.add("#[^\n]+", m -> none());
+        b.add("#[^\n]*(\n\\s*#[^\n]*)*", m -> tok(CJToken.COMMENT, m));
 
         // whitespace
         b.add("[^\\S\n]+", m -> none());
