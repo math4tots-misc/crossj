@@ -36,6 +36,12 @@ public final class CJIRTrait {
         return new CJIRTrait(definition, args.map(arg -> arg.substitute(map)));
     }
 
+    private Map<String, CJIRType> getBindings() {
+        var params = definition.getTypeParameters().map(p -> p.getName());
+        var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
+        return map;
+    }
+
     Try<Optional<CJIRMethodDescriptor>> getMethodDescriptor(String methodName, CJIRType selfType) {
         var incompleteMethodDescriptor = definition.getMethodMap().getOrNull(methodName);
         if (incompleteMethodDescriptor == null) {
@@ -56,6 +62,18 @@ public final class CJIRTrait {
         return definition.getTraits().map(t -> t.getAsIsTrait().substitute(map));
     }
 
+    public boolean implementsTrait(CJIRTrait trait) {
+        if (equals(trait)) {
+            return true;
+        }
+        var implTrait = definition.getTraitsByQualifiedName().getOrNull(trait.getDefinition().getQualifiedName());
+        if (implTrait == null) {
+            return false;
+        }
+        var reifiedImplTrait = implTrait.substitute(getBindings());
+        return trait.equals(reifiedImplTrait);
+    }
+
     @Override
     public String toString() {
         if (args.size() == 0) {
@@ -63,5 +81,14 @@ public final class CJIRTrait {
         } else {
             return definition.getQualifiedName() + "[" + Str.join(",", args) + "]";
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof CJIRTrait)) {
+            return false;
+        }
+        var other = (CJIRTrait) obj;
+        return definition == other.definition && args.equals(other.args);
     }
 }

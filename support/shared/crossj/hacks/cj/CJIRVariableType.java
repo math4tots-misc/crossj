@@ -70,6 +70,16 @@ public final class CJIRVariableType implements CJIRType {
     }
 
     @Override
+    public boolean implementsTrait(CJIRTrait trait) {
+        for (var implTrait : definition.getBounds().map(t -> t.getAsIsTrait())) {
+            if (implTrait.implementsTrait(trait)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         return definition.getName();
     }

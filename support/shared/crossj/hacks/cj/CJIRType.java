@@ -13,4 +13,6 @@ public interface CJIRType {
     List<String> getTypeParameterNames();
 
     boolean isUnion();
+
+    boolean implementsTrait(CJIRTrait trait);
 }

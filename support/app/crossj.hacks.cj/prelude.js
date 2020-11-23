@@ -153,6 +153,10 @@ class MC$cj$String {
             }
         }) + '"';
     }
+
+    /**
+     * @param {string} x
+     */
     M$toString(x) {
         return x;
     }
@@ -263,28 +267,33 @@ class MC$cj$MutableList {
  * @template T
  */
 class MC$cj$Try {
-    constructor(T) {
-        this.T = T;
+    constructor(VT$T) {
+        this.VT$T = VT$T;
     }
 
     M$repr(x) {
         switch (x[0]) {
             case 0:
-                return 'Ok(' + this.T.M$repr(x[1]) + ')';
+                return 'Ok(' + this.VT$T.M$repr(x[1]) + ')';
             case 1:
-                return 'Fail(' + this.T.M$repr(x[1]) + ')';
+                return 'Fail(' + this.VT$T.M$repr(x[1]) + ')';
         }
     }
 
     M$toString(x) {
-        return this.M$repr(x);
+        switch (x[0]) {
+            case 0:
+                return 'Ok(' + this.VT$T.M$toString(x[1]) + ')';
+            case 1:
+                return 'Fail(' + this.VT$T.M$toString(x[1]) + ')';
+        }
     }
 }
 
 class MC$cj$IO {
     // println[T](t: T) : Unit
-    M$println(T, t) {
-        console.log(T.M$toString(t));
+    M$println(VT$T, t) {
+        console.log(VT$T.M$toString(t));
     }
 }
 const MO$cj$IO = new MC$cj$IO();

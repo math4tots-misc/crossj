@@ -203,6 +203,9 @@ public final class CJIRAnnotator
                 stack.addAll(newTraits);
             }
             item.allResolvedTraits = allTraits;
+
+            var traitMap = Map.fromIterable(allTraits.map(t -> Pair.of(t.getDefinition().getQualifiedName(), t)));
+            item.traitsByQualifiedName = traitMap;
         }
 
         // ==============================================================================
@@ -565,6 +568,33 @@ public final class CJIRAnnotator
             int arge = methodDescriptor.method.getTypeConditions().size();
             if (argc != arge) {
                 throw err0(methodDescriptor.toString() + " expects " + arge + " type arguments but got " + argc, mark);
+            }
+        }
+        if (typeArguments.size() > 0) {
+            // TODO: Factor out the binding code into one place
+            var binding = Map.<String, CJIRType>of();
+            {
+                binding.put("Self", methodDescriptor.selfType);
+                var item = methodDescriptor.item;
+                var itemTypeArguments = methodDescriptor.itemTypeArguments;
+                var methodTypeArguments = typeArguments;
+                var method = methodDescriptor.method;
+                for (int i = 0; i < itemTypeArguments.size(); i++) {
+                    binding.put(item.getTypeParameters().get(i).getName(), itemTypeArguments.get(i));
+                }
+                for (int i = 0; i < methodTypeArguments.size(); i++) {
+                    binding.put(method.getTypeParameters().get(i).getName(), methodTypeArguments.get(i));
+                }
+            }
+            for (int i = 0; i < typeArguments.size(); i++) {
+                var param = methodDescriptor.method.getTypeParameters().get(i);
+                var typeArg = typeArguments.get(i);
+                for (var rawTrait : param.getBounds().map(t -> t.getAsIsTrait())) {
+                    var implTrait = rawTrait.substitute(binding);
+                    if (!typeArg.implementsTrait(implTrait)) {
+                        throw err0(typeArg + " does not implement " + implTrait, mark);
+                    }
+                }
             }
         }
         if (methodDescriptor.method.getParameters().size() != args.size()) {
