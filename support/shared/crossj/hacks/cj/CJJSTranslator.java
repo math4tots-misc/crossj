@@ -97,6 +97,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     // private final CJIRWorld world;
     private final CJStrBuilder sb = new CJStrBuilder();
     private CJAstItemDefinition currentItem = null;
+    private int methodLevelUniqueId = 0;
 
     private CJJSTranslator(CJIRWorld world) {
         // this.world = world;
@@ -335,6 +336,37 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         sb.lineBody(translateExpression(s.getCondition()));
         sb.lineEnd(")");
         emitStatement(s.getBody());
+        return null;
+    }
+
+    private String newMethodLevelUniqueId() {
+        var name = "RTV$" + methodLevelUniqueId;
+        methodLevelUniqueId++;
+        return name;
+    }
+
+    @Override
+    public Void visitSwitchUnion(CJAstSwitchUnionStatement s, Void a) {
+        var tmpvar = newMethodLevelUniqueId();
+        sb.line("const " + tmpvar + " = " + translateExpression(s.getTarget()) + ";");
+        sb.line("switch (" + tmpvar + "[0]) {");
+        sb.indent();
+        for (var unionCase : s.getUnionCases()) {
+            sb.line("case " + unionCase.getDescriptor().tag + ": {");
+            sb.indent();
+            var valueNames = unionCase.getValueNames();
+            sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar + ";");
+            emitStatement(unionCase.getBody());
+            sb.line("break;");
+            sb.dedent();
+            sb.line("}");
+        }
+        if (s.getDefaultBody().isPresent()) {
+            sb.line("default:");
+            emitStatement(s.getDefaultBody().get());
+        }
+        sb.dedent();
+        sb.line("}");
         return null;
     }
 

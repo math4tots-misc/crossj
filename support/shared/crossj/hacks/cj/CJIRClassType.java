@@ -88,4 +88,9 @@ public final class CJIRClassType implements CJIRType {
         var other = (CJIRClassType) obj;
         return definition == other.definition && args.equals(other.args);
     }
+
+    @Override
+    public boolean isUnion() {
+        return definition.isUnion();
+    }
 }

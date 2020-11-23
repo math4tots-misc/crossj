@@ -82,4 +82,9 @@ public final class CJIRVariableType implements CJIRType {
         var other = (CJIRVariableType) obj;
         return definition.getName().equals(other.definition.getName());
     }
+
+    @Override
+    public boolean isUnion() {
+        return false;
+    }
 }

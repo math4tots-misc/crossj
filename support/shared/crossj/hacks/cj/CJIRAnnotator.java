@@ -324,6 +324,43 @@ public final class CJIRAnnotator
     }
 
     @Override
+    public Void visitSwitchUnion(CJAstSwitchUnionStatement s, Void a) {
+        annotateExpression(s.getTarget());
+        var targetType = s.getTarget().getResolvedType();
+        if (!targetType.isUnion()) {
+            throw err0("Expected a union type for switch, but got " + targetType, s.getMark());
+        }
+        var classType = (CJIRClassType) targetType;
+        for (var unionCase : s.getUnionCases()) {
+            context.enterBlock();
+            var name = unionCase.getName();
+            var optionalUnionCaseDescriptor = classType.getUnionCaseDescriptor(name);
+            if (optionalUnionCaseDescriptor.isEmpty()) {
+                throw err0("Union case " + name + " not found for " + classType, unionCase.getMark());
+            }
+            var unionCaseDescriptor = optionalUnionCaseDescriptor.get();
+            var argumentTypes = unionCaseDescriptor.signature.argumentTypes;
+            var valueNames = unionCase.getValueNames();
+            var arge = argumentTypes.size();
+            var argc = valueNames.size();
+            if (argc != arge) {
+                throw err0("Union case " + classType + "." + name + " expects " + arge + " arguments but got " + argc,
+                        unionCase.getMark());
+            }
+            for (int i = 0; i < argc; i++) {
+                context.declareVariable(valueNames.get(i), argumentTypes.get(i), unionCase.getMark());
+            }
+            annotateStatement(unionCase.getBody());
+            unionCase.descriptor = unionCaseDescriptor;
+            context.exitBlock();
+        }
+        if (s.getDefaultBody().isPresent()) {
+            annotateStatement(s.getDefaultBody().get());
+        }
+        return null;
+    }
+
+    @Override
     public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
         annotateExpression(s.getExpression());
         var expressionType = s.getExpression().getResolvedType();

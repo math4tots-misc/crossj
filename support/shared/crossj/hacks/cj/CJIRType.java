@@ -11,4 +11,6 @@ public interface CJIRType {
     Try<CJIRMethodDescriptor> getMethodDescriptor(String methodName);
 
     List<String> getTypeParameterNames();
+
+    boolean isUnion();
 }

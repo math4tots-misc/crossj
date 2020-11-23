@@ -518,6 +518,63 @@ public final class CJParserState {
                 }
                 return Try.ok(new CJAstReturnStatement(mark, tryExpr.get()));
             }
+            case CJToken.KW_SWITCH: {
+                next();
+                if (!consume(CJToken.KW_UNION)) {
+                    return expectedType(CJToken.KW_UNION);
+                }
+                var tryTarget = parseExpression();
+                if (tryTarget.isFail()) {
+                    return tryTarget.castFail();
+                }
+                var target = tryTarget.get();
+                consumeDelimitersAndComments();
+                if (!consume('{')) {
+                    return expectedType('{');
+                }
+                var unionCases = List.<CJAstSwitchUnionCase>of();
+                var defaultBody = Optional.<CJAstBlockStatement>empty();
+                consumeDelimitersAndComments();
+                while (at(CJToken.KW_CASE)) {
+                    var caseMark = getMark();
+                    next();
+                    if (!at(CJToken.TYPE_ID)) {
+                        return expectedType(CJToken.TYPE_ID);
+                    }
+                    var name = parseTypeID();
+                    var valueNames = List.<String>of();
+                    if (consume('(')) {
+                        while (!consume(')')) {
+                            if (!at(CJToken.ID)) {
+                                return expectedType(CJToken.ID);
+                            }
+                            valueNames.add(parseID());
+                            if (!consume(',') && !at(')')) {
+                                return expectedType(')');
+                            }
+                        }
+                    }
+                    var tryBody = parseBlockStatement();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body  = tryBody.get();
+                    unionCases.add(new CJAstSwitchUnionCase(caseMark, name, valueNames, body));
+                    consumeDelimitersAndComments();
+                }
+                if (consume(CJToken.KW_DEFAULT)) {
+                    var tryBody = parseBlockStatement();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body  = tryBody.get();
+                    defaultBody = Optional.of(body);
+                }
+                if (!consume('}')) {
+                    return expectedType('}');
+                }
+                return Try.ok(new CJAstSwitchUnionStatement(mark, target, unionCases, defaultBody));
+            }
             default: {
                 if (at(CJToken.ID) && atOffset('=', 1)) {
                     var name = parseID();
