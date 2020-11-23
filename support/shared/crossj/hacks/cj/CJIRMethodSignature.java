@@ -26,10 +26,11 @@ public final class CJIRMethodSignature {
      * resulting method signature
      */
     static CJIRMethodSignature compute(CJAstItemDefinition item, CJAstMethodDefinition method,
-            List<CJIRType> itemTypeArguments, List<CJIRType> methodTypeArguments) {
+            List<CJIRType> itemTypeArguments, CJIRType selfType, List<CJIRType> methodTypeArguments) {
         Assert.equals(item.getTypeParameters().size(), itemTypeArguments.size());
         Assert.equals(method.getTypeParameters().size(), methodTypeArguments.size());
         var binding = Map.<String, CJIRType>of();
+        binding.put("Self", selfType);
         for (int i = 0; i < itemTypeArguments.size(); i++) {
             binding.put(item.getTypeParameters().get(i).getName(), itemTypeArguments.get(i));
         }

@@ -24,6 +24,8 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final Map<String, String> shortToQualifiedNameMap = Map.of();
     private final CJAstTypeParameter selfTypeParameter;
     private final Map<String, CJAstUnionCaseDefinition> unionCaseCache;
+    private final Map<String, CJAstItemMemberDefinition> memberDefinitionByName;
+    List<CJIRTrait> allResolvedTraits;
 
     public CJAstItemDefinition(CJMark mark, String packageName, List<CJAstImport> imports, Optional<String> comment,
             int modifiers, String shortName, List<CJAstTypeParameter> typeParameters,
@@ -38,6 +40,7 @@ public final class CJAstItemDefinition implements CJAstNode {
         this.typeParameters = typeParameters;
         this.conditionalTraits = conditionalTraits;
         this.members = members;
+        memberDefinitionByName = Map.fromIterable(members.map(m -> Pair.of(m.getName(), m)));
 
         shortToQualifiedNameMap.put(shortName, getQualifiedName());
         for (var imp : imports) {
@@ -130,6 +133,10 @@ public final class CJAstItemDefinition implements CJAstNode {
         return members;
     }
 
+    public Optional<CJAstItemMemberDefinition> getMemberDefinitionByName(String name) {
+        return memberDefinitionByName.getOptional(name);
+    }
+
     /**
      * Gets the implicit Self type parameter AST node for this item. This method
      * will throw an exception if this item is not a trait.
@@ -211,5 +218,9 @@ public final class CJAstItemDefinition implements CJAstNode {
 
     public Optional<CJAstUnionCaseDefinition> getUnionCaseDefinitionFor(String name) {
         return unionCaseCache.getOptional(name);
+    }
+
+    public List<CJIRTrait> getAllResolvedTraits() {
+        return allResolvedTraits;
     }
 }

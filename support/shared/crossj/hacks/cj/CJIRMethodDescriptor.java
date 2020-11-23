@@ -11,16 +11,18 @@ import crossj.base.List;
 public final class CJIRMethodDescriptor {
     public final CJAstItemDefinition item;
     public final List<CJIRType> itemTypeArguments;
+    public final CJIRType selfType;
     public final CJAstMethodDefinition method;
 
-    CJIRMethodDescriptor(CJAstItemDefinition item, List<CJIRType> itemTypeArguments, CJAstMethodDefinition method) {
+    CJIRMethodDescriptor(CJAstItemDefinition item, List<CJIRType> itemTypeArguments, CJIRType selfType, CJAstMethodDefinition method) {
         this.item = item;
         this.itemTypeArguments = itemTypeArguments;
+        this.selfType = selfType;
         this.method = method;
     }
 
     public CJIRMethodSignature reify(List<CJIRType> methodTypeArguments) {
-        return CJIRMethodSignature.compute(item, method, itemTypeArguments, methodTypeArguments);
+        return CJIRMethodSignature.compute(item, method, itemTypeArguments, selfType, methodTypeArguments);
     }
 
     @Override

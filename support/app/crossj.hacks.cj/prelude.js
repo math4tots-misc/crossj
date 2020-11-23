@@ -63,6 +63,12 @@ class MC$cj$Int {
     M$__mod(a, b) {
         return (a % b)|0;
     }
+    M$__neg(x) {
+        return -x;
+    }
+    M$__pos(x) {
+        return x;
+    }
     M$repr(x) {
         return '' + x;
     }
@@ -109,6 +115,12 @@ class MC$cj$Double {
     M$__mod(a, b) {
         return a % b;
     }
+    M$__neg(x) {
+        return -x;
+    }
+    M$__pos(x) {
+        return x;
+    }
     M$repr(x) {
         return '' + x;
     }
@@ -151,15 +163,15 @@ const MO$cj$String = new MC$cj$String();
  * @template T
  */
 class MC$cj$List {
-    constructor(inner) {
-        this.inner = inner;
+    constructor(VT$T) {
+        this.VT$T = VT$T;
     }
 
     /**
      * @param {Array<T>} list
      */
     M$repr(list) {
-        return '[' + list.map(x => this.inner.M$repr(x)).join(', ') + ']';
+        return '[' + list.map(x => this.VT$T.M$repr(x)).join(', ') + ']';
     }
 
     /**
@@ -189,15 +201,15 @@ class MC$cj$List {
  * @template T
  */
 class MC$cj$MutableList {
-    constructor(inner) {
-        this.inner = inner;
+    constructor(VT$T) {
+        this.VT$T = VT$T;
     }
 
     /**
      * @param {Array<T>} list
      */
     M$repr(list) {
-        return '[' + list.map(x => this.inner.M$repr(x)).join(', ') + ']';
+        return '[' + list.map(x => this.VT$T.M$repr(x)).join(', ') + ']';
     }
 
     /**

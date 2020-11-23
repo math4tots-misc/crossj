@@ -20,6 +20,9 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
                 annotator.preAnnotateItem(item);
             }
             for (var item : world.getAllItems()) {
+                annotator.computeTraitSet(item);
+            }
+            for (var item : world.getAllItems()) {
                 annotator.annotateItem(item);
             }
         } catch (CJIRAnnotatorException exc) {
@@ -60,7 +63,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         this.mutableListDefinition = context.world.getItem("cj.MutableList");
     }
 
-    public CJIRClassType getSimpleTypeByQualifiedName(String qualifiedName) {
+    private CJIRClassType getSimpleTypeByQualifiedName(String qualifiedName) {
         var item = context.world.getItem(qualifiedName);
         Assert.equals(item.getTypeParameters().size(), 0);
         return new CJIRClassType(item, List.of());
@@ -70,16 +73,16 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         return new CJIRClassType(mutableListDefinition, List.of(innerType));
     }
 
-    public static CJIRAnnotatorException err0(String message, CJMark mark) {
+    private static CJIRAnnotatorException err0(String message, CJMark mark) {
         // throw XError.withMessage("MESSAGE = " + message);
         return CJIRAnnotatorException.fromParts(message, List.of(mark));
     }
 
-    void annotateTypeExpression(CJAstTypeExpression typeExpression) {
+    private void annotateTypeExpression(CJAstTypeExpression typeExpression) {
         context.resolveTypeExpression(typeExpression);
     }
 
-    void enterItem(CJAstItemDefinition item) {
+    private void enterItem(CJAstItemDefinition item) {
         context.enterItem(item);
         context.declareImport(item.getShortName(), item.getQualifiedName(), item.getMark());
         if (item.isTrait()) {
@@ -108,11 +111,11 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         }
     }
 
-    void exitItem() {
+    private void exitItem() {
         context.exitItem();
     }
 
-    void enterMethod(CJAstMethodDefinition method) {
+    private void enterMethod(CJAstMethodDefinition method) {
         context.enterMethod(method);
         for (var typeParameter : method.getTypeParameters()) {
             context.declareTypeVariable(typeParameter);
@@ -128,7 +131,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         }
     }
 
-    void exitMethod() {
+    private void exitMethod() {
         context.exitMethod();
     }
 
@@ -137,7 +140,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
      * method and field types of the item are properly annotated so that
      * 'getMethodSignature()' can be called on any type safely.
      */
-    void preAnnotateItem(CJAstItemDefinition item) {
+    private void preAnnotateItem(CJAstItemDefinition item) {
         enterItem(item);
         for (var traitExpression : item.getTraits()) {
             context.resolveTraitExpression(traitExpression);
@@ -172,7 +175,32 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         exitItem();
     }
 
-    void annotateItem(CJAstItemDefinition item) {
+    private void computeTraitSet(CJAstItemDefinition item) {
+        enterItem(item);
+
+        // TODO: Detect trait-generic conflicts (i.e. traits that are implemented more
+        // than once with different generic arguments) instead of ignoring them
+        // silently.
+        var seen = Set.of(item.getQualifiedName());
+        var allTraits = List.<CJIRTrait>of();
+        var stack = List.reversed(item.getTraits().map(t -> t.getAsIsTrait()));
+        for (var trait : stack) {
+            seen.add(trait.getDefinition().getQualifiedName());
+        }
+        while (stack.size() > 0) {
+            var trait = stack.pop();
+            allTraits.add(trait);
+            var newTraits = List.reversed(
+                    trait.getReifiedTraits().iter().filter(t -> !seen.contains(t.getDefinition().getQualifiedName())));
+            seen.addAll(newTraits.map(t -> t.getDefinition().getQualifiedName()));
+            stack.addAll(newTraits);
+        }
+        item.allResolvedTraits = allTraits;
+
+        exitItem();
+    }
+
+    private void annotateItem(CJAstItemDefinition item) {
         // TODO: Check for method signature conflicts in the implementing traits.
         enterItem(item);
         for (var member : item.getMembers()) {
@@ -183,7 +211,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         exitItem();
     }
 
-    void annotateMethod(CJAstMethodDefinition method) {
+    private void annotateMethod(CJAstMethodDefinition method) {
         enterMethod(method);
         if (method.getBody().isPresent()) {
             annotateStatement(method.getBody().get());
@@ -191,7 +219,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         exitMethod();
     }
 
-    void annotateStatement(CJAstStatement statement) {
+    private void annotateStatement(CJAstStatement statement) {
         statement.accept(this, null);
     }
 

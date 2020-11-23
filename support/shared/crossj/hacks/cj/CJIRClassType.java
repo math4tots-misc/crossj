@@ -55,41 +55,37 @@ public final class CJIRClassType implements CJIRType {
 
     public Try<CJIRMethodDescriptor> getMethodDescriptorUncached(String methodName) {
         // first search for the method defined directly in this class.
-        for (var member : definition.getMembers()) {
-            if (member.getName().equals(methodName)) {
+        {
+            var optionMember = definition.getMemberDefinitionByName(methodName);
+            if (optionMember.isPresent()) {
+                var member = optionMember.get();
                 if (member instanceof CJAstMethodDefinition) {
                     var method = (CJAstMethodDefinition) member;
-                    return Try.ok(new CJIRMethodDescriptor(definition, args, method));
+                    return Try.ok(new CJIRMethodDescriptor(definition, args, this, method));
                 } else {
                     return Try.fail(definition.getQualifiedName() + "." + methodName + " is not a method");
                 }
             }
         }
-        // // find the method in one of the traits
-        // var stack = List.fromIterable(getReifiedTraits());
-        // stack.reverse();
-        // var seen = Set.fromIterable(stack.map(t -> t.getDefinition().getQualifiedName()));
-        // while (stack.size() > 0) {
-        //     var trait = stack.pop();
-        //     for (var indirectTrait : trait.getReifiedTraits()) {
-        //         var qualifiedName = indirectTrait.getQualifiedName();
-        //         if (!seen.contains(qualifiedName)) {
-        //             seen.add(qualifiedName);
-        //             stack.add(indirectTrait);
-        //         }
-        //     }
-        //     for (var member : trait.getDefinition().getMembers()) {
-        //         if (member.getName().equals(methodName)) {
-        //             if (member instanceof CJAstMethodDefinition) {
-        //                 var method = (CJAstMethodDefinition) member;
-        //                 return Try.ok(new CJIRMethodDescriptor(trait.getDefinition(), trait.getArguments(), method));
-        //             } else {
-        //                 return Try.fail(definition.getQualifiedName() + "." + methodName + " (" + trait + ") is not a method");
-        //             }
-        //         }
-        //     }
-        // }
-        return Try.fail("Method " + methodName + " not found in " + definition.getQualifiedName());
+
+        // find the method in one of the traits
+        {
+            var params = definition.getTypeParameters().map(p -> p.getName());
+            var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
+            for (var trait : definition.getAllResolvedTraits().iter().map(t -> t.substitute(map))) {
+                var optionMember = trait.getDefinition().getMemberDefinitionByName(methodName);
+                if (optionMember.isPresent()) {
+                    var member = optionMember.get();
+                    if (member instanceof CJAstMethodDefinition) {
+                        var method = (CJAstMethodDefinition) member;
+                        return Try.ok(new CJIRMethodDescriptor(trait.getDefinition(), trait.getArguments(), this, method));
+                    } else {
+                        return Try.fail(definition.getQualifiedName() + "." + methodName + " (" + trait + ") is not a method");
+                    }
+                }
+            }
+        }
+        return Try.fail("Method " + methodName + " not found in " + this);
     }
 
     public List<CJIRTrait> getReifiedTraits() {
