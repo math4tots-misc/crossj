@@ -2,7 +2,7 @@ package hacks
 
 import cj.IO
 
-class Sample {
+class Sample : ToString {
     def main() : Unit {
         if (1 > 0) {
             IO.println("1 > 0 is true")
@@ -36,10 +36,16 @@ class Sample {
             var x = Try.Ok(23)
             IO.println(x)
         }
+
+        IO.println(Sample.new())
     }
 
     def foo(i: Int) : Int {
         IO.println("Inside foo")
         return i
+    }
+
+    def toString() : String {
+        return "<Sample instance>"
     }
 }

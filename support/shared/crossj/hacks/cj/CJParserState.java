@@ -906,18 +906,6 @@ public final class CJParserState {
                     return expectedType('[');
                 }
             }
-            case CJToken.KW_NEW: { // new expressions
-                next();
-                var tryType = parseTypeExpression();
-                if (tryType.isFail()) {
-                    return tryType.castFail();
-                }
-                var tryArgs = parseArguments();
-                if (tryArgs.isFail()) {
-                    return tryArgs.castFail();
-                }
-                return Try.ok(new CJAstNewExpression(mark, tryType.get(), tryArgs.get()));
-            }
             case CJToken.KW_NOT: { // logical not expressions
                 next();
                 var tryInner = parseExpressionWithPrecedence(LOGICAL_NOT_BINDING_POWER);
@@ -936,7 +924,13 @@ public final class CJParserState {
                 if (!consume('.')) {
                     return fail("Expected '.'");
                 }
-                if (at(CJToken.TYPE_ID)) {
+                if (consume(CJToken.KW_NEW)) { // new expressions
+                    var tryArgs = parseArguments();
+                    if (tryArgs.isFail()) {
+                        return tryArgs.castFail();
+                    }
+                    return Try.ok(new CJAstNewExpression(mark, tryType.get(), tryArgs.get()));
+                } else if (at(CJToken.TYPE_ID)) { // union new expressions
                     var name = parseTypeID();
                     var tryArgs = parseArguments();
                     if (tryArgs.isFail()) {
@@ -944,7 +938,7 @@ public final class CJParserState {
                     }
                     var args = tryArgs.get();
                     return Try.ok(new CJAstNewUnionExpression(mark, type, name, args));
-                } else {
+                } else { // method call expressions
                     if (!at(CJToken.ID)) {
                         return expectedType(CJToken.ID);
                     }
