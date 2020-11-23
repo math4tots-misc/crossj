@@ -28,6 +28,11 @@ public final class CJIRClassType implements CJIRType {
     }
 
     @Override
+    public List<String> getTypeParameterNames() {
+        return definition.getTypeParameters().map(p -> p.getName());
+    }
+
+    @Override
     public CJIRType substitute(Map<String, CJIRType> map) {
         return new CJIRClassType(definition, args.map(arg -> arg.substitute(map)));
     }

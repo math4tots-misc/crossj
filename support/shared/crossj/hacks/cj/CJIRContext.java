@@ -97,6 +97,10 @@ final class CJIRContext {
         return traitExpression.getAsIsTrait();
     }
 
+    Optional<CJAstItemDefinition> getItem(String shortName) {
+        return shortNameToItemMap.getOptional(shortName);
+    }
+
     CJIRType resolveTypeExpression(CJAstTypeExpression typeExpression) {
         if (!typeExpression.hasAsIsType()) {
             var name = typeExpression.getName();

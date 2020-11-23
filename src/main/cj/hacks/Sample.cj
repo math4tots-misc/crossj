@@ -33,7 +33,7 @@ class Sample {
         }
 
         {
-            var x = Try[Int].Ok(23)
+            var x = Try.Ok(23)
             IO.println(x)
         }
     }

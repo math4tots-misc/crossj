@@ -1,5 +1,6 @@
 package crossj.hacks.cj;
 
+import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Try;
 import crossj.base.XError;
@@ -23,6 +24,11 @@ public final class CJIRVariableType implements CJIRType {
 
     public boolean isMethodLevel() {
         return !itemLevel;
+    }
+
+    @Override
+    public List<String> getTypeParameterNames() {
+        return List.of();
     }
 
     @Override

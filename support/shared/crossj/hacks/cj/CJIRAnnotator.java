@@ -3,6 +3,7 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Optional;
 import crossj.base.Pair;
 import crossj.base.Range;
 import crossj.base.Set;
@@ -10,7 +11,8 @@ import crossj.base.Str;
 import crossj.base.Try;
 import crossj.base.XError;
 
-public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, CJAstExpressionVisitor<Void, Void> {
+public final class CJIRAnnotator
+        implements CJAstStatementVisitor<Void, Void>, CJAstExpressionVisitor<Void, Optional<CJIRType>> {
 
     public static Try<Void> annotate(CJIRWorld world) {
         var context = new CJIRContext(world);
@@ -322,14 +324,29 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         return null;
     }
 
-    void annotateExpression(CJAstExpression expression) {
+    void annotateExpressionWithOptionalType(CJAstExpression expression, Optional<CJIRType> optionalType) {
         if (expression.getResolvedTypeOrNull() == null) {
-            expression.accept(this, null);
+            expression.accept(this, optionalType);
+        }
+        if (optionalType.isPresent()) {
+            var expected = optionalType.get();
+            var actual = expression.getResolvedType();
+            if (!expected.equals(actual)) {
+                throw err0("Expected expression with type " + expected + " but got " + actual, expression.getMark());
+            }
         }
     }
 
+    void annotateExpressionWithType(CJAstExpression expression, CJIRType type) {
+        annotateExpressionWithOptionalType(expression, Optional.of(type));
+    }
+
+    void annotateExpression(CJAstExpression expression) {
+        annotateExpressionWithOptionalType(expression, Optional.empty());
+    }
+
     @Override
-    public Void visitInstanceMethodCall(CJAstInstanceMethodCallExpression e, Void a) {
+    public Void visitInstanceMethodCall(CJAstInstanceMethodCallExpression e, Optional<CJIRType> a) {
         var mark = e.getMark();
         var args = e.getArguments();
         annotateExpression(args.get(0));
@@ -339,7 +356,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
             throw err0(tryMethodDescriptor.getErrorMessageWithContext(), mark);
         }
         var methodDescriptor = tryMethodDescriptor.get();
-        var typeArguments = inferTypeArguments(mark, methodDescriptor, args);
+        var typeArguments = inferTypeArguments(mark, methodDescriptor, args, a);
         e.resolvedType = annotateMethodCall0(mark, methodDescriptor, typeArguments, args);
         e.inferredTypeArguments = typeArguments;
         e.inferredOwnerType = ownerType;
@@ -347,7 +364,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     }
 
     @Override
-    public Void visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Void a) {
+    public Void visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Optional<CJIRType> a) {
         var mark = e.getMark();
         var args = e.getArguments();
         var ownerType = context.resolveTypeExpression(e.getOwner());
@@ -356,14 +373,14 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
             throw err0(tryMethodDescriptor.getErrorMessageWithContext(), mark);
         }
         var methodDescriptor = tryMethodDescriptor.get();
-        var typeArguments = inferTypeArguments(mark, methodDescriptor, args);
+        var typeArguments = inferTypeArguments(mark, methodDescriptor, args, a);
         e.resolvedType = annotateMethodCall0(mark, methodDescriptor, typeArguments, args);
         e.inferredTypeArguments = typeArguments;
         return null;
     }
 
     @Override
-    public Void visitMethodCall(CJAstMethodCallExpression e, Void a) {
+    public Void visitMethodCall(CJAstMethodCallExpression e, Optional<CJIRType> a) {
         for (var typeArg : e.getTypeArguments()) {
             context.resolveTypeExpression(typeArg);
         }
@@ -373,68 +390,110 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         return null;
     }
 
+    /**
+     * Given that we know the reified item type, infer the type arguments for the
+     * method.
+     */
     private List<CJIRType> inferTypeArguments(CJMark mark, CJIRMethodDescriptor methodDescriptor,
-            List<CJAstExpression> args) {
+            List<CJAstExpression> args, Optional<CJIRType> expectedReturnType) {
         var method = methodDescriptor.method;
-        var parameterTypes = method.getParameters().map(p -> p.getType().getAsIsType());
 
-        if (parameterTypes.size() == 0) {
+        if (method.getParameters().size() == 0) {
             return List.of();
         }
 
         var map = Map.<String, CJIRType>of();
-        var unboundVariables = Set.fromIterable(method.getTypeParameters().map(p -> p.getName()));
+        for (int i = 0; i < methodDescriptor.itemTypeArguments.size(); i++) {
+            map.put(methodDescriptor.item.getTypeParameters().get(i).getName(),
+                    methodDescriptor.itemTypeArguments.get(i));
+        }
 
-        // use the arguments from left to right to deduce all the type arguments.
+        return inferTypeArguments2(mark, methodDescriptor.item, methodDescriptor.method.getTypeParameters(),
+                methodDescriptor.method.getParameters().map(p -> p.getType().getAsIsType()),
+                methodDescriptor.method.getReturnType().getAsIsType(), args, expectedReturnType, Optional.of(map))
+                        .get2();
+    }
+
+    /**
+     * Assuming that we know which item definition to use and unreified signature of
+     * the member (for the method, constructor or union case), we try to infer the
+     * type arguments.
+     *
+     * Returns (item-type-arguments, member-type-arguments) pair.
+     */
+    private Pair<List<CJIRType>, List<CJIRType>> inferTypeArguments2(CJMark mark, CJAstItemDefinition item,
+            List<CJAstTypeParameter> memberTypeParameters, List<CJIRType> memberArgTypes, CJIRType memberReturnType,
+            List<CJAstExpression> args, Optional<CJIRType> expectedReturnType,
+            Optional<Map<String, CJIRType>> partialBindings) {
+        if (item.getTypeParameters().size() == 0 && memberTypeParameters.size() == 0) {
+            return Pair.of(List.of(), List.of());
+        }
+
+        var knownVariables = Set.fromIterable(
+                List.of(item.getTypeParameters().map(p -> p.getName()), memberTypeParameters.map(p -> p.getName()))
+                        .flatMap(x -> x));
+        var map = partialBindings.isPresent() ? partialBindings.get() : Map.<String, CJIRType>of();
+        var stack = List.<Pair<CJIRType, CJIRType>>of();
         int nextArgIndex = 0;
-        while (map.size() < unboundVariables.size() && nextArgIndex < args.size()) {
-            var arg = args.get(nextArgIndex);
-            var paramType = parameterTypes.get(nextArgIndex);
-            nextArgIndex++;
 
-            annotateExpression(arg);
-            var stack = List.of(Pair.of(paramType, arg.getResolvedType()));
-            while (map.size() < unboundVariables.size() && stack.size() > 0) {
-                var pair = stack.pop();
-                var param = pair.get1();
-                var given = pair.get2();
+        // the first thing to try is making an inference based on the return type, if
+        // available
+        if (expectedReturnType.isPresent()) {
+            stack.add(Pair.of(memberReturnType, expectedReturnType.get()));
+        }
 
-                if (param instanceof CJIRVariableType) {
-                    var variableType = (CJIRVariableType) param;
-                    var variableName = variableType.getDefinition().getName();
-                    if (unboundVariables.contains(variableName) && !map.containsKey(variableName)) {
-                        // we've encountered an unbound variable. we should bind it.
-                        map.put(variableName, given);
-                    }
-                    // if the variable isn't free, for proper unification we would check that
-                    // the concrete types match. However, we silently ignore these cases
-                    // because if the call is actually bad, it should be caught later down
-                    // the line.
-                    // TODO: Throw a 'could not infer types' error when concrete types don't unify.
-                } else if (param instanceof CJIRClassType) {
-                    var classTypeParam = (CJIRClassType) param;
-                    var paramDef = classTypeParam.getDefinition();
-                    if (given instanceof CJIRClassType) {
-                        var classTypeGiven = (CJIRClassType) given;
-                        var givenDef = classTypeGiven.getDefinition();
-                        if (paramDef.getQualifiedName().equals(givenDef.getQualifiedName())
-                                && classTypeParam.getArguments().size() == classTypeGiven.getArguments().size()) {
-                            // the outer part of a reified class type matches.
-                            // this means we can proceed to unify the inner parts.
-                            for (int i = 0; i < classTypeParam.getArguments().size(); i++) {
-                                stack.add(Pair.of(classTypeParam.getArguments().get(i),
-                                        classTypeGiven.getArguments().get(i)));
-                            }
+        while (map.size() < knownVariables.size() && (stack.size() > 0 || nextArgIndex < args.size())) {
+            if (stack.size() == 0) {
+                // if the stack is empty, but we have more arguments we can look at, use it.
+                var arg = args.get(nextArgIndex);
+                annotateExpression(arg);
+                stack.add(Pair.of(memberArgTypes.get(nextArgIndex), arg.getResolvedType()));
+                nextArgIndex++;
+            }
+            var pair = stack.pop();
+            var param = pair.get1();
+            var given = pair.get2();
+
+            if (param instanceof CJIRVariableType) {
+                var variableType = (CJIRVariableType) param;
+                var variableName = variableType.getDefinition().getName();
+                Assert.that(knownVariables.contains(variableName));
+                if (!map.containsKey(variableName)) {
+                    // we've encountered an unbound variable. we should bind it.
+                    map.put(variableName, given);
+                }
+                // if the variable isn't free, for proper unification we would check that
+                // the concrete types match. However, we silently ignore these cases
+                // because if the call is actually bad, it should be caught later down
+                // the line.
+                // TODO: Throw a 'could not infer types' error when concrete types don't unify.
+            } else if (param instanceof CJIRClassType) {
+                var classTypeParam = (CJIRClassType) param;
+                var paramDef = classTypeParam.getDefinition();
+                if (given instanceof CJIRClassType) {
+                    var classTypeGiven = (CJIRClassType) given;
+                    var givenDef = classTypeGiven.getDefinition();
+                    if (paramDef.getQualifiedName().equals(givenDef.getQualifiedName())
+                            && classTypeParam.getArguments().size() == classTypeGiven.getArguments().size()) {
+                        // the outer part of a reified class type matches.
+                        // this means we can proceed to unify the inner parts.
+                        for (int i = 0; i < classTypeParam.getArguments().size(); i++) {
+                            stack.add(Pair.of(classTypeParam.getArguments().get(i),
+                                    classTypeGiven.getArguments().get(i)));
                         }
                     }
                 }
             }
         }
-        if (map.size() < unboundVariables.size()) {
+
+        if (map.size() < knownVariables.size()) {
             throw err0("Could not infer type arguments", mark);
         }
-        return Range.upto(method.getTypeParameters().size())
-                .map(i -> map.get(method.getTypeParameters().get(i).getName())).list();
+        var itemTypeArgs = Range.upto(item.getTypeParameters().size())
+                .map(i -> map.get(item.getTypeParameters().get(i).getName())).list();
+        var memberTypeArgs = Range.upto(memberTypeParameters.size())
+                .map(i -> map.get(memberTypeParameters.get(i).getName())).list();
+        return Pair.of(itemTypeArgs, memberTypeArgs);
     }
 
     // convenience: retrieve method descriptor
@@ -469,16 +528,13 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         for (int i = 0; i < args.size(); i++) {
             var arg = args.get(i);
             var argType = methodSignature.argumentTypes.get(i);
-            annotateExpression(arg);
-            if (!arg.getResolvedType().equals(argType)) {
-                throw err0("Expected " + argType + " expression but got " + arg.getResolvedType(), arg.getMark());
-            }
+            annotateExpressionWithType(arg, argType);
         }
         return methodSignature.returnType;
     }
 
     @Override
-    public Void visitName(CJAstNameExpression e, Void a) {
+    public Void visitName(CJAstNameExpression e, Optional<CJIRType> a) {
         var type = context.getVariableType(e.getName());
         if (type.isEmpty()) {
             throw err0("Name '" + e.getName() + "' is not defined", e.getMark());
@@ -488,7 +544,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     }
 
     @Override
-    public Void visitLiteral(CJAstLiteralExpression e, Void a) {
+    public Void visitLiteral(CJAstLiteralExpression e, Optional<CJIRType> a) {
         CJIRType type = null;
         if (e.getType().equals("Unit")) {
             type = unitType;
@@ -508,24 +564,21 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     }
 
     @Override
-    public Void visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
+    public Void visitEmptyMutableList(CJAstEmptyMutableListExpression e, Optional<CJIRType> a) {
         annotateTypeExpression(e.getType());
         e.resolvedType = getMutableListTypeOf(e.getType().getAsIsType());
         return null;
     }
 
     @Override
-    public Void visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
-        annotateExpression(e.getInner());
-        if (!e.getInner().getResolvedType().equals(boolType)) {
-            throw err0("Expected bool but got " + e.getInner().getResolvedType(), e.getMark());
-        }
+    public Void visitLogicalNot(CJAstLogicalNotExpression e, Optional<CJIRType> a) {
+        annotateExpressionWithType(e.getInner(), boolType);
         e.resolvedType = boolType;
         return null;
     }
 
     @Override
-    public Void visitNew(CJAstNewExpression e, Void a) {
+    public Void visitNew(CJAstNewExpression e, Optional<CJIRType> a) {
         annotateTypeExpression(e.getType());
         for (var arg : e.getArguments()) {
             annotateExpression(arg);
@@ -544,19 +597,40 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
     }
 
     @Override
-    public Void visitNewUnion(CJAstNewUnionExpression e, Void a) {
-        annotateTypeExpression(e.getType());
-        var rawType = e.getType().getAsIsType();
-        if (rawType instanceof CJIRVariableType) {
-            throw err0("Union constructors cannot be used with variable types", e.getMark());
+    public Void visitNewUnion(CJAstNewUnionExpression e, Optional<CJIRType> a) {
+
+        CJIRClassType classType = null;
+
+        var optionalItem = context.getItem(e.getType().getName());
+        if (optionalItem.isPresent() && optionalItem.get().isUnion() && e.getType().getArguments().size() == 0
+                && optionalItem.get().getTypeParameters().size() > 0) {
+            var item = optionalItem.get();
+            // In this case, we have to infer the owner type
+            var optionalUnionCase = item.getUnionCaseDefinitionFor(e.getName());
+            if (optionalUnionCase.isEmpty()) {
+                throw err0("Union constructor " + item.getQualifiedName() + "." + e.getName() + " not found",
+                        e.getMark());
+            }
+            var unionCase = optionalUnionCase.get();
+            var inferredItemTypeArgs = inferTypeArguments2(e.getMark(), item, List.of(),
+                    unionCase.getValueTypes().map(t -> context.resolveTypeExpression(t)), item.getAsSelfClassType(),
+                    e.getArguments(), a, Optional.empty()).get1();
+            classType = new CJIRClassType(item, inferredItemTypeArgs);
+        } else {
+            annotateTypeExpression(e.getType());
+            var rawType = e.getType().getAsIsType();
+            if (rawType instanceof CJIRVariableType) {
+                throw err0("Union constructors cannot be used with variable types", e.getMark());
+            }
+            classType = (CJIRClassType) rawType;
         }
-        var classType = (CJIRClassType) rawType;
+
         if (!classType.getDefinition().isUnion()) {
             throw err0("Union constructors cannot be used with non-union types", e.getMark());
         }
         var optionUnionCaseDescriptor = classType.getUnionCaseDescriptor(e.getName());
         if (optionUnionCaseDescriptor.isEmpty()) {
-            throw err0("Union constructor " + rawType + "." + e.getName() + " not found", e.getMark());
+            throw err0("Union constructor " + classType + "." + e.getName() + " not found", e.getMark());
         }
         var unionCaseDescriptor = optionUnionCaseDescriptor.get();
         for (var arg : e.getArguments()) {
