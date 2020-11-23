@@ -213,16 +213,29 @@ public final class CJIRAnnotator
         var methodMap = Map.<String, CJIRIncompleteMethodDescriptor>of();
         var itemTypeArgs = item.getTypeParameters().map(t -> (CJIRType) new CJIRVariableType(t, true));
         for (var methodDefinition : item.getMethods()) {
+            if (item.isClass()) {
+                if (item.isNative()) {
+                    if (methodDefinition.getBody().isPresent()) {
+                        throw err0("Methods in native classes should not have bodies", methodDefinition.getMark());
+                    }
+                } else {
+                    if (methodDefinition.getBody().isEmpty()) {
+                        throw err0("Methods in non-native classes should have bodies ", methodDefinition.getMark());
+                    }
+                }
+            }
             methodMap.put(methodDefinition.getName(),
                     new CJIRIncompleteMethodDescriptor(item, itemTypeArgs, methodDefinition));
         }
         for (var trait : item.allResolvedTraits) {
             for (var methodDefinition : trait.getDefinition().getMethods()) {
-                if (methodMap.containsKey(methodDefinition.getName())) {
-                    continue;
+                if (methodDefinition.getBody().isPresent()) {
+                    if (methodMap.containsKey(methodDefinition.getName())) {
+                        continue;
+                    }
+                    methodMap.put(methodDefinition.getName(), new CJIRIncompleteMethodDescriptor(trait.getDefinition(),
+                            trait.getArguments(), methodDefinition));
                 }
-                methodMap.put(methodDefinition.getName(), new CJIRIncompleteMethodDescriptor(trait.getDefinition(),
-                        trait.getArguments(), methodDefinition));
             }
         }
         item.methodMap = methodMap;
@@ -235,7 +248,7 @@ public final class CJIRAnnotator
             for (var trait : item.allResolvedTraits) {
                 for (var methodDefinition : trait.getDefinition().getMethods().filter(m -> m.getBody().isEmpty())) {
                     if (!methodMap.containsKey(methodDefinition.getName())) {
-                        throw err0(selfType + " implements " + trait + " but does not implement method "
+                        throw err0(selfType + " implements trait " + trait + " but does not implement method "
                                 + methodDefinition.getName(), item.getMark());
                     }
                 }
