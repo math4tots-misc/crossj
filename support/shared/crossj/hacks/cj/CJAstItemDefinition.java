@@ -26,6 +26,7 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final Map<String, CJAstUnionCaseDefinition> unionCaseCache;
     private final Map<String, CJAstItemMemberDefinition> memberDefinitionByName;
     List<CJIRTrait> allResolvedTraits;
+    Map<String, CJIRIncompleteMethodDescriptor> methodMap;
 
     public CJAstItemDefinition(CJMark mark, String packageName, List<CJAstImport> imports, Optional<String> comment,
             int modifiers, String shortName, List<CJAstTypeParameter> typeParameters,
@@ -133,6 +134,10 @@ public final class CJAstItemDefinition implements CJAstNode {
         return members;
     }
 
+    public List<CJAstMethodDefinition> getMethods() {
+        return members.filter(m -> m instanceof CJAstMethodDefinition).map(m -> (CJAstMethodDefinition) m);
+    }
+
     public Optional<CJAstItemMemberDefinition> getMemberDefinitionByName(String name) {
         return memberDefinitionByName.getOptional(name);
     }
@@ -222,5 +227,10 @@ public final class CJAstItemDefinition implements CJAstNode {
 
     public List<CJIRTrait> getAllResolvedTraits() {
         return allResolvedTraits;
+    }
+
+    public Map<String, CJIRIncompleteMethodDescriptor> getMethodMap() {
+        Assert.that(methodMap != null);
+        return methodMap;
     }
 }

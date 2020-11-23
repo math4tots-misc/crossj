@@ -20,7 +20,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
                 annotator.preAnnotateItem(item);
             }
             for (var item : world.getAllItems()) {
-                annotator.computeTraitSet(item);
+                annotator.computeTraitAndMethodSet(item);
             }
             for (var item : world.getAllItems()) {
                 annotator.annotateItem(item);
@@ -175,27 +175,70 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         exitItem();
     }
 
-    private void computeTraitSet(CJAstItemDefinition item) {
+    private void computeTraitAndMethodSet(CJAstItemDefinition item) {
         enterItem(item);
+
+        // ==============================================================================
+        // compute trait set
+        // ==============================================================================
 
         // TODO: Detect trait-generic conflicts (i.e. traits that are implemented more
         // than once with different generic arguments) instead of ignoring them
         // silently.
-        var seen = Set.of(item.getQualifiedName());
-        var allTraits = List.<CJIRTrait>of();
-        var stack = List.reversed(item.getTraits().map(t -> t.getAsIsTrait()));
-        for (var trait : stack) {
-            seen.add(trait.getDefinition().getQualifiedName());
+        {
+            var seen = Set.of(item.getQualifiedName());
+            var allTraits = List.<CJIRTrait>of();
+            var stack = List.reversed(item.getTraits().map(t -> t.getAsIsTrait()));
+            for (var trait : stack) {
+                seen.add(trait.getDefinition().getQualifiedName());
+            }
+            while (stack.size() > 0) {
+                var trait = stack.pop();
+                allTraits.add(trait);
+                var newTraits = List.reversed(trait.getReifiedTraits().iter()
+                        .filter(t -> !seen.contains(t.getDefinition().getQualifiedName())));
+                seen.addAll(newTraits.map(t -> t.getDefinition().getQualifiedName()));
+                stack.addAll(newTraits);
+            }
+            item.allResolvedTraits = allTraits;
         }
-        while (stack.size() > 0) {
-            var trait = stack.pop();
-            allTraits.add(trait);
-            var newTraits = List.reversed(
-                    trait.getReifiedTraits().iter().filter(t -> !seen.contains(t.getDefinition().getQualifiedName())));
-            seen.addAll(newTraits.map(t -> t.getDefinition().getQualifiedName()));
-            stack.addAll(newTraits);
+
+        // ==============================================================================
+        // compute method map
+        // ==============================================================================
+        // TODO: Detect conflicting method declarations instead of silently ignoring
+        // them
+        var methodMap = Map.<String, CJIRIncompleteMethodDescriptor>of();
+        var itemTypeArgs = item.getTypeParameters().map(t -> (CJIRType) new CJIRVariableType(t, true));
+        for (var methodDefinition : item.getMethods()) {
+            methodMap.put(methodDefinition.getName(),
+                    new CJIRIncompleteMethodDescriptor(item, itemTypeArgs, methodDefinition));
         }
-        item.allResolvedTraits = allTraits;
+        for (var trait : item.allResolvedTraits) {
+            for (var methodDefinition : trait.getDefinition().getMethods()) {
+                if (methodMap.containsKey(methodDefinition.getName())) {
+                    continue;
+                }
+                methodMap.put(methodDefinition.getName(), new CJIRIncompleteMethodDescriptor(trait.getDefinition(),
+                        trait.getArguments(), methodDefinition));
+            }
+        }
+        item.methodMap = methodMap;
+
+        if (item.isClass()) {
+            // ==============================================================================
+            // check that all required methods are implemented
+            // ==============================================================================
+            var selfType = new CJIRClassType(item, itemTypeArgs);
+            for (var trait : item.allResolvedTraits) {
+                for (var methodDefinition : trait.getDefinition().getMethods().filter(m -> m.getBody().isEmpty())) {
+                    if (!methodMap.containsKey(methodDefinition.getName())) {
+                        throw err0(selfType + " implements " + trait + " but does not implement method "
+                                + methodDefinition.getName(), item.getMark());
+                    }
+                }
+            }
+        }
 
         exitItem();
     }

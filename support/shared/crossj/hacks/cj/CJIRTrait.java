@@ -37,17 +37,17 @@ public final class CJIRTrait {
     }
 
     Try<Optional<CJIRMethodDescriptor>> getMethodDescriptor(String methodName, CJIRType selfType) {
-        var optionMember = definition.getMemberDefinitionByName(methodName);
-        if (optionMember.isPresent()) {
-            var member = optionMember.get();
-            if (member instanceof CJAstMethodDefinition) {
-                var method = (CJAstMethodDefinition) member;
-                return Try.ok(Optional.of(new CJIRMethodDescriptor(definition, args, selfType, method)));
-            } else {
-                return Try.fail(definition.getQualifiedName() + "." + methodName + " is not a method");
-            }
+        var incompleteMethodDescriptor = definition.getMethodMap().getOrNull(methodName);
+        if (incompleteMethodDescriptor == null) {
+            return Try.ok(Optional.empty());
+        } else {
+            var params = definition.getTypeParameters().map(p -> p.getName());
+            var typeMap = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
+            var item = incompleteMethodDescriptor.item;
+            var itemTypeArguments = incompleteMethodDescriptor.itemTypeArguments.map(t -> t.substitute(typeMap));
+            var method = incompleteMethodDescriptor.method;
+            return Try.ok(Optional.of(new CJIRMethodDescriptor(item, itemTypeArguments, selfType, method)));
         }
-        return Try.ok(Optional.empty());
     }
 
     public List<CJIRTrait> getReifiedTraits() {

@@ -12,7 +12,6 @@ import crossj.base.Try;
 public final class CJIRClassType implements CJIRType {
     private final CJAstItemDefinition definition;
     private final List<CJIRType> args;
-    private final Map<String, Try<CJIRMethodDescriptor>> methodDescriptorCache = Map.of();
 
     CJIRClassType(CJAstItemDefinition definition, List<CJIRType> args) {
         Assert.that(!definition.isTrait());
@@ -47,45 +46,17 @@ public final class CJIRClassType implements CJIRType {
 
     @Override
     public Try<CJIRMethodDescriptor> getMethodDescriptor(String methodName) {
-        if (!methodDescriptorCache.containsKey(methodName)) {
-            methodDescriptorCache.put(methodName, getMethodDescriptorUncached(methodName));
-        }
-        return methodDescriptorCache.get(methodName);
-    }
-
-    public Try<CJIRMethodDescriptor> getMethodDescriptorUncached(String methodName) {
-        // first search for the method defined directly in this class.
-        {
-            var optionMember = definition.getMemberDefinitionByName(methodName);
-            if (optionMember.isPresent()) {
-                var member = optionMember.get();
-                if (member instanceof CJAstMethodDefinition) {
-                    var method = (CJAstMethodDefinition) member;
-                    return Try.ok(new CJIRMethodDescriptor(definition, args, this, method));
-                } else {
-                    return Try.fail(definition.getQualifiedName() + "." + methodName + " is not a method");
-                }
-            }
-        }
-
-        // find the method in one of the traits
-        {
+        var incompleteMethodDescriptor = definition.getMethodMap().getOrNull(methodName);
+        if (incompleteMethodDescriptor == null) {
+            return Try.fail("Method " + methodName + " not found in " + this);
+        } else {
             var params = definition.getTypeParameters().map(p -> p.getName());
-            var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
-            for (var trait : definition.getAllResolvedTraits().iter().map(t -> t.substitute(map))) {
-                var optionMember = trait.getDefinition().getMemberDefinitionByName(methodName);
-                if (optionMember.isPresent()) {
-                    var member = optionMember.get();
-                    if (member instanceof CJAstMethodDefinition) {
-                        var method = (CJAstMethodDefinition) member;
-                        return Try.ok(new CJIRMethodDescriptor(trait.getDefinition(), trait.getArguments(), this, method));
-                    } else {
-                        return Try.fail(definition.getQualifiedName() + "." + methodName + " (" + trait + ") is not a method");
-                    }
-                }
-            }
+            var typeMap = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
+            var item = incompleteMethodDescriptor.item;
+            var itemTypeArguments = incompleteMethodDescriptor.itemTypeArguments.map(t -> t.substitute(typeMap));
+            var method = incompleteMethodDescriptor.method;
+            return Try.ok(new CJIRMethodDescriptor(item, itemTypeArguments, this, method));
         }
-        return Try.fail("Method " + methodName + " not found in " + this);
     }
 
     public List<CJIRTrait> getReifiedTraits() {
