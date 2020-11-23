@@ -80,7 +80,7 @@ final class CJIRContext {
             var name = traitExpression.getName();
             var item = shortNameToItemMap.getOrNull(name);
             if (item == null) {
-                throw err0("Item " + name + " not found (for trait)", traitExpression.getMark());
+                throw err0("Item " + name + " not found (should be a trait)", traitExpression.getMark());
             }
             if (!item.isTrait()) {
                 throw err0(name + " is not a trait", traitExpression.getMark());
@@ -117,7 +117,7 @@ final class CJIRContext {
             } else { // class
                 var optItem = shortNameToItemMap.getOptional(name);
                 if (optItem.isEmpty()) {
-                    throw err0("Item " + name + " not found (for class)", typeExpression.getMark());
+                    throw err0("Item " + name + " not found (should be a class)", typeExpression.getMark());
                 }
                 var item = optItem.get();
                 if (item.isTrait()) {

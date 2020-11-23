@@ -31,6 +31,11 @@ class Sample {
             IO.println(xs)
             IO.println(xs.size())
         }
+
+        {
+            var x = Try[Int].Ok(23)
+            IO.println(x)
+        }
     }
 
     def foo(i: Int) : Int {

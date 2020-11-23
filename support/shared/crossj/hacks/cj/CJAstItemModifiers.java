@@ -5,4 +5,5 @@ public final class CJAstItemModifiers {
 
     public static final int TRAIT = 1;
     public static final int NATIVE = 2;
+    public static final int UNION = 4;
 }

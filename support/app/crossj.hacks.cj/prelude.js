@@ -247,6 +247,28 @@ class MC$cj$MutableList {
     }
 }
 
+/**
+ * @template T
+ */
+class MC$cj$Try {
+    constructor(T) {
+        this.T = T;
+    }
+
+    M$repr(x) {
+        switch (x[0]) {
+            case 0:
+                return 'Ok(' + this.T.M$repr(x[1]) + ')';
+            case 1:
+                return 'Fail(' + this.T.M$repr(x[1]) + ')';
+        }
+    }
+
+    M$toString(x) {
+        return this.M$repr(x);
+    }
+}
+
 class MC$cj$IO {
     // println[T](t: T) : Unit
     M$println(T, t) {

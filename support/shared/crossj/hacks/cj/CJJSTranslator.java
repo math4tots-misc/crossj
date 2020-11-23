@@ -172,6 +172,11 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     private void emitDataClass(CJAstItemDefinition item) {
+        if (item.isUnion()) {
+            // union classes don't need need to emit a data class,
+            // they are always represented by an array.
+            return;
+        }
         var qualifiedItemName = item.getQualifiedName();
         var constructorName = qualifiedNameToConstructorName(qualifiedItemName);
         var fields = item.getMembers().filter(m -> m instanceof CJAstFieldDefinition)
@@ -335,7 +340,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     @Override
     public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
-        sb.lineStart("var ");
+        sb.lineStart("let ");
         sb.lineBody(nameToLocalVariableName(s.getName()));
         sb.lineBody(" = ");
         sb.lineBody(translateExpression(s.getExpression()));
@@ -457,6 +462,18 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
             }
         }
         sb.s(")");
+        return sb.build();
+    }
+
+    @Override
+    public String visitNewUnion(CJAstNewUnionExpression e, Void a) {
+        var sb = Str.builder();
+        var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
+        sb.s("[").i(unionCaseDescriptor.tag);
+        for (var arg : e.getArguments()) {
+            sb.s(",").s(translateExpression(arg));
+        }
+        sb.s("]");
         return sb.build();
     }
 }

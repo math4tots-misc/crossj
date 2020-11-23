@@ -143,6 +143,7 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
             context.resolveTraitExpression(traitExpression);
         }
         for (var member : item.getMembers()) {
+            int nextUnionCaseTag = 0;
             if (member instanceof CJAstMethodDefinition) {
                 var method = (CJAstMethodDefinition) member;
                 enterMethod(method);
@@ -152,8 +153,20 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
                 annotateTypeExpression(method.getReturnType());
                 exitMethod();
             } else if (member instanceof CJAstFieldDefinition) {
+                if (item.isUnion() || item.isTrait()) {
+                    throw err0("Only non-union classes may have fields", member.getMark());
+                }
                 var field = (CJAstFieldDefinition) member;
                 annotateTypeExpression(field.getType());
+            } else if (member instanceof CJAstUnionCaseDefinition) {
+                if (!item.isUnion()) {
+                    throw err0("Only unions may have case members", member.getMark());
+                }
+                var ucase = (CJAstUnionCaseDefinition) member;
+                ucase.tag = nextUnionCaseTag++;
+                for (var typeExpression : ucase.getValueTypes()) {
+                    annotateTypeExpression(typeExpression);
+                }
             }
         }
         exitItem();
@@ -446,12 +459,40 @@ public final class CJIRAnnotator implements CJAstStatementVisitor<Void, Void>, C
         for (var arg : e.getArguments()) {
             annotateExpression(arg);
         }
-        var type = e.getType().getAsIsType();
-        if (type instanceof CJIRVariableType) {
+        var rawType = e.getType().getAsIsType();
+        if (rawType instanceof CJIRVariableType) {
             // TODO: Consider whether I want to allow this.
             throw err0("'new' cannot be used with variable types", e.getMark());
         }
-        e.resolvedType = type;
+        var classType = (CJIRClassType) rawType;
+        if (classType.getDefinition().isUnion()) {
+            throw err0("'new' cannot be used with union types", e.getMark());
+        }
+        e.resolvedType = classType;
+        return null;
+    }
+
+    @Override
+    public Void visitNewUnion(CJAstNewUnionExpression e, Void a) {
+        annotateTypeExpression(e.getType());
+        var rawType = e.getType().getAsIsType();
+        if (rawType instanceof CJIRVariableType) {
+            throw err0("Union constructors cannot be used with variable types", e.getMark());
+        }
+        var classType = (CJIRClassType) rawType;
+        if (!classType.getDefinition().isUnion()) {
+            throw err0("Union constructors cannot be used with non-union types", e.getMark());
+        }
+        var optionUnionCaseDescriptor = classType.getUnionCaseDescriptor(e.getName());
+        if (optionUnionCaseDescriptor.isEmpty()) {
+            throw err0("Union constructor " + rawType + "." + e.getName() + " not found", e.getMark());
+        }
+        var unionCaseDescriptor = optionUnionCaseDescriptor.get();
+        for (var arg : e.getArguments()) {
+            annotateExpression(arg);
+        }
+        e.resolvedType = classType;
+        e.resolvedUnionCaseDescriptor = unionCaseDescriptor;
         return null;
     }
 }

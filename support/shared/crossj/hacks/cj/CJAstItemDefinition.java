@@ -23,6 +23,7 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final List<CJAstItemMemberDefinition> members;
     private final Map<String, String> shortToQualifiedNameMap = Map.of();
     private final CJAstTypeParameter selfTypeParameter;
+    private final Map<String, CJAstUnionCaseDefinition> unionCaseCache;
 
     public CJAstItemDefinition(CJMark mark, String packageName, List<CJAstImport> imports, Optional<String> comment,
             int modifiers, String shortName, List<CJAstTypeParameter> typeParameters,
@@ -51,6 +52,20 @@ public final class CJAstItemDefinition implements CJAstNode {
         } else {
             selfTypeParameter = null;
         }
+
+        if (isUnion()) {
+            var unionCaseCache = Map.<String, CJAstUnionCaseDefinition>of();
+            for (var member : members) {
+                if (member instanceof CJAstUnionCaseDefinition) {
+                    unionCaseCache.put(member.getName(), (CJAstUnionCaseDefinition) member);
+                }
+            }
+            this.unionCaseCache = unionCaseCache;
+        } else {
+            unionCaseCache = null;
+        }
+
+        Assert.withMessage(!(isTrait() && isUnion()), "An item cannot be both a trait and union");
     }
 
     @Override
@@ -74,6 +89,15 @@ public final class CJAstItemDefinition implements CJAstNode {
         return (modifiers & CJAstItemModifiers.TRAIT) != 0;
     }
 
+    public boolean isUnion() {
+        return (modifiers & CJAstItemModifiers.UNION) != 0;
+    }
+
+    /**
+     * Checks whether this item is for a class (as opposed to a trait).
+     *
+     * NOTE: Unions are classes.
+     */
     public boolean isClass() {
         return !isTrait();
     }
@@ -183,5 +207,9 @@ public final class CJAstItemDefinition implements CJAstNode {
     private static Pair<String, String> splitQualifiedName(String qualifiedName) {
         var parts = Str.split(qualifiedName, ".");
         return Pair.of(Str.join(".", parts.slice(0, parts.size() - 1)), parts.get(parts.size() - 1));
+    }
+
+    public Optional<CJAstUnionCaseDefinition> getUnionCaseDefinitionFor(String name) {
+        return unionCaseCache.getOptional(name);
     }
 }

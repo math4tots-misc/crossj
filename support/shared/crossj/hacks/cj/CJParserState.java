@@ -126,7 +126,7 @@ public final class CJParserState {
         var sb = Str.builder();
         while (true) {
             if (!at(CJToken.ID)) {
-                return fail("Expected ID");
+                return expectedType(CJToken.ID);
             }
             sb.s(parseID());
             if (consume('.')) {
@@ -168,6 +168,8 @@ public final class CJParserState {
         var modifiers = parseClassDefinitionModifiers();
         if (consume(CJToken.KW_TRAIT)) {
             modifiers |= CJAstItemModifiers.TRAIT;
+        } else if (consume(CJToken.KW_UNION)) {
+            modifiers |= CJAstItemModifiers.UNION;
         } else if (!consume(CJToken.KW_CLASS)) {
             return fail("Expected 'class'");
         }
@@ -363,8 +365,11 @@ public final class CJParserState {
             case CJToken.KW_DEF: {
                 return parseMethodDefinition(List.of(), comment, modifiers).map(x -> x);
             }
+            case CJToken.KW_CASE: {
+                return parseUnionCaseDefinition(comment, modifiers).map(x -> x);
+            }
             default: {
-                return expectedKind("Expected 'def' or 'var'");
+                return expectedKind("Expected 'def', 'var' or 'case'");
             }
         }
     }
@@ -427,6 +432,31 @@ public final class CJParserState {
         }
         return Try.ok(new CJAstMethodDefinition(mark, typeConditions, comment, modifiers, name, typeParameters,
                 parameters, returnType, body));
+    }
+
+    private Try<CJAstUnionCaseDefinition> parseUnionCaseDefinition(Optional<String> comment, int modifiers) {
+        var mark = getMark();
+        if (!consume(CJToken.KW_CASE)) {
+            return expectedType(CJToken.KW_CASE);
+        }
+        if (!at(CJToken.TYPE_ID)) {
+            return expectedType(CJToken.TYPE_ID);
+        }
+        var name = parseTypeID();
+        var valueTypes = List.<CJAstTypeExpression>of();
+        if (consume('(')) {
+            while (!consume(')')) {
+                var tryType = parseTypeExpression();
+                if (tryType.isFail()) {
+                    return tryType.castFail();
+                }
+                valueTypes.add(tryType.get());
+                if (!consume(',') && !at(')')) {
+                    return expectedType(')');
+                }
+            }
+        }
+        return Try.ok(new CJAstUnionCaseDefinition(mark, comment, modifiers, name, valueTypes));
     }
 
     private Try<CJAstStatement> parseStatement() {
@@ -618,7 +648,7 @@ public final class CJParserState {
     private Try<CJAstParameter> parseParameter() {
         var mark = getMark();
         if (!at(CJToken.ID)) {
-            return fail("Expected ID");
+            return expectedType(CJToken.ID);
         }
         var name = parseID();
         if (!consume(':')) {
@@ -668,8 +698,9 @@ public final class CJParserState {
     private static int getTokenPrecedence(int tokenType) {
         // mostly follows Python
         switch (tokenType) {
-            case '?':
-                return 30;
+            // '?' is reserved for short-circuit returns as in Rust.
+            // case '?':
+            // return 30;
             case CJToken.KW_OR:
                 return 40;
             case CJToken.KW_AND:
@@ -723,6 +754,7 @@ public final class CJParserState {
                 case '>':
                 case '|':
                 case '&':
+                case CJToken.POWER:
                 case CJToken.FLOORDIV:
                 case CJToken.EQ:
                 case CJToken.NE:
@@ -731,6 +763,7 @@ public final class CJParserState {
                 case CJToken.KW_IN: {
                     String methodName = null;
                     boolean logicalNot = false;
+                    boolean rightAssociative = false;
                     switch (next().type) {
                         case '+':
                             methodName = "__add";
@@ -752,6 +785,10 @@ public final class CJParserState {
                             break;
                         case '>':
                             methodName = "__gt";
+                            break;
+                        case CJToken.POWER:
+                            methodName = "__pow";
+                            rightAssociative = true;
                             break;
                         case CJToken.FLOORDIV:
                             methodName = "__floordiv";
@@ -782,7 +819,8 @@ public final class CJParserState {
                     }
                     Assert.that(methodName != null);
                     var lhs = tryExpr.get();
-                    var tryRhs = parseExpressionWithPrecedence(tokenPrecedence + 1);
+                    var tryRhs = parseExpressionWithPrecedence(
+                            rightAssociative ? tokenPrecedence : tokenPrecedence + 1);
                     if (tryRhs.isFail()) {
                         return tryRhs.castFail();
                     }
@@ -898,26 +936,36 @@ public final class CJParserState {
                 if (!consume('.')) {
                     return fail("Expected '.'");
                 }
-                if (!at(CJToken.ID)) {
-                    return fail("Expected ID");
-                }
-                var methodName = parseID();
-                var mustInfer = !at('[');
-                var tryTypeArgs = parseTypeArguments();
-                if (tryTypeArgs.isFail()) {
-                    return tryTypeArgs.castFail();
-                }
-                var typeArgs = tryTypeArgs.get();
-                var tryArgs = parseArguments();
-                if (tryArgs.isFail()) {
-                    return tryArgs.castFail();
-                }
-                var args = tryArgs.get();
-                if (mustInfer) {
-                    Assert.equals(typeArgs.size(), 0);
-                    return Try.ok(new CJAstInferredGenericsMethodCallExpression(mark, type, methodName, args));
+                if (at(CJToken.TYPE_ID)) {
+                    var name = parseTypeID();
+                    var tryArgs = parseArguments();
+                    if (tryArgs.isFail()) {
+                        return tryArgs.castFail();
+                    }
+                    var args = tryArgs.get();
+                    return Try.ok(new CJAstNewUnionExpression(mark, type, name, args));
                 } else {
-                    return Try.ok(new CJAstMethodCallExpression(mark, type, methodName, typeArgs, args));
+                    if (!at(CJToken.ID)) {
+                        return expectedType(CJToken.ID);
+                    }
+                    var methodName = parseID();
+                    var mustInfer = !at('[');
+                    var tryTypeArgs = parseTypeArguments();
+                    if (tryTypeArgs.isFail()) {
+                        return tryTypeArgs.castFail();
+                    }
+                    var typeArgs = tryTypeArgs.get();
+                    var tryArgs = parseArguments();
+                    if (tryArgs.isFail()) {
+                        return tryArgs.castFail();
+                    }
+                    var args = tryArgs.get();
+                    if (mustInfer) {
+                        Assert.equals(typeArgs.size(), 0);
+                        return Try.ok(new CJAstInferredGenericsMethodCallExpression(mark, type, methodName, args));
+                    } else {
+                        return Try.ok(new CJAstMethodCallExpression(mark, type, methodName, typeArgs, args));
+                    }
                 }
             }
             case '(': { // parenthetical expression

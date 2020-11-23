@@ -3,6 +3,7 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Optional;
 import crossj.base.Pair;
 import crossj.base.Range;
 import crossj.base.Str;
@@ -30,6 +31,18 @@ public final class CJIRClassType implements CJIRType {
     @Override
     public CJIRType substitute(Map<String, CJIRType> map) {
         return new CJIRClassType(definition, args.map(arg -> arg.substitute(map)));
+    }
+
+    public Optional<CJIRUnionCaseDescriptor> getUnionCaseDescriptor(String name) {
+        var caseDefOption = definition.getUnionCaseDefinitionFor(name);
+        if (caseDefOption.isEmpty()) {
+            return Optional.empty();
+        }
+        var caseDef = caseDefOption.get();
+        var params = definition.getTypeParameters().map(p -> p.getName());
+        var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
+        var signature = new CJIRMethodSignature(caseDef.getValueTypes().map(t -> t.getAsIsType().substitute(map)), this);
+        return Optional.of(new CJIRUnionCaseDescriptor(caseDef.getTag(), caseDef.getName(), signature));
     }
 
     @Override
