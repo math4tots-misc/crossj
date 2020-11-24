@@ -481,7 +481,12 @@ class MC$cj$Assert {
 const MO$cj$Assert = new MC$cj$Assert();
 
 class MC$cj$IO {
-    // println[T](t: T) : Unit
+    /**
+     * println[T](t: T) : Unit
+     * @template T
+     * @param {*} VT$T
+     * @param {T} t
+     */
     M$println(VT$T, t) {
         console.log(VT$T.M$toString(t));
     }
