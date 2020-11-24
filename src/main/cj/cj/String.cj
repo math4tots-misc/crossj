@@ -6,6 +6,8 @@ native class String: Eq, Ord, Hash, Repr, ToString {
 
     def __add(a: Self, b: Self) : Self
 
+    def size(x: Self) : Int
+
     def hash(x: Self) : Int
 
     def repr(x: Self) : String

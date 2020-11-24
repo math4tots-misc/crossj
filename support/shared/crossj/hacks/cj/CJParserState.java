@@ -414,14 +414,17 @@ public final class CJParserState {
             return tryParameters.castFail();
         }
         var parameters = tryParameters.get();
-        if (!consume(':')) {
-            return expectedType(':');
+        CJAstTypeExpression returnType;
+        if (consume(':')) {
+            var tryReturnType = parseTypeExpression();
+            if (tryReturnType.isFail()) {
+                return tryReturnType.castFail();
+            }
+            returnType = tryReturnType.get();
+        } else {
+            // If a return type is not specified, assume Unit
+            returnType = new CJAstTypeExpression(mark, "Unit", List.of());
         }
-        var tryReturnType = parseTypeExpression();
-        if (tryReturnType.isFail()) {
-            return tryReturnType.castFail();
-        }
-        var returnType = tryReturnType.get();
         var body = Optional.<CJAstBlockStatement>empty();
         if (at('{')) {
             var tryBody = parseBlockStatement();

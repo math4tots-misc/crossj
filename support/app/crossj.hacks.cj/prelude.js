@@ -176,6 +176,13 @@ class MC$cj$String {
     M$__lt(a, b) {
         return a < b;
     }
+
+    /**
+     * @param {string} x
+     */
+    M$size(x) {
+        return x.length;
+    }
 }
 const MO$cj$String = new MC$cj$String();
 
