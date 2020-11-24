@@ -106,7 +106,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
                 sb.line("console.log(\"ok\")");
             }
         }
-        sb.line("console.log(\"" + testCount + " tests (across " + qualifiedTestClassNames.size()
+        sb.line("console.log(\"" + testCount + " tests (in " + qualifiedTestClassNames.size()
                 + " classes) passed\");");
         return emitMainCommon(world, sb.build());
     }
