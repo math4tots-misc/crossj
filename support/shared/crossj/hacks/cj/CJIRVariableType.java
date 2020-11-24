@@ -97,4 +97,9 @@ public final class CJIRVariableType implements CJIRType {
     public boolean isUnion() {
         return false;
     }
+
+    @Override
+    public boolean isFunctionType(int argc) {
+        return false;
+    }
 }

@@ -302,7 +302,7 @@ public final class CJIRAnnotator
 
     @Override
     public Void visitReturn(CJAstReturnStatement s, Void a) {
-        annotateExpression(s.getExpression());
+        annotateExpressionWithType(s.getExpression(), context.getDeclaredReturnType());
         return null;
     }
 
@@ -365,9 +365,14 @@ public final class CJIRAnnotator
 
     @Override
     public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
-        annotateExpression(s.getExpression());
-        var expressionType = s.getExpression().getResolvedType();
-        context.declareVariable(s.getName(), expressionType, s.getMark());
+        if (s.getType().isPresent()) {
+            context.resolveTypeExpression(s.getType().get());
+            var expressionType = s.getType().get().getAsIsType();
+            annotateExpressionWithType(s.getExpression(), expressionType);
+        } else {
+            annotateExpression(s.getExpression());
+        }
+        context.declareVariable(s.getName(), s.getExpression().getResolvedType(), s.getMark());
         return null;
     }
 
@@ -647,6 +652,33 @@ public final class CJIRAnnotator
     public Void visitEmptyMutableList(CJAstEmptyMutableListExpression e, Optional<CJIRType> a) {
         annotateTypeExpression(e.getType());
         e.resolvedType = getMutableListTypeOf(e.getType().getAsIsType());
+        return null;
+    }
+
+    @Override
+    public Void visitLambda(CJAstLambdaExpression e, Optional<CJIRType> a) {
+        if (a.isEmpty()) {
+            throw err0("Lambda expressions require type ascriptions", e.getMark());
+        }
+        var requiredType = a.get();
+        if (!requiredType.isFunctionType(e.getParameterNames().size())) {
+            var fnTypeName = "Fn" + e.getParameterNames().size();
+            throw err0("Expected " + requiredType + " but got a " + fnTypeName, e.getMark());
+        }
+        var fnType = (CJIRClassType) requiredType;
+        {
+            var returnType = fnType.getArguments().get(0);
+            context.enterLambda(returnType);
+            var argumentTypes = fnType.getArguments().sliceFrom(1);
+            var parameterNames = e.getParameterNames();
+            Assert.equals(argumentTypes.size(), parameterNames.size());
+            for (int i = 0; i < argumentTypes.size(); i++) {
+                context.declareVariable(parameterNames.get(i), argumentTypes.get(i), e.getMark());
+            }
+            annotateStatement(e.getBody());
+            context.exitLambda();
+        }
+        e.resolvedType = requiredType;
         return null;
     }
 

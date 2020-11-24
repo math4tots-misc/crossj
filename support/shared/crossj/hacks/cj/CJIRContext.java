@@ -5,6 +5,7 @@ import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;
 import crossj.base.Pair;
+import crossj.base.XError;
 
 /**
  * Annotation context. For resolving types and looking up symbols.
@@ -18,6 +19,8 @@ final class CJIRContext {
     Map<String, CJAstTypeParameter> methodLevelTypeMap = null;
     List<Map<String, CJIRType>> localVariableStack = null;
     private CJIRClassType currentSelfType = null;
+    private CJIRType declaredReturnType = null;
+    private List<CJIRType> returnTypeStack = null;
 
     CJIRContext(CJIRWorld world) {
         this.world = world;
@@ -43,12 +46,16 @@ final class CJIRContext {
         currentMethod = method;
         methodLevelTypeMap = Map.of();
         localVariableStack = List.of(Map.of());
+        declaredReturnType = null;
+        returnTypeStack = List.of();
     }
 
     void exitMethod() {
         currentMethod = null;
         methodLevelTypeMap = null;
         localVariableStack = null;
+        declaredReturnType = null;
+        returnTypeStack = null;
     }
 
     void enterBlock() {
@@ -57,6 +64,17 @@ final class CJIRContext {
 
     void exitBlock() {
         localVariableStack.pop();
+    }
+
+    void enterLambda(CJIRType expectedReturnType) {
+        enterBlock();
+        returnTypeStack.add(declaredReturnType);
+        declaredReturnType = expectedReturnType;
+    }
+
+    void exitLambda() {
+        declaredReturnType = returnTypeStack.pop();
+        exitBlock();
     }
 
     boolean isItemLevelTypeVariable(String name) {
@@ -103,9 +121,27 @@ final class CJIRContext {
 
     CJIRType resolveTypeExpression(CJAstTypeExpression typeExpression) {
         if (!typeExpression.hasAsIsType()) {
+            var mark = typeExpression.getMark();
             var name = typeExpression.getName();
             CJIRType type = null;
-            if (isItemLevelTypeVariable(name)) {
+            if (name.equals("Fn")) {
+                var typeArguments = typeExpression.getArguments();
+                switch (typeArguments.size()) {
+                    case 0:
+                        throw err0("Fn requires at least a return type", mark);
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                        name = "Fn" + (typeArguments.size() - 1);
+                        break;
+                    default:
+                        throw err0("Too many arguments to Fn", mark);
+                }
+                var item = shortNameToItemMap.get(name);
+                type = new CJIRClassType(item, typeArguments.map(t -> resolveTypeExpression(t)));
+            } else if (isItemLevelTypeVariable(name)) {
                 Assert.equals(typeExpression.getArguments().size(), 0);
                 var definition = itemLevelTypeMap.get(name);
                 type = new CJIRVariableType(definition, true);
@@ -181,5 +217,15 @@ final class CJIRContext {
         } else {
             localVariableStack.last().put(variableName, variableType);
         }
+    }
+
+    public CJIRType getDeclaredReturnType() {
+        if (declaredReturnType == null) {
+            if (currentMethod == null) {
+                throw XError.withMessage("return type accessed outside of method");
+            }
+            declaredReturnType = currentMethod.getReturnType().getAsIsType();
+        }
+        return declaredReturnType;
     }
 }

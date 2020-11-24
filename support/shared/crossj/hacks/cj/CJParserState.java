@@ -662,6 +662,9 @@ public final class CJParserState {
                     return tryTypeParameter.castFail();
                 }
                 list.add(tryTypeParameter.get());
+                if (!consume(',') && !at(']')) {
+                    return expectedType(']');
+                }
             }
         }
         return Try.ok(list);
@@ -963,6 +966,30 @@ public final class CJParserState {
                     return expectedType('[');
                 }
             }
+            case CJToken.KW_DEF: {
+                next();
+                var tryParameters = parseLambdaParameters();
+                if (tryParameters.isFail()) {
+                    return tryParameters.castFail();
+                }
+                var parameters = tryParameters.get();
+                CJAstStatement body;
+                if (consume('=')) {
+                    var tryRetExpr = parseExpression();
+                    if (tryRetExpr.isFail()) {
+                        return tryRetExpr;
+                    }
+                    var retExpr = tryRetExpr.get();
+                    body = new CJAstReturnStatement(mark, retExpr);
+                } else {
+                    var tryBody = parseBlockStatement();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    body = tryBody.get();
+                }
+                return Try.ok(new CJAstLambdaExpression(mark, parameters, body));
+            }
             case CJToken.KW_NOT: { // logical not expressions
                 next();
                 var tryInner = parseExpressionWithPrecedence(LOGICAL_NOT_BINDING_POWER);
@@ -1033,6 +1060,23 @@ public final class CJParserState {
         }
 
         return expectedKind("expression");
+    }
+
+    private Try<List<String>> parseLambdaParameters() {
+        if (!consume('(')) {
+            return expectedType('(');
+        }
+        var ret = List.<String>of();
+        while (!consume(')')) {
+            if (!at(CJToken.ID)) {
+                return expectedType(CJToken.ID);
+            }
+            ret.add(parseID());
+            if (!consume(',') && !at(')')) {
+                return expectedType(')');
+            }
+        }
+        return Try.ok(ret);
     }
 
     private Try<List<CJAstTypeExpression>> parseTypeArguments() {

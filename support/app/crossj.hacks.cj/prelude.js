@@ -280,6 +280,116 @@ class MC$cj$MutableList {
 }
 
 /**
+ * @template R
+ */
+class MC$cj$Fn0 {
+    constructor(VT$R) {
+        this.VT$R = VT$R;
+    }
+
+    /**
+     * @param {function() : R} f
+     */
+    M$call(f) {
+        return f();
+    }
+}
+
+/**
+ * @template R
+ * @template A1
+ */
+class MC$cj$Fn1 {
+    constructor(VT$R, VT$A1) {
+        this.VT$R = VT$R;
+        this.VT$A1 = VT$A1;
+    }
+
+    /**
+     * @param {function(A1) : R} f
+     * @param {A1} a1
+     */
+    M$call(f, a1) {
+        return f(a1);
+    }
+}
+
+/**
+ * @template R
+ * @template A1
+ * @template A2
+ */
+class MC$cj$Fn2 {
+    constructor(VT$R, VT$A1, VT$A2) {
+        this.VT$R = VT$R;
+        this.VT$A1 = VT$A1;
+        this.VT$A2 = VT$A2;
+    }
+
+    /**
+     * @param {function(A1, A2) : R} f
+     * @param {A1} a1
+     * @param {A2} a2
+     */
+    M$call(f, a1, a2) {
+        return f(a1, a2);
+    }
+}
+
+/**
+ * @template R
+ * @template A1
+ * @template A2
+ * @template A3
+ */
+class MC$cj$Fn3 {
+    constructor(VT$R, VT$A1, VT$A2, VT$A3) {
+        this.VT$R = VT$R;
+        this.VT$A1 = VT$A1;
+        this.VT$A2 = VT$A2;
+        this.VT$A3 = VT$A3;
+    }
+
+    /**
+     * @param {function(A1, A2, A3) : R} f
+     * @param {A1} a1
+     * @param {A2} a2
+     * @param {A3} a3
+     */
+    M$call(f, a1, a2, a3) {
+        return f(a1, a2, a3);
+    }
+}
+
+/**
+ * @template R
+ * @template A1
+ * @template A2
+ * @template A3
+ * @template A4
+ */
+class MC$cj$Fn4 {
+    constructor(VT$R, VT$A1, VT$A2, VT$A3, VT$A4) {
+        this.VT$R = VT$R;
+        this.VT$A1 = VT$A1;
+        this.VT$A2 = VT$A2;
+        this.VT$A3 = VT$A3;
+        this.VT$A4 = VT$A4;
+    }
+
+    /**
+     * @param {function(A1, A2, A3, A4) : R} f
+     * @param {A1} a1
+     * @param {A2} a2
+     * @param {A3} a3
+     * @param {A4} a4
+     */
+    M$call(f, a1, a2, a3, a4) {
+        return f(a1, a2, a3, a4);
+    }
+}
+
+/**
  * @template T
  */
 class MC$cj$Try {

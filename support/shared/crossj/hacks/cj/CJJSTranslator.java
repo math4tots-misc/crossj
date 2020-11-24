@@ -135,7 +135,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     // private final CJIRWorld world;
-    private final CJStrBuilder sb = new CJStrBuilder();
+    private CJStrBuilder sb = new CJStrBuilder();
     private CJAstItemDefinition currentItem = null;
     private int methodLevelUniqueId = 0;
 
@@ -514,6 +514,19 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     @Override
     public String visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
         return "[]";
+    }
+
+    @Override
+    public String visitLambda(CJAstLambdaExpression e, Void a) {
+        var saveSB = this.sb;
+        this.sb = new CJStrBuilder();
+        emitStatement(e.getBody());
+        var body = this.sb.build();
+        this.sb = saveSB;
+
+        var sb = Str.builder();
+        sb.s("(").s(Str.join(",", e.getParameterNames().map(p -> nameToLocalVariableName(p)))).s(") => {").s(body).s("}");
+        return sb.build();
     }
 
     @Override

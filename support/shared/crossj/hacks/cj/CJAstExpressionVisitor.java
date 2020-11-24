@@ -10,4 +10,5 @@ public interface CJAstExpressionVisitor<R, A> {
     R visitLogicalNot(CJAstLogicalNotExpression e, A a);
     R visitEmptyMutableList(CJAstEmptyMutableListExpression e, A a);
     R visitNewUnion(CJAstNewUnionExpression e, A a);
+    R visitLambda(CJAstLambdaExpression e, A a);
 }

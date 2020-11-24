@@ -111,4 +111,9 @@ public final class CJIRClassType implements CJIRType {
     public boolean isUnion() {
         return definition.isUnion();
     }
+
+    @Override
+    public boolean isFunctionType(int argc) {
+        return definition.getQualifiedName().equals("cj.Fn" + argc);
+    }
 }

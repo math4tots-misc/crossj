@@ -15,4 +15,6 @@ public interface CJIRType {
     boolean isUnion();
 
     boolean implementsTrait(CJIRTrait trait);
+
+    boolean isFunctionType(int argc);
 }
