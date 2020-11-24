@@ -234,6 +234,17 @@ class MC$cj$List {
     }
 
     /**
+     * @template R
+     * @param {*} TV$R
+     * @param {*} TV$C
+     * @param {Array<T>} list
+     * @param {function(T): R} f
+     */
+    M$flatMap(TV$R, TV$C, list, f) {
+        return list.flatMap(f);
+    }
+
+    /**
      * @param {Array<T>} a
      * @param {Array<T>} b
      */

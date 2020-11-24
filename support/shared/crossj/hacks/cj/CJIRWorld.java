@@ -25,6 +25,7 @@ public final class CJIRWorld {
         "Double",
         "String",
         "MutableList",
+        "Collection",
         "List",
         "Fn0",
         "Fn1",

@@ -1,7 +1,8 @@
 package cj
 
+
 native class List[T] :
-        Iterable[T],
+        Collection[T],
         Repr if T : Repr,
         ToString if T : Repr,
         Eq if T : Eq,
@@ -26,4 +27,8 @@ native class List[T] :
     }
 
     def map[R](list: Self, f: Fn[R, T]) : List[R]
+
+    def flatMap[R, C: Iterable[R]](list: Self, f: Fn[C, T]) : List[R]
+
+    def size(x: Self) : Int
 }
