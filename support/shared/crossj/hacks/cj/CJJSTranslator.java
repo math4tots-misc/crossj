@@ -517,6 +517,13 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     @Override
+    public String visitListDisplay(CJAstListDisplayExpression e, Void a) {
+        var sb = Str.builder();
+        sb.s("[").s(Str.join(",", e.getElements().map(el -> translateExpression(el)))).s("]");
+        return sb.build();
+    }
+
+    @Override
     public String visitLambda(CJAstLambdaExpression e, Void a) {
         var saveSB = this.sb;
         this.sb = new CJStrBuilder();

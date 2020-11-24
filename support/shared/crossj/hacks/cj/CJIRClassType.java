@@ -116,4 +116,10 @@ public final class CJIRClassType implements CJIRType {
     public boolean isFunctionType(int argc) {
         return definition.getQualifiedName().equals("cj.Fn" + argc);
     }
+
+    @Override
+    public boolean isDerivedFrom(CJAstItemDefinition item) {
+        Assert.that(item.isClass());
+        return definition == item;
+    }
 }

@@ -1,5 +1,6 @@
 package cj
 
+import cj.IO
 import cj.Assert
 
 class SampleTest {
@@ -22,6 +23,10 @@ class SampleTest {
         {
             var x = Self.useLambda(def(x) = x * x)
             Assert.equal(x, 576)
+        }
+        {
+            var xs = [1, 2, 3, 4, 5].map(def(x) = x * x)
+            Assert.equal(xs, [1, 4, 9, 16, 25])
         }
     }
 

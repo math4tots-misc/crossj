@@ -17,4 +17,6 @@ public interface CJIRType {
     boolean implementsTrait(CJIRTrait trait);
 
     boolean isFunctionType(int argc);
+
+    boolean isDerivedFrom(CJAstItemDefinition item);
 }

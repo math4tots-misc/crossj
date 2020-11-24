@@ -966,6 +966,21 @@ public final class CJParserState {
                     return expectedType('[');
                 }
             }
+            case '[': { // list display
+                next();
+                var elements = List.<CJAstExpression>of();
+                while (!consume(']')) {
+                    var tryElement = parseExpression();
+                    if (tryElement.isFail()) {
+                        return tryElement.castFail();
+                    }
+                    elements.add(tryElement.get());
+                    if (!consume(',') && !at(']')) {
+                        return expectedType(']');
+                    }
+                }
+                return Try.ok(new CJAstListDisplayExpression(mark, elements));
+            }
             case CJToken.KW_DEF: {
                 next();
                 var tryParameters = parseLambdaParameters();

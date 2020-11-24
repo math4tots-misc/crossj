@@ -1,5 +1,6 @@
 package crossj.hacks.cj;
 
+import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Try;
@@ -100,6 +101,12 @@ public final class CJIRVariableType implements CJIRType {
 
     @Override
     public boolean isFunctionType(int argc) {
+        return false;
+    }
+
+    @Override
+    public boolean isDerivedFrom(CJAstItemDefinition item) {
+        Assert.that(item.isClass());
         return false;
     }
 }

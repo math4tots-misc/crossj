@@ -54,6 +54,12 @@ public final class CJIRAnnotator
     private final CJIRClassType doubleType;
     private final CJIRClassType stringType;
     private final CJAstItemDefinition mutableListDefinition;
+    private final CJAstItemDefinition listDefinition;
+    private final CJAstItemDefinition fn0Definition;
+    private final CJAstItemDefinition fn1Definition;
+    private final CJAstItemDefinition fn2Definition;
+    private final CJAstItemDefinition fn3Definition;
+    private final CJAstItemDefinition fn4Definition;
 
     private CJIRAnnotator(CJIRContext context) {
         this.context = context;
@@ -63,6 +69,12 @@ public final class CJIRAnnotator
         this.doubleType = getSimpleTypeByQualifiedName("cj.Double");
         this.stringType = getSimpleTypeByQualifiedName("cj.String");
         this.mutableListDefinition = context.world.getItem("cj.MutableList");
+        this.listDefinition = context.world.getItem("cj.List");
+        this.fn0Definition = context.world.getItem("cj.Fn0");
+        this.fn1Definition = context.world.getItem("cj.Fn1");
+        this.fn2Definition = context.world.getItem("cj.Fn2");
+        this.fn3Definition = context.world.getItem("cj.Fn3");
+        this.fn4Definition = context.world.getItem("cj.Fn4");
     }
 
     private CJIRClassType getSimpleTypeByQualifiedName(String qualifiedName) {
@@ -73,6 +85,30 @@ public final class CJIRAnnotator
 
     private CJIRClassType getMutableListTypeOf(CJIRType innerType) {
         return new CJIRClassType(mutableListDefinition, List.of(innerType));
+    }
+
+    private CJIRClassType getListTypeOf(CJIRType innerType) {
+        return new CJIRClassType(listDefinition, List.of(innerType));
+    }
+
+    private CJIRClassType getFunctionType(CJMark mark, CJIRType returnType, List<CJIRType> argumentTypes) {
+        switch (argumentTypes.size()) {
+            case 0:
+                return new CJIRClassType(fn0Definition, List.of(returnType));
+            case 1:
+                return new CJIRClassType(fn1Definition, List.of(returnType, argumentTypes.get(0)));
+            case 2:
+                return new CJIRClassType(fn2Definition,
+                        List.of(returnType, argumentTypes.get(0), argumentTypes.get(1)));
+            case 3:
+                return new CJIRClassType(fn3Definition,
+                        List.of(returnType, argumentTypes.get(0), argumentTypes.get(1), argumentTypes.get(2)));
+            case 4:
+                return new CJIRClassType(fn4Definition, List.of(returnType, argumentTypes.get(0), argumentTypes.get(1),
+                        argumentTypes.get(2), argumentTypes.get(3)));
+            default:
+                throw err0("Too many arguments to Fn[]", mark);
+        }
     }
 
     private static CJIRAnnotatorException err0(String message, CJMark mark) {
@@ -472,6 +508,24 @@ public final class CJIRAnnotator
                         .get2();
     }
 
+    private Optional<CJIRType> getDeterminedType(CJIRType declaredType, Map<String, CJIRType> binding) {
+        if (declaredType instanceof CJIRVariableType) {
+            var name = ((CJIRVariableType) declaredType).getDefinition().getName();
+            return binding.getOptional(name);
+        } else {
+            var type = (CJIRClassType) declaredType;
+            var argtypes = List.<CJIRType>of();
+            for (var arg : type.getArguments()) {
+                var optNewArg = getDeterminedType(arg, binding);
+                if (optNewArg.isEmpty()) {
+                    return optNewArg;
+                }
+                argtypes.add(optNewArg.get());
+            }
+            return Optional.of(new CJIRClassType(type.getDefinition(), argtypes));
+        }
+    }
+
     /**
      * Assuming that we know which item definition to use and unreified signature of
      * the member (for the method, constructor or union case), we try to infer the
@@ -503,10 +557,58 @@ public final class CJIRAnnotator
         while (map.size() < knownVariables.size() && (stack.size() > 0 || nextArgIndex < args.size())) {
             if (stack.size() == 0) {
                 // if the stack is empty, but we have more arguments we can look at, use it.
+                if (args.size() != memberArgTypes.size()) {
+                    throw XError.withMessage("nextArgIndex = " + nextArgIndex + ", memberArgTypes.size() = "
+                            + memberArgTypes.size() + ", args.size() = " + args.size());
+                }
                 var arg = args.get(nextArgIndex);
-                annotateExpression(arg);
-                stack.add(Pair.of(memberArgTypes.get(nextArgIndex), arg.getResolvedType()));
+                var memberArgType = memberArgTypes.get(nextArgIndex);
                 nextArgIndex++;
+
+                if (arg instanceof CJAstLambdaExpression
+                        && memberArgType.isFunctionType(((CJAstLambdaExpression) arg).getParameterNames().size())
+                        && ((CJAstLambdaExpression) arg).getBody() instanceof CJAstReturnStatement) {
+                    /**
+                     * If the argument is a lambda expression, we deal with it a bit specially. In
+                     * particular, there are often cases when the argument types of the expression
+                     * are already known, but not its return type.
+                     */
+
+                    var rawLambdaArgType = (CJIRClassType) memberArgType;
+                    var translatedLambdaArgTypes = List.<CJIRType>of();
+                    for (int i = 1; i < rawLambdaArgType.getArguments().size(); i++) {
+                        var optTranslatedArgType = getDeterminedType(rawLambdaArgType.getArguments().get(i), map);
+                        if (optTranslatedArgType.isEmpty()) {
+                            break;
+                        }
+                        translatedLambdaArgTypes.add(optTranslatedArgType.get());
+                    }
+
+                    if (translatedLambdaArgTypes.size() + 1 == rawLambdaArgType.getArguments().size()) {
+                        /**
+                         * Argument types are known. Try to use it to determine the return type.
+                         */
+                        var lambdaArg = (CJAstLambdaExpression) arg;
+                        var returnStmt = (CJAstReturnStatement) lambdaArg.getBody();
+                        var lambdaParamNames = lambdaArg.getParameterNames();
+                        {
+                            context.enterBlock();
+                            for (int i = 0; i < translatedLambdaArgTypes.size(); i++) {
+                                context.declareVariable(lambdaParamNames.get(i), translatedLambdaArgTypes.get(i), mark);
+                            }
+                            annotateExpression(returnStmt.getExpression());
+                            context.exitBlock();
+                        }
+                        stack.add(Pair.of(memberArgType, getFunctionType(mark, returnStmt.getExpression().getResolvedType(),
+                                translatedLambdaArgTypes)));
+                    } else {
+                        annotateExpression(arg);
+                        stack.add(Pair.of(memberArgType, arg.getResolvedType()));
+                    }
+                } else {
+                    annotateExpression(arg);
+                    stack.add(Pair.of(memberArgType, arg.getResolvedType()));
+                }
             }
             var pair = stack.pop();
             var param = pair.get1();
@@ -652,6 +754,31 @@ public final class CJIRAnnotator
     public Void visitEmptyMutableList(CJAstEmptyMutableListExpression e, Optional<CJIRType> a) {
         annotateTypeExpression(e.getType());
         e.resolvedType = getMutableListTypeOf(e.getType().getAsIsType());
+        return null;
+    }
+
+    @Override
+    public Void visitListDisplay(CJAstListDisplayExpression e, Optional<CJIRType> a) {
+        var elements = e.getElements();
+        CJIRType elementType;
+        if (a.isPresent()) {
+            var listType = a.get();
+            if (!listType.isDerivedFrom(listDefinition)) {
+                throw err0("Expected " + listType + " but got list display", e.getMark());
+            }
+            elementType = ((CJIRClassType) listType).getArguments().get(0);
+            e.resolvedType = listType;
+        } else {
+            if (elements.size() == 0) {
+                throw err0("Could not determine type of list", e.getMark());
+            }
+            annotateExpression(elements.get(0));
+            elementType = elements.get(0).getResolvedType();
+            e.resolvedType = getListTypeOf(elementType);
+        }
+        for (var element : elements) {
+            annotateExpressionWithType(element, elementType);
+        }
         return null;
     }
 
