@@ -160,6 +160,22 @@ class MC$cj$String {
     M$toString(x) {
         return x;
     }
+
+    /**
+     * @param {string} a
+     * @param {string} b
+     */
+    M$__eq(a, b) {
+        return a === b;
+    }
+
+    /**
+     * @param {string} a
+     * @param {string} b
+     */
+    M$__lt(a, b) {
+        return a < b;
+    }
 }
 const MO$cj$String = new MC$cj$String();
 
@@ -289,6 +305,43 @@ class MC$cj$Try {
         }
     }
 }
+
+class MC$cj$Assert {
+
+    /**
+     * @param {boolean} x
+     */
+    M$that(x) {
+        if (!x) {
+            throw new Error("Assertion failed");
+        }
+    }
+
+    /**
+     *
+     * @param {boolean} x
+     * @param {string} message
+     */
+    M$withMessage(x, message) {
+        if (!x) {
+            throw new Error("Assertion failed: " + message);
+        }
+    }
+
+    /**
+     *
+     * @template T
+     * @param {*} VT$T
+     * @param {T} a
+     * @param {T} b
+     */
+    M$equal(VT$T, a, b) {
+        if (!VT$T.M$__eq(a, b)) {
+            throw new Error("Expected " + VT$T.M$repr(a) + " to equal " + VT$T.M$repr(b));
+        }
+    }
+}
+const MO$cj$Assert = new MC$cj$Assert();
 
 class MC$cj$IO {
     // println[T](t: T) : Unit

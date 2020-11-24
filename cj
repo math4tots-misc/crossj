@@ -22,15 +22,33 @@ def main():
     # parser.add_argument('remainder', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     jspath = join(REPO, 'out', 'cj.js')
-    run([
+    mainroot = join(REPO, 'src', 'main', 'cj')
+    testroot = join(REPO, 'src', 'test', 'cj')
+
+    cmd = [
         'python3',
         join(REPO, 'scripts', 'run-class.py'),
     ] + (['-t', 'java'] if args.use_java else []) + [
         'crossj.hacks.cj.CJJSTranslator',
-        '-r', join(REPO, 'src', 'main', 'cj'),
-        '-m', args.maincls,
-        '-o', jspath,
-    ])
+        '-r', mainroot,
+    ]
+
+    if args.maincls == 'test':
+        cmd.extend(['-r', testroot])
+        for dirpath, dirnames, filenames in os.walk(testroot):
+            for filename in filenames:
+                if filename.endswith('.cj'):
+                    relpath = os.path.relpath(join(dirpath, filename), testroot)
+                    clsname = relpath[:-len('.cj')].replace(os.sep, '.')
+                    cmd.extend(['-t', clsname])
+    else:
+        cmd.extend([
+            '-m', args.maincls,
+        ])
+
+    cmd.extend(['-o', jspath])
+
+    run(cmd)
     run(['node', jspath])
 
 

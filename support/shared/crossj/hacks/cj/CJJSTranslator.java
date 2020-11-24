@@ -27,6 +27,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         String qualifiedMainClassName = null;
         var sourceRoots = List.<String>of();
         String outFile = null;
+        var qualifiedTestClassNames = List.<String>of();
         for (int i = 0; i < args.length; i++) {
             var arg = args[i];
             if (arg.equals("-m") || arg.equals("--main")) {
@@ -38,13 +39,19 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
             } else if (arg.equals("-o")) {
                 i++;
                 outFile = args[i];
+            } else if (arg.equals("-t") || arg.equals("--test-class")) {
+                i++;
+                qualifiedTestClassNames.add(args[i]);
             } else if (arg.equals("--")) {
                 // skip
             } else {
                 throw XError.withMessage("Unrecognized command line flag: " + arg);
             }
         }
-        if (qualifiedMainClassName == null) {
+        if (qualifiedMainClassName != null && qualifiedTestClassNames.size() > 0) {
+            throw XError.withMessage("main class and test classes cannot both be specified");
+        }
+        if (qualifiedMainClassName == null && qualifiedTestClassNames.size() == 0) {
             throw XError.withMessage("No main class specified (specify with '-m')");
         }
         if (outFile == null) {
@@ -64,11 +71,48 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         if (tryVoid.isFail()) {
             throw XError.withMessage(tryVoid.getErrorMessageWithContext());
         } else {
-            IO.writeFile(outFile, emitMain(world, qualifiedMainClassName));
+            var content = qualifiedMainClassName != null ? emitMain(world, qualifiedMainClassName)
+                    : emitTest(world, qualifiedTestClassNames);
+            IO.writeFile(outFile, content);
         }
     }
 
     public static String emitMain(CJIRWorld world, String qualifiedMainClassName) {
+        // call the main method
+        var sb = new CJStrBuilder();
+        var mainObjectName = qualifiedNameToMetaObjectName(qualifiedMainClassName);
+        var mainMethodName = nameToMethodName("main");
+        sb.line(mainObjectName + "." + mainMethodName + "();");
+        return emitMainCommon(world, sb.build());
+    }
+
+    public static String emitTest(CJIRWorld world, List<String> qualifiedTestClassNames) {
+        var sb = new CJStrBuilder();
+        sb.line("console.log(\"Running tests\");");
+        int testCount = 0;
+        for (var qualifiedTestClassName : qualifiedTestClassNames) {
+            var item = world.getItemOrNull(qualifiedTestClassName);
+            if (item == null) {
+                throw XError.withMessage("Test " + qualifiedTestClassName + " not found");
+            }
+            sb.line("console.log(\"  " + qualifiedTestClassName + "\");");
+            var methodNames = item.getMethods().filter(m -> m.getName().startsWith("test")).map(m -> m.getName());
+            var jsObjectName = qualifiedNameToMetaObjectName(qualifiedTestClassName);
+            for (var methodName : methodNames) {
+                testCount++;
+                sb.line("process.stdout.write(\"    " + methodName + "... \");");
+                var jsMethodName = nameToMethodName(methodName);
+                sb.line(jsObjectName + "." + jsMethodName + "();");
+                sb.line("console.log(\"ok\")");
+            }
+        }
+        sb.line("console.log(\"" + testCount + " tests (across " + qualifiedTestClassNames.size()
+                + " classes) passed\");");
+        return emitMainCommon(world, sb.build());
+    }
+
+    private static String emitMainCommon(CJIRWorld world, String main) {
+        // translate all classes
         var translator = new CJJSTranslator(world);
         translator.sb.line("(function(){");
         translator.sb.line("\"use strict\";");
@@ -80,12 +124,8 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
             translator.emitItem(item);
         }
 
-        // call the main method
-        {
-            var mainObjectName = qualifiedNameToMetaObjectName(qualifiedMainClassName);
-            var mainMethodName = nameToMethodName("main");
-            translator.sb.line(mainObjectName + "." + mainMethodName + "();");
-        }
+        // insert main snippet
+        translator.sb.line(main);
         translator.sb.line("})();");
         return translator.sb.build();
     }
@@ -355,7 +395,8 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
             sb.line("case " + unionCase.getDescriptor().tag + ": {");
             sb.indent();
             var valueNames = unionCase.getValueNames();
-            sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar + ";");
+            sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar
+                    + ";");
             emitStatement(unionCase.getBody());
             sb.line("break;");
             sb.dedent();
