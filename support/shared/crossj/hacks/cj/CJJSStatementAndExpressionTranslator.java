@@ -198,11 +198,7 @@ public final class CJJSStatementAndExpressionTranslator
                  * lambda expressions will either result in a lambda expression literal, or the
                  * name of the function. Either case, it should be ok to return here.
                  */
-                || expression instanceof CJAstLambdaExpression
-                /**
-                 * empty lists are of course, ok to return
-                 */
-                || expression instanceof CJAstEmptyMutableListExpression) {
+                || expression instanceof CJAstLambdaExpression) {
             return emitExpressionPartial(expression);
         } else {
             return emitExpression(expression, Optional.empty(), DECLARE_CONST);
