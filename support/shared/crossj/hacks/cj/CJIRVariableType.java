@@ -3,6 +3,7 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Optional;
 import crossj.base.Try;
 import crossj.base.XError;
 
@@ -72,12 +73,28 @@ public final class CJIRVariableType implements CJIRType {
 
     @Override
     public boolean implementsTrait(CJIRTrait trait) {
+        // TOOD: Take into account indirectly implementing traits.
         for (var implTrait : definition.getBounds().map(t -> t.getAsIsTrait())) {
             if (implTrait.implementsTrait(trait)) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public Optional<CJIRTrait> getImplementingTraitByQualifiedName(String qualifiedName) {
+        // TOOD: Take into account indirectly implementing traits.
+        for (var implTrait : getBounds()) {
+            if (implTrait.getDefinition().getQualifiedName().equals(qualifiedName)) {
+                return Optional.of(implTrait);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public List<CJIRTrait> getBounds() {
+        return definition.getBounds().map(t -> t.getAsIsTrait());
     }
 
     @Override

@@ -2,6 +2,7 @@ package crossj.hacks.cj;
 
 import crossj.base.List;
 import crossj.base.Map;
+import crossj.base.Optional;
 import crossj.base.Try;
 
 public interface CJIRType {
@@ -15,6 +16,14 @@ public interface CJIRType {
     boolean isUnion();
 
     boolean implementsTrait(CJIRTrait trait);
+
+    /**
+     * If this type implements a trait with a matching qualified name,
+     * returns a reified version of that trait.
+     *
+     * Otherwise returns empty.
+     */
+    Optional<CJIRTrait> getImplementingTraitByQualifiedName(String qualifiedName);
 
     boolean isFunctionType(int argc);
 

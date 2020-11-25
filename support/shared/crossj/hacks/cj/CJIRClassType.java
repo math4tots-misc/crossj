@@ -82,6 +82,16 @@ public final class CJIRClassType implements CJIRType {
         return trait.equals(reifiedImplTrait);
     }
 
+    @Override
+    public Optional<CJIRTrait> getImplementingTraitByQualifiedName(String qualifiedName) {
+        var implTrait = definition.getTraitsByQualifiedName().getOrNull(qualifiedName);
+        if (implTrait == null) {
+            return Optional.empty();
+        }
+        var bindings = getBindings();
+        return Optional.of(implTrait.substitute(bindings));
+    }
+
     public List<CJIRTrait> getReifiedTraits() {
         var params = definition.getTypeParameters().map(p -> p.getName());
         var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));

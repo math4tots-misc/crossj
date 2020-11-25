@@ -189,6 +189,49 @@ const MO$cj$String = new MC$cj$String();
 /**
  * @template T
  */
+class MC$cj$Iterator {
+    constructor(VT$T) {
+        this.VT$T = VT$T;
+    }
+
+    /**
+     * @template R
+     * @param {IterableIterator<T>} iterator
+     * @param {function(T) : R} f
+     */
+    *M$map(VT$R, iterator, f) {
+        for (const t of iterator) {
+            yield f(t);
+        }
+    }
+
+    /**
+     * @template I
+     * @template {Iterable<I>} C
+     * @param {*} VT$I
+     * @param {*} VT$C
+     * @param {IterableIterator<T>} iterator
+     * @param {function(T): C} f
+     */
+    *M$flatMap(VT$I, VT$C, iterator, f) {
+        for (const t of iterator) {
+            for (const i of f(t)) {
+                yield i;
+            }
+        }
+    }
+
+    /**
+     * @param {IterableIterator<T>} iterator
+     */
+    M$list(iterator) {
+        return Array.from(iterator);
+    }
+}
+
+/**
+ * @template T
+ */
 class MC$cj$List {
     constructor(VT$T) {
         this.VT$T = VT$T;
@@ -206,6 +249,13 @@ class MC$cj$List {
      */
     M$size(list) {
         return list.length;
+    }
+
+    /**
+     * @param {Array<T>} list
+     */
+    M$iter(list) {
+        return list[Symbol.iterator]()
     }
 
     /**

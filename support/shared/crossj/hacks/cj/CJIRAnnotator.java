@@ -601,8 +601,8 @@ public final class CJIRAnnotator
                             annotateExpression(returnStmt.getExpression());
                             context.exitBlock();
                         }
-                        stack.add(Pair.of(memberArgType, getFunctionType(mark, returnStmt.getExpression().getResolvedType(),
-                                translatedLambdaArgTypes)));
+                        stack.add(Pair.of(memberArgType, getFunctionType(mark,
+                                returnStmt.getExpression().getResolvedType(), translatedLambdaArgTypes)));
                     } else {
                         annotateExpression(arg);
                         stack.add(Pair.of(memberArgType, arg.getResolvedType()));
@@ -623,6 +623,21 @@ public final class CJIRAnnotator
                 if (!map.containsKey(variableName)) {
                     // we've encountered an unbound variable. we should bind it.
                     map.put(variableName, given);
+
+                    // The other thing we can do at this point is, if the type variable had
+                    // trait bounds, we can use the bounds to make more inferences
+                    for (var bound : variableType.getBounds()) {
+                        var optGivenImplTrait = given
+                                .getImplementingTraitByQualifiedName(bound.getDefinition().getQualifiedName());
+                        if (optGivenImplTrait.isPresent()) {
+                            var givenImplTrait = optGivenImplTrait.get();
+                            for (int i = 0; i < bound.getArguments().size(); i++) {
+                                var typeFromBound = bound.getArguments().get(i);
+                                var typeFromGiven = givenImplTrait.getArguments().get(i);
+                                stack.add(Pair.of(typeFromBound, typeFromGiven));
+                            }
+                        }
+                    }
                 }
                 // if the variable isn't free, for proper unification we would check that
                 // the concrete types match. However, we silently ignore these cases

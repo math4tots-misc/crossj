@@ -2,5 +2,9 @@ package cj
 
 
 native class Iterator[T] {
-    def map[R](f: Fn[R, T]) : Iterator[R]
+    def map[R](x: Self, f: Fn[R, T]) : Iterator[R]
+
+    def flatMap[I, C: Iterable[I]](x: Self, f: Fn[C, T]) : Iterator[I]
+
+    def list(x: Self) : List[T]
 }
