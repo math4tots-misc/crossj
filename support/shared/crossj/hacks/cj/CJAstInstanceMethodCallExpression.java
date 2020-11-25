@@ -11,6 +11,7 @@ public final class CJAstInstanceMethodCallExpression implements CJAstExpression 
     CJIRType resolvedType;
     List<CJIRType> inferredTypeArguments;
     CJIRType inferredOwnerType;
+    int complexityFlags;
 
     CJAstInstanceMethodCallExpression(CJMark mark, String name, List<CJAstExpression> args) {
         this.mark = mark;
@@ -66,5 +67,10 @@ public final class CJAstInstanceMethodCallExpression implements CJAstExpression 
     public CJIRType getInferredOwnerType() {
         Assert.that(inferredOwnerType != null);
         return inferredOwnerType;
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

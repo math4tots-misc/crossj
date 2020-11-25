@@ -1,6 +1,7 @@
 package crossj.hacks.cj;
 
 import crossj.base.Assert;
+import crossj.base.XError;
 
 public interface CJAstExpression extends CJAstNode {
     <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a);
@@ -16,5 +17,19 @@ public interface CJAstExpression extends CJAstNode {
         var type = getResolvedTypeOrNull();
         Assert.that(type != null);
         return type;
+    }
+
+    int getComplexityFlagsOrZero();
+
+    default int getComplexityFlags() {
+        int flags = getComplexityFlagsOrZero();
+        if (flags == 0) {
+            throw XError.withMessage(inspect0());
+        }
+        return flags;
+    }
+
+    default boolean isSimple() {
+        return getComplexityFlags() == CJIRExpressionComplexityFlags.NONE;
     }
 }

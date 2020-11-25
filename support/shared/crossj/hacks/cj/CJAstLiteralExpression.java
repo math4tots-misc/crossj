@@ -17,6 +17,7 @@ public final class CJAstLiteralExpression implements CJAstExpression {
     private final String type;
     private final String rawText;
     CJIRType resolvedType;
+    int complexityFlags;
 
     CJAstLiteralExpression(CJMark mark, String type, String rawText) {
         Assert.that(TYPES.contains(type));
@@ -54,5 +55,10 @@ public final class CJAstLiteralExpression implements CJAstExpression {
             sb.repeatStr("  ", depth);
         }
         sb.s(rawText).s(suffix).s("\n");
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

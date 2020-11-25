@@ -6,6 +6,7 @@ public final class CJAstEmptyMutableListExpression implements CJAstExpression {
     private final CJMark mark;
     private final CJAstTypeExpression type;
     CJIRType resolvedType;
+    int complexityFlags;
 
     CJAstEmptyMutableListExpression(CJMark mark, CJAstTypeExpression type) {
         this.mark = mark;
@@ -37,5 +38,10 @@ public final class CJAstEmptyMutableListExpression implements CJAstExpression {
     @Override
     public <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a) {
         return visitor.visitEmptyMutableList(this, a);
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

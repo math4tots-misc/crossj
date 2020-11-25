@@ -6,6 +6,7 @@ public final class CJAstLogicalNotExpression implements CJAstExpression {
     private final CJMark mark;
     private final CJAstExpression inner;
     CJIRType resolvedType;
+    int complexityFlags;
 
     CJAstLogicalNotExpression(CJMark mark, CJAstExpression inner) {
         this.mark = mark;
@@ -38,5 +39,10 @@ public final class CJAstLogicalNotExpression implements CJAstExpression {
     @Override
     public CJIRType getResolvedTypeOrNull() {
         return resolvedType;
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

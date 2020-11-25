@@ -1,6 +1,5 @@
 package crossj.hacks.cj;
 
-import crossj.base.Assert;
 import crossj.base.FS;
 import crossj.base.IO;
 import crossj.base.List;
@@ -136,52 +135,46 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     // private final CJIRWorld world;
     private CJStrBuilder sb = new CJStrBuilder();
-    private CJAstItemDefinition currentItem = null;
+    private CJJSTypeTranslator typeTranslator;
+    private CJJSSimpleExpressionTranslator simpleExpressionTranslator;
     private int methodLevelUniqueId = 0;
 
     private CJJSTranslator(CJIRWorld world) {
         // this.world = world;
     }
 
-    private static String qualifiedNameToMetaClassName(String qualifiedItemName) {
+    static String qualifiedNameToMetaClassName(String qualifiedItemName) {
         return "MC$" + qualifiedItemName.replace(".", "$");
     }
 
     // only applies when a class has no type parameters
-    private static String qualifiedNameToMetaObjectName(String qualifiedItemName) {
+    static String qualifiedNameToMetaObjectName(String qualifiedItemName) {
         return "MO$" + qualifiedItemName.replace(".", "$");
     }
 
-    private static String qualifiedNameToConstructorName(String qualifiedItemName) {
+    static String qualifiedNameToConstructorName(String qualifiedItemName) {
         return "CT$" + qualifiedItemName.replace(".", "$");
     }
 
-    private static String nameToFunctionLevelTypeVariableName(String shortName) {
+    static String nameToFunctionLevelTypeVariableName(String shortName) {
         return "TV$" + shortName;
     }
 
-    private String nameToItemLevelTypeVariableExpression(String shortName) {
-        if (currentItem.isTrait()) {
-            return "this.TV$" + currentItem.getQualifiedName().replace(".", "$") + "$" + shortName + "()";
-        } else {
-            return "this.TV$" + shortName;
-        }
-    }
-
-    private static String nameToFieldName(String name) {
+    static String nameToFieldName(String name) {
         return "F$" + name;
     }
 
-    private static String nameToLocalVariableName(String name) {
+    static String nameToLocalVariableName(String name) {
         return "L$" + name;
     }
 
-    private static String nameToMethodName(String name) {
+    static String nameToMethodName(String name) {
         return "M$" + name;
     }
 
     private void emitItem(CJAstItemDefinition item) {
-        currentItem = item;
+        typeTranslator = new CJJSTypeTranslator(item);
+        simpleExpressionTranslator = new CJJSSimpleExpressionTranslator(typeTranslator);
         if (item.isNative()) {
             // nothing to do
         } else if (item.isTrait()) {
@@ -189,7 +182,8 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
         } else {
             emitClass(item);
         }
-        currentItem = null;
+        typeTranslator = null;
+        simpleExpressionTranslator = null;
     }
 
     private void emitTrait(CJAstItemDefinition item) {
@@ -300,30 +294,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     private String translateType(CJIRType type) {
-        if (type instanceof CJIRVariableType) {
-            var variableType = (CJIRVariableType) type;
-            if (variableType.isItemLevel()) {
-                return nameToItemLevelTypeVariableExpression(variableType.getDefinition().getName());
-            } else {
-                Assert.that(variableType.isMethodLevel());
-                return nameToFunctionLevelTypeVariableName(variableType.getDefinition().getName());
-            }
-        } else {
-            var classType = (CJIRClassType) type;
-            if (classType.getArguments().size() == 0) {
-                return qualifiedNameToMetaObjectName(classType.getDefinition().getQualifiedName());
-            } else {
-                var sb = Str.builder();
-                sb.s("new ").s(qualifiedNameToMetaClassName(classType.getDefinition().getQualifiedName())).s("(");
-                var args = classType.getArguments();
-                sb.s(translateType(args.get(0)));
-                for (int i = 1; i < args.size(); i++) {
-                    sb.s(",").s(translateType(args.get(i)));
-                }
-                sb.s(")");
-                return sb.build();
-            }
-        }
+        return typeTranslator.translateType(type);
     }
 
     private void emitStatement(CJAstStatement statement) {
@@ -431,6 +402,11 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
     }
 
     private String translateExpression(CJAstExpression expression) {
+        // if (expression.getComplexityFlags() == CJIRExpressionComplexityFlags.NONE) {
+        //     return simpleExpressionTranslator.translateExpression(expression);
+        // } else {
+        //     return expression.accept(this, null);
+        // }
         return expression.accept(this, null);
     }
 

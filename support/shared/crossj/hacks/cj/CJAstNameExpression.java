@@ -6,6 +6,7 @@ public final class CJAstNameExpression implements CJAstExpression {
     private final CJMark mark;
     private final String name;
     CJIRType resolvedType;
+    int complexityFlags;
 
     CJAstNameExpression(CJMark mark, String name) {
         this.mark = mark;
@@ -37,5 +38,10 @@ public final class CJAstNameExpression implements CJAstExpression {
             sb.repeatStr("  ", depth);
         }
         sb.s(name).s(suffix).s("\n");
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

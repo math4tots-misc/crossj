@@ -8,6 +8,7 @@ public final class CJAstNewExpression implements CJAstExpression {
     private final CJAstTypeExpression type;
     private final List<CJAstExpression> args;
     CJIRType resolvedType;
+    int complexityFlags;
 
     CJAstNewExpression(CJMark mark, CJAstTypeExpression type, List<CJAstExpression> args) {
         this.mark = mark;
@@ -48,5 +49,10 @@ public final class CJAstNewExpression implements CJAstExpression {
             arg.addInspect0(sb, depth + 1, true, ",");
         }
         sb.repeatStr("  ", depth).s(")").s(suffix).s("\n");
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

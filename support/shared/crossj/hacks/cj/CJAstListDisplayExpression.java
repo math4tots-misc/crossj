@@ -8,6 +8,7 @@ public final class CJAstListDisplayExpression implements CJAstExpression {
     private final CJMark mark;
     private final List<CJAstExpression> elements;
     CJIRType resolvedType;
+    int complexityFlags;
 
     CJAstListDisplayExpression(CJMark mark, List<CJAstExpression> elements) {
         this.mark = mark;
@@ -39,5 +40,10 @@ public final class CJAstListDisplayExpression implements CJAstExpression {
     @Override
     public <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a) {
         return visitor.visitListDisplay(this, a);
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

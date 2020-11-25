@@ -11,6 +11,7 @@ public final class CJAstInferredGenericsMethodCallExpression implements CJAstExp
     private final List<CJAstExpression> args;
     CJIRType resolvedType;
     List<CJIRType> inferredTypeArguments;
+    int complexityFlags;
 
     CJAstInferredGenericsMethodCallExpression(CJMark mark, CJAstTypeExpression owner,
             String name,
@@ -69,5 +70,10 @@ public final class CJAstInferredGenericsMethodCallExpression implements CJAstExp
     @Override
     public <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a) {
         return visitor.visitInferredGenericsMethodCall(this, a);
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

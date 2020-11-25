@@ -24,6 +24,7 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
     private final List<CJAstTypeExpression> typeArguments;
     private final List<CJAstExpression> args;
     CJIRType resolvedType;
+    int complexityFlags;
 
     CJAstMethodCallExpression(CJMark mark, CJAstTypeExpression owner, String name,
             List<CJAstTypeExpression> typeArguments, List<CJAstExpression> args) {
@@ -88,5 +89,10 @@ public final class CJAstMethodCallExpression implements CJAstExpression {
             sb.s("()");
         }
         sb.s(suffix).s("\n");
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

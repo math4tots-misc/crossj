@@ -9,6 +9,7 @@ public final class CJAstLambdaExpression implements CJAstExpression {
     private final List<String> parameterNames;
     private final CJAstStatement body;
     CJIRType resolvedType;
+    int complexityFlags;
 
     CJAstLambdaExpression(CJMark mark, List<String> parameterNames, CJAstStatement body) {
         this.mark = mark;
@@ -47,5 +48,10 @@ public final class CJAstLambdaExpression implements CJAstExpression {
     @Override
     public <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a) {
         return visitor.visitLambda(this, a);
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }

@@ -11,6 +11,7 @@ public final class CJAstNewUnionExpression implements CJAstExpression {
     private final List<CJAstExpression> args;
     CJIRType resolvedType;
     CJIRUnionCaseDescriptor resolvedUnionCaseDescriptor;
+    int complexityFlags;
 
     CJAstNewUnionExpression(CJMark mark, CJAstTypeExpression type, String name, List<CJAstExpression> args) {
         this.mark = mark;
@@ -65,5 +66,10 @@ public final class CJAstNewUnionExpression implements CJAstExpression {
             sb.repeatStr("  ", depth);
         }
         sb.s(")").s(suffix).s("\n");
+    }
+
+    @Override
+    public int getComplexityFlagsOrZero() {
+        return complexityFlags;
     }
 }
