@@ -808,6 +808,17 @@ public final class CJParserState {
         while (tryExpr.isOk() && tokenPrecedence >= precedence) {
             var mark = getMark();
             switch (peek().type) {
+                case CJToken.KW_OR:
+                case CJToken.KW_AND: {
+                    int type = next().type == CJToken.KW_OR ? CJAstLogicalBinaryExpression.OR : CJAstLogicalBinaryExpression.AND;
+                    var tryRight = parseExpressionWithPrecedence(precedence + 1);
+                    if (tryRight.isFail()) {
+                        return tryRight;
+                    }
+                    var right = tryRight.get();
+                    tryExpr = Try.ok(new CJAstLogicalBinaryExpression(mark, type, tryExpr.get(), right));
+                    break;
+                }
                 case '+':
                 case '-':
                 case '*':

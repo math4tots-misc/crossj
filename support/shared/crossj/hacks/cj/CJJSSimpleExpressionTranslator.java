@@ -1,5 +1,6 @@
 package crossj.hacks.cj;
 
+import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Str;
 import crossj.base.XError;
@@ -98,6 +99,18 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     @Override
     public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
         return "(!" + translateExpression(e.getInner()) + ")";
+    }
+
+    @Override
+    public String visitLogicalBinary(CJAstLogicalBinaryExpression e, Void a) {
+        String op;
+        if (e.isAnd()) {
+            op = "&&";
+        } else {
+            Assert.that(e.isOr());
+            op = "||";
+        }
+        return "(" + translateExpression(e.getLeft()) + op + translateExpression(e.getRight()) + ")";
     }
 
     @Override

@@ -339,6 +339,18 @@ public final class CJJSStatementAndExpressionTranslator
     }
 
     @Override
+    public String visitLogicalBinary(CJAstLogicalBinaryExpression e, Void a) {
+        Assert.that(e.isAnd() || e.isOr());
+        var tmpvar = emitExpression(e.getLeft(), Optional.empty(), DECLARE_LET);
+        sb.line("if (" + (e.isAnd() ? "" : "!") + tmpvar + ") {");
+        sb.indent();
+        emitExpression(e.getRight(), Optional.of(tmpvar), DECLARE_NONE);
+        sb.dedent();
+        sb.line("}");
+        return tmpvar;
+    }
+
+    @Override
     public String visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
         // NOTE: we should never actually get here
         // Assert.that(false);

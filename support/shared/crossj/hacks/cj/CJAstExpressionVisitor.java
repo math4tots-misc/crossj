@@ -12,4 +12,5 @@ public interface CJAstExpressionVisitor<R, A> {
     R visitNewUnion(CJAstNewUnionExpression e, A a);
     R visitLambda(CJAstLambdaExpression e, A a);
     R visitListDisplay(CJAstListDisplayExpression e, A a);
+    R visitLogicalBinary(CJAstLogicalBinaryExpression e, A a);
 }

@@ -68,6 +68,12 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     }
 
     @Override
+    public Void visitLogicalBinary(CJAstLogicalBinaryExpression e, Void a) {
+        e.complexityFlags = annotate(e.getLeft()) | annotate(e.getRight());
+        return null;
+    }
+
+    @Override
     public Void visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
         e.complexityFlags = NONE;
         return null;

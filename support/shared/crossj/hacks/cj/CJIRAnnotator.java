@@ -834,6 +834,14 @@ public final class CJIRAnnotator
     }
 
     @Override
+    public Void visitLogicalBinary(CJAstLogicalBinaryExpression e, Optional<CJIRType> a) {
+        annotateExpressionWithType(e.getLeft(), boolType);
+        annotateExpressionWithType(e.getRight(), boolType);
+        e.resolvedType = boolType;
+        return null;
+    }
+
+    @Override
     public Void visitNew(CJAstNewExpression e, Optional<CJIRType> a) {
         annotateTypeExpression(e.getType());
         for (var arg : e.getArguments()) {
