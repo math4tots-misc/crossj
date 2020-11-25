@@ -73,7 +73,6 @@ public final class CJIRVariableType implements CJIRType {
 
     @Override
     public boolean implementsTrait(CJIRTrait trait) {
-        // TOOD: Take into account indirectly implementing traits.
         for (var implTrait : definition.getBounds().map(t -> t.getAsIsTrait())) {
             if (implTrait.implementsTrait(trait)) {
                 return true;
@@ -86,8 +85,9 @@ public final class CJIRVariableType implements CJIRType {
     public Optional<CJIRTrait> getImplementingTraitByQualifiedName(String qualifiedName) {
         // TOOD: Take into account indirectly implementing traits.
         for (var implTrait : getBounds()) {
-            if (implTrait.getDefinition().getQualifiedName().equals(qualifiedName)) {
-                return Optional.of(implTrait);
+            var optTrait = implTrait.getImplementingTraitByQualifiedName(qualifiedName);
+            if (optTrait.isPresent()) {
+                return optTrait;
             }
         }
         return Optional.empty();

@@ -74,6 +74,17 @@ public final class CJIRTrait {
         return trait.equals(reifiedImplTrait);
     }
 
+    public Optional<CJIRTrait> getImplementingTraitByQualifiedName(String qualifiedName) {
+        if (definition.getQualifiedName().equals(qualifiedName)) {
+            return Optional.of(this);
+        }
+        var implTrait = definition.getTraitsByQualifiedName().getOrNull(qualifiedName);
+        if (implTrait == null) {
+            return Optional.empty();
+        }
+        return Optional.of(implTrait.substitute(getBindings()));
+    }
+
     @Override
     public String toString() {
         if (args.size() == 0) {
