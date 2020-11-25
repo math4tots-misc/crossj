@@ -183,8 +183,8 @@ public final class CJIRAnnotator
         for (var traitExpression : item.getTraits()) {
             context.resolveTraitExpression(traitExpression);
         }
+        int nextUnionCaseTag = 0;
         for (var member : item.getMembers()) {
-            int nextUnionCaseTag = 0;
             if (member instanceof CJAstMethodDefinition) {
                 var method = (CJAstMethodDefinition) member;
                 enterMethod(method);
@@ -378,7 +378,7 @@ public final class CJIRAnnotator
                 throw err0("Union case " + name + " not found for " + classType, unionCase.getMark());
             }
             var unionCaseDescriptor = optionalUnionCaseDescriptor.get();
-            var argumentTypes = unionCaseDescriptor.signature.argumentTypes;
+            var argumentTypes = unionCaseDescriptor.getSignature().argumentTypes;
             var valueNames = unionCase.getValueNames();
             var arge = argumentTypes.size();
             var argc = valueNames.size();

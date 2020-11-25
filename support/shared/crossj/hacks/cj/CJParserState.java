@@ -1045,11 +1045,16 @@ public final class CJParserState {
                     return Try.ok(new CJAstNewExpression(mark, tryType.get(), tryArgs.get()));
                 } else if (at(CJToken.TYPE_ID)) { // union new expressions
                     var name = parseTypeID();
-                    var tryArgs = parseArguments();
-                    if (tryArgs.isFail()) {
-                        return tryArgs.castFail();
+                    List<CJAstExpression> args;
+                    if (at('(')) {
+                        var tryArgs = parseArguments();
+                        if (tryArgs.isFail()) {
+                            return tryArgs.castFail();
+                        }
+                        args = tryArgs.get();
+                    } else {
+                        args = List.of();
                     }
-                    var args = tryArgs.get();
                     return Try.ok(new CJAstNewUnionExpression(mark, type, name, args));
                 } else { // method call expressions
                     if (!at(CJToken.ID)) {

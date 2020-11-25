@@ -134,7 +134,7 @@ public final class CJJSStatementAndExpressionTranslator
         sb.line("switch (" + tmpvar + "[0]) {");
         sb.indent();
         for (var unionCase : s.getUnionCases()) {
-            sb.line("case " + unionCase.getDescriptor().tag + ": {");
+            sb.line("case " + unionCase.getDescriptor().getTag() + ": {");
             sb.indent();
             var valueNames = unionCase.getValueNames();
             sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar
@@ -325,7 +325,7 @@ public final class CJJSStatementAndExpressionTranslator
         var argtmpvars = e.getArguments().map(arg -> emitExpressionConst(arg));
         var sb = Str.builder();
         var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
-        sb.s("[").i(unionCaseDescriptor.tag);
+        sb.s("[").i(unionCaseDescriptor.getTag());
         for (var argtmpvar : argtmpvars) {
             sb.s(",").s(argtmpvar);
         }

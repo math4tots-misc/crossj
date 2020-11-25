@@ -52,7 +52,7 @@ public final class CJIRClassType implements CJIRType {
         var params = definition.getTypeParameters().map(p -> p.getName());
         var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
         var signature = new CJIRMethodSignature(caseDef.getValueTypes().map(t -> t.getAsIsType().substitute(map)), this);
-        return Optional.of(new CJIRUnionCaseDescriptor(caseDef.getTag(), caseDef.getName(), signature));
+        return Optional.of(new CJIRUnionCaseDescriptor(caseDef, signature));
     }
 
     @Override

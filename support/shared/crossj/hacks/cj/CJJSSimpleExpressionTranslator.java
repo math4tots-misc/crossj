@@ -134,7 +134,7 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     public String visitNewUnion(CJAstNewUnionExpression e, Void a) {
         var sb = Str.builder();
         var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
-        sb.s("[").i(unionCaseDescriptor.tag);
+        sb.s("[").i(unionCaseDescriptor.getTag());
         for (var arg : e.getArguments()) {
             sb.s(",").s(translateExpression(arg));
         }

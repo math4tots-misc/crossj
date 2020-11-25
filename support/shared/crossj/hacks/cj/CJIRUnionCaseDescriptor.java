@@ -1,13 +1,23 @@
 package crossj.hacks.cj;
 
 public final class CJIRUnionCaseDescriptor {
-    public final int tag;
-    public final String name;
-    public final CJIRMethodSignature signature;
+    private final CJAstUnionCaseDefinition definition;
+    private final CJIRMethodSignature signature;
 
-    CJIRUnionCaseDescriptor(int tag, String name, CJIRMethodSignature signature) {
-        this.tag = tag;
-        this.name = name;
+    CJIRUnionCaseDescriptor(CJAstUnionCaseDefinition definition, CJIRMethodSignature signature) {
+        this.definition = definition;
         this.signature = signature;
+    }
+
+    public int getTag() {
+        return definition.getTag();
+    }
+
+    public String getName() {
+        return definition.getName();
+    }
+
+    public CJIRMethodSignature getSignature() {
+        return signature;
     }
 }
