@@ -179,6 +179,37 @@ public final class CJJSStatementAndExpressionTranslator
     }
 
     /**
+     * Emits the javascript statements needed to compute the expression.
+     *
+     * Returns a constant expression that can be used to refer to the expression.
+     *
+     * This method will fall back to `emitExpression(expression, Optional.empty(),
+     * DECLARE_CONST)`, except in cases where it is known that the resulting
+     * expression is cheap to compute and has no side effects, where it will try to
+     * omit as many new temporary variables as possible.
+     */
+    private String emitExpressionConst(CJAstExpression expression) {
+        if (
+        /**
+         * literal expressions in general can just be returned as is
+         */
+        expression instanceof CJAstLiteralExpression
+                /**
+                 * lambda expressions will either result in a lambda expression literal, or the
+                 * name of the function. Either case, it should be ok to return here.
+                 */
+                || expression instanceof CJAstLambdaExpression
+                /**
+                 * empty lists are of course, ok to return
+                 */
+                || expression instanceof CJAstEmptyMutableListExpression) {
+            return emitExpressionPartial(expression);
+        } else {
+            return emitExpression(expression, Optional.empty(), DECLARE_CONST);
+        }
+    }
+
+    /**
      * Emits the javascript statements needed to compute the expression, and returns
      * the final javascript expression that would finish the computation.
      *
@@ -237,7 +268,7 @@ public final class CJJSStatementAndExpressionTranslator
 
     private String emitMethodCall(CJIRType owner, String methodName, List<CJIRType> typeArguments,
             List<CJAstExpression> args) {
-        var argtmpvars = args.map(arg -> emitExpression(arg, Optional.empty(), DECLARE_CONST));
+        var argtmpvars = args.map(arg -> emitExpressionConst(arg));
 
         var sb = Str.builder();
         sb.s(translateType(owner)).s(".").s(CJJSTranslator.nameToMethodName(methodName)).s("(");
@@ -278,7 +309,7 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public String visitNew(CJAstNewExpression e, Void a) {
-        var argtmpvars = e.getArguments().map(arg -> emitExpression(arg, Optional.empty(), DECLARE_CONST));
+        var argtmpvars = e.getArguments().map(arg -> emitExpressionConst(arg));
         var sb = Str.builder();
         var type = (CJIRClassType) e.getType().getAsIsType();
         var constructorName = CJJSTranslator.qualifiedNameToConstructorName(type.getDefinition().getQualifiedName());
@@ -295,7 +326,7 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public String visitNewUnion(CJAstNewUnionExpression e, Void a) {
-        var argtmpvars = e.getArguments().map(arg -> emitExpression(arg, Optional.empty(), DECLARE_CONST));
+        var argtmpvars = e.getArguments().map(arg -> emitExpressionConst(arg));
         var sb = Str.builder();
         var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
         sb.s("[").i(unionCaseDescriptor.tag);
@@ -321,7 +352,8 @@ public final class CJJSStatementAndExpressionTranslator
     @Override
     public String visitLambda(CJAstLambdaExpression e, Void a) {
         var tmpvar = newMethodLevelUniqueId();
-        sb.line("function " + tmpvar + "(" + Str.join(",", e.getParameterNames().map(p -> nameToLocalVariableName(p))) + ") {");
+        sb.line("function " + tmpvar + "(" + Str.join(",", e.getParameterNames().map(p -> nameToLocalVariableName(p)))
+                + ") {");
         emitStatement(e.getBody());
         sb.line("}");
         return tmpvar;
@@ -329,7 +361,7 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public String visitListDisplay(CJAstListDisplayExpression e, Void a) {
-        var argtmpvars = e.getElements().map(arg -> emitExpression(arg, Optional.empty(), DECLARE_CONST));
+        var argtmpvars = e.getElements().map(arg -> emitExpressionConst(arg));
         return "[" + Str.join(",", argtmpvars) + "]";
     }
 }
