@@ -4,7 +4,6 @@ import crossj.base.FS;
 import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.OS;
-import crossj.base.Optional;
 import crossj.base.Str;
 import crossj.base.XError;
 
@@ -12,12 +11,7 @@ import crossj.base.XError;
  * Translate CJAst* to JavaScript source.
  *
  */
-public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void> {
-
-    private static final int DECLARE_NONE = 1;
-    private static final int DECLARE_LET = 2;
-    private static final int DECLARE_CONST = 3;
-
+public final class CJJSTranslator {
     /**
      * Quick and dirty CLI for translating cj sources to a javascript blob.
      *
@@ -138,19 +132,10 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void> {
         return FS.join(OS.getenv("HOME"), "git", "crossj", "support", "app", "crossj.hacks.cj", "prelude.js");
     }
 
-    /**
-     * Can this expressio nbe translated with a CJJSSimpleExpressionTranslator?
-     * @return
-     */
-    private static boolean isSimple(CJAstExpression expression) {
-        return CJJSSimpleExpressionTranslator.isSimple(expression);
-    }
-
     // private final CJIRWorld world;
     private CJStrBuilder sb = new CJStrBuilder();
     private CJJSTypeTranslator typeTranslator;
-    private CJJSSimpleExpressionTranslator simpleExpressionTranslator;
-    private int methodLevelUniqueId = 0;
+    private CJJSStatementAndExpressionTranslator statementAndExpressionTranslator;
 
     private CJJSTranslator(CJIRWorld world) {
         // this.world = world;
@@ -187,7 +172,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void> {
 
     private void emitItem(CJAstItemDefinition item) {
         typeTranslator = new CJJSTypeTranslator(item);
-        simpleExpressionTranslator = new CJJSSimpleExpressionTranslator(typeTranslator);
+        statementAndExpressionTranslator = new CJJSStatementAndExpressionTranslator(sb, typeTranslator);
         if (item.isNative()) {
             // nothing to do
         } else if (item.isTrait()) {
@@ -196,7 +181,7 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void> {
             emitClass(item);
         }
         typeTranslator = null;
-        simpleExpressionTranslator = null;
+        statementAndExpressionTranslator = null;
     }
 
     private void emitTrait(CJAstItemDefinition item) {
@@ -299,172 +284,16 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void> {
         }
         sb.lineEnd(") {");
         sb.indent();
+        statementAndExpressionTranslator.enterMethod();
         for (var statement : body.getStatements()) {
             emitStatement(statement);
         }
+        statementAndExpressionTranslator.exitMethod();
         sb.dedent();
         sb.line("}");
-    }
-
-    private String translateType(CJIRType type) {
-        return typeTranslator.translateType(type);
     }
 
     private void emitStatement(CJAstStatement statement) {
-        statement.accept(this, null);
-    }
-
-    @Override
-    public Void visitBlock(CJAstBlockStatement s, Void a) {
-        sb.line("{");
-        sb.indent();
-        for (var statement : s.getStatements()) {
-            emitStatement(statement);
-        }
-        sb.dedent();
-        sb.line("}");
-        return null;
-    }
-
-    @Override
-    public Void visitExpression(CJAstExpressionStatement s, Void a) {
-        var exprPartial = emitExpressionPartial(s.getExpression());
-        sb.line(exprPartial + ";");
-        return null;
-    }
-
-    @Override
-    public Void visitReturn(CJAstReturnStatement s, Void a) {
-        var retPartial = emitExpressionPartial(s.getExpression());
-        sb.line("return " + retPartial + ";");
-        return null;
-    }
-
-    @Override
-    public Void visitIf(CJAstIfStatement s, Void a) {
-        var condPartial = emitExpressionPartial(s.getCondition());
-        sb.line("if (" + condPartial + ")");
-        emitStatement(s.getBody());
-        if (s.getOther().isPresent()) {
-            sb.line("else");
-            var other = s.getOther().get();
-            if (other instanceof CJAstBlockStatement) {
-                emitStatement(other);
-            } else {
-                var otherIf = (CJAstIfStatement) other;
-                if (isSimple(otherIf.getCondition())) {
-                    emitStatement(otherIf);
-                } else {
-                    sb.line("{");
-                    sb.indent();
-                    emitStatement(otherIf);
-                    sb.dedent();
-                    sb.line("}");
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Void visitWhile(CJAstWhileStatement s, Void a) {
-        if (isSimple(s.getCondition())) {
-            sb.lineStart("while (");
-            sb.lineBody(simpleExpressionTranslator.translateExpression(s.getCondition()));
-            sb.lineEnd(")");
-            emitStatement(s.getBody());
-        } else {
-            sb.line("while (true) {");
-            sb.indent();
-            var condPartial = emitExpressionPartial(s.getCondition());
-            sb.line("if (!(" + condPartial + ")) { break; }");
-            emitStatement(s.getBody());
-            sb.dedent();
-            sb.line("}");
-        }
-        return null;
-    }
-
-    private String newMethodLevelUniqueId() {
-        var name = "L$" + methodLevelUniqueId;
-        methodLevelUniqueId++;
-        return name;
-    }
-
-    @Override
-    public Void visitSwitchUnion(CJAstSwitchUnionStatement s, Void a) {
-        var tmpvar = emitExpression(s.getTarget(), Optional.empty(), DECLARE_CONST);
-        sb.line("switch (" + tmpvar + "[0]) {");
-        sb.indent();
-        for (var unionCase : s.getUnionCases()) {
-            sb.line("case " + unionCase.getDescriptor().tag + ": {");
-            sb.indent();
-            var valueNames = unionCase.getValueNames();
-            sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar
-                    + ";");
-            emitStatement(unionCase.getBody());
-            sb.line("break;");
-            sb.dedent();
-            sb.line("}");
-        }
-        if (s.getDefaultBody().isPresent()) {
-            sb.line("default:");
-            emitStatement(s.getDefaultBody().get());
-        }
-        sb.dedent();
-        sb.line("}");
-        return null;
-    }
-
-    @Override
-    public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
-        emitExpression(s.getExpression(), Optional.of(nameToLocalVariableName(s.getName())), DECLARE_LET);
-        return null;
-    }
-
-    @Override
-    public Void visitAssignment(CJAstAssignmentStatement s, Void a) {
-        emitExpression(s.getExpression(), Optional.of(nameToLocalVariableName(s.getName())), DECLARE_NONE);
-        return null;
-    }
-
-    /**
-     * Emits the javascript statements needed to compute the expression, and saves the result to a variable.
-     * The variable to save to can be specified if desired. Otherwise a new temporary variable is generated.
-     */
-    private String emitExpression(CJAstExpression expression, Optional<String> optionalJsVariableName, int declareType) {
-        var partial = emitExpressionPartial(expression);
-        var jsVariableName = optionalJsVariableName.getOrElseDo(() -> newMethodLevelUniqueId());
-        sb.line(getDeclarePrefix(declareType) + jsVariableName + " = " + partial + ";");
-        return jsVariableName;
-    }
-
-    /**
-     * Emits the javascript statements needed to compute the expression, and returns the final javascript
-     * expression that would finish the computation.
-     *
-     * Care needs to be taken with using this method since when the method returns, the expression will be
-     * "partially" in the progress of computing the expression. So the returned expression should be added
-     * as soon as possible with minimal other computation in between.
-     */
-    private String emitExpressionPartial(CJAstExpression expression) {
-        if (isSimple(expression)) {
-            return simpleExpressionTranslator.translateExpression(expression);
-        } else {
-            throw XError.withMessage("TODO: non-simple emitExpressionPartial");
-        }
-    }
-
-    private String getDeclarePrefix(int declareType) {
-        switch (declareType) {
-            case DECLARE_NONE:
-                return "";
-            case DECLARE_LET:
-                return "let ";
-            case DECLARE_CONST:
-                return "const ";
-            default:
-                throw XError.withMessage("Invalid declare type " + declareType);
-        }
+        statementAndExpressionTranslator.emitStatement(statement);
     }
 }

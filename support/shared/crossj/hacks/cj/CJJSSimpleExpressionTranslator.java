@@ -7,7 +7,7 @@ import crossj.base.XError;
 final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<String, Void> {
 
     /**
-     * Check to see if this expression can be translated with a JSSimpleExpressionTranslator
+     * Can this expression be translated with a CJJSSimpleExpressionTranslator?
      */
     public static boolean isSimple(CJAstExpression expression) {
         return (expression.getComplexityFlags() & ~(CJIRExpressionComplexityFlags.NONE|CJIRExpressionComplexityFlags.SIMPLE_LAMBDA)) == 0;
