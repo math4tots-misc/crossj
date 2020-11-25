@@ -4,7 +4,8 @@ import crossj.base.List;
 
 public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionVisitor<Void, Void> {
     private static final int NONE = CJIRExpressionComplexityFlags.NONE;
-    private static final int LAMBDA = CJIRExpressionComplexityFlags.LAMBDA;
+    private static final int SIMPLE_LAMBDA = CJIRExpressionComplexityFlags.SIMPLE_LAMBDA;
+    private static final int COMPLEX_LAMBDA = CJIRExpressionComplexityFlags.COMPLEX_LAMBDA;
     private static final CJIRExpressionComplexityAnnotator instance = new CJIRExpressionComplexityAnnotator();
 
     private CJIRExpressionComplexityAnnotator() {}
@@ -80,7 +81,12 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
 
     @Override
     public Void visitLambda(CJAstLambdaExpression e, Void a) {
-        e.complexityFlags = NONE | LAMBDA;
+        var body = e.getBody();
+        if (body instanceof CJAstReturnStatement && (annotate(((CJAstReturnStatement) body).getExpression()) & ~(NONE|SIMPLE_LAMBDA)) == 0) {
+            e.complexityFlags = NONE | SIMPLE_LAMBDA;
+        } else {
+            e.complexityFlags = NONE | COMPLEX_LAMBDA;
+        }
         return null;
     }
 

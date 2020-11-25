@@ -422,6 +422,7 @@ public final class CJIRAnnotator
         if (expression.getResolvedTypeOrNull() == null) {
             CJIRExpressionComplexityAnnotator.annotate(expression);
             expression.accept(this, optionalType);
+            expression.getComplexityFlags();
         }
         if (optionalType.isPresent()) {
             var expected = optionalType.get();
@@ -755,7 +756,6 @@ public final class CJIRAnnotator
     public Void visitEmptyMutableList(CJAstEmptyMutableListExpression e, Optional<CJIRType> a) {
         annotateTypeExpression(e.getType());
         e.resolvedType = getMutableListTypeOf(e.getType().getAsIsType());
-        e.complexityFlags = 0;
         return null;
     }
 

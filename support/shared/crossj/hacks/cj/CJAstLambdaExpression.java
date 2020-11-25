@@ -30,6 +30,14 @@ public final class CJAstLambdaExpression implements CJAstExpression {
         return body;
     }
 
+    /**
+     * If this lambda expression is 'simple' and contains only a retrn statement,
+     * returns the expression of the return statement.
+     */
+    public CJAstExpression getReturnExpression() {
+        return ((CJAstReturnStatement) body).getExpression();
+    }
+
     @Override
     public void addInspect0(StrBuilder sb, int depth, boolean indentFirstLine, String suffix) {
         if (indentFirstLine) {

@@ -5,6 +5,14 @@ import crossj.base.Str;
 import crossj.base.XError;
 
 final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<String, Void> {
+
+    /**
+     * Check to see if this expression can be translated with a JSSimpleExpressionTranslator
+     */
+    public static boolean isSimple(CJAstExpression expression) {
+        return (expression.getComplexityFlags() & ~(CJIRExpressionComplexityFlags.NONE|CJIRExpressionComplexityFlags.SIMPLE_LAMBDA)) == 0;
+    }
+
     private final CJJSTypeTranslator typeTranslator;
 
     CJJSSimpleExpressionTranslator(CJJSTypeTranslator typeTranslator) {
@@ -81,7 +89,10 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
 
     @Override
     public String visitLambda(CJAstLambdaExpression e, Void a) {
-        throw XError.withMessage("NOT A SIMPLE EXPR");
+        var sb = Str.builder();
+        sb.s("((").s(Str.join(",", e.getParameterNames().map(n -> CJJSTranslator.nameToLocalVariableName(n))))
+                .s(") => ").s(translateExpression(e.getReturnExpression())).s(")");
+        return sb.build();
     }
 
     @Override

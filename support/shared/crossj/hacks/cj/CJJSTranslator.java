@@ -4,6 +4,7 @@ import crossj.base.FS;
 import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.OS;
+import crossj.base.Optional;
 import crossj.base.Str;
 import crossj.base.XError;
 
@@ -11,7 +12,11 @@ import crossj.base.XError;
  * Translate CJAst* to JavaScript source.
  *
  */
-public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, CJAstExpressionVisitor<String, Void> {
+public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void> {
+
+    private static final int DECLARE_NONE = 1;
+    private static final int DECLARE_LET = 2;
+    private static final int DECLARE_CONST = 3;
 
     /**
      * Quick and dirty CLI for translating cj sources to a javascript blob.
@@ -131,6 +136,14 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     private static String getPathToPrelude() {
         return FS.join(OS.getenv("HOME"), "git", "crossj", "support", "app", "crossj.hacks.cj", "prelude.js");
+    }
+
+    /**
+     * Can this expressio nbe translated with a CJJSSimpleExpressionTranslator?
+     * @return
+     */
+    private static boolean isSimple(CJAstExpression expression) {
+        return CJJSSimpleExpressionTranslator.isSimple(expression);
     }
 
     // private final CJIRWorld world;
@@ -315,51 +328,72 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     @Override
     public Void visitExpression(CJAstExpressionStatement s, Void a) {
-        sb.lineStart(translateExpression(s.getExpression()));
-        sb.lineEnd(";");
+        var exprPartial = emitExpressionPartial(s.getExpression());
+        sb.line(exprPartial + ";");
         return null;
     }
 
     @Override
     public Void visitReturn(CJAstReturnStatement s, Void a) {
-        sb.lineStart("return ");
-        sb.lineBody(translateExpression(s.getExpression()));
-        sb.lineEnd(";");
+        var retPartial = emitExpressionPartial(s.getExpression());
+        sb.line("return " + retPartial + ";");
         return null;
     }
 
     @Override
     public Void visitIf(CJAstIfStatement s, Void a) {
-        sb.lineStart("if (");
-        sb.lineBody(translateExpression(s.getCondition()));
-        sb.lineEnd(")");
+        var condPartial = emitExpressionPartial(s.getCondition());
+        sb.line("if (" + condPartial + ")");
         emitStatement(s.getBody());
         if (s.getOther().isPresent()) {
             sb.line("else");
-            emitStatement(s.getOther().get());
+            var other = s.getOther().get();
+            if (other instanceof CJAstBlockStatement) {
+                emitStatement(other);
+            } else {
+                var otherIf = (CJAstIfStatement) other;
+                if (isSimple(otherIf.getCondition())) {
+                    emitStatement(otherIf);
+                } else {
+                    sb.line("{");
+                    sb.indent();
+                    emitStatement(otherIf);
+                    sb.dedent();
+                    sb.line("}");
+                }
+            }
         }
         return null;
     }
 
     @Override
     public Void visitWhile(CJAstWhileStatement s, Void a) {
-        sb.lineStart("while (");
-        sb.lineBody(translateExpression(s.getCondition()));
-        sb.lineEnd(")");
-        emitStatement(s.getBody());
+        if (isSimple(s.getCondition())) {
+            sb.lineStart("while (");
+            sb.lineBody(simpleExpressionTranslator.translateExpression(s.getCondition()));
+            sb.lineEnd(")");
+            emitStatement(s.getBody());
+        } else {
+            sb.line("while (true) {");
+            sb.indent();
+            var condPartial = emitExpressionPartial(s.getCondition());
+            sb.line("if (!(" + condPartial + ")) { break; }");
+            emitStatement(s.getBody());
+            sb.dedent();
+            sb.line("}");
+        }
         return null;
     }
 
     private String newMethodLevelUniqueId() {
-        var name = "RTV$" + methodLevelUniqueId;
+        var name = "L$" + methodLevelUniqueId;
         methodLevelUniqueId++;
         return name;
     }
 
     @Override
     public Void visitSwitchUnion(CJAstSwitchUnionStatement s, Void a) {
-        var tmpvar = newMethodLevelUniqueId();
-        sb.line("const " + tmpvar + " = " + translateExpression(s.getTarget()) + ";");
+        var tmpvar = emitExpression(s.getTarget(), Optional.empty(), DECLARE_CONST);
         sb.line("switch (" + tmpvar + "[0]) {");
         sb.indent();
         for (var unionCase : s.getUnionCases()) {
@@ -384,165 +418,53 @@ public final class CJJSTranslator implements CJAstStatementVisitor<Void, Void>, 
 
     @Override
     public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
-        sb.lineStart("let ");
-        sb.lineBody(nameToLocalVariableName(s.getName()));
-        sb.lineBody(" = ");
-        sb.lineBody(translateExpression(s.getExpression()));
-        sb.lineEnd(";");
+        emitExpression(s.getExpression(), Optional.of(nameToLocalVariableName(s.getName())), DECLARE_LET);
         return null;
     }
 
     @Override
     public Void visitAssignment(CJAstAssignmentStatement s, Void a) {
-        sb.lineStart(nameToLocalVariableName(s.getName()));
-        sb.lineBody(" = ");
-        sb.lineBody(translateExpression(s.getExpression()));
-        sb.lineEnd(";");
+        emitExpression(s.getExpression(), Optional.of(nameToLocalVariableName(s.getName())), DECLARE_NONE);
         return null;
     }
 
-    private String translateExpression(CJAstExpression expression) {
-        // if (expression.getComplexityFlags() == CJIRExpressionComplexityFlags.NONE) {
-        //     return simpleExpressionTranslator.translateExpression(expression);
-        // } else {
-        //     return expression.accept(this, null);
-        // }
-        return expression.accept(this, null);
+    /**
+     * Emits the javascript statements needed to compute the expression, and saves the result to a variable.
+     * The variable to save to can be specified if desired. Otherwise a new temporary variable is generated.
+     */
+    private String emitExpression(CJAstExpression expression, Optional<String> optionalJsVariableName, int declareType) {
+        var partial = emitExpressionPartial(expression);
+        var jsVariableName = optionalJsVariableName.getOrElseDo(() -> newMethodLevelUniqueId());
+        sb.line(getDeclarePrefix(declareType) + jsVariableName + " = " + partial + ";");
+        return jsVariableName;
     }
 
-    @Override
-    public String visitInstanceMethodCall(CJAstInstanceMethodCallExpression e, Void a) {
-        var owner = e.getInferredOwnerType();
-        var methodName = e.getName();
-        var typeArguments = e.getInferredTypeArguments();
-        var args = e.getArguments();
-        return translateMethodCall(owner, methodName, typeArguments, args);
-    }
-
-    @Override
-    public String visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Void a) {
-        var owner = e.getOwner().getAsIsType();
-        var methodName = e.getName();
-        var typeArguments = e.getInferredTypeArguments();
-        var args = e.getArguments();
-        return translateMethodCall(owner, methodName, typeArguments, args);
-    }
-
-    @Override
-    public String visitMethodCall(CJAstMethodCallExpression e, Void a) {
-        var owner = e.getOwner().getAsIsType();
-        var methodName = e.getName();
-        var typeArguments = e.getTypeArguments().map(t -> t.getAsIsType());
-        var args = e.getArguments();
-        return translateMethodCall(owner, methodName, typeArguments, args);
-    }
-
-    private String translateMethodCall(CJIRType owner, String methodName, List<CJIRType> typeArguments,
-            List<CJAstExpression> args) {
-        var sb = Str.builder();
-        sb.s(translateType(owner)).s(".").s(nameToMethodName(methodName)).s("(");
-        {
-            boolean first = true;
-            for (var typeArg : typeArguments) {
-                if (!first) {
-                    sb.s(",");
-                }
-                first = false;
-                sb.s(translateType(typeArg));
-            }
-            for (var arg : args) {
-                if (!first) {
-                    sb.s(",");
-                }
-                first = false;
-                sb.s(translateExpression(arg));
-            }
-        }
-        sb.s(")");
-        return sb.build();
-    }
-
-    @Override
-    public String visitName(CJAstNameExpression e, Void a) {
-        // For now, names always refer to local variables.
-        // In the future, there's also a chance that we may have
-        // global field variables here.
-        return nameToLocalVariableName(e.getName());
-    }
-
-    @Override
-    public String visitLiteral(CJAstLiteralExpression e, Void a) {
-        if (e.getType().equals(CJAstLiteralExpression.STRING)) {
-            return e.getRawText();
-        } else if (e.getType().equals(CJAstLiteralExpression.CHAR)) {
-            return e.getRawText();
-        } else if (e.getType().equals(CJAstLiteralExpression.INT)) {
-            return e.getRawText();
-        } else if (e.getType().equals(CJAstLiteralExpression.DOUBLE)) {
-            return e.getRawText();
-        } else if (e.getType().equals(CJAstLiteralExpression.BOOL)) {
-            return e.getRawText();
+    /**
+     * Emits the javascript statements needed to compute the expression, and returns the final javascript
+     * expression that would finish the computation.
+     *
+     * Care needs to be taken with using this method since when the method returns, the expression will be
+     * "partially" in the progress of computing the expression. So the returned expression should be added
+     * as soon as possible with minimal other computation in between.
+     */
+    private String emitExpressionPartial(CJAstExpression expression) {
+        if (isSimple(expression)) {
+            return simpleExpressionTranslator.translateExpression(expression);
         } else {
-            throw XError.withMessage("Unrecognized literal type: " + e.getType());
+            throw XError.withMessage("TODO: non-simple emitExpressionPartial");
         }
     }
 
-    @Override
-    public String visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
-        return "[]";
-    }
-
-    @Override
-    public String visitListDisplay(CJAstListDisplayExpression e, Void a) {
-        var sb = Str.builder();
-        sb.s("[").s(Str.join(",", e.getElements().map(el -> translateExpression(el)))).s("]");
-        return sb.build();
-    }
-
-    @Override
-    public String visitLambda(CJAstLambdaExpression e, Void a) {
-        var saveSB = this.sb;
-        this.sb = new CJStrBuilder();
-        emitStatement(e.getBody());
-        var body = this.sb.build();
-        this.sb = saveSB;
-
-        var sb = Str.builder();
-        sb.s("(").s(Str.join(",", e.getParameterNames().map(p -> nameToLocalVariableName(p)))).s(") => {").s(body).s("}");
-        return sb.build();
-    }
-
-    @Override
-    public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
-        return "(!" + translateExpression(e.getInner()) + ")";
-    }
-
-    @Override
-    public String visitNew(CJAstNewExpression e, Void a) {
-        var sb = Str.builder();
-        var type = (CJIRClassType) e.getType().getAsIsType();
-        var constructorName = qualifiedNameToConstructorName(type.getDefinition().getQualifiedName());
-        var args = e.getArguments();
-        sb.s(constructorName).s("(");
-        if (args.size() > 0) {
-            sb.s(translateExpression(args.get(0)));
-            for (int i = 1; i < args.size(); i++) {
-                sb.s(",").s(translateExpression(args.get(i)));
-            }
+    private String getDeclarePrefix(int declareType) {
+        switch (declareType) {
+            case DECLARE_NONE:
+                return "";
+            case DECLARE_LET:
+                return "let ";
+            case DECLARE_CONST:
+                return "const ";
+            default:
+                throw XError.withMessage("Invalid declare type " + declareType);
         }
-        sb.s(")");
-        return sb.build();
-    }
-
-    @Override
-    public String visitNewUnion(CJAstNewUnionExpression e, Void a) {
-        var sb = Str.builder();
-        var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
-        sb.s("[").i(unionCaseDescriptor.tag);
-        for (var arg : e.getArguments()) {
-            sb.s(",").s(translateExpression(arg));
-        }
-        sb.s("]");
-        return sb.build();
     }
 }

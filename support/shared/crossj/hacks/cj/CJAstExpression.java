@@ -28,8 +28,4 @@ public interface CJAstExpression extends CJAstNode {
         }
         return flags;
     }
-
-    default boolean isSimple() {
-        return getComplexityFlags() == CJIRExpressionComplexityFlags.NONE;
-    }
 }
