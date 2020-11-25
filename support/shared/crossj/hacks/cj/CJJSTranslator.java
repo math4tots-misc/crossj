@@ -104,8 +104,7 @@ public final class CJJSTranslator {
                 sb.line("console.log(\"ok\")");
             }
         }
-        sb.line("console.log(\"" + testCount + " tests (in " + qualifiedTestClassNames.size()
-                + " classes) passed\");");
+        sb.line("console.log(\"" + testCount + " tests (in " + qualifiedTestClassNames.size() + " classes) passed\");");
         return emitMainCommon(world, sb.build());
     }
 
@@ -120,6 +119,10 @@ public final class CJJSTranslator {
 
         for (var item : world.getAllItems()) {
             translator.emitItem(item);
+        }
+
+        for (var item : world.getAllItems()) {
+            translator.emitMethodInheritance(item);
         }
 
         // insert main snippet
@@ -168,6 +171,24 @@ public final class CJJSTranslator {
 
     static String nameToMethodName(String name) {
         return "M$" + name;
+    }
+
+    private void emitMethodInheritance(CJAstItemDefinition item) {
+        if (item.isClass()) {
+            var metaClassName = qualifiedNameToMetaClassName(item.getQualifiedName());
+            for (var pair : List.sorted(item.getMethodMap().pairs())) {
+                var methodName = pair.get1();
+                var incompleteMethodDescriptor = pair.get2();
+                var sourceItem = incompleteMethodDescriptor.item;
+                if (sourceItem == item) {
+                    continue;
+                }
+                var sourceMetaClassName = qualifiedNameToMetaClassName(sourceItem.getQualifiedName());
+                var jsMethodName = nameToMethodName(methodName);
+                sb.line(metaClassName + ".prototype." + jsMethodName + " = " + sourceMetaClassName + ".prototype."
+                        + jsMethodName + ";");
+            }
+        }
     }
 
     private void emitItem(CJAstItemDefinition item) {

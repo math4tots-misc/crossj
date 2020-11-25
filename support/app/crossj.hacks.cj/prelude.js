@@ -202,13 +202,6 @@ class MC$cj$List {
     }
 
     /**
-     * @param {List<T>} x
-     */
-    M$toString(x) {
-        return this.M$repr(x);
-    }
-
-    /**
      * @param {Array<T>} list
      */
     M$size(list) {

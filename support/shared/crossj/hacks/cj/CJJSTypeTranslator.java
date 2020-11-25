@@ -5,14 +5,20 @@ import crossj.base.Str;
 
 final class CJJSTypeTranslator {
     private final CJAstItemDefinition currentItem;
+    private CJIRClassType selfClassType;
 
     CJJSTypeTranslator(CJAstItemDefinition currentItem) {
         this.currentItem = currentItem;
+        this.selfClassType = currentItem.isTrait() ? null : currentItem.getAsSelfClassType();
     }
 
     private String nameToItemLevelTypeVariableExpression(String shortName) {
         if (currentItem.isTrait()) {
-            return "this.TV$" + currentItem.getQualifiedName().replace(".", "$") + "$" + shortName + "()";
+            if (shortName.equals("Self")) {
+                return "this";
+            } else {
+                return "this.TV$" + currentItem.getQualifiedName().replace(".", "$") + "$" + shortName + "()";
+            }
         } else {
             return "this.TV$" + shortName;
         }
@@ -27,6 +33,8 @@ final class CJJSTypeTranslator {
                 Assert.that(variableType.isMethodLevel());
                 return CJJSTranslator.nameToFunctionLevelTypeVariableName(variableType.getDefinition().getName());
             }
+        } else if (type.equals(selfClassType)) {
+            return "this";
         } else {
             var classType = (CJIRClassType) type;
             if (classType.getArguments().size() == 0) {

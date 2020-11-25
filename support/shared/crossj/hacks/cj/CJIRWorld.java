@@ -36,6 +36,7 @@ public final class CJIRWorld {
         "Error",
         "Option",
         "Iterable",
+        "Iterator",
         "ToString",
         "Repr",
         "Eq",
