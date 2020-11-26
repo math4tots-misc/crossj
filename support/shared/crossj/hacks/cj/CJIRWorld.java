@@ -38,6 +38,8 @@ public final class CJIRWorld {
         "Iterable",
         "Iterator",
         "ToString",
+        "ToList",
+        "ListBuilder",
         "Repr",
         "Eq",
         "Ord",

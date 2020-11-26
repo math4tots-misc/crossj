@@ -315,6 +315,40 @@ class MC$cj$List {
         }
         return true;
     }
+
+    /**
+     * @returns {Array<Array<T>>}
+     */
+    M$builder() {
+        return [[]];
+    }
+}
+
+/**
+ * @template T
+ */
+class MC$cj$ListBuilder {
+    constructor(VT$T) {
+        this.VT$T = VT$T;
+    }
+
+    /**
+     * @param {Array<Array<T>>} builder
+     * @param {T} x
+     */
+    M$push(builder, x) {
+        builder[0].push(x);
+        return builder;
+    }
+
+    /**
+     * @param {Array<Array<T>>} builder
+     */
+    M$build(builder) {
+        const list = builder[0];
+        builder[0] = [];
+        return list;
+    }
 }
 
 /**
@@ -393,6 +427,13 @@ class MC$cj$MutableList {
             }
         }
         return true;
+    }
+
+    /**
+     * @param {Array<T>} list
+     */
+    M$iter(list) {
+        return list[Symbol.iterator]();
     }
 }
 

@@ -31,4 +31,6 @@ native class List[T] :
     def size(x: Self) : Int
 
     def iter(x: Self) : Iterator[T]
+
+    def builder() : ListBuilder[T]
 }

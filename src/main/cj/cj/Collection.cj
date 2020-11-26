@@ -2,5 +2,5 @@ package cj
 
 
 trait Collection[T] : Iterable[T] {
-    def size() : Int
+    def size(self: Self) : Int
 }

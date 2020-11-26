@@ -1,6 +1,7 @@
 package cj
 
 native class MutableList[T] :
+        Collection[T],
         ToString if T : Repr,
         Repr if T : Repr,
         Ord if T : Ord,
@@ -19,6 +20,7 @@ native class MutableList[T] :
         def __lt(a: Self, b: Self) : Bool
     }
 
+    def iter(self: Self) : Iterator[T]
     def size(list: Self) : Int
     def get(list: Self, i: Int) : T
     def set(list: Self, i: Int, t: T) : Unit
