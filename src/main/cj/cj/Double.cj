@@ -1,6 +1,6 @@
 package cj
 
-native class Double : Eq, Ord, Hash {
+native class Double : Eq, Ord, Hash, Repr {
     def __eq(a : Self, b : Self) : Bool
     def __lt(a : Self, b : Self) : Bool
     def __gt(a : Self, b : Self) : Bool
@@ -11,6 +11,8 @@ native class Double : Eq, Ord, Hash {
     def __mul(a : Self, b : Self) : Self
     def __div(a : Self, b : Self) : Self
     def __floordiv(a: Self, b: Self) : Int
+    def __pow(a: Self, b: Self) : Self
 
     def hash(x: Self) : Self
+    def repr(x: Self) : String
 }

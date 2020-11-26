@@ -778,6 +778,9 @@ public final class CJParserState {
     // binds just a little bit tighter than comparisons
     private static final int LOGICAL_NOT_BINDING_POWER = getTokenPrecedence(CJToken.EQ) + 5;
 
+    // binds just a little tighter than multiplicative operators
+    private static final int DEFAULT_UNARY_OP_BINDING_POWER = getTokenPrecedence('*') + 5;
+
     private static int getTokenPrecedence(int tokenType) {
         // mostly follows Python
         switch (tokenType) {
@@ -879,6 +882,12 @@ public final class CJParserState {
                             break;
                         case '>':
                             methodName = "__gt";
+                            break;
+                        case '|':
+                            methodName = "__or";
+                            break;
+                        case '&':
+                            methodName = "__and";
                             break;
                         case CJToken.POWER:
                             methodName = "__pow";
@@ -1082,6 +1091,30 @@ public final class CJParserState {
                         return Try.ok(new CJAstMethodCallExpression(mark, type, methodName, typeArgs, args));
                     }
                 }
+            }
+            case '+':
+            case '-':
+            case '~': { // unary operators
+                String methodName;
+                int optype = next().type;
+                switch (optype) {
+                    case '+':
+                        methodName = "__pos";
+                        break;
+                    case '-':
+                        methodName = "__neg";
+                        break;
+                    case '~':
+                        methodName = "__invert";
+                        break;
+                    default:
+                        throw XError.withMessage("Unsupported unary optype: " + CJToken.typeToString(optype));
+                }
+                var tryExpr = parseExpressionWithPrecedence(DEFAULT_UNARY_OP_BINDING_POWER);
+                if (tryExpr.isFail()) {
+                    return tryExpr;
+                }
+                return Try.ok(new CJAstInstanceMethodCallExpression(mark, methodName, List.of(tryExpr.get())));
             }
             case '(': { // parenthetical expression or lambda expression
                 if (atLambda()) {

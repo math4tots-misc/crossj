@@ -69,6 +69,15 @@ class MC$cj$Int {
     M$__pos(x) {
         return x;
     }
+    M$__invert(x) {
+        return ~x;
+    }
+    M$__and(a, b) {
+        return a & b;
+    }
+    M$__or(a, b) {
+        return a | b;
+    }
     M$repr(x) {
         return '' + x;
     }
@@ -120,6 +129,9 @@ class MC$cj$Double {
     }
     M$__pos(x) {
         return x;
+    }
+    M$__pow(a, b) {
+        return a ** b;
     }
     M$repr(x) {
         return '' + x;
