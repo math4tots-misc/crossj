@@ -236,7 +236,7 @@ class MC$cj$Iterator {
     /**
      * @param {IterableIterator<T>} iterator
      */
-    M$list(iterator) {
+    M$toList(iterator) {
         return Array.from(iterator);
     }
 }
@@ -376,6 +376,23 @@ class MC$cj$MutableList {
      */
     M$pop(list) {
         return list.pop();
+    }
+
+    /**
+     * @param {Array<T>} a
+     * @param {Array<T>} b
+     */
+    M$__eq(a, b) {
+        const T = this.VT$T;
+        if (a.length !== b.length) {
+            return false;
+        }
+        for (var i = 0; i < a.length; i++) {
+            if (!T.M$__eq(a[i], b[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

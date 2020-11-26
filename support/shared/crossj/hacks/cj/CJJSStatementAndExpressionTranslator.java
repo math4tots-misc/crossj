@@ -131,6 +131,20 @@ public final class CJJSStatementAndExpressionTranslator
     }
 
     @Override
+    public Void visitFor(CJAstForStatement s, Void a) {
+        var localName = nameToLocalVariableName(s.getName());
+        var containerType = s.getContainerExpression().getResolvedType();
+        var jsContainerType = translateType(containerType);
+        var jsIterMethodName = CJJSTranslator.nameToMethodName("iter");
+        var jsFullMethodRef = jsContainerType + "." + jsIterMethodName;
+        var containerPartial = emitExpressionPartial(s.getContainerExpression());
+        sb.line("for (const " + localName + " of " + jsFullMethodRef + "(" + containerPartial + ")) {");
+        emitStatement(s.getBody());
+        sb.line("}");
+        return null;
+    }
+
+    @Override
     public Void visitSwitchUnion(CJAstSwitchUnionStatement s, Void a) {
         var tmpvar = emitExpression(s.getTarget(), Optional.empty(), DECLARE_CONST);
         sb.line("switch (" + tmpvar + "[0]) {");

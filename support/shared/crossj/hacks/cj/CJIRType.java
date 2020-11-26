@@ -25,6 +25,10 @@ public interface CJIRType {
      */
     Optional<CJIRTrait> getImplementingTraitByQualifiedName(String qualifiedName);
 
+    default Optional<CJIRTrait> getImplementingTraitByDefinition(CJAstItemDefinition item) {
+        return getImplementingTraitByQualifiedName(item.getQualifiedName());
+    }
+
     boolean isFunctionType(int argc);
 
     boolean isDerivedFrom(CJAstItemDefinition item);

@@ -6,18 +6,24 @@ import crossj.base.StrBuilder;
 
 public final class CJAstListDisplayExpression implements CJAstExpression {
     private final CJMark mark;
+    private final boolean mutable;
     private final List<CJAstExpression> elements;
     CJIRType resolvedType;
     int complexityFlags;
 
-    CJAstListDisplayExpression(CJMark mark, List<CJAstExpression> elements) {
+    CJAstListDisplayExpression(CJMark mark, boolean mutable, List<CJAstExpression> elements) {
         this.mark = mark;
+        this.mutable = mutable;
         this.elements = elements;
     }
 
     @Override
     public CJMark getMark() {
         return mark;
+    }
+
+    public boolean isMutable() {
+        return mutable;
     }
 
     public List<CJAstExpression> getElements() {
@@ -28,6 +34,9 @@ public final class CJAstListDisplayExpression implements CJAstExpression {
     public void addInspect0(StrBuilder sb, int depth, boolean indentFirstLine, String suffix) {
         if (indentFirstLine) {
             sb.repeatStr("  ", depth);
+        }
+        if (mutable) {
+            sb.s("@");
         }
         sb.s("[").s(Str.join(", ", elements.map(e -> e.inspect0()))).s("]").s(suffix).s("\n");
     }

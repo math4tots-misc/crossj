@@ -6,5 +6,5 @@ native class Iterator[T] {
 
     def flatMap[I, C: Iterable[I]](x: Self, f: Fn[C, T]) : Iterator[I]
 
-    def list(x: Self) : List[T]
+    def toList(x: Self) : List[T]
 }

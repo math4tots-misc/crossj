@@ -481,6 +481,27 @@ public final class CJParserState {
                 var body = tryBody.get();
                 return Try.ok(new CJAstWhileStatement(mark, cond, body));
             }
+            case CJToken.KW_FOR: {
+                next();
+                if (!at(CJToken.ID)) {
+                    return expectedType(CJToken.ID);
+                }
+                var name = parseID();
+                if (!consume(CJToken.KW_IN)) {
+                    return expectedType(CJToken.KW_IN);
+                }
+                var tryContainerExpr = parseExpression();
+                if (tryContainerExpr.isFail()) {
+                    return tryContainerExpr.castFail();
+                }
+                var containerExpr = tryContainerExpr.get();
+                var tryBody = parseBlockStatement();
+                if (tryBody.isFail()) {
+                    return tryBody.castFail();
+                }
+                var body = tryBody.get();
+                return Try.ok(new CJAstForStatement(mark, name, containerExpr, body));
+            }
             case CJToken.KW_VAR: {
                 next();
                 if (!at(CJToken.ID)) {
@@ -1008,6 +1029,19 @@ public final class CJParserState {
                             i = savedI;
                             return fail("Non-empty mutable lists are not yet supported");
                         }
+                    } else {
+                        var elements = List.<CJAstExpression>of();
+                        while (!consume(']')) {
+                            var tryElement = parseExpression();
+                            if (tryElement.isFail()) {
+                                return tryElement.castFail();
+                            }
+                            elements.add(tryElement.get());
+                            if (!consume(',') && !at(']')) {
+                                return expectedType(']');
+                            }
+                        }
+                        return Try.ok(new CJAstListDisplayExpression(mark, true, elements));
                     }
                 } else {
                     return expectedType('[');
@@ -1029,7 +1063,7 @@ public final class CJParserState {
                         return expectedType(']');
                     }
                 }
-                return Try.ok(new CJAstListDisplayExpression(mark, elements));
+                return Try.ok(new CJAstListDisplayExpression(mark, false, elements));
             }
             case CJToken.KW_NOT: { // logical not expressions
                 next();

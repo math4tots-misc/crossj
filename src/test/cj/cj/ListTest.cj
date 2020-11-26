@@ -19,7 +19,25 @@ class ListTest {
     }
 
     def testIter() {
-        Assert.equal([1, 2, 3].iter().map(x -> x * x).list(), [1, 4, 9])
-        Assert.equal([1, 2, 3].iter().flatMap(x -> [x, x * x]).list(), [1, 1, 2, 4, 3, 9])
+        Assert.equal([1, 2, 3].iter().map(x -> x * x).toList(), [1, 4, 9])
+        Assert.equal([1, 2, 3].iter().flatMap(x -> [x, x * x]).toList(), [1, 1, 2, 4, 3, 9])
+    }
+
+    def testMutable() {
+        Assert.equal(@[Int], @[Int])
+        Assert.equal(@[Int], @[])
+        Assert.equal(@[1, 2, 3], @[1, 2, 3])
+        Assert.that(@[1, 2, 3] == @[1, 2, 3])
+        Assert.that(@[1, 2, 3] != @[3, 2, 1])
+        Assert.that(@[1, 2, 3] != @[1, 2, 3, 4])
+        Assert.that(@[1, 2, 3, 4] != @[1, 2, 3])
+    }
+
+    def testFor() {
+        var strings = @[String]
+        for x in ["hello", "world", "bob"] {
+            strings.push(x)
+        }
+        Assert.equal(strings, @["hello", "world", "bob"])
     }
 }

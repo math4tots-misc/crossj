@@ -53,13 +53,14 @@ public final class CJIRAnnotator
     private final CJIRClassType intType;
     private final CJIRClassType doubleType;
     private final CJIRClassType stringType;
-    private final CJAstItemDefinition mutableListDefinition;
     private final CJAstItemDefinition listDefinition;
+    private final CJAstItemDefinition mutableListDefinition;
     private final CJAstItemDefinition fn0Definition;
     private final CJAstItemDefinition fn1Definition;
     private final CJAstItemDefinition fn2Definition;
     private final CJAstItemDefinition fn3Definition;
     private final CJAstItemDefinition fn4Definition;
+    private final CJAstItemDefinition iterableDefinition;
 
     private CJIRAnnotator(CJIRContext context) {
         this.context = context;
@@ -68,13 +69,14 @@ public final class CJIRAnnotator
         this.intType = getSimpleTypeByQualifiedName("cj.Int");
         this.doubleType = getSimpleTypeByQualifiedName("cj.Double");
         this.stringType = getSimpleTypeByQualifiedName("cj.String");
-        this.mutableListDefinition = context.world.getItem("cj.MutableList");
         this.listDefinition = context.world.getItem("cj.List");
+        this.mutableListDefinition = context.world.getItem("cj.MutableList");
         this.fn0Definition = context.world.getItem("cj.Fn0");
         this.fn1Definition = context.world.getItem("cj.Fn1");
         this.fn2Definition = context.world.getItem("cj.Fn2");
         this.fn3Definition = context.world.getItem("cj.Fn3");
         this.fn4Definition = context.world.getItem("cj.Fn4");
+        this.iterableDefinition = context.world.getItem("cj.Iterable");
     }
 
     private CJIRClassType getSimpleTypeByQualifiedName(String qualifiedName) {
@@ -363,6 +365,23 @@ public final class CJIRAnnotator
     }
 
     @Override
+    public Void visitFor(CJAstForStatement s, Void a) {
+        annotateExpression(s.getContainerExpression());
+        var containerType = s.getContainerExpression().getResolvedType();
+        var optIterableTrait = containerType.getImplementingTraitByDefinition(iterableDefinition);
+        if (optIterableTrait.isEmpty()) {
+            throw err0(containerType + " does not implement the Iterable trait", s.getContainerExpression().getMark());
+        }
+        var iterableTrait = optIterableTrait.get();
+        var itemType = iterableTrait.getArguments().get(0);
+        context.enterBlock();
+        context.declareVariable(s.getName(), itemType, s.getMark());
+        annotateStatement(s.getBody());
+        context.exitBlock();
+        return null;
+    }
+
+    @Override
     public Void visitSwitchUnion(CJAstSwitchUnionStatement s, Void a) {
         annotateExpression(s.getTarget());
         var targetType = s.getTarget().getResolvedType();
@@ -627,8 +646,7 @@ public final class CJIRAnnotator
                     // The other thing we can do at this point is, if the type variable had
                     // trait bounds, we can use the bounds to make more inferences
                     for (var bound : variableType.getBounds()) {
-                        var optGivenImplTrait = given
-                                .getImplementingTraitByQualifiedName(bound.getDefinition().getQualifiedName());
+                        var optGivenImplTrait = given.getImplementingTraitByDefinition(bound.getDefinition());
                         if (optGivenImplTrait.isPresent()) {
                             var givenImplTrait = optGivenImplTrait.get();
                             for (int i = 0; i < bound.getArguments().size(); i++) {
@@ -780,7 +798,7 @@ public final class CJIRAnnotator
         CJIRType elementType;
         if (a.isPresent()) {
             var listType = a.get();
-            if (!listType.isDerivedFrom(listDefinition)) {
+            if (!listType.isDerivedFrom(e.isMutable() ? mutableListDefinition : listDefinition)) {
                 throw err0("Expected " + listType + " but got list display", e.getMark());
             }
             elementType = ((CJIRClassType) listType).getArguments().get(0);
@@ -791,7 +809,7 @@ public final class CJIRAnnotator
             }
             annotateExpression(elements.get(0));
             elementType = elements.get(0).getResolvedType();
-            e.resolvedType = getListTypeOf(elementType);
+            e.resolvedType = e.isMutable() ? getMutableListTypeOf(elementType) : getListTypeOf(elementType);
         }
         for (var element : elements) {
             annotateExpressionWithType(element, elementType);
@@ -834,7 +852,7 @@ public final class CJIRAnnotator
         }
         if (e.getExpression().isEmpty()) {
             e.resolvedType = unitType;
-        }else {
+        } else {
             annotateExpressionWithOptionalType(e.getExpression().get(), a);
             e.resolvedType = e.getExpression().get().getResolvedType();
         }

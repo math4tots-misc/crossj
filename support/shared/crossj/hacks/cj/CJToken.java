@@ -69,11 +69,12 @@ public final class CJToken {
     public static final int KW_ENUM = 231;
     public static final int KW_DEFAULT = 232;
     public static final int KW_AS = 233;
+    public static final int KW_FOR = 234;
 
     public static final Tuple<Integer> KEYWORD_TYPES = Tuple.of(KW_DEF, KW_CLASS, KW_TRUE, KW_FALSE, KW_NULL, KW_IF,
             KW_ELSE, KW_IMPORT, KW_WHILE, KW_BREAK, KW_CONTINUE, KW_VAR, KW_VAL, KW_NEW, KW_TRAIT, KW_NATIVE, KW_STATIC,
             KW_PRIVATE, KW_PUBLIC, KW_PACKAGE, KW_RETURN, KW_AND, KW_OR, KW_IS, KW_NOT, KW_IN, KW_THEN, KW_SWITCH,
-            KW_CASE, KW_UNION, KW_ENUM, KW_DEFAULT, KW_AS);
+            KW_CASE, KW_UNION, KW_ENUM, KW_DEFAULT, KW_AS, KW_FOR);
 
     public final int type;
     public final String text;
@@ -219,6 +220,8 @@ public final class CJToken {
                 return "CJToken.KW_DEFAULT";
             case KW_AS:
                 return "CJToken.KW_AS";
+            case KW_FOR:
+                return "CJToken.KW_FOR";
             case '\n':
                 return "'\\n'";
             default:

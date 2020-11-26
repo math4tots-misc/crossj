@@ -25,4 +25,3 @@ native class MutableList[T] :
     def push(list: Self, t: T) : Unit
     def pop(list: Self) : T
 }
-
