@@ -12,15 +12,23 @@ final class CJJSTypeTranslator {
         this.selfClassType = currentItem.isTrait() ? null : currentItem.getAsSelfClassType();
     }
 
+    static String nameToItemLevelTraitTypeVariableMethodName(CJAstItemDefinition item, String shortName) {
+        return "TV$" + item.getQualifiedName().replace(".", "$") + "$" + shortName;
+    }
+
+    String nameToItemLevelClassTypeVariableFieldName(String shortName) {
+        return "TV$" + shortName;
+    }
+
     private String nameToItemLevelTypeVariableExpression(String shortName) {
         if (currentItem.isTrait()) {
             if (shortName.equals("Self")) {
                 return "this";
             } else {
-                return "this.TV$" + currentItem.getQualifiedName().replace(".", "$") + "$" + shortName + "()";
+                return "this." + nameToItemLevelTraitTypeVariableMethodName(currentItem, shortName) + "()";
             }
         } else {
-            return "this.TV$" + shortName;
+            return "this." + nameToItemLevelClassTypeVariableFieldName(shortName);
         }
     }
 

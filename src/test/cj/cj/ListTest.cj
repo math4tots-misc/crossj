@@ -31,7 +31,7 @@ class ListTest {
         Assert.that(@[1, 2, 3] != @[3, 2, 1])
         Assert.that(@[1, 2, 3] != @[1, 2, 3, 4])
         Assert.that(@[1, 2, 3, 4] != @[1, 2, 3])
-        # Assert.that(@[1, 2, 3].toList() == [])
+        Assert.equal(@[1, 2, 3].toList(), [1, 2, 3])
     }
 
     def testFor() {

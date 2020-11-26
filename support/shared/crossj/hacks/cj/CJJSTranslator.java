@@ -1,5 +1,6 @@
 package crossj.hacks.cj;
 
+import crossj.base.Assert;
 import crossj.base.FS;
 import crossj.base.IO;
 import crossj.base.List;
@@ -201,6 +202,15 @@ public final class CJJSTranslator {
         } else {
             emitClass(item);
         }
+
+        /**
+         * For native classes, we attach a few methods for dealing with type variables
+         * passed to traits.
+         */
+        if (item.isNative() && item.isClass()) {
+            emitTraitTypeParamMethods(item, false);
+        }
+
         typeTranslator = null;
         statementAndExpressionTranslator = null;
     }
@@ -258,11 +268,31 @@ public final class CJJSTranslator {
     }
 
     private void emitMetaClass(CJAstItemDefinition item) {
+        /**
+         * If isNative is true, emitTraitTypeParamMethods may be called twice for this class
+         */
+        Assert.that(!item.isNative());
+
         var qualifiedItemName = item.getQualifiedName();
         var metaClassName = qualifiedNameToMetaClassName(qualifiedItemName);
         var typeParameters = item.getTypeParameters();
         sb.line("class " + metaClassName + " {");
         sb.indent();
+
+        if (typeParameters.size() > 0) {
+            var translatedNames = typeParameters
+                    .map(p -> typeTranslator.nameToItemLevelClassTypeVariableFieldName(p.getName()));
+            sb.line("constructor(" + Str.join(",", translatedNames) + ") {");
+            sb.indent();
+            for (var translatedName : translatedNames) {
+                sb.line("this." + translatedName + " = " + translatedName + ";");
+            }
+            sb.dedent();
+            sb.line("}");
+        }
+
+        emitTraitTypeParamMethods(item, true);
+
         for (var member : item.getMembers()) {
             if (member instanceof CJAstMethodDefinition) {
                 var method = (CJAstMethodDefinition) member;
@@ -274,6 +304,30 @@ public final class CJJSTranslator {
         if (typeParameters.size() == 0) {
             var metaObjectName = qualifiedNameToMetaObjectName(qualifiedItemName);
             sb.line("const " + metaObjectName + " = new " + metaClassName + "();");
+        }
+    }
+
+    private void emitTraitTypeParamMethods(CJAstItemDefinition item, boolean insideClass) {
+        var qualifiedItemName = item.getQualifiedName();
+        var metaClassName = qualifiedNameToMetaClassName(qualifiedItemName);
+        for (var implTrait : item.getAllResolvedTraits()) {
+            var traitDef = implTrait.getDefinition();
+            var traitTypeParams = traitDef.getTypeParameters();
+            for (int i = 0; i < traitTypeParams.size(); i++) {
+                var traitTypeParam = traitTypeParams.get(i);
+                var traitTypeMethodName = CJJSTypeTranslator.nameToItemLevelTraitTypeVariableMethodName(traitDef,
+                        traitTypeParam.getName());
+
+                if (insideClass) {
+                    sb.line(traitTypeMethodName + "() {");
+                } else {
+                    sb.line(metaClassName + ".prototype." + traitTypeMethodName + " = function() {");
+                }
+                sb.indent();
+                sb.line("return " + typeTranslator.translateType(implTrait.getArguments().get(i)) + ";");
+                sb.dedent();
+                sb.line("}");
+            }
         }
     }
 
