@@ -4,7 +4,7 @@ import cj.IO
 
 class Sample : ToString {
     def main() : Unit {
-        if (1 > 0) {
+        if 1 > 0 {
             IO.println("1 > 0 is true")
         } else {
             IO.println("1 > 0 is false")
@@ -17,7 +17,7 @@ class Sample : ToString {
         }
 
         var i = 0
-        while (i < 10) {
+        while i < 10 {
             IO.println(i)
             i = i + 1
         }

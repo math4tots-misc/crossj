@@ -32,6 +32,7 @@ public final class CJLexer {
         b.add("<<", m -> symtok(CJToken.LSHIFT, m));
         b.add(">>", m -> symtok(CJToken.RSHIFT, m));
         b.add("//", m -> symtok(CJToken.FLOORDIV, m));
+        b.add("->", m -> symtok(CJToken.RIGHT_ARROW, m));
         b.add("\\*\\*", m -> symtok(CJToken.POWER, m));
 
         // newline

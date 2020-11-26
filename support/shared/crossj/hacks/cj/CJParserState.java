@@ -953,9 +953,13 @@ public final class CJParserState {
         var mark = getMark();
 
         switch (peek().type) {
-            case CJToken.ID: { // local variable name
-                var name = parseID();
-                return Try.ok(new CJAstNameExpression(mark, name));
+            case CJToken.ID: { // local variable name or lambda expression
+                if (atLambda()) {
+                    return parseLambdaExpression().map(x -> x);
+                } else {
+                    var name = parseID();
+                    return Try.ok(new CJAstNameExpression(mark, name));
+                }
             }
             case CJToken.CHAR: { // char literal
                 var rawText = next().text;
@@ -1018,30 +1022,6 @@ public final class CJParserState {
                 }
                 return Try.ok(new CJAstListDisplayExpression(mark, elements));
             }
-            case CJToken.KW_DEF: {
-                next();
-                var tryParameters = parseLambdaParameters();
-                if (tryParameters.isFail()) {
-                    return tryParameters.castFail();
-                }
-                var parameters = tryParameters.get();
-                CJAstStatement body;
-                if (consume('=')) {
-                    var tryRetExpr = parseExpression();
-                    if (tryRetExpr.isFail()) {
-                        return tryRetExpr;
-                    }
-                    var retExpr = tryRetExpr.get();
-                    body = new CJAstReturnStatement(mark, retExpr);
-                } else {
-                    var tryBody = parseBlockStatement();
-                    if (tryBody.isFail()) {
-                        return tryBody.castFail();
-                    }
-                    body = tryBody.get();
-                }
-                return Try.ok(new CJAstLambdaExpression(mark, parameters, body));
-            }
             case CJToken.KW_NOT: { // logical not expressions
                 next();
                 var tryInner = parseExpressionWithPrecedence(LOGICAL_NOT_BINDING_POWER);
@@ -1103,37 +1083,73 @@ public final class CJParserState {
                     }
                 }
             }
-            case '(': { // parenthetical expression
-                next();
-                var tryExpr = parseExpression();
-                if (tryExpr.isFail()) {
-                    return tryExpr.castFail();
+            case '(': { // parenthetical expression or lambda expression
+                if (atLambda()) {
+                    return parseLambdaExpression().map(x -> x);
+                } else {
+                    next();
+                    var tryExpr = parseExpression();
+                    if (tryExpr.isFail()) {
+                        return tryExpr.castFail();
+                    }
+                    if (!consume(')')) {
+                        return expectedType(')');
+                    }
+                    return tryExpr;
                 }
-                if (!consume(')')) {
-                    return expectedType(')');
-                }
-                return tryExpr;
             }
+            default:
+                return expectedKind("expression");
         }
-
-        return expectedKind("expression");
     }
 
-    private Try<List<String>> parseLambdaParameters() {
-        if (!consume('(')) {
-            return expectedType('(');
+    /**
+     * Look ahead a few tokens to see if we're currently at a lambda expression
+     */
+    private boolean atLambda() {
+        if (at(CJToken.ID) && atOffset(CJToken.RIGHT_ARROW, 1)) {
+            return true;
         }
-        var ret = List.<String>of();
-        while (!consume(')')) {
-            if (!at(CJToken.ID)) {
-                return expectedType(CJToken.ID);
+        if (!at('(')) {
+            return false;
+        }
+
+        int savedI = i;
+
+        next(); // skip the first '('
+        while (consume(CJToken.ID) || consume(',')) {
+        }
+        boolean matched = consume(')') && consume(CJToken.RIGHT_ARROW);
+
+        i = savedI;
+        return matched;
+    }
+
+    private Try<CJAstLambdaExpression> parseLambdaExpression() {
+        var mark = getMark();
+        var parameterNames = List.<String>of();
+        if (at(CJToken.ID)) {
+            parameterNames.add(parseID());
+        } else {
+            if (!consume('(')) {
+                return expectedType('(');
             }
-            ret.add(parseID());
-            if (!consume(',') && !at(')')) {
-                return expectedType(')');
+            while (!consume(')')) {
+                if (!at(CJToken.ID)) {
+                    return expectedType(CJToken.ID);
+                }
+                parameterNames.add(parseID());
+                if (!consume(',') && !at(')')) {
+                    return expectedType(')');
+                }
             }
         }
-        return Try.ok(ret);
+        if (!consume(CJToken.RIGHT_ARROW)) {
+            return expectedType(CJToken.RIGHT_ARROW);
+        }
+        var tryBody = at('{') ? parseBlockStatement() : parseExpression().map(e -> new CJAstReturnStatement(e.getMark(), e));
+        var body = tryBody.get();
+        return Try.ok(new CJAstLambdaExpression(mark, parameterNames, body));
     }
 
     private Try<List<CJAstTypeExpression>> parseTypeArguments() {

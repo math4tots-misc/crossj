@@ -16,16 +16,16 @@ class SampleTest {
 
     def testLambda() : Unit {
         {
-            var f : Fn[Int, Int] = def(x) = x + 1
+            var f : Fn[Int, Int] = x -> x + 1
             var x = f.call(2)
             Assert.equal(x, 3)
         }
         {
-            var x = Self.useLambda(def(x) = x * x)
+            var x = Self.useLambda(x -> x * x)
             Assert.equal(x, 576)
         }
         {
-            var xs = [1, 2, 3, 4, 5].map(def(x) = x * x)
+            var xs = [1, 2, 3, 4, 5].map(x -> x * x)
             Assert.equal(xs, [1, 4, 9, 16, 25])
         }
     }
