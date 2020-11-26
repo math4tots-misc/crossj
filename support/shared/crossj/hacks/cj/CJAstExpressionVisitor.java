@@ -13,4 +13,5 @@ public interface CJAstExpressionVisitor<R, A> {
     R visitLambda(CJAstLambdaExpression e, A a);
     R visitListDisplay(CJAstListDisplayExpression e, A a);
     R visitLogicalBinary(CJAstLogicalBinaryExpression e, A a);
+    R visitCompound(CJAstCompoundExpression e, A a);
 }

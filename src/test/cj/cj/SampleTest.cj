@@ -33,4 +33,14 @@ class SampleTest {
     def useLambda(f: Fn[Int, Int]) : Int {
         return f.call(24)
     }
+
+    def testBlockExpressions() {
+        {
+            var x = {
+                var a = 5
+                a * a * a
+            }
+            Assert.equal(x, 125)
+        }
+    }
 }

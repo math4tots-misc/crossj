@@ -97,6 +97,11 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     }
 
     @Override
+    public String visitCompound(CJAstCompoundExpression e, Void a) {
+        throw XError.withMessage("Compound/block expressions cannot appear in simple expressions");
+    }
+
+    @Override
     public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
         return "(!" + translateExpression(e.getInner()) + ")";
     }

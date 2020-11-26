@@ -72,7 +72,9 @@ public final class CJJSStatementAndExpressionTranslator
     @Override
     public Void visitExpression(CJAstExpressionStatement s, Void a) {
         var exprPartial = emitExpressionPartial(s.getExpression());
-        sb.line(exprPartial + ";");
+        if (exprPartial.length() > 0) {
+            sb.line(exprPartial + ";");
+        }
         return null;
     }
 
@@ -365,6 +367,39 @@ public final class CJJSStatementAndExpressionTranslator
         emitStatement(e.getBody());
         sb.line("}");
         return tmpvar;
+    }
+
+    @Override
+    public String visitCompound(CJAstCompoundExpression e, Void a) {
+        if (e.getStatements().size() == 0) {
+            if (e.getExpression().isEmpty()) {
+                return "";
+            } else {
+                return emitExpressionPartial(e.getExpression().get());
+            }
+        }
+        if (e.getExpression().isPresent()) {
+            var tmpvar = newMethodLevelUniqueId();
+            sb.line("let " + tmpvar + ";");
+            sb.line("{");
+            sb.indent();
+            for (var statement : e.getStatements()) {
+                emitStatement(statement);
+            }
+            emitExpression(e.getExpression().get(), Optional.of(tmpvar), DECLARE_NONE);
+            sb.dedent();
+            sb.line("}");
+            return tmpvar;
+        } else {
+            sb.line("{");
+            sb.indent();
+            for (var statement : e.getStatements()) {
+                emitStatement(statement);
+            }
+            sb.dedent();
+            sb.line("}");
+            return "";
+        }
     }
 
     @Override

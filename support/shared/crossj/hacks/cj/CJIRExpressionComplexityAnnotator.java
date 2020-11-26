@@ -6,6 +6,7 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     private static final int NONE = CJIRExpressionComplexityFlags.NONE;
     private static final int SIMPLE_LAMBDA = CJIRExpressionComplexityFlags.SIMPLE_LAMBDA;
     private static final int COMPLEX_LAMBDA = CJIRExpressionComplexityFlags.COMPLEX_LAMBDA;
+    private static final int BLOCK = CJIRExpressionComplexityFlags.BLOCK;
     private static final CJIRExpressionComplexityAnnotator instance = new CJIRExpressionComplexityAnnotator();
 
     private CJIRExpressionComplexityAnnotator() {}
@@ -92,6 +93,15 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
             e.complexityFlags = NONE | SIMPLE_LAMBDA;
         } else {
             e.complexityFlags = NONE | COMPLEX_LAMBDA;
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitCompound(CJAstCompoundExpression e, Void a) {
+        e.complexityFlag = BLOCK;
+        if (e.getExpression().isPresent()) {
+            e.complexityFlag |= annotate(e.getExpression().get());
         }
         return null;
     }

@@ -827,6 +827,22 @@ public final class CJIRAnnotator
     }
 
     @Override
+    public Void visitCompound(CJAstCompoundExpression e, Optional<CJIRType> a) {
+        context.enterBlock();
+        for (var statement : e.getStatements()) {
+            annotateStatement(statement);
+        }
+        if (e.getExpression().isEmpty()) {
+            e.resolvedType = unitType;
+        }else {
+            annotateExpressionWithOptionalType(e.getExpression().get(), a);
+            e.resolvedType = e.getExpression().get().getResolvedType();
+        }
+        context.exitBlock();
+        return null;
+    }
+
+    @Override
     public Void visitLogicalNot(CJAstLogicalNotExpression e, Optional<CJIRType> a) {
         annotateExpressionWithType(e.getInner(), boolType);
         e.resolvedType = boolType;

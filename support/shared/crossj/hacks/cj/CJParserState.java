@@ -465,8 +465,6 @@ public final class CJParserState {
     private Try<CJAstStatement> parseStatement() {
         var mark = getMark();
         switch (peek().type) {
-            case '{':
-                return parseBlockStatement().map(x -> x);
             case CJToken.KW_IF:
                 return parseIfStatement().map(x -> x);
             case CJToken.KW_WHILE: {
@@ -624,7 +622,7 @@ public final class CJParserState {
             switch (peek().type) {
                 case '{':
                 case CJToken.KW_IF: {
-                    var tryOther = parseStatement();
+                    var tryOther = at('{') ? parseBlockStatement() : parseStatement();
                     if (tryOther.isFail()) {
                         return tryOther.castFail();
                     }
@@ -654,6 +652,28 @@ public final class CJParserState {
             consumeDelimitersAndComments();
         }
         return Try.ok(new CJAstBlockStatement(mark, list));
+    }
+
+    private Try<CJAstCompoundExpression> parseCompoundExpression() {
+        var mark = getMark();
+        if (!consume('{')) {
+            return expectedType('{');
+        }
+        consumeDelimitersAndComments();
+        var list = List.<CJAstStatement>of();
+        while (!consume('}')) {
+            var tryStatement = parseStatement();
+            if (tryStatement.isFail()) {
+                return tryStatement.castFail();
+            }
+            list.add(tryStatement.get());
+            consumeDelimitersAndComments();
+        }
+        Optional<CJAstExpression> expression = Optional.empty();
+        if (list.size() > 0 && list.last() instanceof CJAstExpressionStatement) {
+            expression = Optional.of(((CJAstExpressionStatement) list.pop()).getExpression());
+        }
+        return Try.ok(new CJAstCompoundExpression(mark, list, expression));
     }
 
     private Try<List<CJAstTypeParameter>> parseTypeParameters() {
@@ -979,6 +999,9 @@ public final class CJParserState {
                 } else {
                     return expectedType('[');
                 }
+            }
+            case '{': { // block expression
+                return parseCompoundExpression().map(x -> x);
             }
             case '[': { // list display
                 next();
