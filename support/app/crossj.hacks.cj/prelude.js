@@ -235,6 +235,18 @@ class MC$cj$Iterator {
 
     /**
      * @param {IterableIterator<T>} iterator
+     * @param {function(T): boolean} f
+     */
+    *M$filter(iterator, f) {
+        for (const t of iterator) {
+            if (f(t)) {
+                yield t
+            }
+        }
+    }
+
+    /**
+     * @param {IterableIterator<T>} iterator
      */
     M$toList(iterator) {
         return Array.from(iterator);

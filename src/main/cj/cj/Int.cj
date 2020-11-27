@@ -7,6 +7,7 @@ native class Int : Eq, Ord, Hash, Repr {
     def __sub(a : Self, b : Self) : Self
     def __mul(a : Self, b : Self) : Self
     def __div(a : Self, b : Self) : Double
+    def __mod(a: Self, b: Self) : Self
     def __floordiv(a: Self, b: Self) : Self
 
     def __neg(x: Self) : Self
