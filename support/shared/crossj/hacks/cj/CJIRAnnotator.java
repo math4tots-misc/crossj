@@ -52,6 +52,7 @@ public final class CJIRAnnotator
     private final CJIRClassType boolType;
     private final CJIRClassType intType;
     private final CJIRClassType doubleType;
+    private final CJIRClassType charType;
     private final CJIRClassType stringType;
     private final CJAstItemDefinition listDefinition;
     private final CJAstItemDefinition mutableListDefinition;
@@ -71,6 +72,7 @@ public final class CJIRAnnotator
         this.boolType = getSimpleTypeByQualifiedName("cj.Bool");
         this.intType = getSimpleTypeByQualifiedName("cj.Int");
         this.doubleType = getSimpleTypeByQualifiedName("cj.Double");
+        this.charType = getSimpleTypeByQualifiedName("cj.Char");
         this.stringType = getSimpleTypeByQualifiedName("cj.String");
         this.listDefinition = context.world.getItem("cj.List");
         this.mutableListDefinition = context.world.getItem("cj.MutableList");
@@ -809,6 +811,8 @@ public final class CJIRAnnotator
             type = doubleType;
         } else if (e.getType().equals("String")) {
             type = stringType;
+        } else if (e.getType().equals("Char")) {
+            type = charType;
         } else {
             throw XError.withMessage("Unrecognized literal type: " + e.getType());
         }

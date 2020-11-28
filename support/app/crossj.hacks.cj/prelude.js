@@ -95,6 +95,9 @@ class MC$cj$Int {
     M$toString(x) {
         return '' + x;
     }
+    M$toDouble(x) {
+        return x;
+    }
 }
 const MO$cj$Int = new MC$cj$Int();
 
@@ -150,8 +153,75 @@ class MC$cj$Double {
     M$toString(x) {
         return '' + x;
     }
+    M$toInt(x) {
+        return x|0;
+    }
 }
 const MO$cj$Double = new MC$cj$Double();
+
+
+class MC$cj$Char {
+    /**
+     * @param {number} a
+     * @param {number} b
+     */
+    M$__eq(a, b) {
+        return a === b;
+    }
+
+    /**
+     * @param {number} a
+     * @param {number} b
+     */
+    M$__lt(a, b) {
+        return a < b;
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$toInt(c) {
+        return c;
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$repr(c) {
+        return "'" + String.fromCodePoint(c).replace(/\n|\r|[\x01-\x1E]/g, m => {
+            switch (m) {
+                case '\n': return "\\n";
+                case '\r': return "\\r";
+                case '\t': return "\\t";
+                case '\'': return "\\\'";
+                default:
+                    const ch = m.codePointAt(0);
+                    if (ch < 32) {
+                        const rawStr = ch.toString(16);
+                        return "\\x" + rawStr.length < 2 ? '0'.repeat(2 - rawStr.length) + rawStr : rawStr;
+                    } else {
+                        const rawStr = ch.toString(16);
+                        return "\\u" + rawStr.length < 4 ? '0'.repeat(4 - rawStr.length) + rawStr : rawStr;
+                    }
+            }
+        }) + "'";
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$toString(c) {
+        return String.fromCodePoint(c);
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$hash(c) {
+        return c;
+    }
+}
+const MO$cj$Char = new MC$cj$Char();
 
 class MC$cj$String {
     /**

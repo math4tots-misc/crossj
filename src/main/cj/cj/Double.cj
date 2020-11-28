@@ -1,6 +1,6 @@
 package cj
 
-native class Double : Eq, Ord, Hash, Repr {
+native class Double : Eq, Ord, Hash, Repr, ToInt {
     def __eq(a : Self, b : Self) : Bool
     def __lt(a : Self, b : Self) : Bool
     def __gt(a : Self, b : Self) : Bool
@@ -15,4 +15,5 @@ native class Double : Eq, Ord, Hash, Repr {
 
     def hash(x: Self) : Self
     def repr(x: Self) : String
+    def toInt(x: Self) : Int
 }

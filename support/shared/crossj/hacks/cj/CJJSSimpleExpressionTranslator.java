@@ -65,7 +65,7 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
         if (e.getType().equals(CJAstLiteralExpression.STRING)) {
             return e.getRawText();
         } else if (e.getType().equals(CJAstLiteralExpression.CHAR)) {
-            return e.getRawText();
+            return e.getRawText() + ".codePointAt(0)";
         } else if (e.getType().equals(CJAstLiteralExpression.INT)) {
             return e.getRawText();
         } else if (e.getType().equals(CJAstLiteralExpression.DOUBLE)) {
