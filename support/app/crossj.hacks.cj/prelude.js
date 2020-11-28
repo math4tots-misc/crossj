@@ -271,6 +271,14 @@ class MC$cj$String {
     }
 
     /**
+     * @param {string} a
+     * @param {string} b
+     */
+    M$__add(a, b) {
+        return a + b;
+    }
+
+    /**
      * @param {string} x
      */
     M$size(x) {
@@ -960,6 +968,13 @@ class MC$cj$Assert {
     }
 }
 const MO$cj$Assert = new MC$cj$Assert();
+
+class MC$cj$Time {
+    M$now() {
+        return Date.now() / 1000;
+    }
+}
+const MO$cj$Time = new MC$cj$Time();
 
 class MC$cj$IO {
     /**
