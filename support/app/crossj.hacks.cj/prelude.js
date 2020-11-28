@@ -276,6 +276,15 @@ class MC$cj$String {
     M$size(x) {
         return x.length;
     }
+
+    /**
+     * @param {string} string
+     */
+    *M$iter(string) {
+        for (const c of string) {
+            yield c.codePointAt(0);
+        }
+    }
 }
 const MO$cj$String = new MC$cj$String();
 
@@ -711,14 +720,7 @@ class MC$cj$MutableList {
      * @param {Array<T>} list
      */
     M$repr(list) {
-        return '[' + list.map(x => this.VT$T.M$repr(x)).join(', ') + ']';
-    }
-
-    /**
-     * @param {Array<T>} x
-     */
-    M$toString(x) {
-        return this.M$repr(x);
+        return '@[' + list.map(x => this.VT$T.M$repr(x)).join(', ') + ']';
     }
 
     /**

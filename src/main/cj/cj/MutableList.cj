@@ -2,14 +2,12 @@ package cj
 
 native class MutableList[T] :
         Collection[T],
-        ToString if T : Repr,
         Repr if T : Repr,
         Ord if T : Ord,
         Eq if T : Eq {
 
     if T : Repr {
         def repr(x: Self) : String
-        def toString(x : Self) : String
     }
 
     if T : Eq {
