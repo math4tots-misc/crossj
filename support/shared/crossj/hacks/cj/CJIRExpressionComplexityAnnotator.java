@@ -51,7 +51,7 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     }
 
     @Override
-    public Void visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Void a) {
+    public Void visitStaticMethodCall(CJAstStaticMethodCallExpression e, Void a) {
         e.complexityFlags = annotateList(e.getArguments());
         return null;
     }

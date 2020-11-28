@@ -520,18 +520,57 @@ public final class CJIRAnnotator
     }
 
     @Override
-    public Void visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Optional<CJIRType> a) {
+    public Void visitStaticMethodCall(CJAstStaticMethodCallExpression e, Optional<CJIRType> a) {
         var mark = e.getMark();
         var args = e.getArguments();
-        var ownerType = context.resolveTypeExpression(e.getOwner());
-        var tryMethodDescriptor = ownerType.getMethodDescriptor(e.getName());
-        if (tryMethodDescriptor.isFail()) {
-            throw err0(tryMethodDescriptor.getErrorMessageWithContext(), mark);
+        var ownerLocalName = e.getOwner().getName();
+        var optItem = context.getItem(ownerLocalName);
+
+        if (ownerLocalName.equals("Self") || context.isTypeVariable(ownerLocalName)
+                || e.getOwner().getArguments().size() > 0
+                || optItem.isPresent() && (optItem.get().getTypeParameters().size() == 0
+                        || optItem.get().getTypeParameters().size() == e.getOwner().getArguments().size())) {
+            // If the owner type is fully specified, there's no need to do any inference on
+            // the owner type at least
+            var ownerType = context.resolveTypeExpression(e.getOwner());
+            var tryMethodDescriptor = ownerType.getMethodDescriptor(e.getName());
+            if (tryMethodDescriptor.isFail()) {
+                throw err0(tryMethodDescriptor.getErrorMessageWithContext(), mark);
+            }
+            var methodDescriptor = tryMethodDescriptor.get();
+            var typeArguments = inferTypeArguments(mark, methodDescriptor, args, a);
+            e.resolvedType = annotateMethodCall0(mark, methodDescriptor, typeArguments, args);
+            e.resolvedOwnerType = e.getOwner().getAsIsType();
+            e.inferredTypeArguments = typeArguments;
+        } else {
+            // Otherwise, we need to do some type inference to figure out the type arguments
+            // for the owner type using method arguments
+            Assert.equals(e.getOwner().getArguments().size(), 0);
+            if (optItem.isEmpty()) {
+                throw err0("Class or type variable " + e.getOwner().getName() + " not found", e.getMark());
+            }
+            var item = optItem.get();
+            var optMethod = item.getMemberDefinitionByName(e.getName());
+            if (optMethod.isEmpty()) {
+                throw err0("Method " + e.getName() + " in " + item.getQualifiedName() + " not found", e.getMark());
+            }
+            var member = optMethod.get();
+            if (!(member instanceof CJAstMethodDefinition)) {
+                throw err0(item.getQualifiedName() + "." + e.getName() + " is not a method", e.getMark());
+            }
+            var method = (CJAstMethodDefinition) member;
+            var memberTypeParameters = method.getTypeParameters();
+            var memberArgTypes = method.getParameters().map(p -> p.getType().getAsIsType());
+            var memberReturnType = method.getReturnType().getAsIsType();
+            var pair = inferTypeArguments2(mark, item, memberTypeParameters, memberArgTypes, memberReturnType, args, a,
+                    Optional.empty());
+            var ownerType = new CJIRClassType(item, pair.get1());
+            var methodDescriptor = ownerType.getMethodDescriptor(e.getName()).get();
+            var typeArguments = pair.get2();
+            e.resolvedType = annotateMethodCall0(mark, methodDescriptor, typeArguments, args);
+            e.resolvedOwnerType = ownerType;
+            e.inferredTypeArguments = typeArguments;
         }
-        var methodDescriptor = tryMethodDescriptor.get();
-        var typeArguments = inferTypeArguments(mark, methodDescriptor, args, a);
-        e.resolvedType = annotateMethodCall0(mark, methodDescriptor, typeArguments, args);
-        e.inferredTypeArguments = typeArguments;
         return null;
     }
 

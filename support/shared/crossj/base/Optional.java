@@ -39,7 +39,7 @@ public final class Optional<T> implements TypedEq<Optional<T>>, XIterable<T> {
 
     public T get() {
         if (isEmpty()) {
-            throw XError.withMessage("get from emtpy Optional");
+            throw XError.withMessage("get from empty Optional");
         }
         return value;
     }

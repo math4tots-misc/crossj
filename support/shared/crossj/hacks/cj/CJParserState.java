@@ -1124,7 +1124,7 @@ public final class CJParserState {
                     var args = tryArgs.get();
                     if (mustInfer) {
                         Assert.equals(typeArgs.size(), 0);
-                        return Try.ok(new CJAstInferredGenericsMethodCallExpression(mark, type, methodName, args));
+                        return Try.ok(new CJAstStaticMethodCallExpression(mark, type, methodName, args));
                     } else {
                         return Try.ok(new CJAstMethodCallExpression(mark, type, methodName, typeArgs, args));
                     }

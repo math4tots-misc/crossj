@@ -4,16 +4,17 @@ import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.StrBuilder;
 
-public final class CJAstInferredGenericsMethodCallExpression implements CJAstExpression {
+public final class CJAstStaticMethodCallExpression implements CJAstExpression {
     private final CJMark mark;
     private final CJAstTypeExpression owner;
     private final String name;
     private final List<CJAstExpression> args;
     CJIRType resolvedType;
+    CJIRType resolvedOwnerType;
     List<CJIRType> inferredTypeArguments;
     int complexityFlags;
 
-    CJAstInferredGenericsMethodCallExpression(CJMark mark, CJAstTypeExpression owner,
+    CJAstStaticMethodCallExpression(CJMark mark, CJAstTypeExpression owner,
             String name,
             List<CJAstExpression> args) {
         this.mark = mark;
@@ -69,11 +70,16 @@ public final class CJAstInferredGenericsMethodCallExpression implements CJAstExp
 
     @Override
     public <R, A> R accept(CJAstExpressionVisitor<R, A> visitor, A a) {
-        return visitor.visitInferredGenericsMethodCall(this, a);
+        return visitor.visitStaticMethodCall(this, a);
     }
 
     @Override
     public int getComplexityFlagsOrZero() {
         return complexityFlags;
+    }
+
+    public CJIRType getResolvedOwnerType() {
+        Assert.that(resolvedOwnerType != null);
+        return resolvedOwnerType;
     }
 }

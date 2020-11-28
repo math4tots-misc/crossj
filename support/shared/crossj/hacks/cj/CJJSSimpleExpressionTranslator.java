@@ -35,7 +35,7 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     }
 
     @Override
-    public String visitInferredGenericsMethodCall(CJAstInferredGenericsMethodCallExpression e, Void a) {
+    public String visitStaticMethodCall(CJAstStaticMethodCallExpression e, Void a) {
         var owner = e.getOwner().getAsIsType();
         var methodName = e.getName();
         var typeArguments = e.getInferredTypeArguments();
