@@ -1,5 +1,5 @@
 package cj
 
 class Error {
-    var message: String
+    val message: String
 }
