@@ -200,7 +200,7 @@ public final class CJIRAnnotator
         }
         for (var parameter : method.getParameters()) {
             context.resolveTypeExpression(parameter.getType());
-            context.declareVariable(parameter.getName(), parameter.getType().getAsIsType(), parameter.getMark());
+            context.declareVariable(parameter.getMark(), false, parameter.getName(), parameter.getType().getAsIsType());
         }
     }
 
@@ -408,7 +408,7 @@ public final class CJIRAnnotator
         var iterableTrait = optIterableTrait.get();
         var itemType = iterableTrait.getArguments().get(0);
         context.enterBlock();
-        context.declareVariable(s.getName(), itemType, s.getMark());
+        context.declareVariable(s.getMark(), false, s.getName(), itemType);
         annotateStatement(s.getBody());
         context.exitBlock();
         return null;
@@ -439,7 +439,7 @@ public final class CJIRAnnotator
                         unionCase.getMark());
             }
             for (int i = 0; i < argc; i++) {
-                context.declareVariable(valueNames.get(i), argumentTypes.get(i), unionCase.getMark());
+                context.declareVariable(unionCase.getMark(), false, valueNames.get(i), argumentTypes.get(i));
             }
             annotateStatement(unionCase.getBody());
             unionCase.descriptor = unionCaseDescriptor;
@@ -460,13 +460,21 @@ public final class CJIRAnnotator
         } else {
             annotateExpression(s.getExpression());
         }
-        context.declareVariable(s.getName(), s.getExpression().getResolvedType(), s.getMark());
+        context.declareVariable(s.getMark(), s.isMutable(), s.getName(), s.getExpression().getResolvedType());
         return null;
     }
 
     @Override
     public Void visitAssignment(CJAstAssignmentStatement s, Void a) {
-        annotateExpression(s.getExpression());
+        var optVariableInfo = context.getVariableInfo(s.getName());
+        if (optVariableInfo.isEmpty()) {
+            throw err0("Variable '" + s.getName() + "' is not defined in this scope", s.getMark());
+        }
+        var variableInfo = optVariableInfo.get();
+        if (!variableInfo.isMutable()) {
+            throw err0("Tried to assign to an immutable variable", s.getMark());
+        }
+        annotateExpressionWithType(s.getExpression(), variableInfo.getType());
         return null;
     }
 
@@ -648,7 +656,8 @@ public final class CJIRAnnotator
                         {
                             context.enterBlock();
                             for (int i = 0; i < translatedLambdaArgTypes.size(); i++) {
-                                context.declareVariable(lambdaParamNames.get(i), translatedLambdaArgTypes.get(i), mark);
+                                context.declareVariable(mark, false, lambdaParamNames.get(i),
+                                        translatedLambdaArgTypes.get(i));
                             }
                             annotateExpression(returnStmt.getExpression());
                             context.exitBlock();
@@ -790,11 +799,11 @@ public final class CJIRAnnotator
 
     @Override
     public Void visitName(CJAstNameExpression e, Optional<CJIRType> a) {
-        var type = context.getVariableType(e.getName());
-        if (type.isEmpty()) {
+        var optInfo = context.getVariableInfo(e.getName());
+        if (optInfo.isEmpty()) {
             throw err0("Name '" + e.getName() + "' is not defined", e.getMark());
         }
-        e.resolvedType = type.get();
+        e.resolvedType = optInfo.get().getType();
         return null;
     }
 
@@ -890,7 +899,7 @@ public final class CJIRAnnotator
             var parameterNames = e.getParameterNames();
             Assert.equals(argumentTypes.size(), parameterNames.size());
             for (int i = 0; i < argumentTypes.size(); i++) {
-                context.declareVariable(parameterNames.get(i), argumentTypes.get(i), e.getMark());
+                context.declareVariable(e.getMark(), false, parameterNames.get(i), argumentTypes.get(i));
             }
             annotateStatement(e.getBody());
             context.exitLambda();

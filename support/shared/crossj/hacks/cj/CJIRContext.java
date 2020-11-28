@@ -17,7 +17,7 @@ final class CJIRContext {
     Map<String, CJAstItemDefinition> shortNameToItemMap = null;
     Map<String, CJAstTypeParameter> itemLevelTypeMap = null;
     Map<String, CJAstTypeParameter> methodLevelTypeMap = null;
-    List<Map<String, CJIRType>> localVariableStack = null;
+    List<Map<String, CJIRLocalVariableInfo>> localVariableStack = null;
     private CJIRClassType currentSelfType = null;
     private CJIRType declaredReturnType = null;
     private List<CJIRType> returnTypeStack = null;
@@ -216,7 +216,7 @@ final class CJIRContext {
         }
     }
 
-    Optional<CJIRType> getVariableType(String variableName) {
+    Optional<CJIRLocalVariableInfo> getVariableInfo(String variableName) {
         for (int i = localVariableStack.size() - 1; i >= 0; i--) {
             var map = localVariableStack.get(i);
             var type = map.getOrNull(variableName);
@@ -227,11 +227,11 @@ final class CJIRContext {
         return Optional.empty();
     }
 
-    void declareVariable(String variableName, CJIRType variableType, CJMark mark) {
-        if (getVariableType(variableName).isPresent()) {
+    void declareVariable(CJMark mark, boolean mutable, String variableName, CJIRType variableType) {
+        if (getVariableInfo(variableName).isPresent()) {
             throw err0("Variable " + variableName + " is already defined in this scope", mark);
         } else {
-            localVariableStack.last().put(variableName, variableType);
+            localVariableStack.last().put(variableName, new CJIRLocalVariableInfo(mutable, variableType));
         }
     }
 

@@ -359,7 +359,8 @@ public final class CJParserState {
     private Try<CJAstItemMemberDefinition> parseClassMember(Optional<String> comment) {
         int modifiers = parseClassMemberModifiers();
         switch (peek().type) {
-            case CJToken.KW_VAR: {
+            case CJToken.KW_VAR:
+            case CJToken.KW_VAL: {
                 return parseFieldDefinition(comment, modifiers).map(x -> x);
             }
             case CJToken.KW_DEF: {
@@ -376,7 +377,8 @@ public final class CJParserState {
 
     private Try<CJAstFieldDefinition> parseFieldDefinition(Optional<String> comment, int modifiers) {
         var mark = getMark();
-        if (!consume(CJToken.KW_VAR)) {
+        var mutable = at(CJToken.KW_VAR);
+        if (!consume(CJToken.KW_VAL) && !consume(CJToken.KW_VAR)) {
             return fail("Expected 'var'");
         }
         if (!at(CJToken.ID)) {
@@ -391,7 +393,7 @@ public final class CJParserState {
             return tryType.castFail();
         }
         var type = tryType.get();
-        return Try.ok(new CJAstFieldDefinition(mark, comment, modifiers, name, type));
+        return Try.ok(new CJAstFieldDefinition(mark, comment, modifiers, mutable, name, type));
     }
 
     private Try<CJAstMethodDefinition> parseMethodDefinition(List<CJAstTypeCondition> typeConditions,
@@ -502,7 +504,9 @@ public final class CJParserState {
                 var body = tryBody.get();
                 return Try.ok(new CJAstForStatement(mark, name, containerExpr, body));
             }
-            case CJToken.KW_VAR: {
+            case CJToken.KW_VAR:
+            case CJToken.KW_VAL: {
+                var mutable = at(CJToken.KW_VAR);
                 next();
                 if (!at(CJToken.ID)) {
                     return expectedType(CJToken.ID);
@@ -527,7 +531,7 @@ public final class CJParserState {
                 if (!atDelimiter()) {
                     return expectedKind("statement delimiter");
                 }
-                return Try.ok(new CJAstVariableDeclarationStatement(mark, name, type, expr));
+                return Try.ok(new CJAstVariableDeclarationStatement(mark, mutable, name, type, expr));
             }
             case CJToken.KW_RETURN: {
                 next();

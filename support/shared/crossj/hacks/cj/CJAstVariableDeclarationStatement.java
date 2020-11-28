@@ -6,13 +6,15 @@ import crossj.base.StrBuilder;
 
 public final class CJAstVariableDeclarationStatement implements CJAstStatement {
     private final CJMark mark;
+    private final boolean mutable;
     private final String name;
     private final Optional<CJAstTypeExpression> type;
     private final CJAstExpression expression;
 
-    CJAstVariableDeclarationStatement(CJMark mark, String name, Optional<CJAstTypeExpression> type,
+    CJAstVariableDeclarationStatement(CJMark mark, boolean mutable, String name, Optional<CJAstTypeExpression> type,
             CJAstExpression expression) {
         this.mark = mark;
+        this.mutable = mutable;
         this.name = name;
         this.type = type;
         this.expression = expression;
@@ -21,6 +23,10 @@ public final class CJAstVariableDeclarationStatement implements CJAstStatement {
     @Override
     public CJMark getMark() {
         return mark;
+    }
+
+    public boolean isMutable() {
+        return mutable;
     }
 
     public String getName() {

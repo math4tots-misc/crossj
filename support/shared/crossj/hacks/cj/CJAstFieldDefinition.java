@@ -7,13 +7,16 @@ public final class CJAstFieldDefinition implements CJAstItemMemberDefinition {
     private final CJMark mark;
     private final Optional<String> comment;
     private final int modifiers;
+    private final boolean mutable;
     private final String name;
     private final CJAstTypeExpression type;
 
-    CJAstFieldDefinition(CJMark mark, Optional<String> comment, int modifiers, String name, CJAstTypeExpression type) {
+    CJAstFieldDefinition(CJMark mark, Optional<String> comment, int modifiers, boolean mutable, String name,
+            CJAstTypeExpression type) {
         this.mark = mark;
         this.comment = comment;
         this.modifiers = modifiers;
+        this.mutable = mutable;
         this.name = name;
         this.type = type;
     }
@@ -31,6 +34,10 @@ public final class CJAstFieldDefinition implements CJAstItemMemberDefinition {
     @Override
     public int getModifiers() {
         return modifiers;
+    }
+
+    public boolean isMutable() {
+        return mutable;
     }
 
     @Override
@@ -52,6 +59,6 @@ public final class CJAstFieldDefinition implements CJAstItemMemberDefinition {
         if (indentFirstLine) {
             sb.repeatStr("  ", depth);
         }
-        sb.s("var ").s(name).s(" : ").s(type.inspect0()).s(suffix).s("\n");
+        sb.s(mutable ? "var " : "val ").s(name).s(" : ").s(type.inspect0()).s(suffix).s("\n");
     }
 }

@@ -171,7 +171,8 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
-        emitExpression(s.getExpression(), Optional.of(nameToLocalVariableName(s.getName())), DECLARE_LET);
+        emitExpression(s.getExpression(), Optional.of(nameToLocalVariableName(s.getName())),
+                s.isMutable() ? DECLARE_LET : DECLARE_CONST);
         return null;
     }
 

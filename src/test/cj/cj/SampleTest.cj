@@ -16,16 +16,16 @@ class SampleTest {
 
     def testLambda() : Unit {
         {
-            var f : Fn[Int, Int] = x -> x + 1
-            var x = f.call(2)
+            val f : Fn[Int, Int] = x -> x + 1
+            val x = f.call(2)
             Assert.equal(x, 3)
         }
         {
-            var x = Self.useLambda(x -> x * x)
+            val x = Self.useLambda(x -> x * x)
             Assert.equal(x, 576)
         }
         {
-            var xs = [1, 2, 3, 4, 5].map(x -> x * x)
+            val xs = [1, 2, 3, 4, 5].map(x -> x * x)
             Assert.equal(xs, [1, 4, 9, 16, 25])
         }
     }
@@ -36,8 +36,8 @@ class SampleTest {
 
     def testBlockExpressions() {
         {
-            var x = {
-                var a = 5
+            val x = {
+                val a = 5
                 a * a * a
             }
             Assert.equal(x, 125)

@@ -6,7 +6,7 @@ import cj.Assert
 class SwitchUnionTest {
     def testSample() {
         {
-            var x = Option.Some(24)
+            val x = Option.Some(24)
             var i = 0
 
             switch union (x) {
@@ -21,7 +21,7 @@ class SwitchUnionTest {
             Assert.equal(i, 24)
         }
         {
-            var x = Option[Int].None
+            val x = Option[Int].None
             var i = 0
 
             switch union (x) {

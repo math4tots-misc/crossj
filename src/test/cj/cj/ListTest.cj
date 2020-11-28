@@ -35,7 +35,7 @@ class ListTest {
     }
 
     def testFor() {
-        var strings = @[String]
+        val strings = @[String]
         for x in ["hello", "world", "bob"] {
             strings.push(x)
         }
