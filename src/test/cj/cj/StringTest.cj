@@ -8,6 +8,10 @@ class StringTest {
         Assert.equal('a'.toInt(), 97)
         Assert.equal('A'.toInt(), 65)
         Assert.equal('한'.toInt(), 54620)
+
+        Assert.equal((97).toChar(), 'a')
+        Assert.equal((98).toChar(), 'b')
+        Assert.equal((54620).toChar(), '한')
     }
 
     def testCharToString() {

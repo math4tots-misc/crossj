@@ -25,4 +25,11 @@ class IntTest {
         }
         Assert.equal(1 | 4 | 8, 1 + 4 + 8)
     }
+
+    def testArithmetic() {
+        {
+            Assert.equal(5 / 2, 2.5)
+            Assert.equal(5 // 2, 2)
+        }
+    }
 }

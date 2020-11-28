@@ -43,6 +43,7 @@ public final class CJIRWorld {
         "Iterator",
         "ToInt",
         "ToDouble",
+        "ToChar",
         "ToString",
         "ToList",
         "ListBuilder",

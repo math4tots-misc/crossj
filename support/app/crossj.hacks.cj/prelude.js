@@ -98,6 +98,9 @@ class MC$cj$Int {
     M$toDouble(x) {
         return x;
     }
+    M$toChar(x) {
+        return x < 0 || x > 0x10FFFF ? 0 : x;
+    }
 }
 const MO$cj$Int = new MC$cj$Int();
 

@@ -1,6 +1,6 @@
 package cj
 
-native class Int : Eq, Ord, Hash, Repr, ToDouble {
+native class Int : Eq, Ord, Hash, Repr, ToDouble, ToChar {
     def __eq(a : Self, b : Self) : Bool
     def __lt(a : Self, b : Self) : Bool
     def __add(a : Self, b : Self) : Self
@@ -23,4 +23,14 @@ native class Int : Eq, Ord, Hash, Repr, ToDouble {
     def repr(x: Self) : String
 
     def toDouble(x: Self) : Double
+
+    # Converts an Int to a Char.
+    #
+    # If the integer is not a valid codepoint, the '\0' character
+    # is returned.
+    #
+    # Otherwise, the character matching the codepoint of the given
+    # integer is returned.
+    #
+    def toChar(self: Self) : Char
 }
