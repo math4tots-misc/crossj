@@ -122,6 +122,11 @@ public final class CJIRVariableType implements CJIRType {
     }
 
     @Override
+    public boolean isTupleType(int argc) {
+        return false;
+    }
+
+    @Override
     public boolean isDerivedFrom(CJAstItemDefinition item) {
         Assert.that(item.isClass());
         return false;

@@ -141,6 +141,22 @@ final class CJIRContext {
                 }
                 var item = shortNameToItemMap.get(name);
                 type = new CJIRClassType(item, typeArguments.map(t -> resolveTypeExpression(t)));
+            } else if (name.equals("Tuple")) {
+                var typeArguments = typeExpression.getArguments();
+                switch (typeArguments.size()) {
+                    case 0:
+                    case 1:
+                        throw err0("Tuple requires at least two type arguments", mark);
+                    case 2:
+                    case 3:
+                    case 4:
+                        name = "Tuple" + typeArguments.size();
+                        break;
+                    default:
+                        throw err0("Too many arguments to Tuple", mark);
+                }
+                var item = shortNameToItemMap.get(name);
+                type = new CJIRClassType(item, typeArguments.map(t -> resolveTypeExpression(t)));
             } else if (isItemLevelTypeVariable(name)) {
                 Assert.equals(typeExpression.getArguments().size(), 0);
                 var definition = itemLevelTypeMap.get(name);

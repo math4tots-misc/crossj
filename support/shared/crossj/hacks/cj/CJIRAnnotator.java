@@ -55,12 +55,15 @@ public final class CJIRAnnotator
     private final CJIRClassType stringType;
     private final CJAstItemDefinition listDefinition;
     private final CJAstItemDefinition mutableListDefinition;
+    private final CJAstItemDefinition iterableDefinition;
     private final CJAstItemDefinition fn0Definition;
     private final CJAstItemDefinition fn1Definition;
     private final CJAstItemDefinition fn2Definition;
     private final CJAstItemDefinition fn3Definition;
     private final CJAstItemDefinition fn4Definition;
-    private final CJAstItemDefinition iterableDefinition;
+    private final CJAstItemDefinition tuple2Definition;
+    private final CJAstItemDefinition tuple3Definition;
+    private final CJAstItemDefinition tuple4Definition;
 
     private CJIRAnnotator(CJIRContext context) {
         this.context = context;
@@ -71,12 +74,15 @@ public final class CJIRAnnotator
         this.stringType = getSimpleTypeByQualifiedName("cj.String");
         this.listDefinition = context.world.getItem("cj.List");
         this.mutableListDefinition = context.world.getItem("cj.MutableList");
+        this.iterableDefinition = context.world.getItem("cj.Iterable");
         this.fn0Definition = context.world.getItem("cj.Fn0");
         this.fn1Definition = context.world.getItem("cj.Fn1");
         this.fn2Definition = context.world.getItem("cj.Fn2");
         this.fn3Definition = context.world.getItem("cj.Fn3");
         this.fn4Definition = context.world.getItem("cj.Fn4");
-        this.iterableDefinition = context.world.getItem("cj.Iterable");
+        this.tuple2Definition = context.world.getItem("cj.Tuple2");
+        this.tuple3Definition = context.world.getItem("cj.Tuple3");
+        this.tuple4Definition = context.world.getItem("cj.Tuple4");
     }
 
     private CJIRClassType getSimpleTypeByQualifiedName(String qualifiedName) {
@@ -91,6 +97,31 @@ public final class CJIRAnnotator
 
     private CJIRClassType getListTypeOf(CJIRType innerType) {
         return new CJIRClassType(listDefinition, List.of(innerType));
+    }
+
+    private CJIRClassType getTupleTypeOf(CJMark mark, List<CJIRType> types) {
+        switch (types.size()) {
+            case 2:
+                return getTuple2TypeOf(types.get(0), types.get(1));
+            case 3:
+                return getTuple3TypeOf(types.get(0), types.get(1), types.get(2));
+            case 4:
+                return getTuple4TypeOf(types.get(0), types.get(1), types.get(2), types.get(3));
+            default:
+                throw err0("Tuple types must have 2, 3, or 4 arguments, but got " + types.size(), mark);
+        }
+    }
+
+    private CJIRClassType getTuple2TypeOf(CJIRType a0, CJIRType a1) {
+        return new CJIRClassType(tuple2Definition, List.of(a0, a1));
+    }
+
+    private CJIRClassType getTuple3TypeOf(CJIRType a0, CJIRType a1, CJIRType a2) {
+        return new CJIRClassType(tuple3Definition, List.of(a0, a1, a2));
+    }
+
+    private CJIRClassType getTuple4TypeOf(CJIRType a0, CJIRType a1, CJIRType a2, CJIRType a3) {
+        return new CJIRClassType(tuple4Definition, List.of(a0, a1, a2, a3));
     }
 
     private CJIRClassType getFunctionType(CJMark mark, CJIRType returnType, List<CJIRType> argumentTypes) {
@@ -814,6 +845,26 @@ public final class CJIRAnnotator
         for (var element : elements) {
             annotateExpressionWithType(element, elementType);
         }
+        return null;
+    }
+
+    @Override
+    public Void visitTupleDisplay(CJAstTupleDisplayExpression e, Optional<CJIRType> a) {
+        var elements = e.getElements();
+        List<CJIRType> elementTypes;
+        if (a.isPresent()) {
+            var tupleType = a.get();
+            if (!tupleType.isTupleType(elements.size())) {
+                throw err0("Expected " + tupleType + " but got Tuple" + elements.size() + " display", e.getMark());
+            }
+            elementTypes = ((CJIRClassType) tupleType).getArguments();
+        } else {
+            for (var element : elements) {
+                annotateExpression(element);
+            }
+            elementTypes = elements.map(el -> el.getResolvedType());
+        }
+        e.resolvedType = getTupleTypeOf(e.getMark(), elementTypes);
         return null;
     }
 

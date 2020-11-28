@@ -13,7 +13,7 @@ public final class CJAstCompoundExpression implements CJAstExpression {
     private final List<CJAstStatement> statements;
     private final Optional<CJAstExpression> expression;
     CJIRType resolvedType;
-    int complexityFlag;
+    int complexityFlags;
 
     CJAstCompoundExpression(CJMark mark, List<CJAstStatement> statements, Optional<CJAstExpression> expression) {
         this.mark = mark;
@@ -46,7 +46,7 @@ public final class CJAstCompoundExpression implements CJAstExpression {
 
     @Override
     public int getComplexityFlagsOrZero() {
-        return complexityFlag;
+        return complexityFlags;
     }
 
     @Override

@@ -99,15 +99,21 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
 
     @Override
     public Void visitCompound(CJAstCompoundExpression e, Void a) {
-        e.complexityFlag = BLOCK;
+        e.complexityFlags = BLOCK;
         if (e.getExpression().isPresent()) {
-            e.complexityFlag |= annotate(e.getExpression().get());
+            e.complexityFlags |= annotate(e.getExpression().get());
         }
         return null;
     }
 
     @Override
     public Void visitListDisplay(CJAstListDisplayExpression e, Void a) {
+        e.complexityFlags = annotateList(e.getElements());
+        return null;
+    }
+
+    @Override
+    public Void visitTupleDisplay(CJAstTupleDisplayExpression e, Void a) {
         e.complexityFlags = annotateList(e.getElements());
         return null;
     }

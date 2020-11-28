@@ -31,5 +31,7 @@ public interface CJIRType {
 
     boolean isFunctionType(int argc);
 
+    boolean isTupleType(int argc);
+
     boolean isDerivedFrom(CJAstItemDefinition item);
 }

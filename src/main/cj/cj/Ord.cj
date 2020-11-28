@@ -1,6 +1,6 @@
 package cj
 
-trait Ord {
+trait Ord : Eq {
     def __lt(a: Self, b: Self) : Bool
 
     def __gt(a: Self, b: Self) : Bool {

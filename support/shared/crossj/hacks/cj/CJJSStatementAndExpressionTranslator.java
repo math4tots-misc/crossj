@@ -421,4 +421,10 @@ public final class CJJSStatementAndExpressionTranslator
         var argtmpvars = e.getElements().map(arg -> emitExpressionConst(arg));
         return "[" + Str.join(",", argtmpvars) + "]";
     }
+
+    @Override
+    public String visitTupleDisplay(CJAstTupleDisplayExpression e, Void a) {
+        var argtmpvars = e.getElements().map(arg -> emitExpressionConst(arg));
+        return "[" + Str.join(",", argtmpvars) + "]";
+    }
 }

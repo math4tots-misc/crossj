@@ -128,6 +128,11 @@ public final class CJIRClassType implements CJIRType {
     }
 
     @Override
+    public boolean isTupleType(int argc) {
+        return definition.getQualifiedName().equals("cj.Tuple" + argc);
+    }
+
+    @Override
     public boolean isDerivedFrom(CJAstItemDefinition item) {
         Assert.that(item.isClass());
         return definition == item;

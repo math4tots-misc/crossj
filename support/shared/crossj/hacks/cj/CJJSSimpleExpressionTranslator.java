@@ -11,7 +11,8 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
      * Can this expression be translated with a CJJSSimpleExpressionTranslator?
      */
     public static boolean isSimple(CJAstExpression expression) {
-        return (expression.getComplexityFlags() & ~(CJIRExpressionComplexityFlags.NONE|CJIRExpressionComplexityFlags.SIMPLE_LAMBDA)) == 0;
+        return (expression.getComplexityFlags()
+                & ~(CJIRExpressionComplexityFlags.NONE | CJIRExpressionComplexityFlags.SIMPLE_LAMBDA)) == 0;
     }
 
     private final CJJSTypeTranslator typeTranslator;
@@ -83,6 +84,13 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
 
     @Override
     public String visitListDisplay(CJAstListDisplayExpression e, Void a) {
+        var sb = Str.builder();
+        sb.s("[").s(Str.join(",", e.getElements().map(el -> translateExpression(el)))).s("]");
+        return sb.build();
+    }
+
+    @Override
+    public String visitTupleDisplay(CJAstTupleDisplayExpression e, Void a) {
         var sb = Str.builder();
         sb.s("[").s(Str.join(",", e.getElements().map(el -> translateExpression(el)))).s("]");
         return sb.build();

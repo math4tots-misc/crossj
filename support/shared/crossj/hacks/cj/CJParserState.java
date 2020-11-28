@@ -1150,7 +1150,7 @@ public final class CJParserState {
                 }
                 return Try.ok(new CJAstInstanceMethodCallExpression(mark, methodName, List.of(tryExpr.get())));
             }
-            case '(': { // parenthetical expression or lambda expression
+            case '(': { // parenthetical, lambda, or tuple display expression
                 if (atLambda()) {
                     return parseLambdaExpression().map(x -> x);
                 } else {
@@ -1159,10 +1159,27 @@ public final class CJParserState {
                     if (tryExpr.isFail()) {
                         return tryExpr.castFail();
                     }
-                    if (!consume(')')) {
-                        return expectedType(')');
+                    if (consume(',')) {
+                        // tuple display
+                        var elements = List.of(tryExpr.get());
+                        while (!consume(')')) {
+                            var tryElement = parseExpression();
+                            if (tryElement.isFail()) {
+                                return tryElement.castFail();
+                            }
+                            elements.add(tryElement.get());
+                            if (!consume(',') && !at(')')) {
+                                return expectedType(')');
+                            }
+                        }
+                        return Try.ok(new CJAstTupleDisplayExpression(mark, elements));
+                    } else {
+                        // parenthetical expression
+                        if (!consume(')')) {
+                            return expectedType(')');
+                        }
+                        return tryExpr;
                     }
-                    return tryExpr;
                 }
             }
             default:

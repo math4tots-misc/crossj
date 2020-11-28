@@ -1,3 +1,14 @@
+/**
+ * Combines the hash in a way that is consistent with
+ * `java.util.List.hashCode` in the Java language.
+ *
+ * @param {number} h1
+ * @param {number} h2
+ */
+function combineHash(h1, h2) {
+    return (((31 * h1) | 0) + h2) | 0;
+}
+
 class MC$cj$Bool {
     M$__eq(a, b) {
         return a === b;
@@ -14,8 +25,8 @@ class MC$cj$Bool {
     M$__ge(a, b) {
         return a >= b;
     }
-    M$__hash(x) {
-        return x|0;
+    M$hash(x) {
+        return x | 0;
     }
     M$repr(x) {
         return '' + x;
@@ -42,26 +53,26 @@ class MC$cj$Int {
     M$__ge(a, b) {
         return a >= b;
     }
-    M$__hash(x) {
-        return x|0;
+    M$hash(x) {
+        return x | 0;
     }
     M$__add(a, b) {
-        return (a + b)|0;
+        return (a + b) | 0;
     }
     M$__sub(a, b) {
-        return (a - b)|0;
+        return (a - b) | 0;
     }
     M$__mul(a, b) {
-        return (a * b)|0;
+        return (a * b) | 0;
     }
     M$__div(a, b) {
         return a / b;
     }
     M$__floordiv(a, b) {
-        return (a / b)|0;
+        return (a / b) | 0;
     }
     M$__mod(a, b) {
-        return (a % b)|0;
+        return (a % b) | 0;
     }
     M$__neg(x) {
         return -x;
@@ -103,8 +114,8 @@ class MC$cj$Double {
     M$__ge(a, b) {
         return a >= b;
     }
-    M$__hash(x) {
-        return (10000*x)|0;
+    M$hash(x) {
+        return (10000 * x) | 0;
     }
     M$__add(a, b) {
         return a + b;
@@ -119,7 +130,7 @@ class MC$cj$Double {
         return a / b;
     }
     M$__floordiv(a, b) {
-        return (a / b)|0;
+        return (a / b) | 0;
     }
     M$__mod(a, b) {
         return a % b;
@@ -250,6 +261,261 @@ class MC$cj$Iterator {
      */
     M$toList(iterator) {
         return Array.from(iterator);
+    }
+}
+
+/**
+ * @template A0
+ * @template A1
+ */
+class MC$cj$Tuple2 {
+    constructor(VT$A0, VT$A1) {
+        this.VT$A0 = VT$A0;
+        this.VT$A1 = VT$A1;
+    }
+
+    /**
+     * @param {[A0, A1]} tuple
+     */
+    M$get0(tuple) {
+        return tuple[0];
+    }
+
+    /**
+     * @param {[A0, A1]} tuple
+     */
+    M$get1(tuple) {
+        return tuple[1];
+    }
+
+    /**
+     * @param {[A0, A1]} tuple
+     */
+    M$repr(tuple) {
+        return "(" + this.VT$A0.M$repr(tuple[0]) + ", " + this.VT$A1.M$repr(tuple[1]) + ")";
+    }
+
+    /**
+     * @param {[A0, A1]} a
+     * @param {[A0, A1]} b
+     */
+    M$__eq(a, b) {
+        return !!(this.VT$A0.M$__eq(a[0], b[0]) && this.VT$A1.M$__eq(a[1], b[1]));
+    }
+
+    /**
+     * @param {[A0, A1]} a
+     * @param {[A0, A1]} b
+     */
+    M$__lt(a, b) {
+        return !!(
+            this.VT$A0.M$__lt(a[0], b[0]) ||
+            this.VT$A0.M$__eq(a[0], b[0]) && this.VT$A1.M$__lt(a[1], b[1])
+        );
+    }
+
+    /**
+     * @param {[A0, A1]} tuple
+     */
+    M$hash(tuple) {
+        return combineHash(
+            combineHash(
+                1,
+                this.VT$A0.M$hash(tuple[0]),
+            ),
+            this.VT$A1.M$hash(tuple[1]),
+        );
+    }
+}
+
+/**
+ * @template A0
+ * @template A1
+ * @template A2
+ */
+class MC$cj$Tuple3 {
+    constructor(VT$A0, VT$A1, VT$A2) {
+        this.VT$A0 = VT$A0;
+        this.VT$A1 = VT$A1;
+        this.VT$A2 = VT$A2;
+    }
+
+    /**
+     * @param {[A0, A1, A2]} tuple
+     */
+    M$get0(tuple) {
+        return tuple[0];
+    }
+
+    /**
+     * @param {[A0, A1, A2]} tuple
+     */
+    M$get1(tuple) {
+        return tuple[1];
+    }
+
+    /**
+     * @param {[A0, A1, A2]} tuple
+     */
+    M$get2(tuple) {
+        return tuple[2];
+    }
+
+    /**
+     * @param {[A0, A1, A2]} tuple
+     */
+    M$repr(tuple) {
+        return (
+            "(" + this.VT$A0.M$repr(tuple[0]) +
+            ", " + this.VT$A1.M$repr(tuple[1]) +
+            ", " + this.VT$A2.M$repr(tuple[2]) +
+            ")"
+        );
+    }
+
+    /**
+     * @param {[A0, A1, A2]} a
+     * @param {[A0, A1, A2]} b
+     */
+    M$__eq(a, b) {
+        return !!(
+            this.VT$A0.M$__eq(a[0], b[0]) &&
+            this.VT$A1.M$__eq(a[1], b[1]) &&
+            this.VT$A2.M$__eq(a[2], b[2])
+        );
+    }
+
+    /**
+     * @param {[A0, A1, A2]} a
+     * @param {[A0, A1, A2]} b
+     */
+    M$__lt(a, b) {
+        return !!(
+            this.VT$A0.M$__lt(a[0], b[0]) ||
+            this.VT$A0.M$__eq(a[0], b[0]) && (
+                this.VT$A1.M$__lt(a[1], b[1]) ||
+                this.VT$A1.M$__eq(a[1], b[1]) &&
+                this.VT$A2.M$__lt(a[2], b[2])
+            )
+        );
+    }
+
+    /**
+     * @param {[A0, A1, A2]} tuple
+     */
+    M$hash(tuple) {
+        return combineHash(
+            combineHash(
+                combineHash(
+                    1,
+                    this.VT$A0.M$hash(tuple[0]),
+                ),
+                this.VT$A1.M$hash(tuple[1]),
+            ),
+            this.VT$A2.M$hash(tuple[2]),
+        );
+    }
+}
+
+/**
+ * @template A0
+ * @template A1
+ * @template A2
+ * @template A3
+ */
+class MC$cj$Tuple4 {
+    constructor(VT$A0, VT$A1, VT$A2, VT$A3) {
+        this.VT$A0 = VT$A0;
+        this.VT$A1 = VT$A1;
+        this.VT$A2 = VT$A2;
+        this.VT$A3 = VT$A3;
+    }
+
+    /**
+     * @param {[A0, A1, A2, A3]} tuple
+     */
+    M$get0(tuple) {
+        return tuple[0];
+    }
+
+    /**
+     * @param {[A0, A1, A2, A3]} tuple
+     */
+    M$get1(tuple) {
+        return tuple[1];
+    }
+
+    /**
+     * @param {[A0, A1, A2, A3]} tuple
+     */
+    M$get2(tuple) {
+        return tuple[2];
+    }
+
+    /**
+     * @param {[A0, A1, A2, A3]} tuple
+     */
+    M$get3(tuple) {
+        return tuple[3];
+    }
+
+    /**
+     * @param {[A0, A1, A2, A3]} tuple
+     */
+    M$repr(tuple) {
+        return (
+            "(" + this.VT$A0.M$repr(tuple[0]) +
+            ", " + this.VT$A1.M$repr(tuple[1]) +
+            ", " + this.VT$A2.M$repr(tuple[2]) +
+            ", " + this.VT$A3.M$repr(tuple[3]) +
+            ")"
+        );
+    }
+
+    /**
+     * @param {[A0, A1, A2, A3]} a
+     * @param {[A0, A1, A2, A3]} b
+     */
+    M$__eq(a, b) {
+        return !!(
+            this.VT$A0.M$__eq(a[0], b[0]) &&
+            this.VT$A1.M$__eq(a[1], b[1]) &&
+            this.VT$A2.M$__eq(a[2], b[2]) &&
+            this.VT$A3.M$__eq(a[3], b[3])
+        );
+    }
+
+    /**
+     * @param {[A0, A1, A2, A3]} a
+     * @param {[A0, A1, A2, A3]} b
+     */
+    M$__lt(a, b) {
+        return !!(
+            this.VT$A0.M$__lt(a[0], b[0]) || this.VT$A0.M$__eq(a[0], b[0]) && (
+                this.VT$A1.M$__lt(a[1], b[1]) || this.VT$A1.M$__eq(a[1], b[1]) && (
+                    this.VT$A2.M$__lt(a[2], b[2]) || this.VT$A2.M$__eq(a[2], b[2]) && this.VT$A3.M$__lt(a[3], b[3])
+                )
+            )
+        );
+    }
+
+    /**
+     * @param {[A0, A1, A2, A3]} tuple
+     */
+    M$hash(tuple) {
+        return combineHash(
+            combineHash(
+                combineHash(
+                    combineHash(
+                        1,
+                        this.VT$A0.M$hash(tuple[0]),
+                    ),
+                    this.VT$A1.M$hash(tuple[1]),
+                ),
+                this.VT$A2.M$hash(tuple[2]),
+            ),
+            this.VT$A3.M$hash(tuple[3]),
+        );
     }
 }
 
