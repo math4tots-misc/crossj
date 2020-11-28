@@ -685,6 +685,13 @@ class MC$cj$List {
     }
 
     /**
+     * @param {Array<T>} list
+     */
+    M$toList(list) {
+        return list;
+    }
+
+    /**
      * @returns {Array<Array<T>>}
      */
     M$builder() {

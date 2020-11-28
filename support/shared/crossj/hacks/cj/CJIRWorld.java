@@ -20,6 +20,7 @@ public final class CJIRWorld {
      */
     public static final Tuple<String> AUTO_IMPORTED_ITEM_SHORT_NAMES = Tuple.of(
         "Unit",
+        "NoReturn",
         "Bool",
         "Int",
         "Double",

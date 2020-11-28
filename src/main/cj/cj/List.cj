@@ -3,6 +3,7 @@ package cj
 
 native class List[T] :
         Collection[T],
+        ToList[T],
         Repr if T : Repr,
         Eq if T : Eq,
         Ord if T : Ord,
@@ -31,6 +32,8 @@ native class List[T] :
     def size(x: Self) : Int
 
     def iter(x: Self) : Iterator[T]
+
+    def toList(self: Self) : Self
 
     def builder() : ListBuilder[T]
 }
