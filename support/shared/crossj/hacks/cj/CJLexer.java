@@ -57,15 +57,42 @@ public final class CJLexer {
 
     public static Try<List<CJToken>> lex(String string) {
         var tryTokens = lexer.lexAll(string);
-        if (tryTokens.isOk()) {
-            var tokens = tryTokens.get();
-            int line = 1;
-            if (tokens.size() > 0) {
-                line = tokens.last().line + 1;
-            }
-            tryTokens.get().add(CJToken.of(CJToken.EOF, "", line, 1));
+        if (tryTokens.isFail()) {
+            return tryTokens;
         }
-        return tryTokens;
+
+        var rawTokens = tryTokens.get();
+        int line = 1;
+        if (rawTokens.size() > 0) {
+            line = rawTokens.last().line + 1;
+        }
+        rawTokens.add(CJToken.of(CJToken.EOF, "", line, 1));
+
+        // we filter out newline tokens inside pairs of '()' or '[]' tokens
+        // but not '{}'.
+        var newTokens = List.<CJToken>of();
+        var stack = List.<Integer>of();
+        for (var token : rawTokens) {
+            switch (token.type) {
+                case '(':
+                case '[':
+                case '{':
+                    stack.add(token.type);
+                    break;
+                case ')':
+                case ']':
+                case '}':
+                    if (stack.size() > 0) {
+                        stack.pop();
+                    }
+                    break;
+            }
+            if (token.type != '\n' || stack.size() == 0 || stack.last() == '{') {
+                newTokens.add(token);
+            }
+        }
+
+        return Try.ok(newTokens);
     }
 
     private static Try<List<CJToken>> chartok(RegexMatcher m) {
