@@ -279,6 +279,21 @@ public final class CJIRAnnotator
             item.traitsByQualifiedName = traitMap;
         }
 
+        if (item.isClass()) {
+            // ==============================================================================
+            // compute field map
+            // ==============================================================================
+            var fieldMap = Map.<String, CJIRFieldInfo>of();
+            for (var fieldDefinition : item.getFields()) {
+                var name = fieldDefinition.getName();
+                var static_ = fieldDefinition.isStatic();
+                var mutable = fieldDefinition.isMutable();
+                var fieldType = fieldDefinition.getType().getAsIsType();
+                fieldMap.put(name, new CJIRFieldInfo(static_, mutable, fieldType));
+            }
+            item.fieldMap = fieldMap;
+        }
+
         // ==============================================================================
         // compute method map
         // ==============================================================================
@@ -529,6 +544,31 @@ public final class CJIRAnnotator
 
     void annotateExpression(CJAstExpression expression) {
         annotateExpressionWithOptionalType(expression, Optional.empty());
+    }
+
+    @Override
+    public Void visitFieldAccess(CJAstFieldAccessExpression e, Optional<CJIRType> a) {
+        var mark = e.getMark();
+        annotateExpression(e.getOwner());
+        var ownerType = e.getOwner().getResolvedType();
+        var fieldInfo = getFieldInfoOrThrow(mark, ownerType, e.getName());
+        e.resolvedType = fieldInfo.getType();
+        return null;
+    }
+
+    private CJIRFieldInfo getFieldInfoOrThrow(CJMark mark, CJIRType type, String fieldName) {
+        var tryInfo = getFieldInfo(mark, type, fieldName);
+        if (tryInfo.isEmpty()) {
+            throw err0("Field " + fieldName + " not found on " + type, mark);
+        }
+        return tryInfo.get();
+    }
+
+    private Optional<CJIRFieldInfo> getFieldInfo(CJMark mark, CJIRType type, String fieldName) {
+        if (type instanceof CJIRVariableType) {
+            return Optional.empty();
+        }
+        return ((CJIRClassType) type).getDefinition().getFieldMap().getOptional(fieldName);
     }
 
     @Override

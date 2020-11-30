@@ -28,6 +28,7 @@ public final class CJAstItemDefinition implements CJAstNode {
     List<CJIRTrait> allResolvedTraits;
     Map<String, CJIRTrait> traitsByQualifiedName;
     Map<String, CJIRIncompleteMethodDescriptor> methodMap;
+    Map<String, CJIRFieldInfo> fieldMap;
 
     public CJAstItemDefinition(CJMark mark, String packageName, List<CJAstImport> imports, Optional<String> comment,
             int modifiers, String shortName, List<CJAstTypeParameter> typeParameters,
@@ -139,6 +140,10 @@ public final class CJAstItemDefinition implements CJAstNode {
         return members.filter(m -> m instanceof CJAstMethodDefinition).map(m -> (CJAstMethodDefinition) m);
     }
 
+    public List<CJAstFieldDefinition> getFields() {
+        return members.filter(m -> m instanceof CJAstFieldDefinition).map(m -> (CJAstFieldDefinition) m);
+    }
+
     public Optional<CJAstItemMemberDefinition> getMemberDefinitionByName(String name) {
         return memberDefinitionByName.getOptional(name);
     }
@@ -239,5 +244,10 @@ public final class CJAstItemDefinition implements CJAstNode {
     public Map<String, CJIRIncompleteMethodDescriptor> getMethodMap() {
         Assert.that(methodMap != null);
         return methodMap;
+    }
+
+    public Map<String, CJIRFieldInfo> getFieldMap() {
+        Assert.that(fieldMap != null);
+        return fieldMap;
     }
 }

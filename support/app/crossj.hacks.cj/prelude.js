@@ -16,15 +16,6 @@ class MC$cj$Bool {
     M$__lt(a, b) {
         return a < b;
     }
-    M$__le(a, b) {
-        return a <= b;
-    }
-    M$__gt(a, b) {
-        return a > b;
-    }
-    M$__ge(a, b) {
-        return a >= b;
-    }
     M$hash(x) {
         return x | 0;
     }

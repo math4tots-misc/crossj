@@ -26,6 +26,13 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     }
 
     @Override
+    public String visitFieldAccess(CJAstFieldAccessExpression e, Void a) {
+        var owner = translateExpression(e.getOwner());
+        var fieldName = CJJSTranslator.nameToFieldName(e.getName());
+        return owner + "." + fieldName;
+    }
+
+    @Override
     public String visitInstanceMethodCall(CJAstInstanceMethodCallExpression e, Void a) {
         var owner = e.getInferredOwnerType();
         var methodName = e.getName();

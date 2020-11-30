@@ -1034,14 +1034,18 @@ public final class CJParserState {
                         return expectedType(CJToken.ID);
                     }
                     var name = parseID();
-                    var tryArgs = parseArguments();
-                    if (tryArgs.isFail()) {
-                        return tryArgs.castFail();
+                    if (at('(')) {
+                        var tryArgs = parseArguments();
+                        if (tryArgs.isFail()) {
+                            return tryArgs.castFail();
+                        }
+                        var otherArgs = tryArgs.get();
+                        var arg = tryExpr.get();
+                        var args = List.of(List.of(arg), otherArgs).flatMap(x -> x);
+                        tryExpr = Try.ok(new CJAstInstanceMethodCallExpression(mark, name, args));
+                    } else {
+                        tryExpr = Try.ok(new CJAstFieldAccessExpression(mark, tryExpr.get(), name));
                     }
-                    var otherArgs = tryArgs.get();
-                    var arg = tryExpr.get();
-                    var args = List.of(List.of(arg), otherArgs).flatMap(x -> x);
-                    tryExpr = Try.ok(new CJAstInstanceMethodCallExpression(mark, name, args));
                     break;
                 }
                 default:

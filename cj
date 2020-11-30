@@ -37,7 +37,7 @@ def main():
         cmd.extend(['-r', testroot])
         for dirpath, dirnames, filenames in os.walk(testroot):
             for filename in filenames:
-                if filename.endswith('.cj'):
+                if filename.endswith('Test.cj'):
                     relpath = os.path.relpath(join(dirpath, filename), testroot)
                     clsname = relpath[:-len('.cj')].replace(os.sep, '.')
                     cmd.extend(['-t', clsname])

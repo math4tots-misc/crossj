@@ -329,6 +329,12 @@ public final class CJJSStatementAndExpressionTranslator
     }
 
     @Override
+    public String visitFieldAccess(CJAstFieldAccessExpression e, Void a) {
+        var owner = emitExpressionPartial(e.getOwner());
+        return owner + "." + CJJSTranslator.nameToFieldName(e.getName());
+    }
+
+    @Override
     public String visitNew(CJAstNewExpression e, Void a) {
         var argtmpvars = e.getArguments().map(arg -> emitExpressionConst(arg));
         var sb = Str.builder();
