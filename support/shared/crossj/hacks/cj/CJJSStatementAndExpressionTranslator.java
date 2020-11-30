@@ -132,13 +132,13 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public Void visitFor(CJAstForStatement s, Void a) {
-        var localName = nameToLocalVariableName(s.getName());
+        var target = translateTarget(s.getTarget());
         var containerType = s.getContainerExpression().getResolvedType();
         var jsContainerType = translateType(containerType);
         var jsIterMethodName = CJJSTranslator.nameToMethodName("iter");
         var jsFullMethodRef = jsContainerType + "." + jsIterMethodName;
         var containerPartial = emitExpressionPartial(s.getContainerExpression());
-        sb.line("for (const " + localName + " of " + jsFullMethodRef + "(" + containerPartial + ")) {");
+        sb.line("for (const " + target + " of " + jsFullMethodRef + "(" + containerPartial + ")) {");
         emitStatement(s.getBody());
         sb.line("}");
         return null;

@@ -408,7 +408,7 @@ public final class CJIRAnnotator
         var iterableTrait = optIterableTrait.get();
         var itemType = iterableTrait.getArguments().get(0);
         context.enterBlock();
-        context.declareVariable(s.getMark(), false, s.getName(), itemType);
+        declareAssignmentTarget(s.getTarget(), false, itemType);
         annotateStatement(s.getBody());
         context.exitBlock();
         return null;

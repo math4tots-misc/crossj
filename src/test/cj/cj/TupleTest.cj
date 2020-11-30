@@ -37,5 +37,12 @@ class TupleTest {
             Assert.equal(x, 'x')
             Assert.equal(y, "hello")
         }
+        {
+            var a = 5
+            var b = 'z'
+            (a, b) = (10, 'd')
+            Assert.equal(a, 10)
+            Assert.equal(b, 'd')
+        }
     }
 }

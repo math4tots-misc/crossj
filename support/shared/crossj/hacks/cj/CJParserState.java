@@ -548,10 +548,11 @@ public final class CJParserState {
             }
             case CJToken.KW_FOR: {
                 next();
-                if (!at(CJToken.ID)) {
-                    return expectedType(CJToken.ID);
+                var tryTarget = parseAssignmentTarget();
+                if (tryTarget.isFail()) {
+                    return tryTarget.castFail();
                 }
-                var name = parseID();
+                var target = tryTarget.get();
                 if (!consume(CJToken.KW_IN)) {
                     return expectedType(CJToken.KW_IN);
                 }
@@ -565,7 +566,7 @@ public final class CJParserState {
                     return tryBody.castFail();
                 }
                 var body = tryBody.get();
-                return Try.ok(new CJAstForStatement(mark, name, containerExpr, body));
+                return Try.ok(new CJAstForStatement(mark, target, containerExpr, body));
             }
             case CJToken.KW_VAR:
             case CJToken.KW_VAL: {

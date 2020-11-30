@@ -5,13 +5,13 @@ import crossj.base.XError;
 
 public final class CJAstForStatement implements CJAstStatement {
     private final CJMark mark;
-    private final String name;
+    private final CJAstAssignmentTarget target;
     private final CJAstExpression containerExpression;
     private final CJAstBlockStatement body;
 
-    CJAstForStatement(CJMark mark, String name, CJAstExpression containerExpression, CJAstBlockStatement body) {
+    CJAstForStatement(CJMark mark, CJAstAssignmentTarget target, CJAstExpression containerExpression, CJAstBlockStatement body) {
         this.mark = mark;
-        this.name = name;
+        this.target = target;
         this.containerExpression = containerExpression;
         this.body = body;
     }
@@ -21,8 +21,8 @@ public final class CJAstForStatement implements CJAstStatement {
         return mark;
     }
 
-    public String getName() {
-        return name;
+    public CJAstAssignmentTarget getTarget() {
+        return target;
     }
 
     public CJAstExpression getContainerExpression() {

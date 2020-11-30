@@ -10,4 +10,14 @@ class IterTest {
             Assert.equal(list, [2, 4, 6])
         }
     }
+
+    def testForWithTupleAssignment() {
+        {
+            var ret = @[Tuple[Int, Int]]
+            for (a, b) in [(1, 2), (3, 4)] {
+                ret.push((b, a))
+            }
+            Assert.equal(ret, @[(2, 1), (4, 3)])
+        }
+    }
 }
