@@ -41,4 +41,14 @@ class ListTest {
         }
         Assert.equal(strings, @["hello", "world", "bob"])
     }
+
+    def testNewline() {
+        var list = [
+            1,
+            2
+            ,
+            3,
+        ]
+        Assert.equal(list, [1, 2, 3])
+    }
 }
