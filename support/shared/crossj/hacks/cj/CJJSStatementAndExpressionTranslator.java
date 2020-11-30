@@ -171,15 +171,23 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
-        emitExpression(s.getExpression(), Optional.of(nameToLocalVariableName(s.getName())),
+        emitExpression(s.getExpression(), Optional.of(translateTarget(s.getTarget())),
                 s.isMutable() ? DECLARE_LET : DECLARE_CONST);
         return null;
     }
 
     @Override
     public Void visitAssignment(CJAstAssignmentStatement s, Void a) {
-        emitExpression(s.getExpression(), Optional.of(nameToLocalVariableName(s.getName())), DECLARE_NONE);
+        emitExpression(s.getExpression(), Optional.of(translateTarget(s.getTarget())), DECLARE_NONE);
         return null;
+    }
+
+    private String translateTarget(CJAstAssignmentTarget target) {
+        if (target instanceof CJAstNameTarget) {
+            return nameToLocalVariableName(((CJAstNameTarget) target).getName());
+        } else {
+            return "[" + Str.join(",", ((CJAstTupleTarget) target).getSubtargets().map(t -> translateTarget(t))) + "]";
+        }
     }
 
     /**

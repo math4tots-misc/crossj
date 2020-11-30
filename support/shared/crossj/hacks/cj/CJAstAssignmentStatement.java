@@ -5,12 +5,12 @@ import crossj.base.StrBuilder;
 
 public final class CJAstAssignmentStatement implements CJAstStatement {
     private final CJMark mark;
-    private final String name;
+    private final CJAstAssignmentTarget target;
     private final CJAstExpression expression;
 
-    CJAstAssignmentStatement(CJMark mark, String name, CJAstExpression expression) {
+    CJAstAssignmentStatement(CJMark mark, CJAstAssignmentTarget target, CJAstExpression expression) {
         this.mark = mark;
-        this.name = name;
+        this.target = target;
         this.expression = expression;
     }
 
@@ -19,8 +19,8 @@ public final class CJAstAssignmentStatement implements CJAstStatement {
         return mark;
     }
 
-    public String getName() {
-        return name;
+    public CJAstAssignmentTarget getTarget() {
+        return target;
     }
 
     public CJAstExpression getExpression() {
@@ -33,7 +33,7 @@ public final class CJAstAssignmentStatement implements CJAstStatement {
         if (indentFirstLine) {
             sb.repeatStr("  ", depth);
         }
-        sb.s(name).s(" = ").s(expression.inspect0()).s("\n");
+        sb.s(target.inspect0()).s(" = ").s(expression.inspect0()).s("\n");
     }
 
     @Override

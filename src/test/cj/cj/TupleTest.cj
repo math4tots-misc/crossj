@@ -24,4 +24,18 @@ class TupleTest {
             Assert.equal(tuple.get3(), 5)
         }
     }
+
+    def testAssignment() {
+        {
+            val (a, b, c) = (1, 2, 3)
+            Assert.equal(a, 1)
+            Assert.equal(b, 2)
+            Assert.equal(c, 3)
+        }
+        {
+            val (x, y) = ('x', "hello")
+            Assert.equal(x, 'x')
+            Assert.equal(y, "hello")
+        }
+    }
 }

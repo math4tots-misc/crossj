@@ -464,6 +464,69 @@ public final class CJParserState {
         return Try.ok(new CJAstUnionCaseDefinition(mark, comment, modifiers, name, valueTypes));
     }
 
+    private Try<CJAstAssignmentTarget> parseAssignmentTarget() {
+        var mark = getMark();
+        switch (peek().type) {
+            case CJToken.ID: {
+                var name = parseID();
+                return Try.ok(new CJAstNameTarget(mark, name));
+            }
+            case '(': {
+                next();
+                var subtargets = List.<CJAstAssignmentTarget>of();
+                while (!consume(')')) {
+                    var trySubtarget = parseAssignmentTarget();
+                    if (trySubtarget.isFail()) {
+                        return trySubtarget;
+                    }
+                    subtargets.add(trySubtarget.get());
+                    if (!consume(',') && !at(')')) {
+                        return expectedType(')');
+                    }
+                }
+                return Try.ok(new CJAstTupleTarget(mark, subtargets));
+            }
+            default:
+                return expectedKind("assignment target");
+        }
+    }
+
+    private boolean atAssignmentTarget() {
+        switch (peek().type) {
+            case CJToken.ID:
+                return atOffset('=', 1);
+            case '(': {
+                int savedI = this.i;
+                var result = true;
+                int depth = 1;
+                next();
+
+                while (result && depth > 0) {
+                    switch (next().type) {
+                        case '(':
+                            depth++;
+                            break;
+                        case ')':
+                            depth--;
+                            break;
+                        case CJToken.ID:
+                        case ',':
+                            break;
+                        default:
+                            result = false;
+                            break;
+                    }
+                }
+                result = result && at('=');
+
+                this.i = savedI;
+                return result;
+            }
+            default:
+                return false;
+        }
+    }
+
     private Try<CJAstStatement> parseStatement() {
         var mark = getMark();
         switch (peek().type) {
@@ -508,10 +571,11 @@ public final class CJParserState {
             case CJToken.KW_VAL: {
                 var mutable = at(CJToken.KW_VAR);
                 next();
-                if (!at(CJToken.ID)) {
-                    return expectedType(CJToken.ID);
+                var tryTarget = parseAssignmentTarget();
+                if (tryTarget.isFail()) {
+                    return tryTarget.castFail();
                 }
-                var name = parseID();
+                var target = tryTarget.get();
                 var type = Optional.<CJAstTypeExpression>empty();
                 if (consume(':')) {
                     var tryType = parseTypeExpression();
@@ -531,7 +595,7 @@ public final class CJParserState {
                 if (!atDelimiter()) {
                     return expectedKind("statement delimiter");
                 }
-                return Try.ok(new CJAstVariableDeclarationStatement(mark, mutable, name, type, expr));
+                return Try.ok(new CJAstVariableDeclarationStatement(mark, mutable, target, type, expr));
             }
             case CJToken.KW_RETURN: {
                 next();
@@ -602,8 +666,12 @@ public final class CJParserState {
                 return Try.ok(new CJAstSwitchUnionStatement(mark, target, unionCases, defaultBody));
             }
             default: {
-                if (at(CJToken.ID) && atOffset('=', 1)) {
-                    var name = parseID();
+                if (atAssignmentTarget()) {
+                    var tryTarget = parseAssignmentTarget();
+                    if (tryTarget.isFail()) {
+                        return tryTarget.castFail();
+                    }
+                    var target = tryTarget.get();
                     next();
                     var tryExpr = parseExpression();
                     if (tryExpr.isFail()) {
@@ -613,7 +681,7 @@ public final class CJParserState {
                     if (!atDelimiter()) {
                         return expectedKind("statement delimiter");
                     }
-                    return Try.ok(new CJAstAssignmentStatement(mark, name, expr));
+                    return Try.ok(new CJAstAssignmentStatement(mark, target, expr));
                 } else {
                     var tryExpr = parseExpression();
                     if (tryExpr.isFail()) {

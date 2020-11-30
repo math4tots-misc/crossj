@@ -460,22 +460,52 @@ public final class CJIRAnnotator
         } else {
             annotateExpression(s.getExpression());
         }
-        context.declareVariable(s.getMark(), s.isMutable(), s.getName(), s.getExpression().getResolvedType());
+        declareAssignmentTarget(s.getTarget(), s.isMutable(), s.getExpression().getResolvedType());
         return null;
+    }
+
+    void declareAssignmentTarget(CJAstAssignmentTarget target, boolean mutable, CJIRType type) {
+        if (target instanceof CJAstNameTarget) {
+            var name = ((CJAstNameTarget) target).getName();
+            context.declareVariable(target.getMark(), mutable, name, type);
+        } else {
+            var subtargets = ((CJAstTupleTarget) target).getSubtargets();
+            if (!type.isTupleType(subtargets.size())) {
+                throw err0("Declared with " + type + " but found a Tuple" + subtargets.size() + " assignment target",
+                        target.getMark());
+            }
+            var subtypes = ((CJIRClassType) type).getArguments();
+            Assert.equals(subtypes.size(), subtargets.size());
+            for (int i = 0; i < subtypes.size(); i++) {
+                declareAssignmentTarget(subtargets.get(i), mutable, subtypes.get(i));
+            }
+        }
     }
 
     @Override
     public Void visitAssignment(CJAstAssignmentStatement s, Void a) {
-        var optVariableInfo = context.getVariableInfo(s.getName());
-        if (optVariableInfo.isEmpty()) {
-            throw err0("Variable '" + s.getName() + "' is not defined in this scope", s.getMark());
-        }
-        var variableInfo = optVariableInfo.get();
-        if (!variableInfo.isMutable()) {
-            throw err0("Tried to assign to an immutable variable", s.getMark());
-        }
-        annotateExpressionWithType(s.getExpression(), variableInfo.getType());
+        var targetType = getAssignmentTargetType(s.getTarget());
+        annotateExpressionWithType(s.getExpression(), targetType);
         return null;
+    }
+
+    private CJIRType getAssignmentTargetType(CJAstAssignmentTarget target) {
+        if (target instanceof CJAstNameTarget) {
+            var name = ((CJAstNameTarget) target).getName();
+            var optVariableInfo = context.getVariableInfo(name);
+            if (optVariableInfo.isEmpty()) {
+                throw err0("Variable '" + name + "' is not defined in this scope", target.getMark());
+            }
+            var variableInfo = optVariableInfo.get();
+            if (!variableInfo.isMutable()) {
+                throw err0("Tried to assign to an immutable variable", target.getMark());
+            }
+            return variableInfo.getType();
+        } else {
+            var subtargets = ((CJAstTupleTarget) target).getSubtargets();
+            var subtypes = subtargets.map(t -> getAssignmentTargetType(t));
+            return getTupleTypeOf(target.getMark(), subtypes);
+        }
     }
 
     void annotateExpressionWithOptionalType(CJAstExpression expression, Optional<CJIRType> optionalType) {

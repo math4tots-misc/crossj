@@ -7,15 +7,15 @@ import crossj.base.StrBuilder;
 public final class CJAstVariableDeclarationStatement implements CJAstStatement {
     private final CJMark mark;
     private final boolean mutable;
-    private final String name;
+    private final CJAstAssignmentTarget target;
     private final Optional<CJAstTypeExpression> type;
     private final CJAstExpression expression;
 
-    CJAstVariableDeclarationStatement(CJMark mark, boolean mutable, String name, Optional<CJAstTypeExpression> type,
-            CJAstExpression expression) {
+    CJAstVariableDeclarationStatement(CJMark mark, boolean mutable, CJAstAssignmentTarget target,
+            Optional<CJAstTypeExpression> type, CJAstExpression expression) {
         this.mark = mark;
         this.mutable = mutable;
-        this.name = name;
+        this.target = target;
         this.type = type;
         this.expression = expression;
     }
@@ -29,8 +29,8 @@ public final class CJAstVariableDeclarationStatement implements CJAstStatement {
         return mutable;
     }
 
-    public String getName() {
-        return name;
+    public CJAstAssignmentTarget getTarget() {
+        return target;
     }
 
     public Optional<CJAstTypeExpression> getType() {
@@ -47,7 +47,7 @@ public final class CJAstVariableDeclarationStatement implements CJAstStatement {
         if (indentFirstLine) {
             sb.repeatStr("  ", depth);
         }
-        sb.s("var ").s(name);
+        sb.s("var ").s(target.inspect0());
         if (type.isPresent()) {
             sb.s(" : ").s(type.get().inspect0());
         }
