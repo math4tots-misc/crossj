@@ -10,7 +10,7 @@ native class Double : Eq, Ord, Hash, Repr, ToInt {
     def __sub(a : Self, b : Self) : Self
     def __mul(a : Self, b : Self) : Self
     def __div(a : Self, b : Self) : Self
-    def __floordiv(a: Self, b: Self) : Int
+    def __truncdiv(a: Self, b: Self) : Int
     def __pow(a: Self, b: Self) : Self
     def __neg(self: Self) : Self
     def __pos(self: Self) : Self

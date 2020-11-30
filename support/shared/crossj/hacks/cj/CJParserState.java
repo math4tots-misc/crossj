@@ -908,7 +908,7 @@ public final class CJParserState {
             case '*':
             case '/':
             case '%':
-            case CJToken.FLOORDIV:
+            case CJToken.TRUNCDIV:
                 return 110;
             case CJToken.POWER:
                 return 120;
@@ -946,7 +946,7 @@ public final class CJParserState {
                 case '|':
                 case '&':
                 case CJToken.POWER:
-                case CJToken.FLOORDIV:
+                case CJToken.TRUNCDIV:
                 case CJToken.EQ:
                 case CJToken.NE:
                 case CJToken.LE:
@@ -969,7 +969,7 @@ public final class CJParserState {
                             methodName = "__div";
                             break;
                         case '%':
-                            methodName = "__mod";
+                            methodName = "__rem";
                             break;
                         case '<':
                             methodName = "__lt";
@@ -987,8 +987,8 @@ public final class CJParserState {
                             methodName = "__pow";
                             rightAssociative = true;
                             break;
-                        case CJToken.FLOORDIV:
-                            methodName = "__floordiv";
+                        case CJToken.TRUNCDIV:
+                            methodName = "__truncdiv";
                             break;
                         case CJToken.EQ:
                             methodName = "__eq";

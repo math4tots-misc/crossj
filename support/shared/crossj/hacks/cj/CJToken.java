@@ -28,7 +28,7 @@ public final class CJToken {
     public static final int GE = 20;
     public static final int LSHIFT = 21;
     public static final int RSHIFT = 22;
-    public static final int FLOORDIV = 23;
+    public static final int TRUNCDIV = 23;
     public static final int POWER = 24;
     public static final int RIGHT_ARROW = 25;
 
@@ -148,8 +148,8 @@ public final class CJToken {
                 return "CJToken.LSHIFT";
             case RSHIFT:
                 return "CJToken.RSHIFT";
-            case FLOORDIV:
-                return "CJToken.FLOORDIV";
+            case TRUNCDIV:
+                return "CJToken.TRUNCDIV";
             case POWER:
                 return "CJToken.POWER";
             case RIGHT_ARROW:

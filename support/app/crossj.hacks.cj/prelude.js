@@ -68,10 +68,10 @@ class MC$cj$Int {
     M$__div(a, b) {
         return a / b;
     }
-    M$__floordiv(a, b) {
+    M$__truncdiv(a, b) {
         return (a / b) | 0;
     }
-    M$__mod(a, b) {
+    M$__rem(a, b) {
         return (a % b) | 0;
     }
     M$__neg(x) {
@@ -135,10 +135,10 @@ class MC$cj$Double {
     M$__div(a, b) {
         return a / b;
     }
-    M$__floordiv(a, b) {
+    M$__truncdiv(a, b) {
         return (a / b) | 0;
     }
-    M$__mod(a, b) {
+    M$__rem(a, b) {
         return a % b;
     }
     M$__neg(x) {
