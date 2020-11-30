@@ -51,4 +51,11 @@ class ListTest {
         ]
         Assert.equal(list, [1, 2, 3])
     }
+
+    def testHashCode() {
+        # For better or worse, the hashes should more or less match Java's
+        # TODO: Consider whether hashes should vary
+        Assert.equal((5).hash(), 5)
+        Assert.equal([1, 2, 3].hash(), 30817)
+    }
 }

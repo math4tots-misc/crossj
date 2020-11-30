@@ -228,36 +228,6 @@ const MO$cj$Char = new MC$cj$Char();
 
 class MC$cj$String {
     /**
-     * @param {string} x
-     */
-    M$repr(x) {
-        return '"' + x.replace(/\n|\r|[\x01-\x1E]/g, m => {
-            switch (m) {
-                case '\n': return "\\n";
-                case '\r': return "\\r";
-                case '\t': return "\\t";
-                case '"': return "\\\"";
-                default:
-                    const ch = m.codePointAt(0);
-                    if (ch < 32) {
-                        const rawStr = ch.toString(16);
-                        return "\\x" + rawStr.length < 2 ? '0'.repeat(2 - rawStr.length) + rawStr : rawStr;
-                    } else {
-                        const rawStr = ch.toString(16);
-                        return "\\u" + rawStr.length < 4 ? '0'.repeat(4 - rawStr.length) + rawStr : rawStr;
-                    }
-            }
-        }) + '"';
-    }
-
-    /**
-     * @param {string} x
-     */
-    M$toString(x) {
-        return x;
-    }
-
-    /**
      * @param {string} a
      * @param {string} b
      */
@@ -286,6 +256,47 @@ class MC$cj$String {
      */
     M$size(x) {
         return x.length;
+    }
+
+    /**
+     * @param {string} s
+     */
+    M$hash(s) {
+        let h = 0;
+        for (const c of s) {
+            h = combineHash(h, c.codePointAt(0));
+        }
+        return h;
+    }
+
+    /**
+     * @param {string} x
+     */
+    M$repr(x) {
+        return '"' + x.replace(/\n|\r|[\x01-\x1E]/g, m => {
+            switch (m) {
+                case '\n': return "\\n";
+                case '\r': return "\\r";
+                case '\t': return "\\t";
+                case '"': return "\\\"";
+                default:
+                    const ch = m.codePointAt(0);
+                    if (ch < 32) {
+                        const rawStr = ch.toString(16);
+                        return "\\x" + rawStr.length < 2 ? '0'.repeat(2 - rawStr.length) + rawStr : rawStr;
+                    } else {
+                        const rawStr = ch.toString(16);
+                        return "\\u" + rawStr.length < 4 ? '0'.repeat(4 - rawStr.length) + rawStr : rawStr;
+                    }
+            }
+        }) + '"';
+    }
+
+    /**
+     * @param {string} x
+     */
+    M$toString(x) {
+        return x;
     }
 
     /**
@@ -682,6 +693,35 @@ class MC$cj$List {
             }
         }
         return true;
+    }
+
+    /**
+     * @param {Array<T>} list
+     */
+    M$hash(list) {
+        const T = this.VT$T;
+        let hash = 1;
+        for (const item of list) {
+            hash = combineHash(hash, T.M$hash(item));
+        }
+        return hash;
+    }
+
+    /**
+     * @param {Array<T>} a
+     * @param {Array<T>} b
+     */
+    M$__lt(a, b) {
+        const T = this.VT$T;
+        const len = a.length < b.length ? a.length : b.length;
+        for (let i = 0; i < len; i++) {
+            if (T.M$__lt(a[i], b[i])) {
+                return true;
+            } else if (T.M$__lt(b[i], a[i])) {
+                return false;
+            }
+        }
+        return a.length < b.length;
     }
 
     /**

@@ -39,4 +39,11 @@ class StringTest {
             Assert.equal(chars, @['x', 'y', 'z'])
         }
     }
+
+    def testHash() {
+        # For better or for worse, these should match the java hash results.
+        # TODO: Consider whether hashes should vary
+        Assert.equal("hello".hash(), 99162322)
+        Assert.equal("world".hash(), 113318802)
+    }
 }
