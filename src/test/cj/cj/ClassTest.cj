@@ -23,5 +23,11 @@ class ClassTest {
             # read-only static field
             Assert.equal(SampleClass.sampleStaticField, "some static field")
         }
+        {
+            # mutable static fields
+            Assert.equal(SampleClass.sampleMutableStaticField, "mutable static field")
+            SampleClass.sampleMutableStaticField = "asdfasdf"
+            Assert.equal(SampleClass.sampleMutableStaticField, "asdfasdf")
+        }
     }
 }

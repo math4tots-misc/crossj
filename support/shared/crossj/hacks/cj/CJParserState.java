@@ -697,6 +697,10 @@ public final class CJParserState {
             var owner = ((CJAstFieldAccessExpression) expression).getOwner();
             var name = ((CJAstFieldAccessExpression) expression).getName();
             return Try.ok(new CJAstFieldAccessTarget(mark, owner, name));
+        } else if (expression instanceof CJAstStaticFieldAccessExpression) {
+            var owner = ((CJAstStaticFieldAccessExpression) expression).getOwner();
+            var name = ((CJAstStaticFieldAccessExpression) expression).getName();
+            return Try.ok(new CJAstStaticFieldTarget(mark, owner, name));
         }
         return failWithMark("Expected assignment target", mark);
     }

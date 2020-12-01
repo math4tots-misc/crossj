@@ -528,11 +528,23 @@ public final class CJIRAnnotator
             var subtargets = ((CJAstTupleTarget) target).getSubtargets();
             var subtypes = subtargets.map(t -> getExtendedAssignmentTargetType(t));
             return getTupleTypeOf(target.getMark(), subtypes);
-        } else {
+        } else if (target instanceof CJAstFieldAccessTarget) {
             var t = (CJAstFieldAccessTarget) target;
             annotateExpression(t.getOwner());
             var ownerType = t.getOwner().getResolvedType();
             var fieldInfo = getFieldInfoOrThrow(target.getMark(), ownerType, t.getName());
+            if (fieldInfo.isStatic()) {
+                throw err0(ownerType + "." + t.getName() + " is a static field", target.getMark());
+            }
+            return fieldInfo.getType();
+        } else {
+            var t = (CJAstStaticFieldTarget) target;
+            annotateTypeExpression(t.getOwner());
+            var ownerType = t.getOwner().getAsIsType();
+            var fieldInfo = getFieldInfoOrThrow(target.getMark(), ownerType, t.getName());
+            if (!fieldInfo.isStatic()) {
+                throw err0(ownerType + "." + t.getName() + " is a non-static field", target.getMark());
+            }
             return fieldInfo.getType();
         }
     }

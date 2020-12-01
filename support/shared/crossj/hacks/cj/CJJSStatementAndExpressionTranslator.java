@@ -185,10 +185,14 @@ public final class CJJSStatementAndExpressionTranslator
     private String emitExtendedTarget(CJAstExtendedAssignmentTarget target) {
         if (target instanceof CJAstAssignmentTarget) {
             return translateTarget((CJAstAssignmentTarget) target);
-        } else {
+        } else if (target instanceof CJAstFieldAccessTarget) {
             var t = (CJAstFieldAccessTarget) target;
             var owner = emitExpressionPartial(t.getOwner());
             return owner + "." + CJJSTranslator.nameToFieldName(t.getName());
+        } else {
+            var t = (CJAstStaticFieldTarget) target;
+            var owner = translateType(t.getOwner().getAsIsType());
+            return owner + "." + CJJSTranslator.nameToStaticFieldCacheName(t.getName());
         }
     }
 
