@@ -1,6 +1,5 @@
 package cj
 
-
 native class Char : Eq, Ord, Hash, Repr, ToInt {
     def __eq(a: Self, b: Self) : Bool
     def __lt(a: Self, b: Self) : Bool

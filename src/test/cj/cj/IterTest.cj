@@ -1,8 +1,5 @@
 package cj
 
-import cj.Assert
-
-
 class IterTest {
     def testFilter() {
         {

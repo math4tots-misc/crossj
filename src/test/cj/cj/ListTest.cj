@@ -1,7 +1,5 @@
 package cj
 
-import cj.Assert
-
 class ListTest {
     def testEq() {
         # Assert.that([] == [])

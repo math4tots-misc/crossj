@@ -1,9 +1,5 @@
 package cj
 
-
-import cj.Assert
-
-
 class IntTest {
 
     def testUnary() {

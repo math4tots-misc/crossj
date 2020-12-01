@@ -1,7 +1,6 @@
 package cj
 
 import cj.IO
-import cj.Assert
 
 class SampleTest {
     def testSample() : Unit {

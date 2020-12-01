@@ -1,6 +1,5 @@
 package cj
 
-import cj.Assert
 import cj.dat.SampleClass
 import cj.dat.SampleClass2
 

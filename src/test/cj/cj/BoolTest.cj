@@ -1,8 +1,5 @@
 package cj
 
-import cj.Assert
-
-
 class BoolTest {
     def testMisc() {
         Assert.that(true)

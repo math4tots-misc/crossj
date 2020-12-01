@@ -54,7 +54,8 @@ public final class CJIRWorld {
         "Repr",
         "Eq",
         "Ord",
-        "Hash"
+        "Hash",
+        "Assert"
     );
 
     public void add(CJAstItemDefinition item) {

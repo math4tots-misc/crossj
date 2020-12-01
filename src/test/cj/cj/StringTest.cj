@@ -1,8 +1,5 @@
 package cj
 
-import cj.Assert
-
-
 class StringTest {
     def testCharToInt() {
         Assert.equal('a'.toInt(), 97)

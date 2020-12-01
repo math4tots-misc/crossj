@@ -1,6 +1,5 @@
 package cj
 
-
 native class List[T] :
         Collection[T],
         ToList[T],

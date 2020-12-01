@@ -1,7 +1,5 @@
 package cj
 
-import cj.Assert
-
 class LambdaTest {
 
     def testMultipleParameters() {

@@ -1,6 +1,5 @@
 package cj
 
-
 native class Tuple2[A0, A1] :
         Repr if A0 : Repr and A1 : Repr,
         Eq if A0 : Eq and A1 : Eq,

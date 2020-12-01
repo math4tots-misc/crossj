@@ -1,6 +1,5 @@
 package cj
 
-
 native class Buffer : Repr, Eq, Clone {
     def withCapacity(capacity: Int) : Self
     def withSize(size: Int) : Self
