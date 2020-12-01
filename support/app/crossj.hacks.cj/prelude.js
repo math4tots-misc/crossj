@@ -947,6 +947,51 @@ class MC$cj$Fn4 {
 }
 
 /**
+ * @typedef {[string]} Err
+ */
+
+/**
+ *
+ */
+class MC$cj$Error {
+    /**
+     * @param {string} message
+     * @returns {Err}
+     */
+    M$fromMessage(message) {
+        return [message];
+    }
+
+    /**
+     * @param {Err} error
+     */
+    M$getMessage(error) {
+        return error[0];
+    }
+
+    /**
+     * @param {Err} error
+     */
+    M$repr(error) {
+        return "Error(" + MO$cj$String.M$repr(error[0]) + ")";
+    }
+
+    /**
+     * @param {Err} a
+     * @param {Err} b
+     */
+    M$__eq(a, b) {
+        return a[0] === b[0];
+    }
+}
+const MO$cj$Error = new MC$cj$Error();
+
+/**
+ * @template T
+ * @typedef {[0, T]|[1, Err]} Try
+ */
+
+/**
  * @template T
  */
 class MC$cj$Try {
@@ -957,19 +1002,66 @@ class MC$cj$Try {
     M$repr(x) {
         switch (x[0]) {
             case 0:
-                return 'Ok(' + this.VT$T.M$repr(x[1]) + ')';
+                return 'Try.Ok(' + this.VT$T.M$repr(x[1]) + ')';
             case 1:
-                return 'Fail(' + this.VT$T.M$repr(x[1]) + ')';
+                return 'Try.Fail(' + MO$cj$Error.M$repr(x[1]) + ')';
         }
     }
 
-    M$toString(x) {
-        switch (x[0]) {
-            case 0:
-                return 'Ok(' + this.VT$T.M$toString(x[1]) + ')';
-            case 1:
-                return 'Fail(' + this.VT$T.M$toString(x[1]) + ')';
+    /**
+     * @param {T} t
+     * @returns {Try<T>}
+     */
+    M$ok(t) {
+        return [0, t];
+    }
+
+    /**
+     * @param {string} message
+     * @returns {Try<T>}
+     */
+    M$fail(message) {
+        return [1, MO$cj$Error.M$fromMessage(message)];
+    }
+
+    /**
+     * @param {Try<T>} t
+     */
+    M$isOk(t) {
+        return t[0] === 0;
+    }
+
+    /**
+     * @param {Try<T>} t
+     */
+    M$isFail(t) {
+        return t[0] === 1;
+    }
+
+    /**
+     * @param {Try<T>} t
+     */
+    M$get(t) {
+        if (t[0] === 0) {
+            return t[1];
+        } else {
+            throw new Error("get from a failed Try");
         }
+    }
+
+    /**
+     * @param {Try<T>} t
+     */
+    M$getError(t) {
+        if (t[0] === 1) {
+            return t[1];
+        } else {
+            throw new Error("getError from a successful Try");
+        }
+    }
+
+    M$getErrorMessage(t) {
+        return this.M$getError(t)[0];
     }
 }
 
@@ -1026,6 +1118,17 @@ class MC$cj$IO {
      */
     M$println(VT$T, t) {
         console.log(VT$T.M$toString(t));
+    }
+
+    /**
+     * panic[T](t: T) : NoReturn
+     * @template T
+     * @param {*} VT$T
+     * @param {T} t
+     */
+    M$panic(VT$T, t) {
+        const message = VT$T.M$toString(t);
+        throw new Error(message);
     }
 }
 const MO$cj$IO = new MC$cj$IO();

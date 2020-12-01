@@ -1,5 +1,8 @@
 package cj
 
-class Error {
-    val message: String
+native class Error : Repr, Eq {
+    def fromMessage(message: String) : Self
+    def getMessage(self: Self) : String
+    def repr(self: Self) : String
+    def __eq(a: Self, b: Self) : Bool
 }

@@ -39,4 +39,13 @@ public final class CJIRExpressionComplexityFlags {
      * statements that appear in lambdas)
      */
     public static final int BLOCK = 8;
+
+    /**
+     * Contains the use of the error propagation operator (i.e. postfix '?').
+     *
+     * This potentially causes a return in the middle of evaluating an expression.
+     * For many target languages that don't natively support this, such expressions
+     * can't be translated into expressions in the target language.
+     */
+    public static final int ERROR_PROPAGATION = 16;
 }

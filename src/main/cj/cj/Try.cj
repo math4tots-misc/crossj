@@ -1,8 +1,7 @@
 package cj
 
 native union Try[T] :
-        Repr if T : Repr,
-        ToString if T : Repr {
+        Repr if T : Repr {
     case Ok(T)
     case Fail(Error)
 
@@ -10,7 +9,12 @@ native union Try[T] :
         def repr(x: Self) : String
     }
 
-    if T : String {
-        def toString(x: Self) : String
-    }
+    def fail(x: Self) : String
+
+    def isOk(self: Self) : Bool
+    def isFail(self: Self) : Bool
+
+    def get(self: Self) : T
+    def getError(self: Self) : Error
+    def getErrorMessage(self: Self) : String
 }

@@ -884,11 +884,8 @@ public final class CJParserState {
     private static final int DEFAULT_UNARY_OP_BINDING_POWER = getTokenPrecedence('*') + 5;
 
     private static int getTokenPrecedence(int tokenType) {
-        // mostly follows Python
+        // mostly follows Python, except uses Rust style '?'
         switch (tokenType) {
-            // '?' is reserved for short-circuit returns as in Rust.
-            // case '?':
-            // return 30;
             case CJToken.KW_OR:
                 return 40;
             case CJToken.KW_AND:
@@ -921,6 +918,7 @@ public final class CJParserState {
             case CJToken.POWER:
                 return 120;
             case '.':
+            case '?':
                 return 130;
             default:
                 return -1;
@@ -1055,6 +1053,11 @@ public final class CJParserState {
                     } else {
                         tryExpr = Try.ok(new CJAstFieldAccessExpression(mark, tryExpr.get(), name));
                     }
+                    break;
+                }
+                case '?': {
+                    next();
+                    tryExpr = Try.ok(new CJAstErrorPropagationExpression(mark, tryExpr.get()));
                     break;
                 }
                 default:

@@ -57,6 +57,7 @@ public final class CJIRAnnotator
     private final CJAstItemDefinition listDefinition;
     private final CJAstItemDefinition mutableListDefinition;
     private final CJAstItemDefinition iterableDefinition;
+    private final CJAstItemDefinition tryDefinition;
     private final CJAstItemDefinition fn0Definition;
     private final CJAstItemDefinition fn1Definition;
     private final CJAstItemDefinition fn2Definition;
@@ -77,6 +78,7 @@ public final class CJIRAnnotator
         this.listDefinition = context.world.getItem("cj.List");
         this.mutableListDefinition = context.world.getItem("cj.MutableList");
         this.iterableDefinition = context.world.getItem("cj.Iterable");
+        this.tryDefinition = context.world.getItem("cj.Try");
         this.fn0Definition = context.world.getItem("cj.Fn0");
         this.fn1Definition = context.world.getItem("cj.Fn1");
         this.fn2Definition = context.world.getItem("cj.Fn2");
@@ -99,6 +101,10 @@ public final class CJIRAnnotator
 
     private CJIRClassType getListTypeOf(CJIRType innerType) {
         return new CJIRClassType(listDefinition, List.of(innerType));
+    }
+
+    private CJIRClassType getTryTypeOf(CJIRType innerType) {
+        return new CJIRClassType(tryDefinition, List.of(innerType));
     }
 
     private CJIRClassType getTupleTypeOf(CJMark mark, List<CJIRType> types) {
@@ -1164,6 +1170,23 @@ public final class CJIRAnnotator
         }
         e.resolvedType = classType;
         e.resolvedUnionCaseDescriptor = unionCaseDescriptor;
+        return null;
+    }
+
+    @Override
+    public Void visitErrorPropagation(CJAstErrorPropagationExpression e, Optional<CJIRType> a) {
+        if (!context.isInsideMethod()) {
+            throw err0("Cannot return from outside a method", e.getMark());
+        }
+        if (!context.getDeclaredReturnType().isDerivedFrom(tryDefinition)) {
+            throw err0("You can only use the '?' operator from a method that returns a Try type", e.getMark());
+        }
+        annotateExpressionWithOptionalType(e.getInner(), a.map(t -> getTryTypeOf(t)));
+        if (!e.getInner().getResolvedType().isDerivedFrom(tryDefinition)) {
+            throw err0("The '?' operator requires a Try type expression to propagate", e.getMark());
+        }
+        var wrappingType = (CJIRClassType) e.getInner().getResolvedType();
+        e.resolvedType = wrappingType.getArguments().get(0);
         return null;
     }
 }

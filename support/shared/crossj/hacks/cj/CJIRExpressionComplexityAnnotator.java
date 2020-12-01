@@ -7,6 +7,7 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     private static final int SIMPLE_LAMBDA = CJIRExpressionComplexityFlags.SIMPLE_LAMBDA;
     private static final int COMPLEX_LAMBDA = CJIRExpressionComplexityFlags.COMPLEX_LAMBDA;
     private static final int BLOCK = CJIRExpressionComplexityFlags.BLOCK;
+    private static final int ERROR_PROPAGATION = CJIRExpressionComplexityFlags.ERROR_PROPAGATION;
     private static final CJIRExpressionComplexityAnnotator instance = new CJIRExpressionComplexityAnnotator();
 
     private CJIRExpressionComplexityAnnotator() {
@@ -135,6 +136,12 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     @Override
     public Void visitTupleDisplay(CJAstTupleDisplayExpression e, Void a) {
         e.complexityFlags = annotateList(e.getElements());
+        return null;
+    }
+
+    @Override
+    public Void visitErrorPropagation(CJAstErrorPropagationExpression e, Void a) {
+        e.complexityFlags = annotate(e.getInner()) | ERROR_PROPAGATION;
         return null;
     }
 }

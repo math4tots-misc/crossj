@@ -225,7 +225,7 @@ public final class CJJSStatementAndExpressionTranslator
      * This method will fall back to `emitExpression(expression, Optional.empty(),
      * DECLARE_CONST)`, except in cases where it is known that the resulting
      * expression is cheap to compute and has no side effects, where it will try to
-     * omit as many new temporary variables as possible.
+     * omit as few new temporary variables as possible.
      */
     String emitExpressionConst(CJAstExpression expression) {
         if (
@@ -468,6 +468,13 @@ public final class CJJSStatementAndExpressionTranslator
             sb.line("}");
             return "";
         }
+    }
+
+    @Override
+    public String visitErrorPropagation(CJAstErrorPropagationExpression e, Void a) {
+        var inner = emitExpression(e.getInner(), Optional.empty(), DECLARE_CONST);
+        sb.line("if (" + inner + "[0] === 1) { return " + inner + "; }");
+        return inner + "[1]";
     }
 
     @Override

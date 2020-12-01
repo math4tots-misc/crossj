@@ -18,4 +18,5 @@ public interface CJAstExpressionVisitor<R, A> {
     R visitLogicalBinary(CJAstLogicalBinaryExpression e, A a);
     R visitConditional(CJAstConditionalExpression e, A a);
     R visitCompound(CJAstCompoundExpression e, A a);
+    R visitErrorPropagation(CJAstErrorPropagationExpression e, A a);
 }

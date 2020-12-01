@@ -124,6 +124,11 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     }
 
     @Override
+    public String visitErrorPropagation(CJAstErrorPropagationExpression e, Void a) {
+        throw XError.withMessage("Error propagating expressions cannot appear in simple expressions");
+    }
+
+    @Override
     public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
         return "(!" + translateExpression(e.getInner()) + ")";
     }

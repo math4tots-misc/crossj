@@ -15,6 +15,7 @@ public final class CJIRClassType implements CJIRType {
 
     CJIRClassType(CJAstItemDefinition definition, List<CJIRType> args) {
         Assert.that(!definition.isTrait());
+        Assert.equals(definition.getTypeParameters().size(), args.size());
         this.definition = definition;
         this.args = args;
     }
