@@ -50,4 +50,11 @@ class ControlFlowTest {
         }
         return Try.Ok(24)
     }
+
+    def returnTryWithLowercaseFail(throwError: Bool) : Try[Int] {
+        if (throwError) {
+            return Try.fail("some-error")
+        }
+        return Try.Ok(24)
+    }
 }

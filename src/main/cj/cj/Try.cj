@@ -9,7 +9,7 @@ native union Try[T] :
         def repr(x: Self) : String
     }
 
-    def fail(x: Self) : String
+    def fail(message: String) : Self
 
     def isOk(self: Self) : Bool
     def isFail(self: Self) : Bool
