@@ -151,14 +151,13 @@ class MC$cj$Double {
         return '' + x;
     }
     M$toInt(x) {
-        return x|0;
+        return x | 0;
     }
     M$toBool(x) {
         return x !== 0;
     }
 }
 const MO$cj$Double = new MC$cj$Double();
-
 
 class MC$cj$Char {
     /**
@@ -316,6 +315,9 @@ const MO$cj$String = new MC$cj$String();
 
 /**
  * @template T
+ *
+ * In general, iterators will be generator objects,
+ * but in some cases, cj Iterators may actually be any javascript iterable.
  */
 class MC$cj$Iterator {
     constructor(VT$T) {
@@ -366,6 +368,13 @@ class MC$cj$Iterator {
      */
     M$toList(iterator) {
         return Array.from(iterator);
+    }
+
+    /**
+     * @param {IterableIterator<T>} iterator
+     */
+    M$iter(iterator) {
+        return iterator;
     }
 }
 
@@ -1128,6 +1137,439 @@ class MC$cj$Assert {
     }
 }
 const MO$cj$Assert = new MC$cj$Assert();
+
+
+// TODO: use BigInt for the 64-bit int ops
+class Bytes {
+    /**
+     * @param {ArrayBuffer} buffer
+     */
+    constructor(buffer, siz) {
+        this.siz = Math.max(0, siz);
+        this.buffer = buffer;
+        this.view = new DataView(buffer);
+        this.endian = true // little endian
+    }
+
+    static M$withCapacity(capacity) {
+        capacity = capacity < 16 ? 16 : capacity;
+        return new Bytes(new ArrayBuffer(capacity), 0);
+    }
+
+    static M$withSize(size) {
+        let ret = new Bytes(new ArrayBuffer(size), size);
+        return ret;
+    }
+
+    static M$ofU8s(u8s) {
+        let ret = Bytes.M$withCapacity(u8s.length);
+        for (let b of u8s) {
+            ret.M$addU8(b);
+        }
+        return ret;
+    }
+
+    static M$ofI8s(i8s) {
+        let ret = Bytes.M$withCapacity(i8s.length);
+        for (let b of i8s) {
+            ret.M$addI8(b);
+        }
+        return ret;
+    }
+
+    static M$ofI32LEs(i32les) {
+        let ret = Bytes.M$withCapacity(i32les.length * 4);
+        for (let b of i32les) {
+            ret.M$addI32(b);
+        }
+        return ret;
+    }
+
+    static M$ofI32BEs(i32bes) {
+        let ret = Bytes.M$withCapacity(i32bes.length * 4);
+        ret.M$useLittleEndian(false);
+        for (let b of i32bes) {
+            ret.M$addI32(b);
+        }
+        return ret;
+    }
+
+    static M$fromASCII(string) {
+        let ret = Bytes.M$withCapacity(string.length);
+        for (let i = 0; i < string.length; i++) {
+            ret.M$addU8(string.charCodeAt(i));
+        }
+        return ret;
+    }
+
+    cap() {
+        return this.buffer.byteLength;
+    }
+
+    M$size() {
+        return this.siz;
+    }
+
+    M$useLittleEndian(littleEndian) {
+        this.endian = littleEndian;
+    }
+
+    M$usingLittleEndian() {
+        return this.endian;
+    }
+
+    setNewSize(newSize) {
+        if (this.cap() < newSize) {
+            let newCap = newSize * 2;
+            let src = new Uint8Array(this.buffer, 0, this.siz);
+            let newBuffer = new ArrayBuffer(newCap);
+            new Uint8Array(newBuffer).set(src);
+            this.buffer = newBuffer;
+            this.view = new DataView(this.buffer);
+        }
+        this.siz = newSize;
+    }
+
+    M$addF64(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 8);
+        this.M$setF64(pos, value);
+    }
+
+    M$addF32(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 4);
+        this.M$setF32(pos, value);
+    }
+
+    M$addU8(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 1);
+        this.M$setU8(pos, value);
+    }
+
+    M$addU16(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 2);
+        this.M$setU16(pos, value);
+    }
+
+    M$addU32(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 4);
+        this.M$setU32(pos, value);
+    }
+
+    M$addI8(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 1);
+        this.M$setI8(pos, value);
+    }
+
+    M$addI16(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 2);
+        this.M$setI16(pos, value);
+    }
+
+    M$addI32(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 4);
+        this.M$setI32(pos, value);
+    }
+
+    M$addU32AsDouble(value) {
+        let pos = this.siz;
+        this.setNewSize(pos + 4);
+        this.M$setU32AsDouble(pos, value);
+    }
+
+    /**
+     * @param {Bytes} bytes
+     */
+    M$addBytes(bytes) {
+        let pos = this.siz;
+        this.setNewSize(pos + bytes.siz);
+        this.M$setBytes(pos, bytes);
+    }
+
+    M$addASCII(ascii) {
+        this.M$addBytes(Bytes.M$fromASCII(ascii));
+    }
+
+    M$setF64(index, value) {
+        this.view.setFloat64(index, value, this.endian);
+    }
+
+    M$setF32(index, value) {
+        this.view.setFloat32(index, value, this.endian);
+    }
+
+    M$setI8(index, value) {
+        this.view.setInt8(index, value);
+    }
+
+    M$setI16(index, value) {
+        this.view.setInt16(index, value, this.endian);
+    }
+
+    M$setI32(index, value) {
+        this.view.setInt32(index, value, this.endian);
+    }
+
+    M$setU8(index, value) {
+        this.view.setUint8(index, value);
+    }
+
+    M$setU16(index, value) {
+        this.view.setUint16(index, value, this.endian);
+    }
+
+    M$setU32(index, value) {
+        this.view.setUint32(index, value, this.endian);
+    }
+
+    M$setU32AsDouble(index, value) {
+        this.M$setU32(index, value);
+    }
+
+    /**
+     * @param {number} index
+     * @param {Bytes} value
+     */
+    M$setBytes(index, value) {
+        let src = new Uint8Array(value.buffer, 0, value.siz);
+        let dst = new Uint8Array(this.buffer, index);
+        dst.set(src);
+    }
+
+    M$getI8(index) {
+        return this.view.getInt8(index);
+    }
+
+    M$getI16(index) {
+        return this.view.getInt16(index, this.endian);
+    }
+
+    M$getI32(index) {
+        return this.view.getInt32(index, this.endian);
+    }
+
+    M$getU8(index) {
+        return this.view.getUint8(index);
+    }
+
+    M$getU16(index) {
+        return this.view.getUint16(index, this.endian);
+    }
+
+    M$getU32(index) {
+        return this.view.getUint32(index, this.endian);
+    }
+
+    M$getU32AsDouble(index) {
+        return this.M$getU32(index);
+    }
+
+    M$getBytes(start, end) {
+        return new Bytes(this.buffer.slice(start, end), end - start);
+    }
+
+    M$asU8s() {
+        return new Uint8Array(this.buffer, 0, this.siz);
+    }
+
+    M$asI8s() {
+        return new Int8Array(this.buffer, 0, this.siz);
+    }
+
+    M$toString() {
+        return 'Bytes.ofU8s([' + this.M$asU8s().join(', ') + '])';
+    }
+    toString() {
+        return this.M$toString();
+    }
+
+    M$equals(other) {
+        if (!(other instanceof Bytes)) {
+            return false;
+        }
+        let len = this.siz;
+        if (len !== other.siz) {
+            return false;
+        }
+        let a = this.M$asU8s();
+        let b = other.M$asU8s();
+        for (let i = 0; i < len; i++) {
+            if (a[i] !== b[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    M$clone() {
+        const buf = new ArrayBuffer(this.siz);
+        new Uint8Array(buf).set(this.M$asU8s());
+        return new Bytes(buf, this.siz);
+    }
+}
+
+class MC$cj$Buffer {
+    M$withCapacity(capacity) {
+        return Bytes.M$withCapacity(capacity);
+    }
+    M$withSize(size) {
+        return Bytes.M$withSize(size);
+    }
+    M$ofU8s(list) {
+        return Bytes.M$ofU8s(list);
+    }
+    M$ofI8s(list) {
+        return Bytes.M$ofI8s(list);
+    }
+    M$ofI32LEs(list) {
+        return Bytes.M$ofI32LEs(list);
+    }
+    M$ofI32BEs(list) {
+        return Bytes.M$ofI32BEs(list);
+    }
+    M$fromASCII(string) {
+        return Bytes.M$fromASCII(string);
+    }
+    M$repr(bytes) {
+        return '' + bytes;
+    }
+    M$__eq(a, b) {
+        return a.M$equals(b);
+    }
+    /**
+     * @param {Bytes} bytes
+     */
+    M$size(bytes) {
+        return bytes.M$size();
+    }
+    /**
+     * @param {Bytes} bytes
+     * @param {boolean} flag
+     */
+    M$useLittleEndian(bytes, flag) {
+        bytes.M$useLittleEndian(flag);
+    }
+    M$useBigEndian(bytes, flag) {
+        this.M$useLittleEndian(bytes, !flag);
+    }
+    /**
+     * @param {Bytes} bytes
+     */
+    M$usingLitteEndian(bytes) {
+        return bytes.M$usingLittleEndian();
+    }
+    M$usingBigEndian(bytes) {
+        return !this.M$usingLitteEndian(bytes);
+    }
+    /**
+     * @param {Bytes} bytes
+     * @param {number} i
+     */
+    M$getI8(bytes, i) {
+        return bytes.M$getI8(i);
+    }
+    M$setI8(bytes, i, data) {
+        bytes.M$setI8(i, data);
+    }
+    M$addI8(bytes, data) {
+        bytes.M$addI8(data);
+    }
+    M$getU8(bytes, i) {
+        return bytes.M$getU8(i);
+    }
+    M$setU8(bytes, i, data) {
+        bytes.M$setU8(i, data);
+    }
+    M$addU8(bytes, data) {
+        bytes.M$addU8(data);
+    }
+    M$getI16(bytes, i) {
+        return bytes.M$getI16(i);
+    }
+    M$setI16(bytes, i, data) {
+        bytes.M$setI16(i, data);
+    }
+    M$addI16(bytes, data) {
+        bytes.M$addI16(data);
+    }
+    M$getU16(bytes, i) {
+        return bytes.M$getU16(i);
+    }
+    M$setU16(bytes, i, data) {
+        bytes.M$setU16(i, data);
+    }
+    M$addU16(bytes, data) {
+        bytes.M$addU16(data);
+    }
+    M$getI32(bytes, i) {
+        return bytes.M$getI32(i);
+    }
+    M$setI32(bytes, i, data) {
+        bytes.M$setI32(i, data);
+    }
+    M$addI32(bytes, data) {
+        bytes.M$addI32(data);
+    }
+    M$getF32(bytes, i) {
+        return bytes.M$getF32(i);
+    }
+    M$setF32(bytes, i, data) {
+        bytes.M$setF32(i, data);
+    }
+    M$addF32(bytes, data) {
+        bytes.M$addF32(data);
+    }
+    M$getF64(bytes, i) {
+        return bytes.M$getF64(i);
+    }
+    M$setF64(bytes, i, data) {
+        bytes.M$setF64(i, data);
+    }
+    M$addF64(bytes, data) {
+        bytes.M$addF64(data);
+    }
+    M$getU32AsDouble(bytes, i) {
+        return bytes.M$getU32AsDouble(i);
+    }
+    M$setU32WithDouble(bytes, i, data) {
+        bytes.M$setU32AsDouble(i, data);
+    }
+    M$addU32WithDouble(bytes, data) {
+        bytes.M$addU32AsDouble(data);
+    }
+    M$addASCII(bytes, string) {
+        bytes.M$addASCII(string);
+    }
+    M$addBuffer(bytes, otherBytes) {
+        bytes.M$addBytes(otherBytes);
+    }
+    M$slice(bytes, start, end) {
+        return bytes.M$getBytes(start, end);
+    }
+    /**
+     * @param {Bytes} bytes
+     */
+    M$asI8s(bytes) {
+        return bytes.M$asI8s();
+    }
+    /**
+     * @param {Bytes} bytes
+     */
+    M$asU8s(bytes) {
+        return bytes.M$asU8s();
+    }
+    M$clone(bytes) {
+        return bytes.M$clone();
+    }
+}
+const MO$cj$Buffer = new MC$cj$Buffer();
 
 class MC$cj$Time {
     M$now() {
