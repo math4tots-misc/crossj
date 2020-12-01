@@ -205,7 +205,7 @@ public final class CJJSStatementAndExpressionTranslator
      * the result to a variable. The variable to save to can be specified if
      * desired. Otherwise a new temporary variable is generated.
      */
-    private String emitExpression(CJAstExpression expression, Optional<String> optionalJsVariableName,
+    String emitExpression(CJAstExpression expression, Optional<String> optionalJsVariableName,
             int declareType) {
         var partial = emitExpressionPartial(expression);
         var jsVariableName = optionalJsVariableName.getOrElseDo(() -> newMethodLevelUniqueId());
@@ -223,7 +223,7 @@ public final class CJJSStatementAndExpressionTranslator
      * expression is cheap to compute and has no side effects, where it will try to
      * omit as many new temporary variables as possible.
      */
-    private String emitExpressionConst(CJAstExpression expression) {
+    String emitExpressionConst(CJAstExpression expression) {
         if (
         /**
          * literal expressions in general can just be returned as is
@@ -249,7 +249,7 @@ public final class CJJSStatementAndExpressionTranslator
      * expression. So the returned expression should be added as soon as possible
      * with minimal other computation in between.
      */
-    private String emitExpressionPartial(CJAstExpression expression) {
+    String emitExpressionPartial(CJAstExpression expression) {
         if (isSimple(expression)) {
             return simpleExpressionTranslator.translateExpression(expression);
         } else {
@@ -336,6 +336,14 @@ public final class CJJSStatementAndExpressionTranslator
         // NOTE: we should never actually get here
         // Assert.that(false);
         return simpleExpressionTranslator.translateExpression(e);
+    }
+
+    @Override
+    public String visitStaticFieldAccess(CJAstStaticFieldAccessExpression e, Void a) {
+        // NOTE: we should never actually get here
+        // Assert.that(false);
+        var owner = translateType(e.getOwner().getAsIsType());
+        return owner + "." + CJJSTranslator.nameToFieldName(e.getName()) + "()";
     }
 
     @Override

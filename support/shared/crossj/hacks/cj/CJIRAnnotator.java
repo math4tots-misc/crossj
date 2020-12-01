@@ -22,7 +22,7 @@ public final class CJIRAnnotator
                 annotator.preAnnotateItem(item);
             }
             for (var item : world.getAllItems()) {
-                annotator.computeTraitAndMethodSet(item);
+                annotator.computeTraitAndMethodAndFieldSet(item);
             }
             for (var item : world.getAllItems()) {
                 annotator.annotateItem(item);
@@ -248,7 +248,7 @@ public final class CJIRAnnotator
         exitItem();
     }
 
-    private void computeTraitAndMethodSet(CJAstItemDefinition item) {
+    private void computeTraitAndMethodAndFieldSet(CJAstItemDefinition item) {
         enterItem(item);
 
         // ==============================================================================
@@ -289,6 +289,9 @@ public final class CJIRAnnotator
                 var static_ = fieldDefinition.isStatic();
                 var mutable = fieldDefinition.isMutable();
                 var fieldType = fieldDefinition.getType().getAsIsType();
+                if (static_ && item.getTypeParameters().size() > 0) {
+                    throw err0("Classes with type parameters may not have static fields", fieldDefinition.getMark());
+                }
                 fieldMap.put(name, new CJIRFieldInfo(static_, mutable, fieldType));
             }
             item.fieldMap = fieldMap;
@@ -353,6 +356,11 @@ public final class CJIRAnnotator
         for (var member : item.getMembers()) {
             if (member instanceof CJAstMethodDefinition) {
                 annotateMethod((CJAstMethodDefinition) member);
+            } else if (member instanceof CJAstFieldDefinition) {
+                var field = (CJAstFieldDefinition) member;
+                if (field.isStatic()) {
+                    annotateExpressionWithType(field.getExpression(), field.getType().getAsIsType());
+                }
             }
         }
         exitItem();
@@ -553,11 +561,27 @@ public final class CJIRAnnotator
     }
 
     @Override
+    public Void visitStaticFieldAccess(CJAstStaticFieldAccessExpression e, Optional<CJIRType> a) {
+        var mark = e.getMark();
+        annotateTypeExpression(e.getOwner());
+        var ownerType = e.getOwner().getAsIsType();
+        var fieldInfo = getFieldInfoOrThrow(mark, ownerType, e.getName());
+        if (!fieldInfo.isStatic()) {
+            throw err0(ownerType + "." + e.getName() + " is a non-static field", mark);
+        }
+        e.resolvedType = fieldInfo.getType();
+        return null;
+    }
+
+    @Override
     public Void visitFieldAccess(CJAstFieldAccessExpression e, Optional<CJIRType> a) {
         var mark = e.getMark();
         annotateExpression(e.getOwner());
         var ownerType = e.getOwner().getResolvedType();
         var fieldInfo = getFieldInfoOrThrow(mark, ownerType, e.getName());
+        if (fieldInfo.isStatic()) {
+            throw err0(ownerType + "." + e.getName() + " is a static field", mark);
+        }
         e.resolvedType = fieldInfo.getType();
         return null;
     }

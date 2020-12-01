@@ -397,7 +397,19 @@ public final class CJParserState {
             return tryType.castFail();
         }
         var type = tryType.get();
-        return Try.ok(new CJAstFieldDefinition(mark, comment, modifiers, mutable, name, type));
+        CJAstExpression expression = null;
+        if (consume('=')) {
+            var tryExpression = parseExpression();
+            if (tryExpression.isFail()) {
+                return tryExpression.castFail();
+            }
+            expression = tryExpression.get();
+        }
+        var static_ = (modifiers & CJAstItemMemberModifiers.STATIC) != 0;
+        if (static_ != (expression != null)) {
+            return fail("A field should have an initializer iff it is static");
+        }
+        return Try.ok(new CJAstFieldDefinition(mark, comment, modifiers, mutable, name, type, expression));
     }
 
     private Try<CJAstMethodDefinition> parseMethodDefinition(List<CJAstTypeCondition> typeConditions,
@@ -1172,27 +1184,32 @@ public final class CJParserState {
                         args = List.of();
                     }
                     return Try.ok(new CJAstNewUnionExpression(mark, type, name, args));
-                } else { // method call expressions
+                } else { // method call and field access expressions
                     if (!at(CJToken.ID)) {
                         return expectedType(CJToken.ID);
                     }
-                    var methodName = parseID();
-                    var mustInfer = !at('[');
-                    var tryTypeArgs = parseTypeArguments();
-                    if (tryTypeArgs.isFail()) {
-                        return tryTypeArgs.castFail();
-                    }
-                    var typeArgs = tryTypeArgs.get();
-                    var tryArgs = parseArguments();
-                    if (tryArgs.isFail()) {
-                        return tryArgs.castFail();
-                    }
-                    var args = tryArgs.get();
-                    if (mustInfer) {
-                        Assert.equals(typeArgs.size(), 0);
-                        return Try.ok(new CJAstStaticMethodCallExpression(mark, type, methodName, args));
+                    var name = parseID();
+
+                    if (at('[') || at('(')) {
+                        var mustInfer = !at('[');
+                        var tryTypeArgs = parseTypeArguments();
+                        if (tryTypeArgs.isFail()) {
+                            return tryTypeArgs.castFail();
+                        }
+                        var typeArgs = tryTypeArgs.get();
+                        var tryArgs = parseArguments();
+                        if (tryArgs.isFail()) {
+                            return tryArgs.castFail();
+                        }
+                        var args = tryArgs.get();
+                        if (mustInfer) {
+                            Assert.equals(typeArgs.size(), 0);
+                            return Try.ok(new CJAstStaticMethodCallExpression(mark, type, name, args));
+                        } else {
+                            return Try.ok(new CJAstMethodCallExpression(mark, type, name, typeArgs, args));
+                        }
                     } else {
-                        return Try.ok(new CJAstMethodCallExpression(mark, type, methodName, typeArgs, args));
+                        return Try.ok(new CJAstStaticFieldAccessExpression(mark, type, name));
                     }
                 }
             }

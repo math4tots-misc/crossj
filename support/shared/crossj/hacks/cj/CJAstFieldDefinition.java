@@ -1,5 +1,6 @@
 package crossj.hacks.cj;
 
+import crossj.base.Assert;
 import crossj.base.Optional;
 import crossj.base.StrBuilder;
 
@@ -10,15 +11,18 @@ public final class CJAstFieldDefinition implements CJAstItemMemberDefinition {
     private final boolean mutable;
     private final String name;
     private final CJAstTypeExpression type;
+    private final CJAstExpression expression;
 
     CJAstFieldDefinition(CJMark mark, Optional<String> comment, int modifiers, boolean mutable, String name,
-            CJAstTypeExpression type) {
+            CJAstTypeExpression type, CJAstExpression expression) {
         this.mark = mark;
         this.comment = comment;
         this.modifiers = modifiers;
         this.mutable = mutable;
         this.name = name;
         this.type = type;
+        this.expression = expression;
+        Assert.that(isStatic() == (expression != null));
     }
 
     @Override
@@ -47,6 +51,11 @@ public final class CJAstFieldDefinition implements CJAstItemMemberDefinition {
 
     public CJAstTypeExpression getType() {
         return type;
+    }
+
+    public CJAstExpression getExpression() {
+        Assert.that(expression != null);
+        return expression;
     }
 
     @Override

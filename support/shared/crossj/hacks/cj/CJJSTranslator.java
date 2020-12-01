@@ -162,6 +162,10 @@ public final class CJJSTranslator {
         return "TV$" + shortName;
     }
 
+    static String nameToStaticFieldCacheName(String name) {
+        return "FC$" + name;
+    }
+
     static String nameToFieldName(String name) {
         return "F$" + name;
     }
@@ -243,21 +247,21 @@ public final class CJJSTranslator {
         }
         var qualifiedItemName = item.getQualifiedName();
         var constructorName = qualifiedNameToConstructorName(qualifiedItemName);
-        var fields = item.getMembers().filter(m -> m instanceof CJAstFieldDefinition)
-                .map(f -> (CJAstFieldDefinition) f);
+        var instanceFields = item.getMembers().filter(m -> m instanceof CJAstFieldDefinition)
+                .map(f -> (CJAstFieldDefinition) f).filter(f -> !f.isStatic());
         sb.lineStart("function " + constructorName + "(");
-        if (fields.size() > 0) {
-            sb.lineBody(nameToFieldName(fields.get(0).getName()));
-            for (int i = 1; i < fields.size(); i++) {
+        if (instanceFields.size() > 0) {
+            sb.lineBody(nameToFieldName(instanceFields.get(0).getName()));
+            for (int i = 1; i < instanceFields.size(); i++) {
                 sb.lineBody(",");
-                sb.lineBody(nameToFieldName(fields.get(i).getName()));
+                sb.lineBody(nameToFieldName(instanceFields.get(i).getName()));
             }
         }
         sb.lineEnd(") {");
         sb.indent();
         sb.line("return {");
         sb.indent();
-        for (var field : fields) {
+        for (var field : instanceFields) {
             var fieldName = nameToFieldName(field.getName());
             sb.line(fieldName + ": " + fieldName + ",");
         }
@@ -269,13 +273,15 @@ public final class CJJSTranslator {
 
     private void emitMetaClass(CJAstItemDefinition item) {
         /**
-         * If isNative is true, emitTraitTypeParamMethods may be called twice for this class
+         * If isNative is true, emitTraitTypeParamMethods may be called twice for this
+         * class
          */
         Assert.that(!item.isNative());
 
         var qualifiedItemName = item.getQualifiedName();
         var metaClassName = qualifiedNameToMetaClassName(qualifiedItemName);
         var typeParameters = item.getTypeParameters();
+        var staticFields = item.getFields().filter(f -> f.isStatic());
         sb.line("class " + metaClassName + " {");
         sb.indent();
 
@@ -292,6 +298,22 @@ public final class CJJSTranslator {
         }
 
         emitTraitTypeParamMethods(item, true);
+
+        for (var staticField : staticFields) {
+            var fieldName = nameToFieldName(staticField.getName());
+            var cacheName = nameToStaticFieldCacheName(staticField.getName());
+            sb.line(fieldName + "() {");
+            sb.indent();
+            sb.line("if (this." + cacheName + " === undefined) {");
+            sb.indent();
+            var partial = statementAndExpressionTranslator.emitExpressionPartial(staticField.getExpression());
+            sb.line("this." + cacheName + " = " + partial + ";");
+            sb.dedent();
+            sb.line("}");
+            sb.line("return this." + cacheName + ";");
+            sb.dedent();
+            sb.line("}");
+        }
 
         for (var member : item.getMembers()) {
             if (member instanceof CJAstMethodDefinition) {

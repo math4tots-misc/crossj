@@ -45,6 +45,12 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     }
 
     @Override
+    public Void visitStaticFieldAccess(CJAstStaticFieldAccessExpression e, Void a) {
+        e.complexityFlags = NONE;
+        return null;
+    }
+
+    @Override
     public Void visitFieldAccess(CJAstFieldAccessExpression e, Void a) {
         e.complexityFlags = NONE;
         return null;

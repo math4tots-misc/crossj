@@ -19,5 +19,9 @@ class ClassTest {
             obj.someField = "new field value"
             Assert.equal(obj.someField, "new field value")
         }
+        {
+            # read-only static field
+            Assert.equal(SampleClass.sampleStaticField, "some static field")
+        }
     }
 }
