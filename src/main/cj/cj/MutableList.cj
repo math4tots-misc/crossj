@@ -2,6 +2,7 @@ package cj
 
 native class MutableList[T] :
         Collection[T],
+        ToBool,
         Repr if T : Repr,
         Ord if T : Ord,
         Eq if T : Eq {
@@ -24,4 +25,5 @@ native class MutableList[T] :
     def set(list: Self, i: Int, t: T) : Unit
     def push(list: Self, t: T) : Unit
     def pop(list: Self) : T
+    def toBool(self: Self) : Bool
 }

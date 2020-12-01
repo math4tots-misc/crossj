@@ -58,4 +58,12 @@ class ListTest {
         Assert.equal((5).hash(), 5)
         Assert.equal([1, 2, 3].hash(), 30817)
     }
+
+    def testTruthy() {
+        {
+            val emptyList : List[Int] = []
+            Assert.equal(emptyList.toBool(), false)
+            Assert.equal([1, 2, 3].toBool(), true)
+        }
+    }
 }

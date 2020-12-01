@@ -42,6 +42,7 @@ public final class CJIRWorld {
         "Option",
         "Iterable",
         "Iterator",
+        "ToBool",
         "ToInt",
         "ToDouble",
         "ToChar",

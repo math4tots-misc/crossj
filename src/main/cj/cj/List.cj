@@ -4,6 +4,7 @@ package cj
 native class List[T] :
         Collection[T],
         ToList[T],
+        ToBool,
         Repr if T : Repr,
         Eq if T : Eq,
         Ord if T : Ord,
@@ -36,4 +37,6 @@ native class List[T] :
     def toList(self: Self) : Self
 
     def builder() : ListBuilder[T]
+
+    def toBool(self: Self) : Bool
 }

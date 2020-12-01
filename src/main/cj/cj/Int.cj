@@ -1,6 +1,6 @@
 package cj
 
-native class Int : Eq, Ord, Hash, Repr, ToDouble, ToChar {
+native class Int : Eq, Ord, Hash, Repr, ToDouble, ToChar, ToBool {
     def __eq(a : Self, b : Self) : Bool
     def __lt(a : Self, b : Self) : Bool
     def __le(a : Self, b : Self) : Bool
@@ -36,4 +36,7 @@ native class Int : Eq, Ord, Hash, Repr, ToDouble, ToChar {
     # integer is returned.
     #
     def toChar(self: Self) : Char
+
+    # An Int is truthy iff it is not zero
+    def toBool(self: Self) : Bool
 }

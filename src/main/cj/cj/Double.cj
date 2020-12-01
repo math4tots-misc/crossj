@@ -1,6 +1,6 @@
 package cj
 
-native class Double : Eq, Ord, Hash, Repr, ToInt {
+native class Double : Eq, Ord, Hash, Repr, ToInt, ToBool {
     def __eq(a : Self, b : Self) : Bool
     def __lt(a : Self, b : Self) : Bool
     def __gt(a : Self, b : Self) : Bool
@@ -20,4 +20,7 @@ native class Double : Eq, Ord, Hash, Repr, ToInt {
 
     # Returns an integer by truncating the double
     def toInt(x: Self) : Int
+
+    # A Double is truthy iff it is not zero
+    def toBool(x: Self) : Bool
 }

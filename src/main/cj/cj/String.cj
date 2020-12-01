@@ -1,6 +1,6 @@
 package cj
 
-native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char] {
+native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
     def __eq(a: Self, b: Self) : Bool
     def __lt(a: Self, b: Self) : Bool
 
@@ -14,4 +14,6 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char] {
     def toString(x: Self) : String
 
     def iter(self: Self) : Iterator[Char]
+
+    def toBool(self: Self) : Bool
 }

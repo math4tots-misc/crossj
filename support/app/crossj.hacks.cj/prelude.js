@@ -22,8 +22,8 @@ class MC$cj$Bool {
     M$repr(x) {
         return '' + x;
     }
-    M$toString(x) {
-        return '' + x;
+    M$toBool(x) {
+        return x;
     }
 }
 const MO$cj$Bool = new MC$cj$Bool();
@@ -92,6 +92,9 @@ class MC$cj$Int {
     M$toChar(x) {
         return x < 0 || x > 0x10FFFF ? 0 : x;
     }
+    M$toBool(x) {
+        return x !== 0;
+    }
 }
 const MO$cj$Int = new MC$cj$Int();
 
@@ -149,6 +152,9 @@ class MC$cj$Double {
     }
     M$toInt(x) {
         return x|0;
+    }
+    M$toBool(x) {
+        return x !== 0;
     }
 }
 const MO$cj$Double = new MC$cj$Double();
@@ -297,6 +303,13 @@ class MC$cj$String {
         for (const c of string) {
             yield c.codePointAt(0);
         }
+    }
+
+    /**
+     * @param {string} s
+     */
+    M$toBool(s) {
+        return s.length !== 0;
     }
 }
 const MO$cj$String = new MC$cj$String();
@@ -728,6 +741,13 @@ class MC$cj$List {
     M$builder() {
         return [[]];
     }
+
+    /**
+     * @param {Array<T>} list
+     */
+    M$toBool(list) {
+        return list.length !== 0;
+    }
 }
 
 /**
@@ -833,6 +853,13 @@ class MC$cj$MutableList {
      */
     M$iter(list) {
         return list[Symbol.iterator]();
+    }
+
+    /**
+     * @param {Array<T>} list
+     */
+    M$toBool(list) {
+        return list.length !== 0;
     }
 }
 
