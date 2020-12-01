@@ -396,6 +396,9 @@ public final class CJIRAnnotator
 
     @Override
     public Void visitReturn(CJAstReturnStatement s, Void a) {
+        if (!context.isInsideMethod()) {
+            throw err0("Tried to return outside a method body", s.getMark());
+        }
         annotateExpressionWithType(s.getExpression(), context.getDeclaredReturnType());
         return null;
     }

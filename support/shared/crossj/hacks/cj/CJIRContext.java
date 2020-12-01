@@ -235,6 +235,10 @@ final class CJIRContext {
         }
     }
 
+    public boolean isInsideMethod() {
+        return currentMethod != null;
+    }
+
     public CJIRType getDeclaredReturnType() {
         if (declaredReturnType == null) {
             if (currentMethod == null) {
