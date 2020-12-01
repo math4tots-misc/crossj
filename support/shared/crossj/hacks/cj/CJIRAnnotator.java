@@ -1091,6 +1091,16 @@ public final class CJIRAnnotator
     }
 
     @Override
+    public Void visitConditional(CJAstConditionalExpression e, Optional<CJIRType> a) {
+        annotateExpressionWithType(e.getCondition(), boolType);
+        annotateExpressionWithOptionalType(e.getLeft(), a);
+        var expectedType = e.getLeft().getResolvedType();
+        annotateExpressionWithType(e.getRight(), expectedType);
+        e.resolvedType = expectedType;
+        return null;
+    }
+
+    @Override
     public Void visitNew(CJAstNewExpression e, Optional<CJIRType> a) {
         annotateTypeExpression(e.getType());
         for (var arg : e.getArguments()) {

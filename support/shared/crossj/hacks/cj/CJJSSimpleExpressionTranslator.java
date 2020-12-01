@@ -141,6 +141,12 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     }
 
     @Override
+    public String visitConditional(CJAstConditionalExpression e, Void a) {
+        return "(" + translateExpression(e.getCondition()) + "?" + translateExpression(e.getLeft()) + ":"
+                + translateExpression(e.getRight()) + ")";
+    }
+
+    @Override
     public String visitNew(CJAstNewExpression e, Void a) {
         var sb = Str.builder();
         var type = (CJIRClassType) e.getType().getAsIsType();

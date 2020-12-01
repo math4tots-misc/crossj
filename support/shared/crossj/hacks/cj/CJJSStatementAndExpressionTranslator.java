@@ -404,6 +404,23 @@ public final class CJJSStatementAndExpressionTranslator
     }
 
     @Override
+    public String visitConditional(CJAstConditionalExpression e, Void a) {
+        var tmpvar = newMethodLevelUniqueId();
+        sb.line("let " + tmpvar + ";");
+        var conditionPartial = emitExpressionPartial(e.getCondition());
+        sb.line("if (" + conditionPartial + ") {");
+        sb.indent();
+        sb.line(tmpvar + " = " + emitExpressionPartial(e.getLeft()) + ";");
+        sb.dedent();
+        sb.line("} else {");
+        sb.indent();
+        sb.line(tmpvar + " = " + emitExpressionPartial(e.getRight()) + ";");
+        sb.dedent();
+        sb.line("}");
+        return tmpvar;
+    }
+
+    @Override
     public String visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
         // NOTE: we should never actually get here
         // Assert.that(false);

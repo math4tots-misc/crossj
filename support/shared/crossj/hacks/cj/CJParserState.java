@@ -1151,6 +1151,34 @@ public final class CJParserState {
                 }
                 return Try.ok(new CJAstListDisplayExpression(mark, false, elements));
             }
+            case CJToken.KW_IF: { // if expression
+                next();
+                if (!consume('(')) {
+                    return expectedType('(');
+                }
+                var tryCondition = parseExpression();
+                if (tryCondition.isFail()) {
+                    return tryCondition.castFail();
+                }
+                var condition = tryCondition.get();
+                if (!consume(')')) {
+                    return expectedType(')');
+                }
+                var tryLeft = parseExpression();
+                if (tryLeft.isFail()) {
+                    return tryLeft.castFail();
+                }
+                var left = tryLeft.get();
+                if (!consume(CJToken.KW_ELSE)) {
+                    return expectedType(CJToken.KW_ELSE);
+                }
+                var tryRight = parseExpression();
+                if (tryRight.isFail()) {
+                    return tryRight.castFail();
+                }
+                var right = tryRight.get();
+                return Try.ok(new CJAstConditionalExpression(mark, condition, left, right));
+            }
             case CJToken.KW_NOT: { // logical not expressions
                 next();
                 var tryInner = parseExpressionWithPrecedence(LOGICAL_NOT_BINDING_POWER);

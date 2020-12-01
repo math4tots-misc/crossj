@@ -9,7 +9,8 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     private static final int BLOCK = CJIRExpressionComplexityFlags.BLOCK;
     private static final CJIRExpressionComplexityAnnotator instance = new CJIRExpressionComplexityAnnotator();
 
-    private CJIRExpressionComplexityAnnotator() {}
+    private CJIRExpressionComplexityAnnotator() {
+    }
 
     public static int annotate(CJAstExpression expression) {
         if (expression.getComplexityFlagsOrZero() == 0) {
@@ -87,6 +88,12 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     }
 
     @Override
+    public Void visitConditional(CJAstConditionalExpression e, Void a) {
+        e.complexityFlags = annotate(e.getCondition()) | annotate(e.getLeft()) | annotate(e.getRight());
+        return null;
+    }
+
+    @Override
     public Void visitEmptyMutableList(CJAstEmptyMutableListExpression e, Void a) {
         e.complexityFlags = NONE;
         return null;
@@ -101,7 +108,8 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     @Override
     public Void visitLambda(CJAstLambdaExpression e, Void a) {
         var body = e.getBody();
-        if (body instanceof CJAstReturnStatement && (annotate(((CJAstReturnStatement) body).getExpression()) & ~(NONE|SIMPLE_LAMBDA)) == 0) {
+        if (body instanceof CJAstReturnStatement
+                && (annotate(((CJAstReturnStatement) body).getExpression()) & ~(NONE | SIMPLE_LAMBDA)) == 0) {
             e.complexityFlags = NONE | SIMPLE_LAMBDA;
         } else {
             e.complexityFlags = NONE | COMPLEX_LAMBDA;
