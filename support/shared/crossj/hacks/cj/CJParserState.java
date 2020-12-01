@@ -57,11 +57,15 @@ public final class CJParserState {
 
     private <R> Try<R> fail(String message) {
         var mark = getMark();
-        return Try.<R>fail(message).withContext("on " + mark.line + ":" + mark.column + " in file " + filename);
+        return failWithMark(message, mark);
     }
 
     private <R> Try<R> expectedKind(String kind) {
         return fail("Expected " + kind + " but got " + CJToken.typeToString(peek().type));
+    }
+
+    private <R> Try<R> failWithMark(String message, CJMark mark) {
+        return Try.<R>fail(message).withContext("on " + mark.line + ":" + mark.column + " in file " + filename);
     }
 
     private <R> Try<R> expectedType(int type) {
@@ -491,42 +495,6 @@ public final class CJParserState {
         }
     }
 
-    private boolean atAssignmentTarget() {
-        switch (peek().type) {
-            case CJToken.ID:
-                return atOffset('=', 1);
-            case '(': {
-                int savedI = this.i;
-                var result = true;
-                int depth = 1;
-                next();
-
-                while (result && depth > 0) {
-                    switch (next().type) {
-                        case '(':
-                            depth++;
-                            break;
-                        case ')':
-                            depth--;
-                            break;
-                        case CJToken.ID:
-                        case ',':
-                            break;
-                        default:
-                            result = false;
-                            break;
-                    }
-                }
-                result = result && at('=');
-
-                this.i = savedI;
-                return result;
-            }
-            default:
-                return false;
-        }
-    }
-
     private Try<CJAstStatement> parseStatement() {
         var mark = getMark();
         switch (peek().type) {
@@ -649,7 +617,7 @@ public final class CJParserState {
                     if (tryBody.isFail()) {
                         return tryBody.castFail();
                     }
-                    var body  = tryBody.get();
+                    var body = tryBody.get();
                     unionCases.add(new CJAstSwitchUnionCase(caseMark, name, valueNames, body));
                     consumeDelimitersAndComments();
                 }
@@ -658,7 +626,7 @@ public final class CJParserState {
                     if (tryBody.isFail()) {
                         return tryBody.castFail();
                     }
-                    var body  = tryBody.get();
+                    var body = tryBody.get();
                     defaultBody = Optional.of(body);
                 }
                 if (!consume('}')) {
@@ -667,27 +635,23 @@ public final class CJParserState {
                 return Try.ok(new CJAstSwitchUnionStatement(mark, target, unionCases, defaultBody));
             }
             default: {
-                if (atAssignmentTarget()) {
-                    var tryTarget = parseAssignmentTarget();
+                var tryExpr = parseExpression();
+                if (tryExpr.isFail()) {
+                    return tryExpr.castFail();
+                }
+                if (consume('=')) {
+                    var tryTarget = expressionToExtendedAssignmentTarget(tryExpr.get());
                     if (tryTarget.isFail()) {
                         return tryTarget.castFail();
                     }
                     var target = tryTarget.get();
-                    next();
-                    var tryExpr = parseExpression();
-                    if (tryExpr.isFail()) {
-                        return tryExpr.castFail();
+                    var tryValExpr = parseExpression();
+                    if (tryValExpr.isFail()) {
+                        return tryValExpr.castFail();
                     }
-                    var expr = tryExpr.get();
-                    if (!atDelimiter()) {
-                        return expectedKind("statement delimiter");
-                    }
-                    return Try.ok(new CJAstAssignmentStatement(mark, target, expr));
+                    var valExpr = tryValExpr.get();
+                    return Try.ok(new CJAstAssignmentStatement(mark, target, valExpr));
                 } else {
-                    var tryExpr = parseExpression();
-                    if (tryExpr.isFail()) {
-                        return tryExpr.castFail();
-                    }
                     if (!atDelimiter()) {
                         return expectedKind("statement delimiter");
                     }
@@ -695,6 +659,34 @@ public final class CJParserState {
                 }
             }
         }
+    }
+
+    private Try<CJAstExtendedAssignmentTarget> expressionToExtendedAssignmentTarget(CJAstExpression expression) {
+        var mark = expression.getMark();
+        if (expression instanceof CJAstNameExpression) {
+            var name = ((CJAstNameExpression) expression).getName();
+            return Try.ok(new CJAstNameTarget(mark, name));
+        } else if (expression instanceof CJAstTupleDisplayExpression) {
+            var elements = ((CJAstTupleDisplayExpression) expression).getElements();
+            var subtargets = List.<CJAstAssignmentTarget>of();
+            for (var element : elements) {
+                var trySubtarget = expressionToExtendedAssignmentTarget(element);
+                if (trySubtarget.isFail()) {
+                    return trySubtarget;
+                }
+                var subtarget = trySubtarget.get();
+                if (!(subtarget instanceof CJAstAssignmentTarget)) {
+                    return failWithMark("Field access not allowed here", element.getMark());
+                }
+                subtargets.add((CJAstAssignmentTarget) subtarget);
+            }
+            return Try.ok(new CJAstTupleTarget(mark, subtargets));
+        } else if (expression instanceof CJAstFieldAccessExpression) {
+            var owner = ((CJAstFieldAccessExpression) expression).getOwner();
+            var name = ((CJAstFieldAccessExpression) expression).getName();
+            return Try.ok(new CJAstFieldAccessTarget(mark, owner, name));
+        }
+        return failWithMark("Expected assignment target", mark);
     }
 
     private Try<CJAstIfStatement> parseIfStatement() {
@@ -927,7 +919,8 @@ public final class CJParserState {
             switch (peek().type) {
                 case CJToken.KW_OR:
                 case CJToken.KW_AND: {
-                    int type = next().type == CJToken.KW_OR ? CJAstLogicalBinaryExpression.OR : CJAstLogicalBinaryExpression.AND;
+                    int type = next().type == CJToken.KW_OR ? CJAstLogicalBinaryExpression.OR
+                            : CJAstLogicalBinaryExpression.AND;
                     var tryRight = parseExpressionWithPrecedence(precedence + 1);
                     if (tryRight.isFail()) {
                         return tryRight;
@@ -1308,7 +1301,8 @@ public final class CJParserState {
         if (!consume(CJToken.RIGHT_ARROW)) {
             return expectedType(CJToken.RIGHT_ARROW);
         }
-        var tryBody = at('{') ? parseBlockStatement() : parseExpression().map(e -> new CJAstReturnStatement(e.getMark(), e));
+        var tryBody = at('{') ? parseBlockStatement()
+                : parseExpression().map(e -> new CJAstReturnStatement(e.getMark(), e));
         var body = tryBody.get();
         return Try.ok(new CJAstLambdaExpression(mark, parameterNames, body));
     }

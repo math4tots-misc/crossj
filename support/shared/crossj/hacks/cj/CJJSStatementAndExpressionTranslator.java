@@ -178,8 +178,18 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public Void visitAssignment(CJAstAssignmentStatement s, Void a) {
-        emitExpression(s.getExpression(), Optional.of(translateTarget(s.getTarget())), DECLARE_NONE);
+        emitExpression(s.getExpression(), Optional.of(emitExtendedTarget(s.getTarget())), DECLARE_NONE);
         return null;
+    }
+
+    private String emitExtendedTarget(CJAstExtendedAssignmentTarget target) {
+        if (target instanceof CJAstAssignmentTarget) {
+            return translateTarget((CJAstAssignmentTarget) target);
+        } else {
+            var t = (CJAstFieldAccessTarget) target;
+            var owner = emitExpressionPartial(t.getOwner());
+            return owner + "." + CJJSTranslator.nameToFieldName(t.getName());
+        }
     }
 
     private String translateTarget(CJAstAssignmentTarget target) {

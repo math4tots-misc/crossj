@@ -5,10 +5,10 @@ import crossj.base.StrBuilder;
 
 public final class CJAstAssignmentStatement implements CJAstStatement {
     private final CJMark mark;
-    private final CJAstAssignmentTarget target;
+    private final CJAstExtendedAssignmentTarget target;
     private final CJAstExpression expression;
 
-    CJAstAssignmentStatement(CJMark mark, CJAstAssignmentTarget target, CJAstExpression expression) {
+    CJAstAssignmentStatement(CJMark mark, CJAstExtendedAssignmentTarget target, CJAstExpression expression) {
         this.mark = mark;
         this.target = target;
         this.expression = expression;
@@ -19,7 +19,7 @@ public final class CJAstAssignmentStatement implements CJAstStatement {
         return mark;
     }
 
-    public CJAstAssignmentTarget getTarget() {
+    public CJAstExtendedAssignmentTarget getTarget() {
         return target;
     }
 

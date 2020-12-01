@@ -499,12 +499,12 @@ public final class CJIRAnnotator
 
     @Override
     public Void visitAssignment(CJAstAssignmentStatement s, Void a) {
-        var targetType = getAssignmentTargetType(s.getTarget());
+        var targetType = getExtendedAssignmentTargetType(s.getTarget());
         annotateExpressionWithType(s.getExpression(), targetType);
         return null;
     }
 
-    private CJIRType getAssignmentTargetType(CJAstAssignmentTarget target) {
+    private CJIRType getExtendedAssignmentTargetType(CJAstExtendedAssignmentTarget target) {
         if (target instanceof CJAstNameTarget) {
             var name = ((CJAstNameTarget) target).getName();
             var optVariableInfo = context.getVariableInfo(name);
@@ -516,10 +516,16 @@ public final class CJIRAnnotator
                 throw err0("Tried to assign to an immutable variable", target.getMark());
             }
             return variableInfo.getType();
-        } else {
+        } else if (target instanceof CJAstTupleTarget) {
             var subtargets = ((CJAstTupleTarget) target).getSubtargets();
-            var subtypes = subtargets.map(t -> getAssignmentTargetType(t));
+            var subtypes = subtargets.map(t -> getExtendedAssignmentTargetType(t));
             return getTupleTypeOf(target.getMark(), subtypes);
+        } else {
+            var t = (CJAstFieldAccessTarget) target;
+            annotateExpression(t.getOwner());
+            var ownerType = t.getOwner().getResolvedType();
+            var fieldInfo = getFieldInfoOrThrow(target.getMark(), ownerType, t.getName());
+            return fieldInfo.getType();
         }
     }
 
