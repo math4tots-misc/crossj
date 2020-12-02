@@ -20,4 +20,13 @@ public final class CJIRIncompleteMethodDescriptor {
     public CJIRMethodDescriptor complete(CJIRType selfType) {
         return new CJIRMethodDescriptor(item, itemTypeArguments, selfType, method);
     }
+
+    /**
+     * Returns true iff either
+     * - the body of the method is non-empty, or
+     * - the method is declared inside a native item
+     */
+    public boolean isImplemented() {
+        return method.getBody().isPresent() || item.isNative();
+    }
 }

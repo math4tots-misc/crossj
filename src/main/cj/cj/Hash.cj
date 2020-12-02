@@ -1,5 +1,5 @@
 package cj
 
-trait Hash {
+trait Hash : Eq {
     def hash(self: Self): Int
 }

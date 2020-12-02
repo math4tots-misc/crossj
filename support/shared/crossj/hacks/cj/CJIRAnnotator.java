@@ -1,6 +1,7 @@
 package crossj.hacks.cj;
 
 import crossj.base.Assert;
+import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;
@@ -327,13 +328,12 @@ public final class CJIRAnnotator
         }
         for (var trait : item.allResolvedTraits) {
             for (var methodDefinition : trait.getDefinition().getMethods()) {
-                if (methodDefinition.getBody().isPresent()) {
-                    if (methodMap.containsKey(methodDefinition.getName())) {
-                        continue;
-                    }
-                    methodMap.put(methodDefinition.getName(), new CJIRIncompleteMethodDescriptor(trait.getDefinition(),
-                            trait.getArguments(), methodDefinition));
+                var oldDescriptor = methodMap.getOrNull(methodDefinition.getName());
+                if (oldDescriptor != null && (oldDescriptor.isImplemented() || methodDefinition.getBody().isEmpty())) {
+                    continue;
                 }
+                methodMap.put(methodDefinition.getName(), new CJIRIncompleteMethodDescriptor(trait.getDefinition(),
+                        trait.getArguments(), methodDefinition));
             }
         }
         item.methodMap = methodMap;
@@ -345,7 +345,10 @@ public final class CJIRAnnotator
             var selfType = new CJIRClassType(item, itemTypeArgs);
             for (var trait : item.allResolvedTraits) {
                 for (var methodDefinition : trait.getDefinition().getMethods().filter(m -> m.getBody().isEmpty())) {
-                    if (!methodMap.containsKey(methodDefinition.getName())) {
+                    var descriptor = methodMap.get(methodDefinition.getName());
+                    var hasBody = descriptor.method.getBody().isPresent();
+                    var isNative = descriptor.item.isNative();
+                    if (!hasBody && !isNative) {
                         throw err0(selfType + " implements trait " + trait + " but does not implement method "
                                 + methodDefinition.getName(), item.getMark());
                     }
