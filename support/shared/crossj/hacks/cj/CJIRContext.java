@@ -124,8 +124,15 @@ final class CJIRContext {
             var mark = typeExpression.getMark();
             var name = typeExpression.getName();
             CJIRType type = null;
+            var typeArguments = typeExpression.getArguments();
+            var resolvedArgs = typeArguments.map(t -> {
+                var argType = resolveTypeExpression(t);
+                if (argType.isNullableType()) {
+                    throw err0("Nullable types are not allowed as type arguments", t.getMark());
+                }
+                return argType;
+            });
             if (name.equals("Fn")) {
-                var typeArguments = typeExpression.getArguments();
                 switch (typeArguments.size()) {
                     case 0:
                         throw err0("Fn requires at least a return type", mark);
@@ -140,9 +147,8 @@ final class CJIRContext {
                         throw err0("Too many arguments to Fn", mark);
                 }
                 var item = shortNameToItemMap.get(name);
-                type = new CJIRClassType(item, typeArguments.map(t -> resolveTypeExpression(t)));
+                type = new CJIRClassType(item, resolvedArgs);
             } else if (name.equals("Tuple")) {
-                var typeArguments = typeExpression.getArguments();
                 switch (typeArguments.size()) {
                     case 0:
                     case 1:
@@ -156,7 +162,7 @@ final class CJIRContext {
                         throw err0("Too many arguments to Tuple", mark);
                 }
                 var item = shortNameToItemMap.get(name);
-                type = new CJIRClassType(item, typeArguments.map(t -> resolveTypeExpression(t)));
+                type = new CJIRClassType(item, resolvedArgs);
             } else if (isItemLevelTypeVariable(name)) {
                 Assert.equals(typeExpression.getArguments().size(), 0);
                 var definition = itemLevelTypeMap.get(name);
@@ -185,7 +191,7 @@ final class CJIRContext {
                     throw err0("Expected " + arge + " type args but got " + argc, typeExpression.getMark(),
                             item.getMark());
                 }
-                type = new CJIRClassType(item, typeExpression.getArguments().map(arg -> resolveTypeExpression(arg)));
+                type = new CJIRClassType(item, resolvedArgs);
             }
             typeExpression.setAsIsType(type);
         }

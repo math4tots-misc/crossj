@@ -63,23 +63,23 @@ class MutableMap[K : Hash, V] {
         self._insertNoRehash((hash, key, value))
     }
 
-    def _getTriple(self: Self, key: K) : Option[Tuple[Int, K, V]] {
+    def _getTriple(self: Self, key: K) : Nullable[Tuple[Int, K, V]] {
         return self._getTripleWithHash(key, key.hash())
     }
 
-    def _getTripleWithHash(self: Self, key: K, hash: Int) : Option[Tuple[Int, K, V]] {
+    def _getTripleWithHash(self: Self, key: K, hash: Int) : Nullable[Tuple[Int, K, V]] {
         if self._siz == 0 {
-            return Option.None
+            return Nullable.None
         }
         val list = self._list
         val index = Self._getIndex(hash, list.size())
         val bucket = list.get(index)
         for triple in bucket {
             if triple.get0() == hash and triple.get1() == key {
-                return Option.Some(triple)
+                return Nullable.Some(triple)
             }
         }
-        return Option.None
+        return Nullable.None
     }
 
     def getOrInsert(self: Self, key: K, f: Fn[V]): V {
@@ -95,7 +95,7 @@ class MutableMap[K : Hash, V] {
         }
     }
 
-    def getOption(self: Self, key: K) : Option[V] {
+    def getOption(self: Self, key: K) : Nullable[V] {
         return self._getTriple(key).map(triple -> triple.get2())
     }
 

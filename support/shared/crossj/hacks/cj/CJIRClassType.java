@@ -16,6 +16,12 @@ public final class CJIRClassType implements CJIRType {
     CJIRClassType(CJAstItemDefinition definition, List<CJIRType> args) {
         Assert.that(!definition.isTrait());
         Assert.equals(definition.getTypeParameters().size(), args.size());
+        for (var arg : args) {
+            if (arg instanceof CJIRClassType) {
+                // nullable types are never allowed as type arguments
+                Assert.that(!arg.isNullableType());
+            }
+        }
         this.definition = definition;
         this.args = args;
     }
@@ -131,6 +137,11 @@ public final class CJIRClassType implements CJIRType {
     @Override
     public boolean isTupleType(int argc) {
         return definition.getQualifiedName().equals("cj.Tuple" + argc);
+    }
+
+    @Override
+    public boolean isNullableType() {
+        return definition.getQualifiedName().equals("cj.Nullable");
     }
 
     @Override

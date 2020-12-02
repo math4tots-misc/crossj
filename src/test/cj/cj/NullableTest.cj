@@ -1,14 +1,14 @@
 package cj
 
-import cj.Option
 
-class UnionTest {
+class NullableTest {
+
     def testSample() {
         {
-            val x = Option.Some(24)
+            val x = Nullable.Some(24)
             var i = 0
 
-            union (x) {
+            union x {
                 case Some(k) {
                     i = k
                 }
@@ -20,10 +20,10 @@ class UnionTest {
             Assert.equal(i, 24)
         }
         {
-            val x = Option[Int].None
+            val x = Nullable[Int].None
             var i = 0
 
-            union (x) {
+            union x {
                 case Some(k) {
                     i = k
                 }
@@ -38,14 +38,14 @@ class UnionTest {
 
     def testExpr() {
         {
-            val i = union Option.Some(24) {
+            val i = union Nullable.Some(29) {
                 case Some(k) = k
                 case None = 800
             }
-            Assert.equal(i, 24)
+            Assert.equal(i, 29)
         }
         {
-            val i = union Option[Int].None {
+            val i = union Nullable[Int].None {
                 case Some(k) = k
                 case None = 800
             }

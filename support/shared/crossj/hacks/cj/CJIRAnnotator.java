@@ -479,6 +479,17 @@ public final class CJIRAnnotator
         if (s.getDefaultBody().isPresent()) {
             annotateStatement(s.getDefaultBody().get());
         }
+
+        // If we're working with a Nullable type, make sure that all cases are handled
+        // TODO: Consider whether I want to do this check for all Union types.
+        if (s.getTarget().getResolvedType().isNullableType()) {
+            if (s.getDefaultBody().isPresent() || s.getUnionCases().size() != 2) {
+                throw err0(
+                        "Union matches against Option types must have both Some() and None branches and no default case",
+                        s.getMark());
+            }
+        }
+
         return null;
     }
 
@@ -1225,6 +1236,17 @@ public final class CJIRAnnotator
             annotateExpressionWithOptionalType(e.getDefaultCase().get(), a);
             a = Optional.of(e.getDefaultCase().get().getResolvedType());
         }
+
+        // If we're working with a Nullable type, make sure that all cases are handled
+        // TODO: Consider whether I want to do this check for all Union types.
+        if (e.getTarget().getResolvedType().isNullableType()) {
+            if (e.getDefaultCase().isPresent() || e.getCases().size() != 2) {
+                throw err0(
+                        "Union matches against Option types must have both Some() and None branches and no default case",
+                        e.getMark());
+            }
+        }
+
         e.resolvedType = a.get();
         return null;
     }

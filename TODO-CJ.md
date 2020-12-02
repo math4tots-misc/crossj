@@ -4,3 +4,8 @@
 * `Bytes` and other binary data manip utils
 * Allow all `ToBool` types to be used in control flow locations (e.g. `if` and `while`)
 * Check for method signature conflicts inherited from traits
+* Right now `Nullable` is treated specially and disallowed as a type argument.
+    Maybe this could be a more general thing? Maybe a `final` or `const` type can be one
+    that cannot be used as a type argument?
+* The handling of `Nullable` in various aspects of the transpiler is hacky and error prone.
+    Refactor to improve this.

@@ -1,7 +1,6 @@
 package cj
 
-import cj.IO
-
+# Deprecated in favor of Nullable[T]
 union Option[T] {
     case Some(T)
     case None

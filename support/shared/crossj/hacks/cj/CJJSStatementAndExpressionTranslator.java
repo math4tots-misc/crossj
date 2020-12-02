@@ -146,26 +146,46 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public Void visitUnionSwitch(CJAstUnionSwitchStatement s, Void a) {
-        var tmpvar = emitExpression(s.getTarget(), Optional.empty(), DECLARE_CONST);
-        sb.line("switch (" + tmpvar + "[0]) {");
-        sb.indent();
-        for (var unionCase : s.getUnionCases()) {
-            sb.line("case " + unionCase.getDescriptor().getTag() + ": {");
+        if (s.getTarget().getResolvedType().isNullableType()) {
+            Assert.equals(s.getUnionCases().size(), 2);
+            Assert.that(s.getDefaultBody().isEmpty());
+            var someCase = s.getUnionCases().filter(c -> c.getDescriptor().getTag() == 0).get(0);
+            var noneCase = s.getUnionCases().filter(c -> c.getDescriptor().getTag() == 1).get(0);
+            Assert.equals(someCase.getValueNames().size(), 1);
+            var valueName = someCase.getValueNames().get(0);
+            var tmpvar = emitExpression(s.getTarget(), Optional.empty(), DECLARE_CONST);
+            sb.line("if (" + tmpvar + " !== null) {");
             sb.indent();
-            var valueNames = unionCase.getValueNames();
-            sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar
-                    + ";");
-            emitStatement(unionCase.getBody());
-            sb.line("break;");
+            sb.line("const " + nameToLocalVariableName(valueName) + " = " + tmpvar + ";");
+            emitStatement(someCase.getBody());
+            sb.dedent();
+            sb.line("} else {");
+            sb.indent();
+            emitStatement(noneCase.getBody());
+            sb.dedent();
+            sb.line("}");
+        } else {
+            var tmpvar = emitExpression(s.getTarget(), Optional.empty(), DECLARE_CONST);
+            sb.line("switch (" + tmpvar + "[0]) {");
+            sb.indent();
+            for (var unionCase : s.getUnionCases()) {
+                sb.line("case " + unionCase.getDescriptor().getTag() + ": {");
+                sb.indent();
+                var valueNames = unionCase.getValueNames();
+                sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar
+                        + ";");
+                emitStatement(unionCase.getBody());
+                sb.line("break;");
+                sb.dedent();
+                sb.line("}");
+            }
+            if (s.getDefaultBody().isPresent()) {
+                sb.line("default:");
+                emitStatement(s.getDefaultBody().get());
+            }
             sb.dedent();
             sb.line("}");
         }
-        if (s.getDefaultBody().isPresent()) {
-            sb.line("default:");
-            emitStatement(s.getDefaultBody().get());
-        }
-        sb.dedent();
-        sb.line("}");
         return null;
     }
 
@@ -375,15 +395,32 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public String visitNewUnion(CJAstNewUnionExpression e, Void a) {
-        var argtmpvars = e.getArguments().map(arg -> emitExpressionConst(arg));
-        var sb = Str.builder();
-        var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
-        sb.s("[").i(unionCaseDescriptor.getTag());
-        for (var argtmpvar : argtmpvars) {
-            sb.s(",").s(argtmpvar);
+        if (e.getResolvedType().isNullableType()) {
+            switch (e.getResolvedUnionCaseDescriptor().getTag()) {
+                case 0: {
+                    // Some(T)
+                    Assert.equals(e.getArguments().size(), 1);
+                    return emitExpressionPartial(e.getArguments().get(0));
+                }
+                case 1: {
+                    // None
+                    Assert.equals(e.getArguments().size(), 0);
+                    return "null";
+                }
+                default:
+                    throw XError.withMessage("FUBAR");
+            }
+        } else {
+            var argtmpvars = e.getArguments().map(arg -> emitExpressionConst(arg));
+            var sb = Str.builder();
+            var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
+            sb.s("[").i(unionCaseDescriptor.getTag());
+            for (var argtmpvar : argtmpvars) {
+                sb.s(",").s(argtmpvar);
+            }
+            sb.s("]");
+            return sb.build();
         }
-        sb.s("]");
-        return sb.build();
     }
 
     @Override
@@ -491,33 +528,55 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public String visitUnionMatch(CJAstUnionMatchExpression e, Void a) {
-        var tmpvar = emitExpression(e.getTarget(), Optional.empty(), DECLARE_CONST);
-        var outvar = newMethodLevelUniqueId();
-        sb.line("let " + outvar + ";");
-        sb.line("switch (" + tmpvar + "[0]) {");
-        sb.indent();
-        for (var unionCase : e.getCases()) {
-            sb.line("case " + unionCase.getDescriptor().getTag() + ": {");
+        if (e.getTarget().getResolvedType().isNullableType()) {
+            var someCase = e.getCases().filter(c -> c.getDescriptor().getTag() == 0).get(0);
+            var noneCase = e.getCases().filter(c -> c.getDescriptor().getTag() == 1).get(0);
+            Assert.equals(someCase.getValueNames().size(), 1);
+            var valueName = someCase.getValueNames().get(0);
+
+            var tmpvar = emitExpression(e.getTarget(), Optional.empty(), DECLARE_CONST);
+            var outvar = newMethodLevelUniqueId();
+            sb.line("let " + outvar + ";");
+            sb.line("if (" + tmpvar + " !== null) {");
             sb.indent();
-            var valueNames = unionCase.getValueNames();
-            sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar
-                    + ";");
-            emitExpression(unionCase.getExpression(), Optional.of(outvar), DECLARE_NONE);
-            sb.line("break;");
+            sb.line("const " + nameToLocalVariableName(valueName) + " = " + tmpvar + ";");
+            emitExpression(someCase.getExpression(), Optional.of(outvar), DECLARE_NONE);
+            sb.dedent();
+            sb.line("} else {");
+            sb.indent();
+            emitExpression(noneCase.getExpression(), Optional.of(outvar), DECLARE_NONE);
             sb.dedent();
             sb.line("}");
-        }
-        sb.line("default: {");
-        sb.indent();
-        if (e.getDefaultCase().isPresent()) {
-            emitExpression(e.getDefaultCase().get(), Optional.of(outvar), DECLARE_NONE);
+            return outvar;
         } else {
-            sb.line("throw new Error('MISSING CASE MATCH');");
+            var tmpvar = emitExpression(e.getTarget(), Optional.empty(), DECLARE_CONST);
+            var outvar = newMethodLevelUniqueId();
+            sb.line("let " + outvar + ";");
+            sb.line("switch (" + tmpvar + "[0]) {");
+            sb.indent();
+            for (var unionCase : e.getCases()) {
+                sb.line("case " + unionCase.getDescriptor().getTag() + ": {");
+                sb.indent();
+                var valueNames = unionCase.getValueNames();
+                sb.line("const [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar
+                        + ";");
+                emitExpression(unionCase.getExpression(), Optional.of(outvar), DECLARE_NONE);
+                sb.line("break;");
+                sb.dedent();
+                sb.line("}");
+            }
+            sb.line("default: {");
+            sb.indent();
+            if (e.getDefaultCase().isPresent()) {
+                emitExpression(e.getDefaultCase().get(), Optional.of(outvar), DECLARE_NONE);
+            } else {
+                sb.line("throw new Error('MISSING CASE MATCH');");
+            }
+            sb.dedent();
+            sb.line("}");
+            sb.dedent();
+            sb.line("}");
+            return outvar;
         }
-        sb.dedent();
-        sb.line("}");
-        sb.dedent();
-        sb.line("}");
-        return outvar;
     }
 }

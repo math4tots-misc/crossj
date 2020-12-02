@@ -127,6 +127,11 @@ public final class CJIRVariableType implements CJIRType {
     }
 
     @Override
+    public boolean isNullableType() {
+        return false;
+    }
+
+    @Override
     public boolean isDerivedFrom(CJAstItemDefinition item) {
         Assert.that(item.isClass());
         return false;

@@ -33,5 +33,7 @@ public interface CJIRType {
 
     boolean isTupleType(int argc);
 
+    boolean isNullableType();
+
     boolean isDerivedFrom(CJAstItemDefinition item);
 }

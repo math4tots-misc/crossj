@@ -25,6 +25,7 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final CJAstTypeParameter selfTypeParameter;
     private final Map<String, CJAstUnionCaseDefinition> unionCaseCache;
     private final Map<String, CJAstItemMemberDefinition> memberDefinitionByName;
+    private final String qualifiedName;
     List<CJIRTrait> allResolvedTraits;
     Map<String, CJIRTrait> traitsByQualifiedName;
     Map<String, CJIRIncompleteMethodDescriptor> methodMap;
@@ -43,6 +44,7 @@ public final class CJAstItemDefinition implements CJAstNode {
         this.typeParameters = typeParameters;
         this.conditionalTraits = conditionalTraits;
         this.members = members;
+        this.qualifiedName = packageName + "." + shortName;
         memberDefinitionByName = Map.fromIterable(members.map(m -> Pair.of(m.getName(), m)));
 
         shortToQualifiedNameMap.put(shortName, getQualifiedName());
@@ -117,7 +119,7 @@ public final class CJAstItemDefinition implements CJAstNode {
     }
 
     public String getQualifiedName() {
-        return packageName + "." + shortName;
+        return qualifiedName;
     }
 
     public List<CJAstTypeParameter> getTypeParameters() {

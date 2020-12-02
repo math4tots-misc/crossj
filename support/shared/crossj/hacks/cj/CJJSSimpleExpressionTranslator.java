@@ -175,14 +175,31 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
 
     @Override
     public String visitNewUnion(CJAstNewUnionExpression e, Void a) {
-        var sb = Str.builder();
-        var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
-        sb.s("[").i(unionCaseDescriptor.getTag());
-        for (var arg : e.getArguments()) {
-            sb.s(",").s(translateExpression(arg));
+        if (e.getResolvedType().isNullableType()) {
+            switch (e.getResolvedUnionCaseDescriptor().getTag()) {
+                case 0: {
+                    // Some(T)
+                    Assert.equals(e.getArguments().size(), 1);
+                    return translateExpression(e.getArguments().get(0));
+                }
+                case 1: {
+                    // None
+                    Assert.equals(e.getArguments().size(), 0);
+                    return "null";
+                }
+                default:
+                    throw XError.withMessage("FUBAR");
+            }
+        } else {
+            var sb = Str.builder();
+            var unionCaseDescriptor = e.getResolvedUnionCaseDescriptor();
+            sb.s("[").i(unionCaseDescriptor.getTag());
+            for (var arg : e.getArguments()) {
+                sb.s(",").s(translateExpression(arg));
+            }
+            sb.s("]");
+            return sb.build();
         }
-        sb.s("]");
-        return sb.build();
     }
 
     private String translateType(CJIRType type) {
