@@ -1,7 +1,6 @@
 package crossj.hacks.cj;
 
 import crossj.base.Assert;
-import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;
@@ -345,10 +344,7 @@ public final class CJIRAnnotator
             var selfType = new CJIRClassType(item, itemTypeArgs);
             for (var trait : item.allResolvedTraits) {
                 for (var methodDefinition : trait.getDefinition().getMethods().filter(m -> m.getBody().isEmpty())) {
-                    var descriptor = methodMap.get(methodDefinition.getName());
-                    var hasBody = descriptor.method.getBody().isPresent();
-                    var isNative = descriptor.item.isNative();
-                    if (!hasBody && !isNative) {
+                    if (!methodMap.get(methodDefinition.getName()).isImplemented()) {
                         throw err0(selfType + " implements trait " + trait + " but does not implement method "
                                 + methodDefinition.getName(), item.getMark());
                     }
