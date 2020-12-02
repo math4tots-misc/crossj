@@ -680,7 +680,8 @@ public final class CJParserState {
                                 type = "*=";
                                 break;
                             default:
-                                throw XError.withMessage("Unrecognized aug assign token: " + CJToken.typeToString(toktype));
+                                throw XError
+                                        .withMessage("Unrecognized aug assign token: " + CJToken.typeToString(toktype));
                         }
                         var owner = Optional.<CJAstExpression>empty();
                         var typeOwner = Optional.<CJAstTypeExpression>empty();
@@ -695,14 +696,17 @@ public final class CJParserState {
                             typeOwner = Optional.of(((CJAstStaticFieldAccessExpression) target).getOwner());
                             name = ((CJAstStaticFieldAccessExpression) target).getName();
                         } else {
-                            return failWithMark("Only variable or field or static fields can be used with augmented assignment", mark);
+                            return failWithMark(
+                                    "Only variable or field or static fields can be used with augmented assignment",
+                                    mark);
                         }
                         var tryValExpr = parseExpression();
                         if (tryValExpr.isFail()) {
                             return tryValExpr.castFail();
                         }
                         var valExpr = tryValExpr.get();
-                        return Try.ok(new CJAstAugmentedAssignmentStatement(mark, owner, typeOwner, name, type, valExpr));
+                        return Try
+                                .ok(new CJAstAugmentedAssignmentStatement(mark, owner, typeOwner, name, type, valExpr));
                     }
                 }
 
@@ -1387,9 +1391,13 @@ public final class CJParserState {
                 }
                 return Try.ok(new CJAstInstanceMethodCallExpression(mark, methodName, List.of(tryExpr.get())));
             }
-            case '(': { // parenthetical, lambda, or tuple display expression
+            case '(': { // parenthetical, lambda, unit or tuple display expression
                 if (atLambda()) {
                     return parseLambdaExpression().map(x -> x);
+                } else if (atOffset(')', 1)) {
+                    next();
+                    next();
+                    return Try.ok(new CJAstLiteralExpression(mark, CJAstLiteralExpression.UNIT, "()"));
                 } else {
                     next();
                     var tryExpr = parseExpression();

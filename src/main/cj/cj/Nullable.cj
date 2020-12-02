@@ -11,7 +11,10 @@ package cj
 # the extra restriction allows it to take advantage of any 'null' types
 # the underlying target may have.
 #
-union Nullable[T] {
+union Nullable[T] :
+        Eq if T : Eq,
+        Repr if T : Repr,
+        ToBool {
     case Some(T)
     case None
 
@@ -39,6 +42,35 @@ union Nullable[T] {
             case None {
                 IO.panic("Get from None")
             }
+        }
+    }
+
+    def toBool(self: Self) : Bool {
+        return union self {
+            case Some(t) = true
+            case None = false
+        }
+    }
+
+    def isPresent(self: Self) : Bool {
+        return self.toBool()
+    }
+
+    def isEmpty(self: Self) : Bool {
+        return not self.isPresent()
+    }
+
+    def __eq(self: Self, other: Self): Bool {
+        IO.panic("TODO")
+    }
+
+    if T : Repr {
+        def repr(self: Self): String {
+            IO.panic("TODO")
+            # return union self {
+            #     case Some(t) = "Some(" + t.repr() + ")"
+            #     case None = "None"
+            # }
         }
     }
 }

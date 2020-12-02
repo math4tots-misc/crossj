@@ -86,6 +86,8 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
             return e.getRawText();
         } else if (e.getType().equals(CJAstLiteralExpression.BOOL)) {
             return e.getRawText();
+        } else if (e.getType().equals(CJAstLiteralExpression.UNIT)) {
+            return "undefined";
         } else {
             throw XError.withMessage("Unrecognized literal type: " + e.getType());
         }

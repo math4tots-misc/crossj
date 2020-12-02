@@ -206,7 +206,7 @@ public final class CJJSStatementAndExpressionTranslator
     public Void visitAugmentedAssignment(CJAstAugmentedAssignmentStatement s, Void a) {
         String target;
         if (s.getOwner().isPresent()) {
-            var tmpvar = emitExpression(s.getOwner().get(), Optional.empty(), DECLARE_CONST);
+            var tmpvar = emitExpressionConst(s.getOwner().get());
             target = tmpvar + "." + CJJSTranslator.nameToFieldName(s.getName());
         } else if (s.getTypeOwner().isPresent()) {
             target = translateType(s.getTypeOwner().get().getAsIsType()) + "."
@@ -215,7 +215,7 @@ public final class CJJSStatementAndExpressionTranslator
             target = nameToLocalVariableName(s.getName());
         }
         var expr = emitExpressionPartial(s.getExpression());
-        sb.line(target + s.getType() + expr);
+        sb.line(target + s.getType() + expr + ";");
         return null;
     }
 
@@ -257,6 +257,7 @@ public final class CJJSStatementAndExpressionTranslator
      * Emits the javascript statements needed to compute the expression.
      *
      * Returns a constant expression that can be used to refer to the expression.
+     * This expression should also have no side effects.
      *
      * This method will fall back to `emitExpression(expression, Optional.empty(),
      * DECLARE_CONST)`, except in cases where it is known that the resulting
@@ -269,6 +270,10 @@ public final class CJJSStatementAndExpressionTranslator
          * literal expressions in general can just be returned as is
          */
         expression instanceof CJAstLiteralExpression
+                /**
+                 * Name expressions are also basically fast and have no side effects
+                 */
+                || expression instanceof CJAstNameExpression
                 /**
                  * lambda expressions will either result in a lambda expression literal, or the
                  * name of the function. Either case, it should be ok to return here.

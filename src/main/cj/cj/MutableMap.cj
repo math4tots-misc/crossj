@@ -1,7 +1,8 @@
 package cj
 
-
-class MutableMap[K : Hash, V] {
+# TODO: Make MutableMap conditionally Eq and Repr based on whether
+# V is Eq and Repr
+class MutableMap[K : Hash & Repr, V: Eq & Repr]: Eq, Repr {
     private var _siz : Int
     private var _list : MutableList[MutableList[Tuple[Int, K, V]]]
 
@@ -12,6 +13,9 @@ class MutableMap[K : Hash, V] {
 
     def of(pairs: List[Tuple[K, V]]) : Self {
         val self = Self._newEmpty()
+        for (k, v) in pairs {
+            self.put(k, v)
+        }
         return self
     }
 
@@ -39,10 +43,12 @@ class MutableMap[K : Hash, V] {
             val entry = bucket.get(i)
             if (hash == entry.get0() and entry.get1() == key) {
                 bucket.set(i, triple)
+                return ()
             }
-            i = i + 1
+            i += 1
         }
-        self._siz = self._siz + 1
+        self._siz += 1
+        bucket.push(triple)
     }
 
     def _checkForRehashBeforeInsert(self: Self) {
@@ -95,15 +101,95 @@ class MutableMap[K : Hash, V] {
         }
     }
 
-    def getOption(self: Self, key: K) : Nullable[V] {
+    def getOrNull(self: Self, key: K) : Nullable[V] {
         return self._getTriple(key).map(triple -> triple.get2())
+    }
+
+    def containsKey(self: Self, key: K): Bool {
+        return self._getTriple(key).isPresent()
     }
 
     def get(self: Self, key: K): V {
         return self._getTriple(key).get().get2()
     }
 
+    def _removeTriple(self: Self, key: K) : Nullable[Tuple[Int, K, V]] {
+        if (self._list.size() == 0) {
+            return Nullable.None
+        }
+        val hash = key.hash()
+        val index = Self._getIndex(hash, self._list.size())
+        val bucket = self._list.get(index)
+        var i = 0
+        while (i < bucket.size()) {
+            val triple = bucket.get(i)
+            if triple.get0() == hash and triple.get1() == key {
+                self._siz -= 1
+                return Nullable.Some(bucket.removeIndex(i))
+            }
+            i += 1
+        }
+        return Nullable.None
+    }
+
+    def removeOrFalse(self: Self, key: K): Bool {
+        return self._removeTriple(key).isPresent()
+    }
+
+    def remove(self: Self, key: K) {
+        if (self._removeTriple(key).isEmpty()) {
+            IO.panic("Key " + key.repr() + " not found in this map")
+        }
+    }
+
+    def keys(self: Self) : Iterator[K] {
+        return self._list.iter().flatMap(bucket -> bucket.map(triple -> triple.get1()))
+    }
+
+    def values(self: Self) : Iterator[V] {
+        return self._list.iter().flatMap(bucket -> bucket.map(triple -> triple.get2()))
+    }
+
+    def pairs(self: Self): Iterator[Tuple[K, V]] {
+        return self._list.iter().flatMap(
+            bucket -> bucket.map(triple -> (triple.get1(), triple.get2())))
+    }
+
     def _getIndex(hash: Int, size: Int) : Int {
         return (hash % size + size) % size
+    }
+
+    def __eq(self: Self, other: Self): Bool {
+        if (self._siz != other._siz) {
+            return false
+        } else if (self._siz == 0) {
+            return true
+        }
+        for (hash, k, v) in self._list.iter().flatMap(bucket -> bucket) {
+            union other._getTripleWithHash(k, hash) {
+                case Some(otherTriple) {
+                    if v != otherTriple.get2() {
+                        return false
+                    }
+                }
+                case None {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    def repr(self: Self): String {
+        if self._siz == 0 {
+            return "[:]"
+        } else {
+            return (
+                "[" +
+                ",".join(
+                    self.pairs().map(kv -> kv.get0().repr() + ": " + kv.get1().repr())) +
+                "]"
+            )
+        }
     }
 }

@@ -15,5 +15,7 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
 
     def iter(self: Self) : Iterator[Char]
 
+    def join[I: ToString, C: Iterable[I]](self: Self, parts: C): String
+
     def toBool(self: Self) : Bool
 }

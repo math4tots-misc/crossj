@@ -44,7 +44,7 @@ public final class CJIRClassType implements CJIRType {
         return new CJIRClassType(definition, args.map(arg -> arg.substitute(map)));
     }
 
-    private Map<String, CJIRType> getBindings() {
+    Map<String, CJIRType> getBindings() {
         var params = definition.getTypeParameters().map(p -> p.getName());
         var map = Map.fromIterable(Range.upto(args.size()).map(i -> Pair.of(params.get(i), args.get(i))));
         return map;

@@ -676,7 +676,14 @@ public final class CJIRAnnotator
         if (type instanceof CJIRVariableType) {
             return Optional.empty();
         }
-        return ((CJIRClassType) type).getDefinition().getFieldMap().getOptional(fieldName);
+        var classType = ((CJIRClassType) type);
+        var optInfo = classType.getDefinition().getFieldMap().getOptional(fieldName);
+        if (optInfo.isEmpty() || classType.getArguments().size() == 0) {
+            return optInfo;
+        }
+        var info = optInfo.get();
+        var fieldType = info.getType().substitute(classType.getBindings());
+        return Optional.of(new CJIRFieldInfo(info.isStatic(), info.isMutable(), fieldType));
     }
 
     @Override

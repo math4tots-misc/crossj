@@ -9,3 +9,7 @@
     that cannot be used as a type argument?
 * The handling of `Nullable` in various aspects of the transpiler is hacky and error prone.
     Refactor to improve this.
+* Special handling for methods that can be translated directly (e.g. `Int.__add`
+    should be inlined)
+* `switch` statement and expression for matching raw values.
+    At least for `Char`, `Int`, and `String`

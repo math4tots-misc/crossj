@@ -6,12 +6,13 @@ import crossj.base.StrBuilder;
 
 public final class CJAstLiteralExpression implements CJAstExpression {
     // various literal types
+    public static final String UNIT = "Unit";
     public static final String STRING = "String";
     public static final String CHAR = "Char";
     public static final String INT = "Int";
     public static final String DOUBLE = "Double";
     public static final String BOOL = "Bool";
-    public static final List<String> TYPES = List.of(STRING, CHAR, INT, DOUBLE, BOOL);
+    public static final List<String> TYPES = List.of(UNIT, STRING, CHAR, INT, DOUBLE, BOOL);
 
     private final CJMark mark;
     private final String type;

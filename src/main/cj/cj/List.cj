@@ -27,17 +27,15 @@ native class List[T] :
         def repr(list: Self) : String
     }
 
-    def map[R](list: Self, f: Fn[R, T]) : List[R]
-
-    def flatMap[R, C: Iterable[R]](list: Self, f: Fn[C, T]) : List[R]
-
     def size(x: Self) : Int
-
     def iter(x: Self) : Iterator[T]
 
+    def map[R](list: Self, f: Fn[R, T]) : List[R]
+    def flatMap[R, C: Iterable[R]](list: Self, f: Fn[C, T]) : List[R]
+    def filter(self: Self, f: Fn[Bool, T]): List[T]
+
     def toList(self: Self) : Self
+    def toBool(self: Self) : Bool
 
     def builder() : ListBuilder[T]
-
-    def toBool(self: Self) : Bool
 }

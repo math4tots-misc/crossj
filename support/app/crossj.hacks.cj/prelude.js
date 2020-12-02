@@ -306,6 +306,18 @@ class MC$cj$String {
     }
 
     /**
+     * @template T
+     * @param {*} VT$I
+     * @param {*} VT$C
+     * @param {string} sep
+     * @param {Iterable<T>} parts
+     */
+    M$join(VT$I, VT$C, sep, parts) {
+        const arr = Array.isArray(parts) ? parts : Array.from(parts);
+        return arr.join(sep);
+    }
+
+    /**
      * @param {string} s
      */
     M$toBool(s) {
@@ -655,6 +667,52 @@ class MC$cj$List {
     }
 
     /**
+     * @param {Array<T>} a
+     * @param {Array<T>} b
+     */
+    M$__eq(a, b) {
+        const T = this.VT$T;
+        if (a.length !== b.length) {
+            return false;
+        }
+        for (var i = 0; i < a.length; i++) {
+            if (!T.M$__eq(a[i], b[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param {Array<T>} list
+     */
+    M$hash(list) {
+        const T = this.VT$T;
+        let hash = 1;
+        for (const item of list) {
+            hash = combineHash(hash, T.M$hash(item));
+        }
+        return hash;
+    }
+
+    /**
+     * @param {Array<T>} a
+     * @param {Array<T>} b
+     */
+    M$__lt(a, b) {
+        const T = this.VT$T;
+        const len = a.length < b.length ? a.length : b.length;
+        for (let i = 0; i < len; i++) {
+            if (T.M$__lt(a[i], b[i])) {
+                return true;
+            } else if (T.M$__lt(b[i], a[i])) {
+                return false;
+            }
+        }
+        return a.length < b.length;
+    }
+
+    /**
      * @param {Array<T>} list
      */
     M$repr(list) {
@@ -705,49 +763,11 @@ class MC$cj$List {
     }
 
     /**
-     * @param {Array<T>} a
-     * @param {Array<T>} b
-     */
-    M$__eq(a, b) {
-        const T = this.VT$T;
-        if (a.length !== b.length) {
-            return false;
-        }
-        for (var i = 0; i < a.length; i++) {
-            if (!T.M$__eq(a[i], b[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * @param {Array<T>} list
+     * @param {function(T): boolean} f
      */
-    M$hash(list) {
-        const T = this.VT$T;
-        let hash = 1;
-        for (const item of list) {
-            hash = combineHash(hash, T.M$hash(item));
-        }
-        return hash;
-    }
-
-    /**
-     * @param {Array<T>} a
-     * @param {Array<T>} b
-     */
-    M$__lt(a, b) {
-        const T = this.VT$T;
-        const len = a.length < b.length ? a.length : b.length;
-        for (let i = 0; i < len; i++) {
-            if (T.M$__lt(a[i], b[i])) {
-                return true;
-            } else if (T.M$__lt(b[i], a[i])) {
-                return false;
-            }
-        }
-        return a.length < b.length;
+    M$filter(list, f) {
+        return list.filter(f);
     }
 
     /**
@@ -758,17 +778,17 @@ class MC$cj$List {
     }
 
     /**
-     * @returns {Array<Array<T>>}
-     */
-    M$builder() {
-        return [[]];
-    }
-
-    /**
      * @param {Array<T>} list
      */
     M$toBool(list) {
         return list.length !== 0;
+    }
+
+    /**
+     * @returns {Array<Array<T>>}
+     */
+    M$builder() {
+        return [[]];
     }
 }
 
@@ -894,6 +914,45 @@ class MC$cj$MutableList {
      */
     M$toBool(list) {
         return list.length !== 0;
+    }
+
+    /**
+     * @template R
+     * @param {*} TV$R
+     * @param {Array<T>} list
+     * @param {function(T): R} f
+     */
+    M$map(TV$R, list, f) {
+        return list.map(f);
+    }
+
+    /**
+     * @template R
+     * @param {*} TV$R
+     * @param {*} TV$C
+     * @param {Array<T>} list
+     * @param {function(T): R} f
+     */
+    M$flatMap(TV$R, TV$C, list, f) {
+        return list.flatMap(f);
+    }
+
+    /**
+     * @param {Array<T>} list
+     * @param {function(T): boolean} f
+     */
+    M$filter(list, f) {
+        return list.filter(f);
+    }
+
+    /**
+     * @param {Array<T>} list
+     * @param {number} i
+     */
+    M$removeIndex(list, i) {
+        let value = list[index];
+        list.splice(index, 1);
+        return value;
     }
 }
 

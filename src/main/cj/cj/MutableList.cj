@@ -28,4 +28,10 @@ native class MutableList[T] :
     def push(list: Self, t: T) : Unit
     def pop(list: Self) : T
     def toBool(self: Self) : Bool
+
+    def map[R](self: Self, f: Fn[R, T]): MutableList[R]
+    def flatMap[R, C: Iterable[R]](self: Self, f: Fn[C, T]): MutableList[R]
+    def filter(self: Self, f: Fn[Bool, T]): MutableList[T]
+
+    def removeIndex(self: Self, i: Int): T
 }
