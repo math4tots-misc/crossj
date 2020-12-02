@@ -43,4 +43,9 @@ class StringTest {
         Assert.equal("hello".hash(), 99162322)
         Assert.equal("world".hash(), 113318802)
     }
+
+    def testAdd() {
+        Assert.equal("asdf" + [1, 2, 3], "asdf[1, 2, 3]")
+        Assert.equal("hello" + " " + "world", "hello world")
+    }
 }

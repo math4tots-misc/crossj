@@ -4,7 +4,7 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
     def __eq(a: Self, b: Self) : Bool
     def __lt(a: Self, b: Self) : Bool
 
-    def __add(a: Self, b: Self) : Self
+    def __add[T: ToString](a: Self, b: T) : Self
 
     def size(x: Self) : Int
 

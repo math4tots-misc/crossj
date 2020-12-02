@@ -240,11 +240,12 @@ class MC$cj$String {
     }
 
     /**
+     * @template T
      * @param {string} a
-     * @param {string} b
+     * @param {T} b
      */
-    M$__add(a, b) {
-        return a + b;
+    M$__add(TV$T, a, b) {
+        return a + TV$T.M$toString(b);
     }
 
     /**
