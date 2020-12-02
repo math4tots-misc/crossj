@@ -33,4 +33,21 @@ class SwitchUnionTest {
             Assert.equal(i, 700)
         }
     }
+
+    def testExpr() {
+        {
+            val i = union Option.Some(24) {
+                case Some(k) = k
+                case None = 800
+            }
+            Assert.equal(i, 24)
+        }
+        {
+            val i = union Option[Int].None {
+                case Some(k) = k
+                case None = 800
+            }
+            Assert.equal(i, 800)
+        }
+    }
 }

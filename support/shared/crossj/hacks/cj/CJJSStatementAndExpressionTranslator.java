@@ -488,4 +488,36 @@ public final class CJJSStatementAndExpressionTranslator
         var argtmpvars = e.getElements().map(arg -> emitExpressionConst(arg));
         return "[" + Str.join(",", argtmpvars) + "]";
     }
+
+    @Override
+    public String visitUnionMatch(CJAstUnionMatchExpression e, Void a) {
+        var tmpvar = emitExpression(e.getTarget(), Optional.empty(), DECLARE_CONST);
+        var outvar = newMethodLevelUniqueId();
+        sb.line("let " + outvar + ";");
+        sb.line("switch (" + tmpvar + "[0]) {");
+        sb.indent();
+        for (var unionCase : e.getCases()) {
+            sb.line("case " + unionCase.getDescriptor().getTag() + ": {");
+            sb.indent();
+            var valueNames = unionCase.getValueNames();
+            sb.line("let [_, " + Str.join(", ", valueNames.map(n -> nameToLocalVariableName(n))) + "] = " + tmpvar
+                    + ";");
+            emitExpression(unionCase.getExpression(), Optional.of(outvar), DECLARE_NONE);
+            sb.line("break;");
+            sb.dedent();
+            sb.line("}");
+        }
+        sb.line("default: {");
+        sb.indent();
+        if (e.getDefaultCase().isPresent()) {
+            emitExpression(e.getDefaultCase().get(), Optional.of(outvar), DECLARE_NONE);
+        } else {
+            sb.line("throw new Error('MISSING CASE MATCH');");
+        }
+        sb.dedent();
+        sb.line("}");
+        sb.dedent();
+        sb.line("}");
+        return outvar;
+    }
 }

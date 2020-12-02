@@ -129,6 +129,11 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     }
 
     @Override
+    public String visitUnionMatch(CJAstUnionMatchExpression e, Void a) {
+        throw XError.withMessage("union-match expressions cannot appear in simple expressions");
+    }
+
+    @Override
     public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
         return "(!" + translateExpression(e.getInner()) + ")";
     }

@@ -8,6 +8,7 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     private static final int COMPLEX_LAMBDA = CJIRExpressionComplexityFlags.COMPLEX_LAMBDA;
     private static final int BLOCK = CJIRExpressionComplexityFlags.BLOCK;
     private static final int ERROR_PROPAGATION = CJIRExpressionComplexityFlags.ERROR_PROPAGATION;
+    private static final int UNION_MATCH = CJIRExpressionComplexityFlags.UNION_MATCH;
     private static final CJIRExpressionComplexityAnnotator instance = new CJIRExpressionComplexityAnnotator();
 
     private CJIRExpressionComplexityAnnotator() {
@@ -142,6 +143,13 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     @Override
     public Void visitErrorPropagation(CJAstErrorPropagationExpression e, Void a) {
         e.complexityFlags = annotate(e.getInner()) | ERROR_PROPAGATION;
+        return null;
+    }
+
+    @Override
+    public Void visitUnionMatch(CJAstUnionMatchExpression e, Void a) {
+        e.complexityFlags = annotate(e.getTarget()) | annotateList(e.getCases().map(c -> c.getExpression()))
+                | UNION_MATCH;
         return null;
     }
 }

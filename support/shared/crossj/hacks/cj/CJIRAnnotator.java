@@ -1188,4 +1188,44 @@ public final class CJIRAnnotator
         e.resolvedType = wrappingType.getArguments().get(0);
         return null;
     }
+
+    @Override
+    public Void visitUnionMatch(CJAstUnionMatchExpression e, Optional<CJIRType> a) {
+        annotateExpression(e.getTarget());
+        var targetType = e.getTarget().getResolvedType();
+        if (!targetType.isUnion()) {
+            throw err0("Expected a union type, but got " + targetType, e.getMark());
+        }
+        var classType = (CJIRClassType) targetType;
+        for (var unionCase : e.getCases()) {
+            context.enterBlock();
+            var name = unionCase.getName();
+            var optionalUnionCaseDescriptor = classType.getUnionCaseDescriptor(name);
+            if (optionalUnionCaseDescriptor.isEmpty()) {
+                throw err0("Union case " + name + " not found for " + classType, unionCase.getMark());
+            }
+            var unionCaseDescriptor = optionalUnionCaseDescriptor.get();
+            var argumentTypes = unionCaseDescriptor.getSignature().argumentTypes;
+            var valueNames = unionCase.getValueNames();
+            var arge = argumentTypes.size();
+            var argc = valueNames.size();
+            if (argc != arge) {
+                throw err0("Union case " + classType + "." + name + " expects " + arge + " arguments but got " + argc,
+                        unionCase.getMark());
+            }
+            for (int i = 0; i < argc; i++) {
+                context.declareVariable(unionCase.getMark(), false, valueNames.get(i), argumentTypes.get(i));
+            }
+            annotateExpressionWithOptionalType(unionCase.getExpression(), a);
+            a = Optional.of(unionCase.getExpression().getResolvedType());
+            unionCase.descriptor = unionCaseDescriptor;
+            context.exitBlock();
+        }
+        if (e.getDefaultCase().isPresent()) {
+            annotateExpressionWithOptionalType(e.getDefaultCase().get(), a);
+            a = Optional.of(e.getDefaultCase().get().getResolvedType());
+        }
+        e.resolvedType = a.get();
+        return null;
+    }
 }

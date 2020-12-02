@@ -1154,6 +1154,66 @@ public final class CJParserState {
                 }
                 return Try.ok(new CJAstListDisplayExpression(mark, false, elements));
             }
+            case CJToken.KW_UNION: { // union match expression
+                next();
+                var tryTarget = parseExpression();
+                if (tryTarget.isFail()) {
+                    return tryTarget.castFail();
+                }
+                var target = tryTarget.get();
+                consumeDelimitersAndComments();
+                if (!consume('{')) {
+                    return expectedType('{');
+                }
+                var unionCases = List.<CJAstUnionMatchCase>of();
+                var defaultBody = Optional.<CJAstExpression>empty();
+                consumeDelimitersAndComments();
+                while (at(CJToken.KW_CASE)) {
+                    var caseMark = getMark();
+                    next();
+                    if (!at(CJToken.TYPE_ID)) {
+                        return expectedType(CJToken.TYPE_ID);
+                    }
+                    var name = parseTypeID();
+                    var valueNames = List.<String>of();
+                    if (consume('(')) {
+                        while (!consume(')')) {
+                            if (!at(CJToken.ID)) {
+                                return expectedType(CJToken.ID);
+                            }
+                            valueNames.add(parseID());
+                            if (!consume(',') && !at(')')) {
+                                return expectedType(')');
+                            }
+                        }
+                    }
+                    if (!consume('=')) {
+                        return expectedType('=');
+                    }
+                    var tryBody = parseExpression();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body = tryBody.get();
+                    unionCases.add(new CJAstUnionMatchCase(caseMark, name, valueNames, body));
+                    consumeDelimitersAndComments();
+                }
+                if (consume(CJToken.KW_DEFAULT)) {
+                    if (!consume('=')) {
+                        return expectedType('=');
+                    }
+                    var tryBody = parseExpression();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body = tryBody.get();
+                    defaultBody = Optional.of(body);
+                }
+                if (!consume('}')) {
+                    return expectedType('}');
+                }
+                return Try.ok(new CJAstUnionMatchExpression(mark, target, unionCases, defaultBody));
+            }
             case CJToken.KW_IF: { // if expression
                 next();
                 if (!consume('(')) {

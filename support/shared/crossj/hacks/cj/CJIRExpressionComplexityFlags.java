@@ -48,4 +48,9 @@ public final class CJIRExpressionComplexityFlags {
      * can't be translated into expressions in the target language.
      */
     public static final int ERROR_PROPAGATION = 16;
+
+    /**
+     * Contains a union-match expression
+     */
+    public static final int UNION_MATCH = 32;
 }
