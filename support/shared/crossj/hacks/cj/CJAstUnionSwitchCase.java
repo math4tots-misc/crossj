@@ -5,14 +5,14 @@ import crossj.base.List;
 import crossj.base.Str;
 import crossj.base.StrBuilder;
 
-public final class CJAstSwitchUnionCase implements CJAstNode {
+public final class CJAstUnionSwitchCase implements CJAstNode {
     private final CJMark mark;
     private final String name;
     private final List<String> valueNames;
     private final CJAstBlockStatement body;
     CJIRUnionCaseDescriptor descriptor;
 
-    CJAstSwitchUnionCase(CJMark mark, String name, List<String> valueNames, CJAstBlockStatement body) {
+    CJAstUnionSwitchCase(CJMark mark, String name, List<String> valueNames, CJAstBlockStatement body) {
         this.mark = mark;
         this.name = name;
         this.valueNames = valueNames;

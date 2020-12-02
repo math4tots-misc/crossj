@@ -35,7 +35,7 @@ class Sample : ToString {
         {
             var x = Try.Ok(23)
 
-            switch union (x) {
+            union (x) {
                 case Ok(j) {
                     IO.println("Ok(j): j -> ")
                     IO.println(j)

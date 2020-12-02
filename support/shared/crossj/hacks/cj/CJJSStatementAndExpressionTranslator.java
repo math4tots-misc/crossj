@@ -145,7 +145,7 @@ public final class CJJSStatementAndExpressionTranslator
     }
 
     @Override
-    public Void visitSwitchUnion(CJAstSwitchUnionStatement s, Void a) {
+    public Void visitUnionSwitch(CJAstUnionSwitchStatement s, Void a) {
         var tmpvar = emitExpression(s.getTarget(), Optional.empty(), DECLARE_CONST);
         sb.line("switch (" + tmpvar + "[0]) {");
         sb.indent();

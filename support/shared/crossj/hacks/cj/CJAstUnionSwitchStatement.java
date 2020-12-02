@@ -4,13 +4,13 @@ import crossj.base.List;
 import crossj.base.Optional;
 import crossj.base.StrBuilder;
 
-public final class CJAstSwitchUnionStatement implements CJAstStatement {
+public final class CJAstUnionSwitchStatement implements CJAstStatement {
     private final CJMark mark;
     private final CJAstExpression target;
-    private final List<CJAstSwitchUnionCase> unionCases;
+    private final List<CJAstUnionSwitchCase> unionCases;
     private final Optional<CJAstBlockStatement> defaultBody;
 
-    CJAstSwitchUnionStatement(CJMark mark, CJAstExpression target, List<CJAstSwitchUnionCase> unionCases,
+    CJAstUnionSwitchStatement(CJMark mark, CJAstExpression target, List<CJAstUnionSwitchCase> unionCases,
             Optional<CJAstBlockStatement> defaultBody) {
         this.mark = mark;
         this.target = target;
@@ -27,7 +27,7 @@ public final class CJAstSwitchUnionStatement implements CJAstStatement {
         return target;
     }
 
-    public List<CJAstSwitchUnionCase> getUnionCases() {
+    public List<CJAstUnionSwitchCase> getUnionCases() {
         return unionCases;
     }
 
@@ -57,6 +57,6 @@ public final class CJAstSwitchUnionStatement implements CJAstStatement {
 
     @Override
     public <R, A> R accept(CJAstStatementVisitor<R, A> visitor, A a) {
-        return visitor.visitSwitchUnion(this, a);
+        return visitor.visitUnionSwitch(this, a);
     }
 }

@@ -446,7 +446,7 @@ public final class CJIRAnnotator
     }
 
     @Override
-    public Void visitSwitchUnion(CJAstSwitchUnionStatement s, Void a) {
+    public Void visitUnionSwitch(CJAstUnionSwitchStatement s, Void a) {
         annotateExpression(s.getTarget());
         var targetType = s.getTarget().getResolvedType();
         if (!targetType.isUnion()) {

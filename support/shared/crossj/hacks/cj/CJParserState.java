@@ -589,11 +589,8 @@ public final class CJParserState {
                 }
                 return Try.ok(new CJAstReturnStatement(mark, tryExpr.get()));
             }
-            case CJToken.KW_SWITCH: {
+            case CJToken.KW_UNION: {
                 next();
-                if (!consume(CJToken.KW_UNION)) {
-                    return expectedType(CJToken.KW_UNION);
-                }
                 var tryTarget = parseExpression();
                 if (tryTarget.isFail()) {
                     return tryTarget.castFail();
@@ -603,7 +600,7 @@ public final class CJParserState {
                 if (!consume('{')) {
                     return expectedType('{');
                 }
-                var unionCases = List.<CJAstSwitchUnionCase>of();
+                var unionCases = List.<CJAstUnionSwitchCase>of();
                 var defaultBody = Optional.<CJAstBlockStatement>empty();
                 consumeDelimitersAndComments();
                 while (at(CJToken.KW_CASE)) {
@@ -630,7 +627,7 @@ public final class CJParserState {
                         return tryBody.castFail();
                     }
                     var body = tryBody.get();
-                    unionCases.add(new CJAstSwitchUnionCase(caseMark, name, valueNames, body));
+                    unionCases.add(new CJAstUnionSwitchCase(caseMark, name, valueNames, body));
                     consumeDelimitersAndComments();
                 }
                 if (consume(CJToken.KW_DEFAULT)) {
@@ -644,7 +641,7 @@ public final class CJParserState {
                 if (!consume('}')) {
                     return expectedType('}');
                 }
-                return Try.ok(new CJAstSwitchUnionStatement(mark, target, unionCases, defaultBody));
+                return Try.ok(new CJAstUnionSwitchStatement(mark, target, unionCases, defaultBody));
             }
             default: {
                 var tryExpr = parseExpression();

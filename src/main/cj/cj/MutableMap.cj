@@ -83,7 +83,7 @@ class MutableMap[K : Hash, V] {
     }
 
     def getOrInsert(self: Self, key: K, f: Fn[V]): V {
-        switch union self._getTriple(key) {
+        union self._getTriple(key) {
             case Some(triple) {
                 return triple.get2()
             }

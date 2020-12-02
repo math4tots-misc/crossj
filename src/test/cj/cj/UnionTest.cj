@@ -1,12 +1,12 @@
 package cj
 
-class SwitchUnionTest {
+class UnionTest {
     def testSample() {
         {
             val x = Option.Some(24)
             var i = 0
 
-            switch union (x) {
+            union (x) {
                 case Some(k) {
                     i = k
                 }
@@ -21,7 +21,7 @@ class SwitchUnionTest {
             val x = Option[Int].None
             var i = 0
 
-            switch union (x) {
+            union (x) {
                 case Some(k) {
                     i = k
                 }
