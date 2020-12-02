@@ -1,6 +1,7 @@
 package crossj.hacks.cj;
 
 import crossj.base.Assert;
+import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;
@@ -19,6 +20,7 @@ public final class CJIRAnnotator
         var annotator = new CJIRAnnotator(context);
         try {
             for (var item : world.getAllItems()) {
+                annotator.processOptionalTypeVariableTraits(item);
                 annotator.preAnnotateItem(item);
             }
             for (var item : world.getAllItems()) {
@@ -187,6 +189,9 @@ public final class CJIRAnnotator
             for (var traitExpression : typeParameter.getBounds()) {
                 context.resolveTraitExpression(traitExpression);
             }
+            for (var traitExpression : typeParameter.getOptionalBounds()) {
+                context.resolveTraitExpression(traitExpression);
+            }
         }
     }
 
@@ -212,6 +217,24 @@ public final class CJIRAnnotator
 
     private void exitMethod() {
         context.exitMethod();
+    }
+
+    private void processOptionalTypeVariableTraits(CJAstItemDefinition item) {
+        // TODO: Remove this DIRTY HACK
+        // See optionalBounds field of CJAstTypeParameter
+        var parametersByName = Map.fromIterable(item.getTypeParameters().map(p -> Pair.of(p.getName(), p)));
+        for (var pair : item.getConditionalTraits()) {
+            for (var condition : pair.get2()) {
+                var type = condition.getType();
+                var parameter = parametersByName.getOrNull(type.getName());
+                if (parameter == null || type.getArguments().size() > 0) {
+                    continue;
+                }
+                for (var bound : condition.getTraits()) {
+                    parameter.addOptionalBound(bound);
+                }
+            }
+        }
     }
 
     /**

@@ -9,6 +9,17 @@ public final class CJAstTypeParameter implements CJAstNode {
     private final String name;
     private final List<CJAstTraitExpression> bounds; // trait that the given type must satisfy
 
+    /**
+     * These are additional traits that this type variable may implement. The type
+     * variable implementing these traits may cause another type to implement other
+     * traits.
+     *
+     * Keeping the conditional bounds here is a hack, that allows correct programs
+     * to pass annotation (albeit at the cost of allowing some invalid programs that
+     * assume these bounds when inappropriate to also pass)
+     */
+    private final List<CJAstTraitExpression> optionalBounds = List.of();
+
     CJAstTypeParameter(CJMark mark, String name, List<CJAstTraitExpression> bounds) {
         this.mark = mark;
         this.name = name;
@@ -26,6 +37,18 @@ public final class CJAstTypeParameter implements CJAstNode {
 
     public List<CJAstTraitExpression> getBounds() {
         return bounds;
+    }
+
+    public List<CJAstTraitExpression> getOptionalBounds() {
+        return optionalBounds;
+    }
+
+    public List<CJAstTraitExpression> getAllBounds() {
+        return List.of(bounds, optionalBounds).flatMap(x -> x);
+    }
+
+    public void addOptionalBound(CJAstTraitExpression traitExpression) {
+        optionalBounds.add(traitExpression);
     }
 
     @Override

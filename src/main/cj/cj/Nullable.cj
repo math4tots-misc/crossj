@@ -66,11 +66,10 @@ union Nullable[T] :
 
     if T : Repr {
         def repr(self: Self): String {
-            IO.panic("TODO")
-            # return union self {
-            #     case Some(t) = "Some(" + t.repr() + ")"
-            #     case None = "None"
-            # }
+            return union self {
+                case Some(t) = "Some(" + t.repr() + ")"
+                case None = "None"
+            }
         }
     }
 }

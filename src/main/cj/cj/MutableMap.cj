@@ -2,7 +2,9 @@ package cj
 
 # TODO: Make MutableMap conditionally Eq and Repr based on whether
 # V is Eq and Repr
-class MutableMap[K : Hash & Repr, V: Eq & Repr]: Eq, Repr {
+class MutableMap[K : Hash, V]:
+        Eq if K: Eq and V: Eq,
+        Repr if K: Repr and V: Repr {
     private var _siz : Int
     private var _list : MutableList[MutableList[Tuple[Int, K, V]]]
 
@@ -159,37 +161,41 @@ class MutableMap[K : Hash & Repr, V: Eq & Repr]: Eq, Repr {
         return (hash % size + size) % size
     }
 
-    def __eq(self: Self, other: Self): Bool {
-        if (self._siz != other._siz) {
-            return false
-        } else if (self._siz == 0) {
-            return true
-        }
-        for (hash, k, v) in self._list.iter().flatMap(bucket -> bucket) {
-            union other._getTripleWithHash(k, hash) {
-                case Some(otherTriple) {
-                    if v != otherTriple.get2() {
+    if V: Eq {
+        def __eq(self: Self, other: Self): Bool {
+            if (self._siz != other._siz) {
+                return false
+            } else if (self._siz == 0) {
+                return true
+            }
+            for (hash, k, v) in self._list.iter().flatMap(bucket -> bucket) {
+                union other._getTripleWithHash(k, hash) {
+                    case Some(otherTriple) {
+                        if v != otherTriple.get2() {
+                            return false
+                        }
+                    }
+                    case None {
                         return false
                     }
                 }
-                case None {
-                    return false
-                }
             }
+            return true
         }
-        return true
     }
 
-    def repr(self: Self): String {
-        if self._siz == 0 {
-            return "[:]"
-        } else {
-            return (
-                "[" +
-                ",".join(
-                    self.pairs().map(kv -> kv.get0().repr() + ": " + kv.get1().repr())) +
-                "]"
-            )
+    if K: Repr and V: Repr {
+        def repr(self: Self): String {
+            if self._siz == 0 {
+                return "[:]"
+            } else {
+                return (
+                    "[" +
+                    ",".join(
+                        self.pairs().map(kv -> kv.get0().repr() + ": " + kv.get1().repr())) +
+                    "]"
+                )
+            }
         }
     }
 }

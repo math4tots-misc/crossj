@@ -1,6 +1,7 @@
 package crossj.hacks.cj;
 
 import crossj.base.Assert;
+import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.Map;
 import crossj.base.Optional;
@@ -57,7 +58,7 @@ public final class CJIRVariableType implements CJIRType {
 
     @Override
     public Try<CJIRMethodDescriptor> getMethodDescriptor(String methodName) {
-        for (var traitExpression : definition.getBounds()) {
+        for (var traitExpression : definition.getAllBounds()) {
             var trait = traitExpression.getAsIsTrait();
             var tryMethodDescriptor = trait.getMethodDescriptor(methodName, this);
             if (tryMethodDescriptor.isFail()) {
@@ -68,12 +69,13 @@ public final class CJIRVariableType implements CJIRType {
                 return Try.ok(optionMethodDescriptor.get());
             }
         }
+        IO.println("All bounds = " + definition.getAllBounds().map(e -> e.getAsIsTrait()));
         return Try.fail("Method " + methodName + " not found for type variable " + definition.getName());
     }
 
     @Override
     public boolean implementsTrait(CJIRTrait trait) {
-        for (var implTrait : definition.getBounds().map(t -> t.getAsIsTrait())) {
+        for (var implTrait : definition.getAllBounds().map(t -> t.getAsIsTrait())) {
             if (implTrait.implementsTrait(trait)) {
                 return true;
             }
