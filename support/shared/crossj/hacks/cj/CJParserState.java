@@ -648,6 +648,64 @@ public final class CJParserState {
                 if (tryExpr.isFail()) {
                     return tryExpr.castFail();
                 }
+
+                switch (peek().type) {
+                    case '=': {
+                        next();
+                        var tryTarget = expressionToExtendedAssignmentTarget(tryExpr.get());
+                        if (tryTarget.isFail()) {
+                            return tryTarget.castFail();
+                        }
+                        var target = tryTarget.get();
+                        var tryValExpr = parseExpression();
+                        if (tryValExpr.isFail()) {
+                            return tryValExpr.castFail();
+                        }
+                        var valExpr = tryValExpr.get();
+                        return Try.ok(new CJAstAssignmentStatement(mark, target, valExpr));
+                    }
+                    case CJToken.PLUS_EQ:
+                    case CJToken.MINUS_EQ:
+                    case CJToken.STAR_EQ: {
+                        String type;
+                        int toktype = next().type;
+                        switch (toktype) {
+                            case CJToken.PLUS_EQ:
+                                type = "+=";
+                                break;
+                            case CJToken.MINUS_EQ:
+                                type = "-=";
+                                break;
+                            case CJToken.STAR_EQ:
+                                type = "*=";
+                                break;
+                            default:
+                                throw XError.withMessage("Unrecognized aug assign token: " + CJToken.typeToString(toktype));
+                        }
+                        var owner = Optional.<CJAstExpression>empty();
+                        var typeOwner = Optional.<CJAstTypeExpression>empty();
+                        String name;
+                        var target = tryExpr.get();
+                        if (target instanceof CJAstNameExpression) {
+                            name = ((CJAstNameExpression) target).getName();
+                        } else if (target instanceof CJAstFieldAccessExpression) {
+                            owner = Optional.of(((CJAstFieldAccessExpression) target).getOwner());
+                            name = ((CJAstFieldAccessExpression) target).getName();
+                        } else if (target instanceof CJAstStaticFieldAccessExpression) {
+                            typeOwner = Optional.of(((CJAstStaticFieldAccessExpression) target).getOwner());
+                            name = ((CJAstStaticFieldAccessExpression) target).getName();
+                        } else {
+                            return failWithMark("Only variable or field or static fields can be used with augmented assignment", mark);
+                        }
+                        var tryValExpr = parseExpression();
+                        if (tryValExpr.isFail()) {
+                            return tryValExpr.castFail();
+                        }
+                        var valExpr = tryValExpr.get();
+                        return Try.ok(new CJAstAugmentedAssignmentStatement(mark, owner, typeOwner, name, type, valExpr));
+                    }
+                }
+
                 if (consume('=')) {
                     var tryTarget = expressionToExtendedAssignmentTarget(tryExpr.get());
                     if (tryTarget.isFail()) {

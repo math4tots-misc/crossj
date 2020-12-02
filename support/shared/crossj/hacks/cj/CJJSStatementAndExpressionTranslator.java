@@ -202,6 +202,23 @@ public final class CJJSStatementAndExpressionTranslator
         return null;
     }
 
+    @Override
+    public Void visitAugmentedAssignment(CJAstAugmentedAssignmentStatement s, Void a) {
+        String target;
+        if (s.getOwner().isPresent()) {
+            var tmpvar = emitExpression(s.getOwner().get(), Optional.empty(), DECLARE_CONST);
+            target = tmpvar + "." + CJJSTranslator.nameToFieldName(s.getName());
+        } else if (s.getTypeOwner().isPresent()) {
+            target = translateType(s.getTypeOwner().get().getAsIsType()) + "."
+                    + CJJSTranslator.nameToStaticFieldCacheName(s.getName());
+        } else {
+            target = nameToLocalVariableName(s.getName());
+        }
+        var expr = emitExpressionPartial(s.getExpression());
+        sb.line(target + s.getType() + expr);
+        return null;
+    }
+
     private String emitExtendedTarget(CJAstExtendedAssignmentTarget target) {
         if (target instanceof CJAstAssignmentTarget) {
             return translateTarget((CJAstAssignmentTarget) target);
@@ -229,8 +246,7 @@ public final class CJJSStatementAndExpressionTranslator
      * the result to a variable. The variable to save to can be specified if
      * desired. Otherwise a new temporary variable is generated.
      */
-    String emitExpression(CJAstExpression expression, Optional<String> optionalJsVariableName,
-            int declareType) {
+    String emitExpression(CJAstExpression expression, Optional<String> optionalJsVariableName, int declareType) {
         var partial = emitExpressionPartial(expression);
         var jsVariableName = optionalJsVariableName.getOrElseDo(() -> newMethodLevelUniqueId());
         sb.line(getDeclarePrefix(declareType) + jsVariableName + " = " + partial + ";");

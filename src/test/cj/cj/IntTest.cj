@@ -28,4 +28,25 @@ class IntTest {
             Assert.equal(5 // 2, 2)
         }
     }
+
+    def testAugAssign() {
+        {
+            var i = 824
+            Assert.equal(i, 824)
+            i += 1
+            Assert.equal(i, 825)
+        }
+        {
+            var i = 1000
+            Assert.equal(i, 1000)
+            i *= 2
+            Assert.equal(i, 2000)
+        }
+        {
+            var i = 5000
+            Assert.equal(i, 5000)
+            i -= 284
+            Assert.equal(i, 4716)
+        }
+    }
 }

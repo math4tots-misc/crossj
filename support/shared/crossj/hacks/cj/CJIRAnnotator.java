@@ -568,6 +568,37 @@ public final class CJIRAnnotator
         }
     }
 
+    @Override
+    public Void visitAugmentedAssignment(CJAstAugmentedAssignmentStatement s, Void a) {
+        CJIRType targetType;
+        if (s.getOwner().isPresent()) {
+            annotateExpression(s.getOwner().get());
+            var fieldInfo = getInstanceFieldInfoOrThrow(s.getMark(), s.getOwner().get().getResolvedType(), s.getName());
+            targetType = fieldInfo.getType();
+        } else if (s.getTypeOwner().isPresent()) {
+            annotateTypeExpression(s.getTypeOwner().get());
+            var fieldInfo = getStaticFieldInfoOrThrow(s.getMark(), s.getTypeOwner().get().getAsIsType(), s.getName());
+            targetType = fieldInfo.getType();
+        } else {
+            var optInfo = context.getVariableInfo(s.getName());
+            if (optInfo.isEmpty()) {
+                throw err0("Name '" + s.getName() + "' is not defined", s.getMark());
+            }
+            if (!optInfo.get().isMutable()) {
+                throw err0("Variable '" + s.getName() + "' is not mutable", s.getMark());
+            }
+            targetType = optInfo.get().getType();
+        }
+        if (targetType.equals(intType)) {
+            annotateExpressionWithType(s.getExpression(), intType);
+        } else if (targetType.equals(doubleType)) {
+            annotateExpressionWithType(s.getExpression(), doubleType);
+        } else {
+            throw err0("Augmented assignment can only be used with Int or Double types (for now)", s.getMark());
+        }
+        return null;
+    }
+
     void annotateExpressionWithOptionalType(CJAstExpression expression, Optional<CJIRType> optionalType) {
         if (expression.getResolvedTypeOrNull() == null) {
             CJIRExpressionComplexityAnnotator.annotate(expression);
@@ -623,6 +654,22 @@ public final class CJIRAnnotator
             throw err0("Field " + fieldName + " not found on " + type, mark);
         }
         return tryInfo.get();
+    }
+
+    private CJIRFieldInfo getStaticFieldInfoOrThrow(CJMark mark, CJIRType type, String fieldName) {
+        var info = getFieldInfoOrThrow(mark, type, fieldName);
+        if (!info.isStatic()) {
+            throw err0("Field " + type + "." + fieldName + " is non-static", mark);
+        }
+        return info;
+    }
+
+    private CJIRFieldInfo getInstanceFieldInfoOrThrow(CJMark mark, CJIRType type, String fieldName) {
+        var info = getFieldInfoOrThrow(mark, type, fieldName);
+        if (info.isStatic()) {
+            throw err0("Field " + type + "." + fieldName + " is static", mark);
+        }
+        return info;
     }
 
     private Optional<CJIRFieldInfo> getFieldInfo(CJMark mark, CJIRType type, String fieldName) {

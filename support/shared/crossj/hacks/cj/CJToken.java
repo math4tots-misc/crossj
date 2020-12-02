@@ -31,6 +31,12 @@ public final class CJToken {
     public static final int TRUNCDIV = 23;
     public static final int POWER = 24;
     public static final int RIGHT_ARROW = 25;
+    public static final int PLUS_EQ = 26;
+    public static final int MINUS_EQ = 27;
+    public static final int STAR_EQ = 28;
+    public static final int DIV_EQ = 29;
+    public static final int TRUNCDIV_EQ = 30;
+    public static final int REM_EQ = 31;
 
     // token types in the range 32-127 are reserved for ASCII single character
     // token types.
@@ -154,6 +160,18 @@ public final class CJToken {
                 return "CJToken.POWER";
             case RIGHT_ARROW:
                 return "CJToken.RIGHT_ARROW";
+            case PLUS_EQ:
+                return "CJToken.PLUS_EQ";
+            case MINUS_EQ:
+                return "CJToken.MINUS_EQ";
+            case STAR_EQ:
+                return "CJToken.STAR_EQ";
+            case DIV_EQ:
+                return "CJToken.DIV_EQ";
+            case TRUNCDIV_EQ:
+                return "CJToken.TRUNCDIV_EQ";
+            case REM_EQ:
+                return "CJToken.REM_EQ";
             case KW_DEF:
                 return "CJToken.KW_DEF";
             case KW_CLASS:

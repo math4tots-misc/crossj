@@ -9,5 +9,6 @@ public interface CJAstStatementVisitor<R, A> {
     R visitFor(CJAstForStatement s, A a);
     R visitVariableDeclaration(CJAstVariableDeclarationStatement s, A a);
     R visitAssignment(CJAstAssignmentStatement s, A a);
+    R visitAugmentedAssignment(CJAstAugmentedAssignmentStatement s, A a);
     R visitUnionSwitch(CJAstUnionSwitchStatement s, A a);
 }
