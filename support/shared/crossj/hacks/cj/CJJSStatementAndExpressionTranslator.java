@@ -80,8 +80,12 @@ public final class CJJSStatementAndExpressionTranslator
 
     @Override
     public Void visitReturn(CJAstReturnStatement s, Void a) {
-        var retPartial = emitExpressionPartial(s.getExpression());
-        sb.line("return " + retPartial + ";");
+        if (s.getExpression().getResolvedType().isUnitType()) {
+            sb.line("return;");
+        } else {
+            var retPartial = emitExpressionPartial(s.getExpression());
+            sb.line("return " + retPartial + ";");
+        }
         return null;
     }
 

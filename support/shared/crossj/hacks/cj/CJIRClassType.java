@@ -145,6 +145,16 @@ public final class CJIRClassType implements CJIRType {
     }
 
     @Override
+    public boolean isUnitType() {
+        return definition.getQualifiedName().equals("cj.Unit");
+    }
+
+    @Override
+    public boolean isNoReturnType() {
+        return definition.getQualifiedName().equals("cj.NoReturn");
+    }
+
+    @Override
     public boolean isDerivedFrom(CJAstItemDefinition item) {
         Assert.that(item.isClass());
         return definition == item;

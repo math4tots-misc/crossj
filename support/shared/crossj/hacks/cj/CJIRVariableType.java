@@ -132,6 +132,16 @@ public final class CJIRVariableType implements CJIRType {
     }
 
     @Override
+    public boolean isUnitType() {
+        return false;
+    }
+
+    @Override
+    public boolean isNoReturnType() {
+        return false;
+    }
+
+    @Override
     public boolean isDerivedFrom(CJAstItemDefinition item) {
         Assert.that(item.isClass());
         return false;

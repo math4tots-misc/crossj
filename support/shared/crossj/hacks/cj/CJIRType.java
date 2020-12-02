@@ -35,5 +35,9 @@ public interface CJIRType {
 
     boolean isNullableType();
 
+    boolean isUnitType();
+
+    boolean isNoReturnType();
+
     boolean isDerivedFrom(CJAstItemDefinition item);
 }
