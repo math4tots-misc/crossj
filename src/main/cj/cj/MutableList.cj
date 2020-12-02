@@ -7,6 +7,8 @@ native class MutableList[T] :
         Ord if T : Ord,
         Eq if T : Eq {
 
+    def ofSize(size: Int, f: Fn[T, Int]): MutableList[T]
+
     if T : Repr {
         def repr(x: Self) : String
     }

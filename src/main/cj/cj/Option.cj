@@ -10,6 +10,17 @@ union Option[T] {
         return Self.Some(t)
     }
 
+    def map[R](self: Self, f: Fn[R, T]): Option[R] {
+        switch union self {
+            case Some(t) {
+                return Option.Some(f.call(t))
+            }
+            case None {
+                return Option.None
+            }
+        }
+    }
+
     def get(self: Self) : T {
         switch union self {
             case Some(t) {

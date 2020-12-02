@@ -642,6 +642,18 @@ class MC$cj$List {
     }
 
     /**
+     * @param {number} size
+     * @param {function(number) : T} f
+     */
+    M$ofSize(size, f) {
+        const arr = [];
+        for (let i = 0; i < size; i++) {
+            arr.push(f(i));
+        }
+        return arr;
+    }
+
+    /**
      * @param {Array<T>} list
      */
     M$repr(list) {
@@ -792,6 +804,18 @@ class MC$cj$ListBuilder {
 class MC$cj$MutableList {
     constructor(VT$T) {
         this.VT$T = VT$T;
+    }
+
+    /**
+     * @param {number} size
+     * @param {function(number): T} f
+     */
+    M$ofSize(size, f) {
+        const arr = [];
+        for (let i = 0; i < size; i++) {
+            arr.push(f(i));
+        }
+        return arr;
     }
 
     /**
