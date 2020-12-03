@@ -18,7 +18,11 @@ native class Int : Eq, Ord, Hash, Repr, ToDouble, ToChar, ToBool {
 
     def __invert(x: Self) : Self
     def __and(a: Self, b: Self) : Self
+    def __xor(a: Self, b: Self) : Self
     def __or(a: Self, b: Self) : Self
+    def __lshift(a: Self, b: Self) : Self
+    def __rshift(a: Self, b: Self) : Self
+    def __rshiftu(a: Self, b: Self) : Self
 
     def hash(x: Self) : Self
 

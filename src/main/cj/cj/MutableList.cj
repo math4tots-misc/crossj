@@ -9,6 +9,8 @@ native class MutableList[T] :
 
     def ofSize(size: Int, f: Fn[T, Int]): MutableList[T]
 
+    def fromIterable[I: Iterable[T]](iterable: I): Self
+
     if T : Repr {
         def repr(x: Self) : String
     }

@@ -11,12 +11,13 @@ public final class CJLexer {
     private static Lexer<CJToken> buildLexer() {
         var b = Lexer.<CJToken>builder();
         b.add("\\d+\\.\\d*|\\.\\d+", m -> tok(CJToken.DOUBLE, m));
+        b.add("0x[0-9A-Fa-f]+", m -> tok(CJToken.INT, m)); // hex literals
         b.add("\\d+", m -> tok(CJToken.INT, m));
         for (int type : CJToken.KEYWORD_TYPES) {
             b.add(CJToken.keywordTypeToString(type), m -> tok(type, m));
         }
         b.add("[A-Z]\\w*", m -> tok(CJToken.TYPE_ID, m));
-        b.add("\\w+", m -> tok(CJToken.ID, m));
+        b.add("[a-z_]\\w*", m -> tok(CJToken.ID, m));
         b.add("'\\\\.'", m -> tok(CJToken.CHAR, m));
         b.add("'[^'\\\\]'", m -> tok(CJToken.CHAR, m));
         b.add("\"(\\\\.|[^\"\\\\])*\"", m -> tok(CJToken.STRING, m));
@@ -31,6 +32,7 @@ public final class CJLexer {
         b.add(">=", m -> symtok(CJToken.GE, m));
         b.add("<<", m -> symtok(CJToken.LSHIFT, m));
         b.add(">>", m -> symtok(CJToken.RSHIFT, m));
+        b.add(">>>", m -> symtok(CJToken.RSHIFTU, m));
         b.add("//", m -> symtok(CJToken.TRUNCDIV, m));
         b.add("->", m -> symtok(CJToken.RIGHT_ARROW, m));
         b.add("\\*\\*", m -> symtok(CJToken.POWER, m));

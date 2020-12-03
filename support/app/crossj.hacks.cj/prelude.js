@@ -77,8 +77,20 @@ class MC$cj$Int {
     M$__and(a, b) {
         return a & b;
     }
+    M$__xor(a, b) {
+        return a ^ b;
+    }
     M$__or(a, b) {
         return a | b;
+    }
+    M$__lshift(a, b) {
+        return a << b;
+    }
+    M$__rshift(a, b) {
+        return a >> b;
+    }
+    M$__rshiftu(a, b) {
+        return a >>> b;
     }
     M$repr(x) {
         return '' + x;
@@ -681,6 +693,19 @@ class MC$cj$List {
     }
 
     /**
+     *
+     * @param {*} VT$I
+     * @param {*} iterable
+     */
+    M$fromIterable(VT$I, iterable) {
+        const ret = [];
+        for (const t of VT$I.M$iter(iterable)) {
+            ret.push(t);
+        }
+        return ret;
+    }
+
+    /**
      * @param {Array<T>} a
      * @param {Array<T>} b
      */
@@ -865,6 +890,19 @@ class MC$cj$MutableList {
             arr.push(f(i));
         }
         return arr;
+    }
+
+    /**
+     *
+     * @param {*} VT$I
+     * @param {*} iterable
+     */
+    M$fromIterable(VT$I, iterable) {
+        const ret = [];
+        for (const t of VT$I.M$iter(iterable)) {
+            ret.push(t);
+        }
+        return ret;
     }
 
     /**
@@ -1247,7 +1285,18 @@ class MC$cj$Assert {
             throw new Error("Expected " + VT$T.M$repr(a) + " to equal " + VT$T.M$repr(b));
         }
     }
+
+    /**
+     * @param {number} divisor
+     * @param {number} dividend
+     */
+    M$divides(divisor, dividend) {
+        if (dividend % divisor !== 0) {
+            throw new Error("Expected " + divisior + " to divide " + dividend);
+        }
+    }
 }
+
 const MO$cj$Assert = new MC$cj$Assert();
 
 

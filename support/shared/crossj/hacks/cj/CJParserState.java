@@ -1073,24 +1073,27 @@ public final class CJParserState {
                 return 60;
             case '|':
                 return 70;
-            case '&':
+            case '^':
                 return 80;
+            case '&':
+                return 90;
             case CJToken.LSHIFT:
             case CJToken.RSHIFT:
-                return 90;
+            case CJToken.RSHIFTU:
+                return 100;
             case '+':
             case '-':
-                return 100;
+                return 110;
             case '*':
             case '/':
             case '%':
             case CJToken.TRUNCDIV:
-                return 110;
-            case CJToken.POWER:
                 return 120;
+            case CJToken.POWER:
+                return 130;
             case '.':
             case '?':
-                return 130;
+                return 140;
             default:
                 return -1;
         }
@@ -1122,7 +1125,11 @@ public final class CJParserState {
                 case '<':
                 case '>':
                 case '|':
+                case '^':
                 case '&':
+                case CJToken.LSHIFT:
+                case CJToken.RSHIFT:
+                case CJToken.RSHIFTU:
                 case CJToken.POWER:
                 case CJToken.TRUNCDIV:
                 case CJToken.EQ:
@@ -1160,8 +1167,20 @@ public final class CJParserState {
                         case '|':
                             methodName = "__or";
                             break;
+                        case '^':
+                            methodName = "__xor";
+                            break;
                         case '&':
                             methodName = "__and";
+                            break;
+                        case CJToken.LSHIFT:
+                            methodName = "__lshift";
+                            break;
+                        case CJToken.RSHIFT:
+                            methodName = "__rshift";
+                            break;
+                        case CJToken.RSHIFTU:
+                            methodName = "__rshiftu";
                             break;
                         case CJToken.POWER:
                             methodName = "__pow";

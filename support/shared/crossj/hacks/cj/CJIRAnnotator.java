@@ -1086,7 +1086,11 @@ public final class CJIRAnnotator
         } else if (e.getType().equals("Bool")) {
             type = boolType;
         } else if (e.getType().equals("Int")) {
-            type = intType;
+            if (a.isPresent() && a.get().equals(doubleType)) {
+                type = doubleType;
+            } else {
+                type = intType;
+            }
         } else if (e.getType().equals("Double")) {
             type = doubleType;
         } else if (e.getType().equals("String")) {

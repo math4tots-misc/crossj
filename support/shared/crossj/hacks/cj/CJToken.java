@@ -11,7 +11,7 @@ import crossj.base.Tuple;
 public final class CJToken {
     // various token types
 
-    // general categories (1-16)
+    // general categories (1-15)
     public static final int EOF = 1;
     public static final int DOUBLE = 2;
     public static final int INT = 3;
@@ -21,7 +21,8 @@ public final class CJToken {
     public static final int TYPE_ID = 7;
     public static final int COMMENT = 8;
 
-    // multi-character symbols (17-31)
+    // multi-character symbols (16-31)
+    public static final int RSHIFTU = 16;
     public static final int EQ = 17;
     public static final int NE = 18;
     public static final int LE = 19;
@@ -142,6 +143,8 @@ public final class CJToken {
                 return "CJToken.TYPE_ID";
             case COMMENT:
                 return "CJToken.COMMENT";
+            case RSHIFTU:
+                return "CJToken.RSHIFTU";
             case EQ:
                 return "CJToken.EQ";
             case NE:
