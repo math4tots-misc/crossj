@@ -7,6 +7,10 @@
 		},
 		{
 			"name": "constant.numeric.cj",
+			"match": "0x[0-9A-Fa-f]+"
+		},
+		{
+			"name": "constant.numeric.cj",
 			"match": "\\d+\\.\\d*|\\.\\d+|\\d+"
 		},
 		{
