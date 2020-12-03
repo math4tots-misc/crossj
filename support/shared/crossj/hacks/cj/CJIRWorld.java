@@ -47,6 +47,7 @@ public final class CJIRWorld {
         "Error",
         "Nullable",
         "IO",
+        "FS",
         "Iterable",
         "Iterator",
         "ToBool",

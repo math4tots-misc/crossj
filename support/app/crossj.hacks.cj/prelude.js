@@ -9,6 +9,30 @@ function combineHash(h1, h2) {
     return (((31 * h1) | 0) + h2) | 0;
 }
 
+/**
+ * @param {string} message
+ */
+function newError(message) {
+    return MO$cj$Error.M$fromMessage(message);
+}
+
+/**
+ * @param {string} message
+ * @returns {[1, Err]}
+ */
+function fail(message) {
+    return [1, newError(message)];
+}
+
+/**
+ * @template T
+ * @param {T} value
+ * @returns {[0, T]}
+ */
+function ok(value) {
+    return [0, value];
+}
+
 class MC$cj$Bool {
     M$__eq(a, b) {
         return a === b;
@@ -1751,6 +1775,36 @@ class MC$cj$IO {
     }
 
     /**
+     * print[T](t: T) : Unit
+     * @template T
+     * @param {*} VT$T
+     * @param {T} t
+     */
+    M$print(VT$T, t) {
+        process.stdout.write(VT$T.M$toString(t));
+    }
+
+    /**
+     * eprintln[T](t: T) : Unit
+     * @template T
+     * @param {*} VT$T
+     * @param {T} t
+     */
+    M$eprintln(VT$T, t) {
+        console.error(VT$T.M$toString(t));
+    }
+
+    /**
+     * eprint[T](t: T) : Unit
+     * @template T
+     * @param {*} VT$T
+     * @param {T} t
+     */
+    M$print(VT$T, t) {
+        process.stderr.write(VT$T.M$toString(t));
+    }
+
+    /**
      * panic[T](t: T) : NoReturn
      * @template T
      * @param {*} VT$T
@@ -1762,3 +1816,50 @@ class MC$cj$IO {
     }
 }
 const MO$cj$IO = new MC$cj$IO();
+
+class MC$cj$FS {
+    /**
+     * @param {string} path
+     */
+    M$read(path) {
+        try {
+            return require('fs').readFileSync(path, 'utf-8');
+        } catch (e) {
+            return fail('' + e);
+        }
+    }
+
+    /**
+     * @param {string} path
+     */
+    M$readBuffer(path) {
+        try {
+            const b = require('fs').readFileSync(path);
+            const arraybuffer = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+            return ok(new Bytes(arraybuffer, b.byteLength));
+        } catch (e) {
+            return fail('' + e);
+        }
+    }
+
+    /**
+     * @param {string} filepath
+     * @param {string|Uint8Array} data
+     */
+    M$write(filepath, data) {
+        const path = require('path');
+        const fs = require('fs');
+        const dirname = path.dirname(filepath);
+        fs.mkdirSync(dirname, {recursive: true});
+        fs.writeFileSync(filepath, data);
+    }
+
+    /**
+     * @param {string} filepath
+     * @param {Bytes} data
+     */
+    M$writeBuffer(filepath, data) {
+        MO$cj$FS.M$write(filepath, data.M$asU8s());
+    }
+}
+const MO$cj$FS = new MC$cj$FS();
