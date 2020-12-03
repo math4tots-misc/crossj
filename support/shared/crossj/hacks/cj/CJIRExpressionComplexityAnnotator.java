@@ -9,6 +9,7 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     private static final int BLOCK = CJIRExpressionComplexityFlags.BLOCK;
     private static final int ERROR_PROPAGATION = CJIRExpressionComplexityFlags.ERROR_PROPAGATION;
     private static final int UNION_MATCH = CJIRExpressionComplexityFlags.UNION_MATCH;
+    private static final int SWITCH_MATCH = CJIRExpressionComplexityFlags.SWITCH_MATCH;
     private static final CJIRExpressionComplexityAnnotator instance = new CJIRExpressionComplexityAnnotator();
 
     private CJIRExpressionComplexityAnnotator() {
@@ -150,6 +151,15 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
     public Void visitUnionMatch(CJAstUnionMatchExpression e, Void a) {
         e.complexityFlags = annotate(e.getTarget()) | annotateList(e.getCases().map(c -> c.getExpression()))
                 | UNION_MATCH;
+        return null;
+    }
+
+    @Override
+    public Void visitRawMatch(CJAstRawMatchExpression e, Void a) {
+        e.complexityFlags = annotate(e.getTarget())
+                | annotateList(e.getCases().flatMap(c -> List.of(c.getValues(), List.of(c.getBody())).flatMap(x -> x)))
+                | e.getDefaultCase().map(c -> annotate(c)).getOrElse(0)
+                | SWITCH_MATCH;
         return null;
     }
 }

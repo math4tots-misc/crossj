@@ -63,4 +63,25 @@ class ControlFlowTest {
             Assert.equal(list, @[10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
         }
     }
+
+    def testRawMatch() {
+        {
+            val x = switch "hello" {
+                case "foo" = "got foo"
+                case "hello" = "got hello"
+                case "world" = "got world"
+                default = "got none"
+            }
+            Assert.equal(x, "got hello")
+        }
+        {
+            val x = switch "asdf" {
+                case "foo" = "got foo"
+                case "hello" = "got hello"
+                case "world" = "got world"
+                default = "got none"
+            }
+            Assert.equal(x, "got none")
+        }
+    }
 }

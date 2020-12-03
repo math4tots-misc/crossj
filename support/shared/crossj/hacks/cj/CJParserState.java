@@ -1389,6 +1389,60 @@ public final class CJParserState {
                     }
                 }
             }
+            case CJToken.KW_SWITCH: { // raw match expression
+                next();
+                var tryTarget = parseExpression();
+                if (tryTarget.isFail()) {
+                    return tryTarget.castFail();
+                }
+                var target = tryTarget.get();
+                consumeDelimitersAndComments();
+                if (!consume('{')) {
+                    return expectedType('{');
+                }
+                var unionCases = List.<CJAstRawMatchCase>of();
+                var defaultBody = Optional.<CJAstExpression>empty();
+                consumeDelimitersAndComments();
+                while (at(CJToken.KW_CASE)) {
+                    var caseMark = getMark();
+                    var valueExprs = List.<CJAstExpression>of();
+                    while (consume(CJToken.KW_CASE)) {
+                        var tryExpr = parseExpression();
+                        if (tryExpr.isFail()) {
+                            return tryExpr.castFail();
+                        }
+                        valueExprs.add(tryExpr.get());
+                        consumeDelimitersAndComments();
+                    }
+                    if (!consume('=')) {
+                        return expectedType('=');
+                    }
+                    var tryBody = parseExpression();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body = tryBody.get();
+                    consumeDelimitersAndComments();
+                    unionCases.add(new CJAstRawMatchCase(caseMark, valueExprs, body));
+                    consumeDelimitersAndComments();
+                }
+                if (consume(CJToken.KW_DEFAULT)) {
+                    if (!consume('=')) {
+                        return expectedType('=');
+                    }
+                    var tryBody = parseExpression();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body = tryBody.get();
+                    defaultBody = Optional.of(body);
+                    consumeDelimitersAndComments();
+                }
+                if (!consume('}')) {
+                    return expectedType('}');
+                }
+                return Try.ok(new CJAstRawMatchExpression(mark, target, unionCases, defaultBody));
+            }
             case CJToken.KW_UNION: { // union match expression
                 next();
                 var tryTarget = parseExpression();

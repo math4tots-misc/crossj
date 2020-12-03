@@ -136,6 +136,11 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     }
 
     @Override
+    public String visitRawMatch(CJAstRawMatchExpression e, Void a) {
+        throw XError.withMessage("raw-match (i.e. switch) expressions cannot appear in simple expressions");
+    }
+
+    @Override
     public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
         return "(!" + translateExpression(e.getInner()) + ")";
     }

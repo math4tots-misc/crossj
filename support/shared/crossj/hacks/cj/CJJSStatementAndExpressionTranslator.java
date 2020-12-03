@@ -595,7 +595,7 @@ public final class CJJSStatementAndExpressionTranslator
             if (e.getDefaultCase().isPresent()) {
                 emitExpression(e.getDefaultCase().get(), Optional.of(outvar), DECLARE_NONE);
             } else {
-                sb.line("throw new Error('MISSING CASE MATCH');");
+                sb.line("throw new Error('MISSING UNION CASE MATCH');");
             }
             sb.dedent();
             sb.line("}");
@@ -603,5 +603,39 @@ public final class CJJSStatementAndExpressionTranslator
             sb.line("}");
             return outvar;
         }
+    }
+
+    @Override
+    public String visitRawMatch(CJAstRawMatchExpression e, Void a) {
+        var tmppartial = emitExpressionPartial(e.getTarget());
+        var outvar = newMethodLevelUniqueId();
+        sb.line("let " + outvar + ";");
+        sb.line("switch (" + tmppartial + ") {");
+        sb.indent();
+        for (var case_: e.getCases()) {
+            for (var value : case_.getValues()) {
+                sb.line("case " + simpleExpressionTranslator.translateExpression(value) + ":");
+            }
+            sb.line("{");
+            sb.indent();
+            var body = emitExpressionPartial(case_.getBody());
+            sb.line(outvar + " = " + body + ";");
+            sb.line("break;");
+            sb.dedent();
+            sb.line("}");
+        }
+        if (e.getDefaultCase().isPresent()) {
+            sb.line("default: {");
+            sb.indent();
+            var body = emitExpressionPartial(e.getDefaultCase().get());
+            sb.line(outvar + " = " + body + ";");
+            sb.dedent();
+            sb.line("}");
+        } else {
+            sb.line("default: throw new Error('MISSING RAW CASE MATCH');");
+        }
+        sb.dedent();
+        sb.line("}");
+        return outvar;
     }
 }

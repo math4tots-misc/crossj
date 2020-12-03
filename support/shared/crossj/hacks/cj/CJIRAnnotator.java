@@ -1330,4 +1330,32 @@ public final class CJIRAnnotator
         e.resolvedType = a.get();
         return null;
     }
+
+    @Override
+    public Void visitRawMatch(CJAstRawMatchExpression e, Optional<CJIRType> a) {
+        var mark = e.getMark();
+        annotateExpression(e.getTarget());
+        var targetType = e.getTarget().getResolvedType();
+        if (!(targetType.equals(charType) || targetType.equals(intType) || targetType.equals(stringType))) {
+            throw err0("switch expressions require a char, int, or string target type but got " + targetType, mark);
+        }
+        for (var case_: e.getCases()) {
+            for (var value : case_.getValues()) {
+                annotateExpressionWithType(value, targetType);
+            }
+            annotateExpressionWithOptionalType(case_.getBody(), a);
+            a = Optional.of(case_.getBody().getResolvedType());
+            for (var value : case_.getValues()) {
+                if (value.getComplexityFlags() != CJIRExpressionComplexityFlags.NONE) {
+                    throw err0("switch cases must be a simple expression", case_.getMark());
+                }
+            }
+        }
+        if (e.getDefaultCase().isPresent()) {
+            annotateExpressionWithOptionalType(e.getDefaultCase().get(), a);
+            a = Optional.of(e.getDefaultCase().get().getResolvedType());
+        }
+        e.resolvedType = a.get();
+        return null;
+    }
 }

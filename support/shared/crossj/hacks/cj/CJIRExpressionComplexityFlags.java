@@ -53,4 +53,9 @@ public final class CJIRExpressionComplexityFlags {
      * Contains a union-match expression
      */
     public static final int UNION_MATCH = 32;
+
+    /**
+     * Contains a switch-match expression
+     */
+    public static final int SWITCH_MATCH = 64;
 }
