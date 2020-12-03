@@ -29,6 +29,7 @@ public final class CJIRWorld {
         "Buffer",
         "MutableList",
         "MutableMap",
+        "MutableSet",
         "Collection",
         "Clone",
         "List",
