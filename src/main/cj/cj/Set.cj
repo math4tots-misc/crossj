@@ -38,4 +38,8 @@ class Set[T: Hash]:
             return "Set.of([" + ", ".join(self) + "])"
         }
     }
+
+    def builder(): SetBuilder[T] {
+        return SetBuilder[T].new(MutableMap[T, Bool].empty())
+    }
 }

@@ -56,6 +56,7 @@ public final class CJIRWorld {
         "ToString",
         "ToList",
         "ListBuilder",
+        "SetBuilder",
         "Repr",
         "Eq",
         "Ord",
