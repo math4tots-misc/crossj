@@ -29,6 +29,7 @@ native class List[T] :
 
     def size(x: Self) : Int
     def iter(x: Self) : Iterator[T]
+    def __contains(self: Self, t: T): Bool
 
     def map[R](list: Self, f: Fn[R, T]) : List[R]
     def flatMap[R, C: Iterable[R]](list: Self, f: Fn[C, T]) : List[R]

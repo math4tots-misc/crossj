@@ -749,6 +749,20 @@ class MC$cj$List {
 
     /**
      * @param {Array<T>} list
+     * @param {T} t
+     */
+    M$__contains(list, t) {
+        const T = this.VT$T;
+        for (const x of list) {
+            if (T.M$__eq(t, x)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param {Array<T>} list
      * @param {number} i
      */
     M$get(list, i) {

@@ -1129,10 +1129,12 @@ public final class CJParserState {
                 case CJToken.NE:
                 case CJToken.LE:
                 case CJToken.GE:
-                case CJToken.KW_IN: {
+                case CJToken.KW_IN:
+                case CJToken.KW_NOT: {
                     String methodName = null;
                     boolean logicalNot = false;
                     boolean rightAssociative = false;
+                    boolean swap = false;
                     switch (next().type) {
                         case '+':
                             methodName = "__add";
@@ -1183,6 +1185,7 @@ public final class CJParserState {
                             break;
                         case CJToken.KW_IN:
                             methodName = "__contains";
+                            swap = true;
                             break;
                         case CJToken.KW_NOT:
                             if (!consume(CJToken.KW_IN)) {
@@ -1190,6 +1193,7 @@ public final class CJParserState {
                             }
                             methodName = "__contains";
                             logicalNot = true;
+                            swap = true;
                             break;
                     }
                     Assert.that(methodName != null);
@@ -1200,6 +1204,11 @@ public final class CJParserState {
                         return tryRhs.castFail();
                     }
                     var rhs = tryRhs.get();
+                    if (swap) {
+                        var tmp = rhs;
+                        rhs = lhs;
+                        lhs = tmp;
+                    }
                     tryExpr = Try.ok(new CJAstInstanceMethodCallExpression(mark, methodName, List.of(lhs, rhs)));
                     if (logicalNot) {
                         tryExpr = Try.ok(new CJAstLogicalNotExpression(mark, tryExpr.get()));

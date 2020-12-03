@@ -64,4 +64,11 @@ class ListTest {
             Assert.equal([1, 2, 3].toBool(), true)
         }
     }
+
+    def testContains() {
+        Assert.that(3 in [1, 2, 3])
+        Assert.that(not (20 in [1, 2, 3]))
+        Assert.that(not (3 not in [1, 2, 3]))
+        Assert.that(20 not in [1, 2, 3])
+    }
 }
