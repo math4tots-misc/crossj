@@ -1,0 +1,90 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "cj",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"name": "constant.numeric.cj",
+			"match": "\\d+\\.\\d*|\\.\\d+|\\d+"
+		},
+		{
+			"name": "entity.name.class.cj",
+			"match": "[A-Z]\\w*"
+		},
+		{
+			"name": "entity.name.function.cj",
+			"match": "[a-z_]\\w*(?=\\(|\\[)"
+		},
+		{
+			"name": "variable.cj",
+			"match": "[a-z_]\\w*"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"name": "constant.character.cj",
+			"match": "'\\\\.'|'[^'\\\\]'"
+		},
+		{
+			"name": "comment.cj",
+			"match": "#[^\n]*(\n\\s*#[^\n]*)*"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "storage.type.item.cj",
+					"match": "^\\b(class|trait|union|enum|native\\s+union)\\b"
+				},
+				{
+					"name": "storage.type.cj",
+					"match": "\\b(enum|var|val)\\b"
+				},
+				{
+					"name": "storage.modifier.cj",
+					"match": "\\b(native|static|private|public)\\b"
+				},
+				{
+					"name": "keyword.control.cj",
+					"match": "\\b(def|if|else|import|while|break|continue|new|package|return|and|or|is|not|in|then|switch|case|default|as|for)\\b"
+				},
+				{
+					"name": "keyword.operator.cj",
+					"match": "\\b(and|or|is|not|in)\\b"
+				},
+				{
+					"name": "keyword.control.cj",
+					"match": "\\b(class|trait|union)\\b"
+				},
+				{
+					"name": "support.other.cj",
+					"match": "\\bself\\b"
+				},
+				{
+					"name": "keyword.other.cj",
+					"match": "\\bSelf\\b"
+				},
+				{
+					"name": "constant.language.cj",
+					"match": "\\b(true|false|null)\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.cj",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.cj",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.cj"
+}

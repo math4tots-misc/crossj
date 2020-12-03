@@ -1,0 +1,30 @@
+{
+    "name": "language-cj",
+    "displayName": "language-cj",
+    "description": "cj language support",
+    "version": "0.0.1",
+    "publisher": "mtots",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/math4tots/crossj"
+    },
+    "engines": {
+        "vscode": "^1.51.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "cj",
+            "aliases": ["cj", "cj"],
+            "extensions": [".cj"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "cj",
+            "scopeName": "source.cj",
+            "path": "./syntaxes/cj.tmLanguage.json"
+        }]
+    }
+}
