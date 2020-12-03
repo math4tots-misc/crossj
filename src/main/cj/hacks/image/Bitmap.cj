@@ -21,4 +21,22 @@ class Bitmap {
     def fromColors[CC: Iterable[Color]](width: Int, colors: CC): Bitmap {
         val data = MutableList.fromIterable(colors.iter().map(cl -> cl.toI32RGBA()))
     }
+
+    def width(self: Self): Int {
+        return self._width
+    }
+
+    def height(self: Self): Int {
+        return self._data.size() // self._width
+    }
+
+    def setColor(self: Self, x: Int, y: Int, color: Color) {
+        val i = y * self._width + x
+        self._data.set(i, color.toI32RGBA())
+    }
+
+    def getColor(self: Self, x: Int, y: Int): Color {
+        val i = y * self._width + x
+        return Color.fromI32RGBA(self._data.get(i))
+    }
 }
