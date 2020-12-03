@@ -64,7 +64,7 @@ class ControlFlowTest {
         }
     }
 
-    def testRawMatch() {
+    def testSwitch() {
         {
             val x = switch "hello" {
                 case "foo" = "got foo"
@@ -82,6 +82,92 @@ class ControlFlowTest {
                 default = "got none"
             }
             Assert.equal(x, "got none")
+        }
+        {
+            val x = switch "hello" {
+                case "foo" = "got foo"
+                case "hello"
+                case "world" = "got world"
+                default = "got none"
+            }
+            Assert.equal(x, "got world")
+        }
+        {
+            val x = switch "world" {
+                case "foo" = "got foo"
+                case "hello"
+                case "world" = "got world"
+                default = "got none"
+            }
+            Assert.equal(x, "got world")
+        }
+        {
+            var x = "original"
+            switch "hello" {
+                case "foo" {
+                    x = "got foo"
+                }
+                case "hello" {
+                    x = "got hello1"
+                }
+                case "world" {
+                    x = "got world1"
+                }
+                default {
+                    x = "got none"
+                }
+            }
+            Assert.equal(x, "got hello1")
+        }
+        {
+            var x = "original"
+            switch "hello" {
+                case "foo" {
+                    x = "got foo"
+                }
+                case "hello" {
+                    x = "got hello2"
+                }
+                case "world" {
+                    x = "got world"
+                }
+                default {
+                    x = "got none"
+                }
+            }
+            Assert.equal(x, "got hello2")
+        }
+        {
+            var x = "original"
+            switch "hello" {
+                case "foo" {
+                    x = "got foo"
+                }
+                case "hello"
+                case "world" {
+                    x = "got world3"
+                }
+                default {
+                    x = "got none"
+                }
+            }
+            Assert.equal(x, "got world3")
+        }
+        {
+            var x = "original"
+            switch "world" {
+                case "foo" {
+                    x = "got foo"
+                }
+                case "hello"
+                case "world" {
+                    x = "got world4"
+                }
+                default {
+                    x = "got none"
+                }
+            }
+            Assert.equal(x, "got world4")
         }
     }
 }

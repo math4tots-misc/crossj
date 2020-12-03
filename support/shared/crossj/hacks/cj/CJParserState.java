@@ -653,6 +653,54 @@ public final class CJParserState {
                 }
                 return Try.ok(new CJAstReturnStatement(mark, tryExpr.get()));
             }
+            case CJToken.KW_SWITCH: {
+                next();
+                var tryTarget = parseExpression();
+                if (tryTarget.isFail()) {
+                    return tryTarget.castFail();
+                }
+                var target = tryTarget.get();
+                consumeDelimitersAndComments();
+                if (!consume('{')) {
+                    return expectedType('{');
+                }
+                var unionCases = List.<CJAstRawSwitchCase>of();
+                var defaultBody = Optional.<CJAstBlockStatement>empty();
+                consumeDelimitersAndComments();
+                while (at(CJToken.KW_CASE)) {
+                    var caseMark = getMark();
+                    var valueExprs = List.<CJAstExpression>of();
+                    while (consume(CJToken.KW_CASE)) {
+                        var tryExpr = parseExpression();
+                        if (tryExpr.isFail()) {
+                            return tryExpr.castFail();
+                        }
+                        valueExprs.add(tryExpr.get());
+                        consumeDelimitersAndComments();
+                    }
+                    var tryBody = parseBlockStatement();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body = tryBody.get();
+                    consumeDelimitersAndComments();
+                    unionCases.add(new CJAstRawSwitchCase(caseMark, valueExprs, body));
+                    consumeDelimitersAndComments();
+                }
+                if (consume(CJToken.KW_DEFAULT)) {
+                    var tryBody = parseBlockStatement();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body = tryBody.get();
+                    defaultBody = Optional.of(body);
+                    consumeDelimitersAndComments();
+                }
+                if (!consume('}')) {
+                    return expectedType('}');
+                }
+                return Try.ok(new CJAstRawSwitchStatement(mark, target, unionCases, defaultBody));
+            }
             case CJToken.KW_UNION: {
                 next();
                 var tryTarget = parseExpression();

@@ -11,4 +11,5 @@ public interface CJAstStatementVisitor<R, A> {
     R visitAssignment(CJAstAssignmentStatement s, A a);
     R visitAugmentedAssignment(CJAstAugmentedAssignmentStatement s, A a);
     R visitUnionSwitch(CJAstUnionSwitchStatement s, A a);
+    R visitRawSwitch(CJAstRawSwitchStatement s, A a);
 }

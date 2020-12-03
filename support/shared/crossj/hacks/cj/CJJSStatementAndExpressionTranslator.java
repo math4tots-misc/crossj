@@ -194,6 +194,34 @@ public final class CJJSStatementAndExpressionTranslator
     }
 
     @Override
+    public Void visitRawSwitch(CJAstRawSwitchStatement s, Void a) {
+        var tmppartial = emitExpressionPartial(s.getTarget());
+        sb.line("switch (" + tmppartial + ") {");
+        sb.indent();
+        for (var case_: s.getCases()) {
+            for (var value : case_.getValues()) {
+                sb.line("case " + simpleExpressionTranslator.translateExpression(value) + ":");
+            }
+            sb.line("{");
+            sb.indent();
+            emitStatement(case_.getBody());
+            sb.line("break;");
+            sb.dedent();
+            sb.line("}");
+        }
+        if (s.getDefaultCase().isPresent()) {
+            sb.line("default: {");
+            sb.indent();
+            emitStatement(s.getDefaultCase().get());
+            sb.dedent();
+            sb.line("}");
+        }
+        sb.dedent();
+        sb.line("}");
+        return null;
+    }
+
+    @Override
     public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
         emitExpression(s.getExpression(), Optional.of(translateTarget(s.getTarget())),
                 s.isMutable() ? DECLARE_LET : DECLARE_CONST);

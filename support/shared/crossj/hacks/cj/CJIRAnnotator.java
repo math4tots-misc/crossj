@@ -516,6 +516,31 @@ public final class CJIRAnnotator
     }
 
     @Override
+    public Void visitRawSwitch(CJAstRawSwitchStatement s, Void a) {
+        var mark = s.getMark();
+        annotateExpression(s.getTarget());
+        var targetType = s.getTarget().getResolvedType();
+        if (!(targetType.equals(charType) || targetType.equals(intType) || targetType.equals(stringType))) {
+            throw err0("switch expressions require a char, int, or string target type but got " + targetType, mark);
+        }
+        for (var case_: s.getCases()) {
+            for (var value : case_.getValues()) {
+                annotateExpressionWithType(value, targetType);
+            }
+            annotateStatement(case_.getBody());
+            for (var value : case_.getValues()) {
+                if (value.getComplexityFlags() != CJIRExpressionComplexityFlags.NONE) {
+                    throw err0("switch cases must be a simple expression", case_.getMark());
+                }
+            }
+        }
+        if (s.getDefaultCase().isPresent()) {
+            annotateStatement(s.getDefaultCase().get());
+        }
+        return null;
+    }
+
+    @Override
     public Void visitVariableDeclaration(CJAstVariableDeclarationStatement s, Void a) {
         if (s.getType().isPresent()) {
             context.resolveTypeExpression(s.getType().get());
