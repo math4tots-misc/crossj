@@ -6,7 +6,7 @@ trait Iterable[T] : ToList[T] {
     def toList(self: Self) : List[T] {
         var builder = List[T].builder()
         for t in self {
-            builder.push(t)
+            builder.add(t)
         }
         return builder.build()
     }

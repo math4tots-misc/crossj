@@ -35,7 +35,7 @@ class ListTest {
     def testFor() {
         val strings = @[String]
         for x in ["hello", "world", "bob"] {
-            strings.push(x)
+            strings.add(x)
         }
         Assert.equal(strings, @["hello", "world", "bob"])
     }

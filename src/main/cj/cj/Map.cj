@@ -71,4 +71,8 @@ class Map[K: Hash, V]:
             }
         }
     }
+
+    def builder(): MapBuilder[K, V] {
+        return MapBuilder[K, V].new(@[:])
+    }
 }

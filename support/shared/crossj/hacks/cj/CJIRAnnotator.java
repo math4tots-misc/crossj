@@ -523,7 +523,7 @@ public final class CJIRAnnotator
         if (!(targetType.equals(charType) || targetType.equals(intType) || targetType.equals(stringType))) {
             throw err0("switch expressions require a char, int, or string target type but got " + targetType, mark);
         }
-        for (var case_: s.getCases()) {
+        for (var case_ : s.getCases()) {
             for (var value : case_.getValues()) {
                 annotateExpressionWithType(value, targetType);
             }
@@ -1227,9 +1227,6 @@ public final class CJIRAnnotator
     @Override
     public Void visitNew(CJAstNewExpression e, Optional<CJIRType> a) {
         annotateTypeExpression(e.getType());
-        for (var arg : e.getArguments()) {
-            annotateExpression(arg);
-        }
         var rawType = e.getType().getAsIsType();
         if (rawType instanceof CJIRVariableType) {
             // TODO: Consider whether I want to allow this.
@@ -1238,6 +1235,17 @@ public final class CJIRAnnotator
         var classType = (CJIRClassType) rawType;
         if (classType.getDefinition().isUnion()) {
             throw err0("'new' cannot be used with union types", e.getMark());
+        }
+        var bindings = classType.getBindings();
+        var fields = classType.getDefinition().getFields().filter(f -> !f.isStatic());
+        if (fields.size() != e.getArguments().size()) {
+            throw err0("Expected " + fields.size() + " args but got " + e.getArguments().size(), e.getMark());
+        }
+        for (int i = 0; i < fields.size(); i++) {
+            var fieldDef = fields.get(i);
+            var arg = e.getArguments().get(i);
+            var argtype = fieldDef.getType().getAsIsType().substitute(bindings);
+            annotateExpressionWithType(arg, argtype);
         }
         e.resolvedType = classType;
         return null;
@@ -1364,7 +1372,7 @@ public final class CJIRAnnotator
         if (!(targetType.equals(charType) || targetType.equals(intType) || targetType.equals(stringType))) {
             throw err0("switch expressions require a char, int, or string target type but got " + targetType, mark);
         }
-        for (var case_: e.getCases()) {
+        for (var case_ : e.getCases()) {
             for (var value : case_.getValues()) {
                 annotateExpressionWithType(value, targetType);
             }

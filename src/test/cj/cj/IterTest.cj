@@ -12,7 +12,7 @@ class IterTest {
         {
             var ret = @[Tuple[Int, Int]]
             for (a, b) in [(1, 2), (3, 4)] {
-                ret.push((b, a))
+                ret.add((b, a))
             }
             Assert.equal(ret, @[(2, 1), (4, 3)])
         }

@@ -832,7 +832,7 @@ class MC$cj$ListBuilder {
      * @param {Array<Array<T>>} builder
      * @param {T} x
      */
-    M$push(builder, x) {
+    M$add(builder, x) {
         builder[0].push(x);
         return builder;
     }
@@ -902,7 +902,7 @@ class MC$cj$MutableList {
      * @param {Array<T>} list
      * @param {T} x
      */
-    M$push(list, x) {
+    M$add(list, x) {
         list.push(x);
     }
 

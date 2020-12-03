@@ -27,7 +27,7 @@ class Sample : ToString {
         {
             var xs = @[Int]
             IO.println(xs.size())
-            xs.push(42)
+            xs.add(42)
             IO.println(xs)
             IO.println(xs.size())
         }

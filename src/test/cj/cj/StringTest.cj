@@ -31,7 +31,7 @@ class StringTest {
         {
             val chars = @[Char]
             for c in "xyz" {
-                chars.push(c)
+                chars.add(c)
             }
             Assert.equal(chars, @['x', 'y', 'z'])
         }

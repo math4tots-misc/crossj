@@ -49,7 +49,7 @@ class MutableMap[K : Hash, V]:
             i += 1
         }
         self._siz += 1
-        bucket.push(triple)
+        bucket.add(triple)
     }
 
     def _checkForRehashBeforeInsert(self: Self) {
