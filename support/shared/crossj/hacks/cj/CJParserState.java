@@ -528,25 +528,89 @@ public final class CJParserState {
             }
             case CJToken.KW_FOR: {
                 next();
-                var tryTarget = parseAssignmentTarget();
-                if (tryTarget.isFail()) {
-                    return tryTarget.castFail();
+                if (at(';') || at(CJToken.ID) && atOffset('=', 1)) {
+                    // classic for loop
+                    var name = Optional.<String>empty();
+                    var startExpr = Optional.<CJAstExpression>empty();
+                    if (at(CJToken.ID)) {
+                        name = Optional.of(parseID());
+                        if (!consume('=')) {
+                            return expectedType('=');
+                        }
+                        var tryExpr = parseExpression();
+                        if (tryExpr.isFail()) {
+                            return tryExpr.castFail();
+                        }
+                        startExpr = Optional.of(tryExpr.get());
+                    }
+                    if (!consume(';')) {
+                        return expectedType(';');
+                    }
+                    CJAstExpression condExpr;
+                    if (!at(';')) {
+                        var tryExpr = parseExpression();
+                        if (tryExpr.isFail()) {
+                            return tryExpr.castFail();
+                        }
+                        condExpr = tryExpr.get();
+                    } else {
+                        condExpr = new CJAstLiteralExpression(mark, CJAstLiteralExpression.BOOL, "true");
+                    }
+                    if (!consume(';')) {
+                        return expectedType(';');
+                    }
+                    var incrStmt = Optional.<CJAstStatement>empty();
+                    if (!at('{')) {
+                        var tryStmt = parseStatement();
+                        if (tryStmt.isFail()) {
+                            return tryStmt;
+                        }
+                        var stmt = tryStmt.get();
+                        if (!(stmt instanceof CJAstAssignmentStatement
+                                || stmt instanceof CJAstAugmentedAssignmentStatement
+                                || stmt instanceof CJAstExpressionStatement)) {
+                            return failWithMark(
+                                    "Only assignment, augmented assignment or expression statements are allowed here",
+                                    stmt.getMark());
+                        }
+                        incrStmt = Optional.of(stmt);
+                    }
+                    var tryBody = parseBlockStatement();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body = tryBody.get();
+                    var stmts = List.<CJAstStatement>of();
+                    if (name.isPresent()) {
+                        stmts.add(new CJAstVariableDeclarationStatement(mark, true,
+                                new CJAstNameTarget(mark, name.get()), Optional.empty(), startExpr.get()));
+                    }
+                    if (incrStmt.isPresent()) {
+                        body.getStatements().add(incrStmt.get());
+                    }
+                    stmts.add(new CJAstWhileStatement(mark, condExpr, body));
+                    return Try.ok(new CJAstBlockStatement(mark, stmts));
+                } else {
+                    var tryTarget = parseAssignmentTarget();
+                    if (tryTarget.isFail()) {
+                        return tryTarget.castFail();
+                    }
+                    var target = tryTarget.get();
+                    if (!consume(CJToken.KW_IN)) {
+                        return expectedType(CJToken.KW_IN);
+                    }
+                    var tryContainerExpr = parseExpression();
+                    if (tryContainerExpr.isFail()) {
+                        return tryContainerExpr.castFail();
+                    }
+                    var containerExpr = tryContainerExpr.get();
+                    var tryBody = parseBlockStatement();
+                    if (tryBody.isFail()) {
+                        return tryBody.castFail();
+                    }
+                    var body = tryBody.get();
+                    return Try.ok(new CJAstForStatement(mark, target, containerExpr, body));
                 }
-                var target = tryTarget.get();
-                if (!consume(CJToken.KW_IN)) {
-                    return expectedType(CJToken.KW_IN);
-                }
-                var tryContainerExpr = parseExpression();
-                if (tryContainerExpr.isFail()) {
-                    return tryContainerExpr.castFail();
-                }
-                var containerExpr = tryContainerExpr.get();
-                var tryBody = parseBlockStatement();
-                if (tryBody.isFail()) {
-                    return tryBody.castFail();
-                }
-                var body = tryBody.get();
-                return Try.ok(new CJAstForStatement(mark, target, containerExpr, body));
             }
             case CJToken.KW_VAR:
             case CJToken.KW_VAL: {

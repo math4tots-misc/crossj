@@ -56,4 +56,14 @@ class ControlFlowTest {
         }
         return Try.Ok(24)
     }
+
+    def testClassicFor() {
+        {
+            val list = @[Int]
+            for i = 10; i < 20; i += 1 {
+                list.push(i)
+            }
+            Assert.equal(list, @[10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
+        }
+    }
 }
