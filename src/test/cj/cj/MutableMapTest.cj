@@ -3,6 +3,28 @@ package cj
 
 class MutableMapTest {
 
+    def testEq() {
+        {
+            val map = MutableMap.of([(1, 2)])
+            Assert.equal(map, map)
+            Assert.equal(map, MutableMap.of([(1, 2)]))
+        }
+    }
+
+    def testLiterals() {
+        {
+            val map = MutableMap.of([(1, 2)])
+            Assert.equal(map, @[1: 2])
+            Assert.equal(map, MutableMap.of([(1, 2)]))
+        }
+        Assert.equal(MutableMap[Int, String].empty(), @[:])
+        {
+            val map = MutableMap.of([(1, 2), (2, 3)])
+            Assert.equal(map, @[2: 3, 1: 2])
+            Assert.equal(map, MutableMap.of([(2, 3), (1, 2)]))
+        }
+    }
+
     def testSample() {
         var map = MutableMap[String, Int].of([])
         Assert.equal(map.size(), 0)

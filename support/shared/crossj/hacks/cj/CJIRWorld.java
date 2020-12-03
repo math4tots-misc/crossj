@@ -32,6 +32,7 @@ public final class CJIRWorld {
         "Collection",
         "Clone",
         "List",
+        "Map",
         "Fn0",
         "Fn1",
         "Fn2",

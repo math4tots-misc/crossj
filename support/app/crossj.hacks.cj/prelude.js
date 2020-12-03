@@ -377,6 +377,20 @@ class MC$cj$Iterator {
     }
 
     /**
+     * @template A
+     * @param {*} VT$A
+     * @param {IterableIterator<T>} iter
+     * @param {A} acc
+     * @param {function(A, T): A} f
+     */
+    M$fold(VT$A, iter, acc, f) {
+        for (const t of iter) {
+            acc = f(acc, t);
+        }
+        return acc;
+    }
+
+    /**
      * @param {IterableIterator<T>} iterator
      */
     M$toList(iterator) {

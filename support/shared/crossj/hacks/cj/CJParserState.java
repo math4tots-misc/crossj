@@ -1230,7 +1230,13 @@ public final class CJParserState {
             case '@': { // mutable collection literals
                 next();
                 if (consume('[')) {
-                    if (at(CJToken.TYPE_ID)) {
+                    if (consume(':')) {
+                        if (!consume(']')) {
+                            return expectedType(']');
+                        }
+                        return Try.ok(new CJAstStaticMethodCallExpression(mark,
+                                new CJAstTypeExpression(mark, "MutableMap", List.of()), "empty", List.of()));
+                    } else if (at(CJToken.TYPE_ID)) {
                         int savedI = i;
                         var tryType = parseTypeExpression();
                         if (tryType.isOk() && consume(']')) {
@@ -1243,17 +1249,66 @@ public final class CJParserState {
                         }
                     } else {
                         var elements = List.<CJAstExpression>of();
-                        while (!consume(']')) {
-                            var tryElement = parseExpression();
-                            if (tryElement.isFail()) {
-                                return tryElement.castFail();
+                        if (consume(']')) {
+                            return Try.ok(new CJAstListDisplayExpression(mark, true, elements));
+                        }
+                        var tryFirst = parseExpression();
+                        if (tryFirst.isFail()) {
+                            return tryFirst.castFail();
+                        }
+                        var first = tryFirst.get();
+                        if (consume(':')) {
+                            var trySecond = parseExpression();
+                            if (trySecond.isFail()) {
+                                return trySecond.castFail();
                             }
-                            elements.add(tryElement.get());
-                            if (!consume(',') && !at(']')) {
+                            elements.add(new CJAstTupleDisplayExpression(mark, List.of(first, trySecond.get())));
+                            if (consume(',')) {
+                                while (!at(']')) {
+                                    var tryElement = parseExpression();
+                                    if (tryElement.isFail()) {
+                                        return tryElement.castFail();
+                                    }
+                                    var key = tryElement.get();
+                                    if (!consume(':')) {
+                                        return expectedType(':');
+                                    }
+                                    tryElement = parseExpression();
+                                    if (tryElement.isFail()) {
+                                        return tryElement.castFail();
+                                    }
+                                    var val = tryElement.get();
+                                    elements.add(new CJAstTupleDisplayExpression(mark, List.of(key, val)));
+                                    if (!consume(',') && !at(']')) {
+                                        return expectedType(']');
+                                    }
+                                }
+                            }
+                            if (!consume(']')) {
                                 return expectedType(']');
                             }
+                            return Try.ok(new CJAstStaticMethodCallExpression(mark,
+                                    new CJAstTypeExpression(mark, "MutableMap", List.of()), "of",
+                                    List.of(new CJAstListDisplayExpression(mark, false, elements))));
+                        } else {
+                            elements.add(first);
+                            if (consume(',')) {
+                                while (!at(']')) {
+                                    var tryElement = parseExpression();
+                                    if (tryElement.isFail()) {
+                                        return tryElement.castFail();
+                                    }
+                                    elements.add(tryElement.get());
+                                    if (!consume(',') && !at(']')) {
+                                        return expectedType(']');
+                                    }
+                                }
+                            }
+                            if (!consume(']')) {
+                                return expectedType(']');
+                            }
+                            return Try.ok(new CJAstListDisplayExpression(mark, true, elements));
                         }
-                        return Try.ok(new CJAstListDisplayExpression(mark, true, elements));
                     }
                 } else {
                     return expectedType('[');
@@ -1262,20 +1317,77 @@ public final class CJParserState {
             case '{': { // block expression
                 return parseCompoundExpression().map(x -> x);
             }
-            case '[': { // list display
+            case '[': { // list and map displays
                 next();
-                var elements = List.<CJAstExpression>of();
-                while (!consume(']')) {
-                    var tryElement = parseExpression();
-                    if (tryElement.isFail()) {
-                        return tryElement.castFail();
-                    }
-                    elements.add(tryElement.get());
-                    if (!consume(',') && !at(']')) {
+                if (consume(':')) {
+                    if (!consume(']')) {
                         return expectedType(']');
                     }
+                    return Try.ok(new CJAstStaticMethodCallExpression(mark,
+                            new CJAstTypeExpression(mark, "Map", List.of()), "empty", List.of()));
+                } else {
+                    var elements = List.<CJAstExpression>of();
+                    if (consume(']')) {
+                        return Try.ok(new CJAstListDisplayExpression(mark, false, elements));
+                    }
+                    var tryFirst = parseExpression();
+                    if (tryFirst.isFail()) {
+                        return tryFirst.castFail();
+                    }
+                    var first = tryFirst.get();
+                    if (consume(':')) {
+                        var trySecond = parseExpression();
+                        if (trySecond.isFail()) {
+                            return trySecond.castFail();
+                        }
+                        elements.add(new CJAstTupleDisplayExpression(mark, List.of(first, trySecond.get())));
+                        if (consume(',')) {
+                            while (!at(']')) {
+                                var tryElement = parseExpression();
+                                if (tryElement.isFail()) {
+                                    return tryElement.castFail();
+                                }
+                                var key = tryElement.get();
+                                if (!consume(':')) {
+                                    return expectedType(':');
+                                }
+                                tryElement = parseExpression();
+                                if (tryElement.isFail()) {
+                                    return tryElement.castFail();
+                                }
+                                var val = tryElement.get();
+                                elements.add(new CJAstTupleDisplayExpression(mark, List.of(key, val)));
+                                if (!consume(',') && !at(']')) {
+                                    return expectedType(']');
+                                }
+                            }
+                        }
+                        if (!consume(']')) {
+                            return expectedType(']');
+                        }
+                        return Try.ok(new CJAstStaticMethodCallExpression(mark,
+                                new CJAstTypeExpression(mark, "Map", List.of()), "of",
+                                List.of(new CJAstListDisplayExpression(mark, false, elements))));
+                    } else {
+                        elements.add(first);
+                        if (consume(',')) {
+                            while (!at(']')) {
+                                var tryElement = parseExpression();
+                                if (tryElement.isFail()) {
+                                    return tryElement.castFail();
+                                }
+                                elements.add(tryElement.get());
+                                if (!consume(',') && !at(']')) {
+                                    return expectedType(']');
+                                }
+                            }
+                        }
+                        if (!consume(']')) {
+                            return expectedType(']');
+                        }
+                        return Try.ok(new CJAstListDisplayExpression(mark, false, elements));
+                    }
                 }
-                return Try.ok(new CJAstListDisplayExpression(mark, false, elements));
             }
             case CJToken.KW_UNION: { // union match expression
                 next();

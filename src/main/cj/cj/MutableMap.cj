@@ -1,20 +1,19 @@
 package cj
 
-# TODO: Make MutableMap conditionally Eq and Repr based on whether
-# V is Eq and Repr
+
 class MutableMap[K : Hash, V]:
-        Eq if K: Eq and V: Eq,
+        Eq if V: Eq,
         Repr if K: Repr and V: Repr {
     private var _siz : Int
     private var _list : MutableList[MutableList[Tuple[Int, K, V]]]
 
-    def _newEmpty() : Self {
+    def empty() : Self {
         val self = Self.new(0, @[MutableList[Tuple[Int, K, V]]])
         return self
     }
 
     def of(pairs: List[Tuple[K, V]]) : Self {
-        val self = Self._newEmpty()
+        val self = Self.empty()
         for (k, v) in pairs {
             self.put(k, v)
         }
@@ -187,10 +186,10 @@ class MutableMap[K : Hash, V]:
     if K: Repr and V: Repr {
         def repr(self: Self): String {
             if self._siz == 0 {
-                return "[:]"
+                return "@[:]"
             } else {
                 return (
-                    "[" +
+                    "@[" +
                     ",".join(
                         self.pairs().map(kv -> kv.get0().repr() + ": " + kv.get1().repr())) +
                     "]"

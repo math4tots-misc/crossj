@@ -1,8 +1,5 @@
 package cj
 
-import cj.Error
-
-
 class ControlFlowTest {
     def testIf() {
         {

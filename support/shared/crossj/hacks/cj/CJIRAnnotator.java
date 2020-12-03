@@ -1123,6 +1123,10 @@ public final class CJIRAnnotator
             }
             elementTypes = elements.map(el -> el.getResolvedType());
         }
+        Assert.equals(elements.size(), elementTypes.size());
+        for (int i = 0; i < elements.size(); i++) {
+            annotateExpressionWithType(elements.get(i), elementTypes.get(i));
+        }
         e.resolvedType = getTupleTypeOf(e.getMark(), elementTypes);
         return null;
     }
