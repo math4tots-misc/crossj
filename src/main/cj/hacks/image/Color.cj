@@ -26,6 +26,10 @@ class Color {
         return Self._combineFloats(self.r, self.g, self.b, self.a)
     }
 
+    def toI32ARGB(self: Self): Int {
+        return Self._combineFloats(self.a, self.r, self.g, self.b)
+    }
+
     def _split(x: Int): Tuple[Int, Int, Int, Int] {
         return (
             (x >>> 24) & 0xFF,

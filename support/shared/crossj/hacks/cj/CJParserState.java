@@ -95,6 +95,10 @@ public final class CJParserState {
         return found;
     }
 
+    private boolean atDelimiterOrComment() {
+        return atDelimiter() || at(CJToken.COMMENT);
+    }
+
     private Optional<String> consumeDelimitersAndComments() {
         var comments = Optional.<String>empty();
         while (true) {
@@ -637,7 +641,7 @@ public final class CJParserState {
                     return tryExpr.castFail();
                 }
                 var expr = tryExpr.get();
-                if (!atDelimiter()) {
+                if (!atDelimiterOrComment()) {
                     return expectedKind("statement delimiter");
                 }
                 return Try.ok(new CJAstVariableDeclarationStatement(mark, mutable, target, type, expr));
@@ -648,7 +652,7 @@ public final class CJParserState {
                 if (tryExpr.isFail()) {
                     return tryExpr.castFail();
                 }
-                if (!atDelimiter()) {
+                if (!atDelimiterOrComment()) {
                     return expectedKind("statement delimiter");
                 }
                 return Try.ok(new CJAstReturnStatement(mark, tryExpr.get()));
@@ -835,7 +839,7 @@ public final class CJParserState {
                     var valExpr = tryValExpr.get();
                     return Try.ok(new CJAstAssignmentStatement(mark, target, valExpr));
                 } else {
-                    if (!atDelimiter()) {
+                    if (!atDelimiterOrComment()) {
                         return expectedKind("statement delimiter");
                     }
                     return Try.ok(new CJAstExpressionStatement(mark, tryExpr.get()));
