@@ -21,6 +21,10 @@ class Set[T: Hash]:
         return self._map.size()
     }
 
+    def __contains(self: Self, t: T): Bool {
+        return t in self._map
+    }
+
     def hash(self: Self): Int {
         return self.iter().fold(0, (acc, t) -> acc + t.hash())
     }

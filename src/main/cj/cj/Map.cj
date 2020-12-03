@@ -40,8 +40,8 @@ class Map[K: Hash, V]:
         return self._map.getOrNull(key)
     }
 
-    def containsKey(self: Self, key: K): Bool {
-        return self._map.containsKey(key)
+    def __contains(self: Self, key: K): Bool {
+        return key in self._map
     }
 
     if V: Hash {

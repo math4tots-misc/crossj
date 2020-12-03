@@ -39,4 +39,13 @@ class MapTest {
             Assert.equal(map.get(key1), "first")
         }
     }
+
+    def testContains() {
+        {
+            val map = ["hello": "world"]
+            Assert.that("hello" in map)
+            Assert.that("world" not in map)
+            Assert.that("asdf" not in map)
+        }
+    }
 }

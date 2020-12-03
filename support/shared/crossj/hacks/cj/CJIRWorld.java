@@ -33,6 +33,7 @@ public final class CJIRWorld {
         "Clone",
         "List",
         "Map",
+        "Set",
         "Fn0",
         "Fn1",
         "Fn2",

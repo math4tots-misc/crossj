@@ -106,7 +106,7 @@ class MutableMap[K : Hash, V]:
         return self._getTriple(key).map(triple -> triple.get2())
     }
 
-    def containsKey(self: Self, key: K): Bool {
+    def __contains(self: Self, key: K): Bool {
         return self._getTriple(key).isPresent()
     }
 

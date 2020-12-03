@@ -47,4 +47,10 @@ class MutableMapTest {
         # Assert.equal(map.getOrNull("b"), Nullable.Some(234))
         # Assert.equal(map.getOrNull("c"), Nullable.Some(345))
     }
+
+    def testContains() {
+        Assert.that("hello" in @["hello": "world"])
+        Assert.that("world" not in @["hello": "world"])
+        Assert.that("asdf" not in @["hello": "world"])
+    }
 }
