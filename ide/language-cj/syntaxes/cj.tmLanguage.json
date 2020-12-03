@@ -38,7 +38,11 @@
 			"patterns": [
 				{
 					"name": "storage.type.item.cj",
-					"match": "^\\b(class|trait|union|enum|native\\s+union)\\b"
+					"match": "^\\b(union|native\\s+union)\\b"
+				},
+				{
+					"name": "storage.type.item.cj",
+					"match": "\\b(class|trait|enum)\\b"
 				},
 				{
 					"name": "storage.type.cj",
@@ -55,10 +59,6 @@
 				{
 					"name": "keyword.operator.cj",
 					"match": "\\b(and|or|is|not|in)\\b"
-				},
-				{
-					"name": "keyword.control.cj",
-					"match": "\\b(class|trait|union)\\b"
 				},
 				{
 					"name": "support.other.cj",
