@@ -54,7 +54,7 @@
 				},
 				{
 					"name": "keyword.control.cj",
-					"match": "\\b(def|if|else|import|while|break|continue|new|package|return|and|or|is|not|in|then|switch|case|default|as|for)\\b"
+					"match": "\\b(def|if|else|import|while|break|continue|new|package|return|and|or|is|not|in|then|switch|case|default|as|for|union)\\b"
 				},
 				{
 					"name": "keyword.operator.cj",
