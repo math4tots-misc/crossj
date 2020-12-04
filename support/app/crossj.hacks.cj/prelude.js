@@ -33,6 +33,10 @@ function ok(value) {
     return [0, value];
 }
 
+class MC$cj$Unit {
+}
+const MO$cj$Unit = new MC$cj$Unit();
+
 class MC$cj$Bool {
     M$__eq(a, b) {
         return a === b;
@@ -1823,7 +1827,7 @@ class MC$cj$FS {
      */
     M$read(path) {
         try {
-            return require('fs').readFileSync(path, 'utf-8');
+            return ok(require('fs').readFileSync(path, 'utf-8'));
         } catch (e) {
             return fail('' + e);
         }
@@ -1850,7 +1854,7 @@ class MC$cj$FS {
         const path = require('path');
         const fs = require('fs');
         const dirname = path.dirname(filepath);
-        fs.mkdirSync(dirname, {recursive: true});
+        fs.mkdirSync(dirname, { recursive: true });
         fs.writeFileSync(filepath, data);
     }
 
@@ -1859,7 +1863,68 @@ class MC$cj$FS {
      * @param {Bytes} data
      */
     M$writeBuffer(filepath, data) {
-        MO$cj$FS.M$write(filepath, data.M$asU8s());
+        return MO$cj$FS.M$write(filepath, data.M$asU8s());
+    }
+
+    M$sep() {
+        return require('path').sep;
+    }
+
+    /**
+     * @param {Array<String>} parts
+     */
+    M$join(parts) {
+        return require('path').join(...parts);
+    }
+
+    /**
+     * @param {string} path
+     */
+    M$dirname(path) {
+        return require('path').dirname(path);
+    }
+
+    /**
+     * @param {string} path
+     */
+    M$basename(path) {
+        return require('path').basename(path);
+    }
+
+    M$cwd() {
+        return process.cwd();
+    }
+
+    /**
+     * @param {string} path
+     */
+    M$exists(path) {
+        return require('fs').existsSync(path);
+    }
+
+    /**
+     * @param {string} path
+     */
+    M$isfile(path) {
+        return this.M$exists(path) && require('fs').lstatSync(path).isFile();
+    }
+
+    /**
+     * @param {string} path
+     */
+    M$isdir(path) {
+        return this.M$exists(path) && require('fs').lstatSync(path).isDirectory();
+    }
+
+    /**
+     * @param {string} path
+     */
+    M$list(path) {
+        try {
+            return ok(require('fs').readdirSync(path));
+        } catch (e) {
+            return fail('' + e);
+        }
     }
 }
 const MO$cj$FS = new MC$cj$FS();
