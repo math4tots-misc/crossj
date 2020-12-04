@@ -7,6 +7,7 @@ class FSDemo {
     }
 
     def _main(): Try[Unit] {
+        IO.println(FS.cwd())
         IO.println(FS.list(".")?)
         return Try.Ok(())
     }
