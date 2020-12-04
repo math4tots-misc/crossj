@@ -232,6 +232,9 @@ class MC$cj$Double {
     M$__appx(a, b) {
         return appxEq(a, b);
     }
+    M$isCloseTo(a, b) {
+        return appxEq(a, b);
+    }
 }
 const MO$cj$Double = new MC$cj$Double();
 

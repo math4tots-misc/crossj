@@ -33,4 +33,7 @@ native class Double : Eq, Ord, Hash, Repr, ToInt, ToBool, Ring {
 
     ## Checks whether this value is approximatley equal to another
     def __appx(self: Self, other: Self): Bool
+
+    ## Checks whether this value is approximatley equal to another
+    def isCloseTo(self: Self, other: Self): Bool
 }

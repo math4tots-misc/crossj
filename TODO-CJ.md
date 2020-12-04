@@ -13,3 +13,4 @@
     should be inlined)
 * `switch` statement and expression for matching raw values.
     At least for `Char`, `Int`, and `String`
+* Consider making `__appx` a magic method for an "approximately equal" operator

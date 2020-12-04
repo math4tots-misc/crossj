@@ -74,6 +74,8 @@ final class CJJSSpecialMethods {
         mkpair1("cj.Double.repr", a -> "(''+" + a + ")"),
         mkpair1("cj.Double.toInt", x -> "(" + x + "|0)"),
         mkpair1("cj.Double.toBool", x -> "(!!" + x + ")"),
+        mkpair2("cj.Double.__appx", (a, b) -> "appxEq(" + a + "," + b + ")"),
+        mkpair2("cj.Double.isCloseTo", (a, b) -> "appxEq(" + a + "," + b + ")"),
 
         mkpair2("cj.Char.__eq", (a, b) -> "(" + a + "===" + b + ")"),
         mkpair2("cj.Char.__lt", (a, b) -> "(" + a + "<" + b + ")"),
