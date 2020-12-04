@@ -87,13 +87,13 @@ final class CJJSSpecialMethods {
 
         mkpair2("cj.List.get", (a, b) -> "(" + a + "[" + b + "])"),
         mkpair1("cj.List.size", a -> "(" + a + ".length)"),
-        mkpair1("cj.List.iter", a -> a),
+        mkpair1("cj.List.iter", a -> a + "[Symbol.iterator]()"),
         mkpair2("cj.List.map", (a, b) -> "" + a + ".map(" + b + ")"),
         mkpair2("cj.List.filter", (a, b) -> "" + a + ".filter(" + b + ")"),
         mkpair1("cj.List.toList", a -> a),
         mkpair1("cj.List.toBool", a -> "(" + a + ".length!==0)"),
 
-        mkpair1("cj.MutableList.iter", a -> a),
+        mkpair1("cj.MutableList.iter", a -> a + "[Symbol.iterator]()"),
         mkpair1("cj.MutableList.size", a -> "(" + a + ".length)"),
         mkpair2("cj.MutableList.get", (a, b) -> "(" + a + "[" + b + "])"),
         mkpair3("cj.MutableList.set", (a, b, c) -> "(" + a + "[" + b + "]=" + c + ")"),
@@ -103,6 +103,9 @@ final class CJJSSpecialMethods {
         mkpair2("cj.MutableList.map", (a, b) -> "" + a + ".map(" + b + ")"),
         mkpair2("cj.MutableList.filter", (a, b) -> "" + a + ".filter(" + b + ")"),
         mkpair1("cj.MutableList.toList", a -> "Array.from(" + a + ")"),
+
+        mkpair1("cj.Iterator.toList", a -> "Array.from(" + a + ")"),
+        mkpair1("cj.Iterator.iter", a -> a),
 
         mkpair1("cj.Nullable.toBool", a -> "(" + a + "!==null)"),
         mkpair1("cj.Nullable.isPresent", a -> "(" + a + "!==null)"),
@@ -126,28 +129,6 @@ final class CJJSSpecialMethods {
             FCALLS.map(key -> mkpair(key, args -> {
                 return "((" + args.get(0) + ")(" + Str.join(",", args.sliceFrom(1)) + "))";
             })),
-            List.of(
-                mkpair("cj.List.get", args -> {
-                    Assert.equals(args.size(), 2);
-                    return "(" + args.get(0) + "[" + args.get(1) + "])";
-                }),
-                mkpair("cj.MutableList.get", args -> {
-                    Assert.equals(args.size(), 2);
-                    return "(" + args.get(0) + "[" + args.get(1) + "])";
-                }),
-                mkpair("cj.MutableList.set", args -> {
-                    Assert.equals(args.size(), 3);
-                    return "(" + args.get(0) + "[" + args.get(1) + "]=" + args.get(2) + ")";
-                }),
-                mkpair("cj.MutableList.add", args -> {
-                    Assert.equals(args.size(), 2);
-                    return args.get(0) + ".push(" + args.get(1) + ")";
-                }),
-                mkpair("cj.Nullable.toBool", args -> {
-                    Assert.equals(args.size(), 1);
-                    return "(" + args.get(0) + "!==null)";
-                })
-            ),
             OTHER
         ).flatMap(x -> x)
     );
