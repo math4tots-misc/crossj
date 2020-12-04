@@ -218,6 +218,6 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
         var sb = Str.builder();
         sb.s(translateType(owner)).s(".").s(CJJSTranslator.nameToMethodName(methodName)).s("(");
         return CJJSStatementAndExpressionTranslator.combineMethodCall(typeTranslator, owner, methodName, typeArguments,
-                args.map(arg -> translateExpression(arg)));
+                args.map(arg -> translateExpression(arg)), args.map(arg -> arg.getResolvedType()));
     }
 }

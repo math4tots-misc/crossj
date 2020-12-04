@@ -392,17 +392,21 @@ public final class CJJSStatementAndExpressionTranslator
     private String emitMethodCall(CJIRType owner, String methodName, List<CJIRType> typeArguments,
             List<CJAstExpression> args) {
         var argtmpvars = args.map(arg -> emitExpressionConst(arg));
-        return combineMethodCall(typeTranslator, owner, methodName, typeArguments, argtmpvars);
+        return combineMethodCall(typeTranslator, owner, methodName, typeArguments, argtmpvars,
+                args.map(arg -> arg.getResolvedType()));
     }
 
     static String combineMethodCall(CJJSTypeTranslator typeTranslator, CJIRType owner, String cjMethodName,
-            List<CJIRType> typeArguments, List<String> args) {
+            List<CJIRType> typeArguments, List<String> args, List<CJIRType> argTypes) {
         CJIRClassType classType = owner instanceof CJIRClassType ? (CJIRClassType) owner : null;
         if (classType != null) {
             var name = classType.getDefinition().getQualifiedName() + "." + cjMethodName;
             var f = CJJSSpecialMethods.OPS.getOrNull(name);
             if (f != null) {
-                return f.apply(args);
+                var result = f.apply(argTypes, args);
+                if (result.isPresent()) {
+                    return result.get();
+                }
             }
         }
 

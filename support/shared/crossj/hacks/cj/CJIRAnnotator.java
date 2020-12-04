@@ -890,10 +890,10 @@ public final class CJIRAnnotator
         while (map.size() < knownVariables.size() && (stack.size() > 0 || nextArgIndex < args.size())) {
             if (stack.size() == 0) {
                 // if the stack is empty, but we have more arguments we can look at, use it.
-                if (args.size() != memberArgTypes.size()) {
-                    throw XError.withMessage("nextArgIndex = " + nextArgIndex + ", memberArgTypes.size() = "
-                            + memberArgTypes.size() + ", args.size() = " + args.size());
-                }
+                // if (args.size() != memberArgTypes.size()) {
+                //     throw XError.withMessage("nextArgIndex = " + nextArgIndex + ", memberArgTypes.size() = "
+                //             + memberArgTypes.size() + ", args.size() = " + args.size());
+                // }
                 var arg = args.get(nextArgIndex);
                 var memberArgType = memberArgTypes.get(nextArgIndex);
                 nextArgIndex++;

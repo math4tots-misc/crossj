@@ -1,6 +1,13 @@
 package cj
 
-native class Double : Eq, Ord, Hash, Repr, ToInt, ToBool {
+import cj.Ring
+
+
+native class Double : Eq, Ord, Hash, Repr, ToInt, ToBool, Ring {
+    def one(): Self
+    def negativeOne(): Self
+    def zero(): Self
+
     def __eq(a : Self, b : Self) : Bool
     def __lt(a : Self, b : Self) : Bool
     def __gt(a : Self, b : Self) : Bool
@@ -23,4 +30,7 @@ native class Double : Eq, Ord, Hash, Repr, ToInt, ToBool {
 
     # A Double is truthy iff it is not zero
     def toBool(x: Self) : Bool
+
+    ## Checks whether this value is approximatley equal to another
+    def __appx(self: Self, other: Self): Bool
 }

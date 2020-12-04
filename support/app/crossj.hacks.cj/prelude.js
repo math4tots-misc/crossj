@@ -33,6 +33,21 @@ function ok(value) {
     return [0, value];
 }
 
+/**
+ * Tests whether two numbers are "approximately" equal to each other.
+ * This is basically what Python3.5+ does with math.isclose()
+ * @param {number} a
+ * @param {number} b
+ */
+function appxEq(a, b) {
+    const REL_TOL = 1e-09;
+    const ABS_TOL = 0.0;
+    return Math.abs(a - b) <= Math.max(
+        REL_TOL * Math.max(Math.abs(a), Math.abs(b)),
+        ABS_TOL
+    );
+}
+
 class MC$cj$Unit {
 }
 const MO$cj$Unit = new MC$cj$Unit();
@@ -57,6 +72,15 @@ class MC$cj$Bool {
 const MO$cj$Bool = new MC$cj$Bool();
 
 class MC$cj$Int {
+    M$one() {
+        return 1;
+    }
+    M$negativeOne() {
+        return -1;
+    }
+    M$zero() {
+        return 0;
+    }
     M$__eq(a, b) {
         return a === b;
     }
@@ -139,6 +163,15 @@ class MC$cj$Int {
 const MO$cj$Int = new MC$cj$Int();
 
 class MC$cj$Double {
+    M$one() {
+        return 1;
+    }
+    M$negativeOne() {
+        return -1;
+    }
+    M$zero() {
+        return 0;
+    }
     M$__eq(a, b) {
         return a === b;
     }
@@ -195,6 +228,9 @@ class MC$cj$Double {
     }
     M$toBool(x) {
         return x !== 0;
+    }
+    M$__appx(a, b) {
+        return appxEq(a, b);
     }
 }
 const MO$cj$Double = new MC$cj$Double();
@@ -1321,6 +1357,16 @@ class MC$cj$Assert {
     M$divides(divisor, dividend) {
         if (dividend % divisor !== 0) {
             throw new Error("Expected " + divisior + " to divide " + dividend);
+        }
+    }
+
+    /**
+     * @param {number} a
+     * @param {number} b
+     */
+    M$approximatelyEqual(a, b) {
+        if (!appxEq(a, b)) {
+            throw new Error("Expected " + a + " to approximately equal " + b);
         }
     }
 }

@@ -59,6 +59,7 @@ public final class CJIRWorld {
         "ListBuilder",
         "MapBuilder",
         "SetBuilder",
+        "Math",
         "Repr",
         "Eq",
         "Ord",

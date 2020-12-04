@@ -1,6 +1,12 @@
 package cj
 
-native class Int : Eq, Ord, Hash, Repr, ToDouble, ToChar, ToBool {
+import cj.Ring
+
+native class Int : Eq, Ord, Hash, Repr, ToDouble, ToChar, ToBool, Ring {
+    def one(): Self
+    def negativeOne(): Self
+    def zero(): Self
+
     def __eq(a : Self, b : Self) : Bool
     def __lt(a : Self, b : Self) : Bool
     def __le(a : Self, b : Self) : Bool
