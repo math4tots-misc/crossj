@@ -67,6 +67,15 @@ final class CJJSSpecialMethods {
         mkpair1("cj.Double.toInt", x -> "(" + x + "|0)"),
         mkpair1("cj.Double.toBool", x -> "(!!" + x + ")"),
 
+        mkpair2("cj.Char.__eq", (a, b) -> "(" + a + "===" + b + ")"),
+        mkpair2("cj.Char.__lt", (a, b) -> "(" + a + "<" + b + ")"),
+        mkpair2("cj.Char.__le", (a, b) -> "(" + a + "<=" + b + ")"),
+        mkpair2("cj.Char.__gt", (a, b) -> "(" + a + ">" + b + ")"),
+        mkpair2("cj.Char.__ge", (a, b) -> "(" + a + ">=" + b + ")"),
+        mkpair1("cj.Char.toInt", a -> a),
+        mkpair1("cj.Char.hash", a -> a),
+        mkpair1("cj.Char.toString", a -> "String.fromCodePoint(" + a + ")"),
+
         mkpair2("cj.String.__eq", (a, b) -> "(" + a + "===" + b + ")"),
         mkpair2("cj.String.__lt", (a, b) -> "(" + a + "<" + b + ")"),
         mkpair2("cj.String.__le", (a, b) -> "(" + a + "<=" + b + ")"),
@@ -74,7 +83,6 @@ final class CJJSSpecialMethods {
         mkpair2("cj.String.__ge", (a, b) -> "(" + a + ">=" + b + ")"),
         mkpair1("cj.String.size", a -> "(" + a + ".length)"),
         mkpair1("cj.String.toString", a -> a),
-        mkpair1("cj.String.iter", a -> a),
         mkpair1("cj.String.toBool", a -> "(!!" + a + ")"),
 
         mkpair2("cj.List.get", (a, b) -> "(" + a + "[" + b + "])"),

@@ -18,8 +18,7 @@ public final class CJJSStatementAndExpressionTranslator
      * call the 'iter' method because javascript's looping iterator mechanism will
      * do the "right thing".
      */
-    private static final Set<String> FOR_LOOP_EXEMPT_TYPES = Set.of("cj.String", "cj.List", "cj.MutableList",
-            "cj.Iterator");
+    private static final Set<String> FOR_LOOP_EXEMPT_TYPES = Set.of("cj.List", "cj.MutableList", "cj.Iterator");
 
     private final CJStrBuilder sb;
     private final CJJSSimpleExpressionTranslator simpleExpressionTranslator;
