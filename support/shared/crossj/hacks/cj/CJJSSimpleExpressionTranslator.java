@@ -217,24 +217,7 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
             List<CJAstExpression> args) {
         var sb = Str.builder();
         sb.s(translateType(owner)).s(".").s(CJJSTranslator.nameToMethodName(methodName)).s("(");
-        {
-            boolean first = true;
-            for (var typeArg : typeArguments) {
-                if (!first) {
-                    sb.s(",");
-                }
-                first = false;
-                sb.s(translateType(typeArg));
-            }
-            for (var arg : args) {
-                if (!first) {
-                    sb.s(",");
-                }
-                first = false;
-                sb.s(translateExpression(arg));
-            }
-        }
-        sb.s(")");
-        return sb.build();
+        return CJJSStatementAndExpressionTranslator.combineMethodCall(typeTranslator, owner, methodName, typeArguments,
+                args.map(arg -> translateExpression(arg)));
     }
 }

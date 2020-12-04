@@ -60,8 +60,16 @@ union Nullable[T] :
         return not self.isPresent()
     }
 
-    def __eq(self: Self, other: Self): Bool {
-        IO.panic("TODO")
+    if T: Eq {
+        def __eq(self: Self, other: Self): Bool {
+            return union self {
+                case Some(t1) = union other {
+                    case Some(t2) = t1 == t2
+                    case None = false
+                }
+                case None = other.isEmpty()
+            }
+        }
     }
 
     if T : Repr {

@@ -3,6 +3,7 @@ package crossj.hacks.cj;
 import crossj.base.Assert;
 import crossj.base.List;
 import crossj.base.Optional;
+import crossj.base.Set;
 import crossj.base.Str;
 import crossj.base.XError;
 
@@ -11,6 +12,14 @@ public final class CJJSStatementAndExpressionTranslator
     private static final int DECLARE_NONE = 1;
     private static final int DECLARE_LET = 2;
     private static final int DECLARE_CONST = 3;
+
+    /**
+     * These are the types that, when used in a for loop, do not have to explicitly
+     * call the 'iter' method because javascript's looping iterator mechanism will
+     * do the "right thing".
+     */
+    private static final Set<String> FOR_LOOP_EXEMPT_TYPES = Set.of("cj.String", "cj.List", "cj.MutableList",
+            "cj.Iterator");
 
     private final CJStrBuilder sb;
     private final CJJSSimpleExpressionTranslator simpleExpressionTranslator;
@@ -138,11 +147,18 @@ public final class CJJSStatementAndExpressionTranslator
     public Void visitFor(CJAstForStatement s, Void a) {
         var target = translateTarget(s.getTarget());
         var containerType = s.getContainerExpression().getResolvedType();
-        var jsContainerType = translateType(containerType);
-        var jsIterMethodName = CJJSTranslator.nameToMethodName("iter");
-        var jsFullMethodRef = jsContainerType + "." + jsIterMethodName;
-        var containerPartial = emitExpressionPartial(s.getContainerExpression());
-        sb.line("for (const " + target + " of " + jsFullMethodRef + "(" + containerPartial + ")) {");
+        String container;
+        if (containerType.getClassTypeQualifiedName().map(name -> FOR_LOOP_EXEMPT_TYPES.contains(name))
+                .getOrElse(false)) {
+            container = emitExpressionPartial(s.getContainerExpression());
+        } else {
+            var jsContainerType = translateType(containerType);
+            var jsIterMethodName = CJJSTranslator.nameToMethodName("iter");
+            var jsFullMethodRef = jsContainerType + "." + jsIterMethodName;
+            var containerPartial = emitExpressionPartial(s.getContainerExpression());
+            container = jsFullMethodRef + "(" + containerPartial + ")";
+        }
+        sb.line("for (const " + target + " of " + container + ") {");
         emitStatement(s.getBody());
         sb.line("}");
         return null;
@@ -198,7 +214,7 @@ public final class CJJSStatementAndExpressionTranslator
         var tmppartial = emitExpressionPartial(s.getTarget());
         sb.line("switch (" + tmppartial + ") {");
         sb.indent();
-        for (var case_: s.getCases()) {
+        for (var case_ : s.getCases()) {
             for (var value : case_.getValues()) {
                 sb.line("case " + simpleExpressionTranslator.translateExpression(value) + ":");
             }
@@ -377,9 +393,22 @@ public final class CJJSStatementAndExpressionTranslator
     private String emitMethodCall(CJIRType owner, String methodName, List<CJIRType> typeArguments,
             List<CJAstExpression> args) {
         var argtmpvars = args.map(arg -> emitExpressionConst(arg));
+        return combineMethodCall(typeTranslator, owner, methodName, typeArguments, argtmpvars);
+    }
+
+    static String combineMethodCall(CJJSTypeTranslator typeTranslator, CJIRType owner, String cjMethodName,
+            List<CJIRType> typeArguments, List<String> args) {
+        CJIRClassType classType = owner instanceof CJIRClassType ? (CJIRClassType) owner : null;
+        if (classType != null) {
+            var name = classType.getDefinition().getQualifiedName() + "." + cjMethodName;
+            var f = CJJSSpecialMethods.OPS.getOrNull(name);
+            if (f != null) {
+                return f.apply(args);
+            }
+        }
 
         var sb = Str.builder();
-        sb.s(translateType(owner)).s(".").s(CJJSTranslator.nameToMethodName(methodName)).s("(");
+        sb.s(typeTranslator.translateType(owner)).s(".").s(CJJSTranslator.nameToMethodName(cjMethodName)).s("(");
         {
             boolean first = true;
             for (var typeArg : typeArguments) {
@@ -387,14 +416,14 @@ public final class CJJSStatementAndExpressionTranslator
                     sb.s(",");
                 }
                 first = false;
-                sb.s(translateType(typeArg));
+                sb.s(typeTranslator.translateType(typeArg));
             }
-            for (var tmpvar : argtmpvars) {
+            for (var arg : args) {
                 if (!first) {
                     sb.s(",");
                 }
                 first = false;
-                sb.s(tmpvar);
+                sb.s(arg);
             }
         }
         sb.s(")");
@@ -640,7 +669,7 @@ public final class CJJSStatementAndExpressionTranslator
         sb.line("let " + outvar + ";");
         sb.line("switch (" + tmppartial + ") {");
         sb.indent();
-        for (var case_: e.getCases()) {
+        for (var case_ : e.getCases()) {
             for (var value : case_.getValues()) {
                 sb.line("case " + simpleExpressionTranslator.translateExpression(value) + ":");
             }

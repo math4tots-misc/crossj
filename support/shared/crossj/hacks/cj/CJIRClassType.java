@@ -130,6 +130,11 @@ public final class CJIRClassType implements CJIRType {
     }
 
     @Override
+    public Optional<String> getClassTypeQualifiedName() {
+        return Optional.of(definition.getQualifiedName());
+    }
+
+    @Override
     public boolean isFunctionType(int argc) {
         return definition.getQualifiedName().equals("cj.Fn" + argc);
     }

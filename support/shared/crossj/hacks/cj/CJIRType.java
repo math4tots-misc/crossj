@@ -29,6 +29,12 @@ public interface CJIRType {
         return getImplementingTraitByQualifiedName(item.getQualifiedName());
     }
 
+    Optional<String> getClassTypeQualifiedName();
+
+    default boolean isClassTypeWithName(String qualifiedName) {
+        return getClassTypeQualifiedName().map(name -> name.equals(qualifiedName)).getOrElse(false);
+    }
+
     boolean isFunctionType(int argc);
 
     boolean isTupleType(int argc);

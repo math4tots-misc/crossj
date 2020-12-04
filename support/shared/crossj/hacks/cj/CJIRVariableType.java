@@ -119,6 +119,11 @@ public final class CJIRVariableType implements CJIRType {
     }
 
     @Override
+    public Optional<String> getClassTypeQualifiedName() {
+        return Optional.empty();
+    }
+
+    @Override
     public boolean isFunctionType(int argc) {
         return false;
     }

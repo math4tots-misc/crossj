@@ -386,7 +386,7 @@ class MC$cj$Iterator {
 
     /**
      * @template I
-     * @template {Iterable<I>} C
+     * @template C
      * @param {*} VT$I
      * @param {*} VT$C
      * @param {IterableIterator<T>} iterator
@@ -394,7 +394,7 @@ class MC$cj$Iterator {
      */
     *M$flatMap(VT$I, VT$C, iterator, f) {
         for (const t of iterator) {
-            for (const i of f(t)) {
+            for (const i of VT$C.M$iter(f(t))) {
                 yield i;
             }
         }
@@ -833,10 +833,10 @@ class MC$cj$List {
      * @param {*} TV$R
      * @param {*} TV$C
      * @param {Array<T>} list
-     * @param {function(T): R} f
+     * @param {function(T): C} f
      */
     M$flatMap(TV$R, TV$C, list, f) {
-        return list.flatMap(f);
+        return list.flatMap(t => TV$C.M$iter(f(t)));
     }
 
     /**
@@ -1021,10 +1021,10 @@ class MC$cj$MutableList {
      * @param {*} TV$R
      * @param {*} TV$C
      * @param {Array<T>} list
-     * @param {function(T): R} f
+     * @param {function(T): C} f
      */
     M$flatMap(TV$R, TV$C, list, f) {
-        return list.flatMap(f);
+        return list.flatMap(t => TV$C.M$iter(f(t)));
     }
 
     /**
