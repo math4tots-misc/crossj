@@ -17,4 +17,25 @@ class IterTest {
             Assert.equal(ret, @[(2, 1), (4, 3)])
         }
     }
+
+    def testIterNext() {
+        {
+            val iter = [7, 8, 9].iter()
+            val out = @[Int]
+            for opt = iter.next(); opt.isPresent(); opt = iter.next() {
+                out.add(opt.get())
+            }
+            Assert.equal(out, @[7, 8, 9])
+        }
+        {
+            # NOTE: this portion of the test is dependent on how the
+            # current hash/Set/MutableMap works
+            val iter = Set.of([1, 2, 3]).iter()
+            val out = @[Int]
+            for opt = iter.next(); opt.isPresent(); opt = iter.next() {
+                out.add(opt.get())
+            }
+            Assert.equal(out, @[1, 2, 3])
+        }
+    }
 }

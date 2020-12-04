@@ -482,6 +482,15 @@ class MC$cj$Iterator {
     M$iter(iterator) {
         return iterator;
     }
+
+    /**
+     * @param {Iterator<T, null>} iterator
+     * @returns {T|null}
+     */
+    M$next(iterator) {
+        const {done, value} = iterator.next();
+        return done ? null : value;
+    }
 }
 
 /**

@@ -9,4 +9,6 @@ native class Iterator[T] : Iterable[T], ToList[T] {
 
     def toList(x: Self) : List[T]
     def iter(self: Self) : Iterator[T]
+
+    def next(self: Self): Nullable[T]
 }
