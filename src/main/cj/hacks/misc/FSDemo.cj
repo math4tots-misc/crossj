@@ -1,4 +1,4 @@
-package cj.hacks.misc
+package hacks.misc
 
 
 class FSDemo {

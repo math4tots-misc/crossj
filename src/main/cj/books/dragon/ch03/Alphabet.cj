@@ -1,4 +1,4 @@
-package cj.books.dragon.ch03
+package books.dragon.ch03
 
 
 ## The set of alphabets that dragon.ch03 works on.

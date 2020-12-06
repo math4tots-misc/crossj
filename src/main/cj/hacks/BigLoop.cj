@@ -1,4 +1,4 @@
-package cj.hacks
+package hacks
 
 import cj.IO
 import cj.Time

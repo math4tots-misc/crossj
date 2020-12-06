@@ -1,6 +1,6 @@
-package cj.hacks.image
+package hacks.image
 
-import cj.hacks.image.Color
+import hacks.image.Color
 
 class Bitmap {
     val _width: Int
