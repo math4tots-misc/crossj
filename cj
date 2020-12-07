@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 import os
+import os.path
 import shutil
 import subprocess
 import argparse
 import json
 import sys
+import shutil
 
 REPO = os.path.dirname(os.path.realpath(__file__))
 HOME = os.environ.get('HOME')
 join = os.path.join
+CORDOVA_ROOT = join(REPO, 'out', 'cordova')
+CJ_SRC_ROOT = join(REPO, 'src', 'main', 'cj')
+CJ_TEST_ROOT = join(REPO, 'src', 'test', 'cj')
 
 
 def run(cmd, *, cwd=None):
@@ -17,7 +22,7 @@ def run(cmd, *, cwd=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('maincls')
+    parser.add_argument('id')
     parser.add_argument('--verbose', '-v', default=False, action='store_true')
 
     # whether to rebuild the transpiler.
@@ -31,15 +36,76 @@ def main():
 
     # parser.add_argument('remainder', nargs=argparse.REMAINDER)
     args = parser.parse_args()
-    jspath = join(REPO, 'out', 'cj.js')
-    mainroot = join(REPO, 'src', 'main', 'cj')
-    testroot = join(REPO, 'src', 'test', 'cj')
 
-    if args.build or not args.use_java:
+    config = load_config(args.id)
+    type_ = config['type']
+
+    if type_ == 'cli':
+        jspath = join(REPO, 'out', 'cj.js')
+        cli_config = config['cli']
+        maincls = cli_config['main']
+        emit_js(
+            maincls=maincls,
+            build_transpiler=args.build,
+            use_java=args.use_java,
+            verbose=args.verbose,
+            out_js_path=jspath,
+        )
+        run(['node', jspath])
+
+    elif type_ == 'cordova':
+        jspath = join(CORDOVA_ROOT, 'www', 'js', 'cj.js')
+        cordova_config = config['cordova']
+        maincls = cordova_config['main']
+        id = cordova_config['id']
+        name = cordova_config['name']
+        platforms = cordova_config['platforms']
+        emit_cordova_project(
+            id=id,
+            name=name,
+            main_class=maincls,
+            verbose=args.verbose,
+            app_root=get_app_path(args.id),
+        )
+        emit_js(
+            maincls=maincls,
+            build_transpiler=args.build,
+            use_java=args.use_java,
+            verbose=args.verbose,
+            out_js_path=jspath,
+        )
+        run(['cordova', 'run', 'browser'], cwd=CORDOVA_ROOT)
+
+    else:
+        raise Exception(f'Unrecognized app type {repr(type_)}')
+
+
+def get_app_path(id):
+    return join(REPO, 'src', 'main', 'app', id)
+
+
+def load_config(id):
+    app_path = get_app_path(id)
+    config_path = join(app_path, 'config.json')
+
+    if os.path.isfile(config_path):
+        with open(config_path) as f:
+            return json.loads(f.read())
+
+    return {
+        'type': 'cli',
+        'cli': {
+            'main': id,
+        }
+    }
+
+
+def emit_js(maincls, build_transpiler, use_java, verbose, out_js_path):
+    if build_transpiler or not use_java:
         cmd = [
             'python3',
             join(REPO, 'scripts', 'run-class.py'),
-        ] + (['-t', 'java'] if args.use_java else []) + [
+        ] + (['-t', 'java'] if use_java else []) + [
             'crossj.hacks.cj.CJJSTranslator',
         ]
     else:
@@ -49,26 +115,36 @@ def main():
             'crossj.hacks.cj.CJJSTranslator',
         ]
 
-    cmd.extend(['-r', mainroot])
+    cmd.extend(['-r', CJ_SRC_ROOT])
 
-    if args.maincls == 'test':
-        cmd.extend(['-r', testroot])
-        for dirpath, dirnames, filenames in os.walk(testroot):
+    if maincls == 'test':
+        cmd.extend(['-r', CJ_TEST_ROOT])
+        for dirpath, dirnames, filenames in os.walk(CJ_TEST_ROOT):
             for filename in filenames:
                 if filename.endswith('Test.cj'):
-                    relpath = os.path.relpath(join(dirpath, filename), testroot)
+                    relpath = os.path.relpath(join(dirpath, filename), CJ_TEST_ROOT)
                     clsname = relpath[:-len('.cj')].replace(os.sep, '.')
                     cmd.extend(['-t', clsname])
     else:
-        cmd.extend(['-m', args.maincls])
+        cmd.extend(['-m', maincls])
 
-    cmd.extend(['-o', jspath])
+    cmd.extend(['-o', out_js_path])
 
-    if args.verbose:
+    if verbose:
         print(f'cmd = {cmd}')
 
     run(cmd)
-    run(['node', jspath])
+
+
+def emit_cordova_project(id, name, main_class, verbose, app_root):
+    shutil.rmtree(CORDOVA_ROOT, ignore_errors=True)
+    run(['cordova', 'create', CORDOVA_ROOT, id, name])
+    run(['cordova', 'platform', 'add', 'browser'], cwd=CORDOVA_ROOT)
+    run(['cordova', 'platform', 'add', 'electron'], cwd=CORDOVA_ROOT)
+    wwwroot = join(CORDOVA_ROOT, 'www')
+
+    if join(app_root, 'index.html'):
+        shutil.copyfile(join(app_root, 'index.html'), join(wwwroot, 'index.html'))
 
 
 if __name__ == '__main__':

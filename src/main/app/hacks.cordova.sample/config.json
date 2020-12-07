@@ -1,0 +1,11 @@
+{
+    "type": "cordova",
+    "cordova": {
+        "id": "hacks.cordova.sample",
+        "name": "Sample App",
+        "main": "hacks.cordova.sample.Main",
+        "platforms": [
+            "browser"
+        ]
+    }
+}
