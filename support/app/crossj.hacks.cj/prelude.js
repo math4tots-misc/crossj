@@ -11,6 +11,14 @@ function combineHash(h1, h2) {
 
 /**
  * @param {string} message
+ * @returns {never}
+ */
+function panic(message) {
+    throw new Error(message);
+}
+
+/**
+ * @param {string} message
  */
 function newError(message) {
     return MO$cj$Error.M$fromMessage(message);
@@ -488,7 +496,7 @@ class MC$cj$Iterator {
      * @returns {T|null}
      */
     M$next(iterator) {
-        const {done, value} = iterator.next();
+        const { done, value } = iterator.next();
         return done ? null : value;
     }
 }
@@ -1307,7 +1315,7 @@ class MC$cj$Try {
         if (t[0] === 0) {
             return t[1];
         } else {
-            throw new Error("get from a failed Try");
+            panic("get from a failed Try");
         }
     }
 
@@ -1318,7 +1326,7 @@ class MC$cj$Try {
         if (t[0] === 1) {
             return t[1];
         } else {
-            throw new Error("getError from a successful Try");
+            panic("getError from a successful Try");
         }
     }
 
@@ -1334,7 +1342,7 @@ class MC$cj$Assert {
      */
     M$that(x) {
         if (!x) {
-            throw new Error("Assertion failed");
+            panic("Assertion failed");
         }
     }
 
@@ -1345,7 +1353,7 @@ class MC$cj$Assert {
      */
     M$withMessage(x, message) {
         if (!x) {
-            throw new Error("Assertion failed: " + message);
+            panic("Assertion failed: " + message);
         }
     }
 
@@ -1358,7 +1366,7 @@ class MC$cj$Assert {
      */
     M$equal(VT$T, a, b) {
         if (!VT$T.M$__eq(a, b)) {
-            throw new Error("Expected " + VT$T.M$repr(a) + " to equal " + VT$T.M$repr(b));
+            panic("Expected " + VT$T.M$repr(a) + " to equal " + VT$T.M$repr(b));
         }
     }
 
@@ -1368,7 +1376,7 @@ class MC$cj$Assert {
      */
     M$divides(divisor, dividend) {
         if (dividend % divisor !== 0) {
-            throw new Error("Expected " + divisior + " to divide " + dividend);
+            panic("Expected " + divisior + " to divide " + dividend);
         }
     }
 
@@ -1378,7 +1386,7 @@ class MC$cj$Assert {
      */
     M$approximatelyEqual(a, b) {
         if (!appxEq(a, b)) {
-            throw new Error("Expected " + a + " to approximately equal " + b);
+            panic("Expected " + a + " to approximately equal " + b);
         }
     }
 }
@@ -1871,10 +1879,11 @@ class MC$cj$IO {
      * @template T
      * @param {*} VT$T
      * @param {T} t
+     * @returns {never}
      */
     M$panic(VT$T, t) {
         const message = VT$T.M$toString(t);
-        throw new Error(message);
+        panic(message);
     }
 }
 const MO$cj$IO = new MC$cj$IO();
@@ -1986,3 +1995,95 @@ class MC$cj$FS {
     }
 }
 const MO$cj$FS = new MC$cj$FS();
+
+class MC$cjx$JSObject {
+    M$document() {
+        return document;
+    }
+
+    M$empty() {
+        return {};
+    }
+
+    M$null_() {
+        return null;
+    }
+
+    M$create(proto) {
+        return Object.create(proto);
+    }
+
+    M$from(VT$T, t) {
+        return t;
+    }
+
+    M$apply(obj, args) {
+        return obj(...args);
+    }
+
+    M$method(obj, name, args) {
+        return obj[name](...args);
+    }
+
+    M$field(obj, name) {
+        return obj[name];
+    }
+
+    M$setField(VT$T, obj, name, value) {
+        obj[name] = value;
+    }
+
+    M$get(obj, i) {
+        return obj[i];
+    }
+
+    M$set(VT$T, obj, i, t) {
+        obj[i] = t;
+    }
+
+    M$typeOf(obj) {
+        return typeof obj;
+    }
+
+    M$isArray(obj) {
+        return Array.isArray(obj);
+    }
+
+    M$asString(obj) {
+        if (typeof obj !== 'string') {
+            panic(obj + " (" + typeof obj + ") is not a string");
+        }
+        return obj;
+    }
+
+    M$asDouble(obj) {
+        if (typeof obj !== 'number') {
+            panic(obj + " (" + typeof obj + ") is not a number (for Double)");
+        }
+        return obj;
+    }
+
+    M$asInt(obj) {
+        if (typeof obj !== 'number') {
+            panic(obj + " (" + typeof obj + ") is not a number (for Int)");
+        }
+        return obj|0;
+    }
+
+    M$__eq(a, b) {
+        return a === b;
+    }
+
+    M$repr(obj) {
+        return "JSObject(" + this.M$toString(obj) + ")";
+    }
+
+    M$toString(obj) {
+        return (
+            Object.prototype.hasOwnProperty.apply(obj, ['toString']) ?
+                '' + obj :
+                JSON.stringify(obj)
+        )
+    }
+}
+const MO$cjx$JSObject = new MC$cjx$JSObject();

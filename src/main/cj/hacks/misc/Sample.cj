@@ -1,4 +1,4 @@
-package hacks
+package hacks.misc
 
 import cj.IO
 

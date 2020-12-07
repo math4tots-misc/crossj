@@ -13,7 +13,9 @@ HOME = os.environ.get('HOME')
 join = os.path.join
 CORDOVA_ROOT = join(REPO, 'out', 'cordova')
 CJ_SRC_ROOT = join(REPO, 'src', 'main', 'cj')
+CJ_SRC_JS_ROOT = join(REPO, 'src', 'main', 'cj-js')
 CJ_TEST_ROOT = join(REPO, 'src', 'test', 'cj')
+CJ_TEST_JS_ROOT = join(REPO, 'src', 'test', 'cj-js')
 
 
 def run(cmd, *, cwd=None):
@@ -115,16 +117,17 @@ def emit_js(maincls, build_transpiler, use_java, verbose, out_js_path):
             'crossj.hacks.cj.CJJSTranslator',
         ]
 
-    cmd.extend(['-r', CJ_SRC_ROOT])
+    cmd.extend(['-r', CJ_SRC_ROOT, '-r', CJ_SRC_JS_ROOT])
 
     if maincls == 'test':
-        cmd.extend(['-r', CJ_TEST_ROOT])
-        for dirpath, dirnames, filenames in os.walk(CJ_TEST_ROOT):
-            for filename in filenames:
-                if filename.endswith('Test.cj'):
-                    relpath = os.path.relpath(join(dirpath, filename), CJ_TEST_ROOT)
-                    clsname = relpath[:-len('.cj')].replace(os.sep, '.')
-                    cmd.extend(['-t', clsname])
+        for testroot in [CJ_TEST_ROOT, CJ_TEST_JS_ROOT]:
+            cmd.extend(['-r', testroot])
+            for dirpath, dirnames, filenames in os.walk(testroot):
+                for filename in filenames:
+                    if filename.endswith('Test.cj'):
+                        relpath = os.path.relpath(join(dirpath, filename), testroot)
+                        clsname = relpath[:-len('.cj')].replace(os.sep, '.')
+                        cmd.extend(['-t', clsname])
     else:
         cmd.extend(['-m', maincls])
 
