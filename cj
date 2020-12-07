@@ -68,6 +68,7 @@ def main():
             main_class=maincls,
             verbose=args.verbose,
             app_root=get_app_path(args.id),
+            platforms=platforms,
         )
         emit_js(
             maincls=maincls,
@@ -139,11 +140,11 @@ def emit_js(maincls, build_transpiler, use_java, verbose, out_js_path):
     run(cmd)
 
 
-def emit_cordova_project(id, name, main_class, verbose, app_root):
+def emit_cordova_project(id, name, main_class, verbose, app_root, platforms):
     shutil.rmtree(CORDOVA_ROOT, ignore_errors=True)
     run(['cordova', 'create', CORDOVA_ROOT, id, name])
-    run(['cordova', 'platform', 'add', 'browser'], cwd=CORDOVA_ROOT)
-    run(['cordova', 'platform', 'add', 'electron'], cwd=CORDOVA_ROOT)
+    for platform in platforms:
+        run(['cordova', 'platform', 'add', platform], cwd=CORDOVA_ROOT)
     wwwroot = join(CORDOVA_ROOT, 'www')
 
     if join(app_root, 'index.html'):

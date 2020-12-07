@@ -552,8 +552,8 @@ public final class CJJSStatementAndExpressionTranslator
     @Override
     public String visitLambda(CJAstLambdaExpression e, Void a) {
         var tmpvar = newMethodLevelUniqueId();
-        sb.line("function " + tmpvar + "(" + Str.join(",", e.getParameterNames().map(p -> nameToLocalVariableName(p)))
-                + ") {");
+        sb.line("const " + tmpvar + "=(" + Str.join(",", e.getParameterNames().map(p -> nameToLocalVariableName(p)))
+                + ") => {");
         emitStatement(e.getBody());
         sb.line("}");
         return tmpvar;

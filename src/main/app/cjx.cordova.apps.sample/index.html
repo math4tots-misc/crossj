@@ -16,8 +16,23 @@
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
         <meta name="color-scheme" content="light dark">
         <title>Sample App</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            html, body {
+                height: 100%;
+            }
+            #canvas {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
     </head>
     <body>
+        <canvas id="canvas"></canvas>
         <script src="cordova.js"></script>
         <script src="js/cj.js"></script>
     </body>

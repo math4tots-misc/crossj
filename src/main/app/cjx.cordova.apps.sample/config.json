@@ -1,9 +1,9 @@
 {
     "type": "cordova",
     "cordova": {
-        "id": "hacks.cordova.sample",
+        "id": "cjx.cordova.apps.sample.Main",
         "name": "Sample App",
-        "main": "hacks.cordova.sample.Main",
+        "main": "cjx.cordova.apps.sample.Main",
         "platforms": [
             "browser"
         ]

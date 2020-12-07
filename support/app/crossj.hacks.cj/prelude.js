@@ -2087,3 +2087,27 @@ class MC$cjx$JSObject {
     }
 }
 const MO$cjx$JSObject = new MC$cjx$JSObject();
+
+class MC$cjx$cordova$Cordova {
+    /**
+     * @param {function():void} f
+     */
+    M$onDeviceReady(f) {
+        document.addEventListener("deviceready", f, false);
+    }
+
+    /**
+     * @param {function():void} f
+     */
+    M$onPause(f) {
+        document.addEventListener("pause", f, false);
+    }
+
+    /**
+     * @param {function():void} f
+     */
+    M$onResume(f) {
+        document.addEventListener("resume", f, false);
+    }
+}
+const MO$cjx$cordova$Cordova = new MC$cjx$cordova$Cordova();
