@@ -31,6 +31,9 @@ class JSObjectTest {
                 Assert.equal(list.get(1).typeOf(), "number")
                 Assert.equal(list.get(2).typeOf(), "number")
                 Assert.equal(list.get(3).typeOf(), "string")
+                Assert.withMessage(list.isArray(), "list.isArray()")
+                Assert.withMessage(not list.get(0).isArray(), "list.get(0).isArray()")
+                Assert.withMessage(not list.get(3).isArray(), "list.get(3).isArray()")
             }
         }
     }
@@ -45,6 +48,13 @@ class JSObjectTest {
             Assert.equal(obj1.toString(), "{}")
             obj1.setField("foo", "hello")
             Assert.equal(obj1.toString(), "{\"foo\":\"hello\"}")
+        }
+        {
+            val obj = JSObject.empty()
+            Assert.equal(obj.toString(), "[object Object]")
+            Assert.equal(obj.stringify(), "{}")
+            obj.setField("qwerty", 246)
+            Assert.equal(obj.stringify(), "{\"qwerty\":246}")
         }
     }
 }

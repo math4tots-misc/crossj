@@ -23,7 +23,7 @@ final class CJJSSpecialMethods {
         "cj.Fn4.call"
     );
 
-    private static final List<Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>> OTHER = List.of(
+    private static final List<Pair<String, CJJSSpecialMethodHandler>> OTHER = List.of(
         mkpair0("cj.Int.one", "1"),
         mkpair0("cj.Int.negativeOne", "-1"),
         mkpair0("cj.Int.zero", "0"),
@@ -166,11 +166,26 @@ final class CJJSSpecialMethods {
         mkpair2("cj.Math.atan2", (a, b) -> "Math.atan2(" + a + "," + b + ")"),
         mkpair1("cj.Math.sqrt", a -> "Math.sqrt(" + a + ")"),
 
+        mkpair0("cjx.JSObject.empty", "{}"),
+        mkpair0("cjx.JSObject.null_", "null"),
+        mkpair1("cjx.JSObject.create", a -> "Object.create(" + a + ")"),
+        mkpair1("cjx.JSObject.from", a -> a),
+        mkpair2("cjx.JSObject.apply", (f, args) -> f + "(..." + args + ")"),
+        mkpair3("cjx.JSObject.method", (f, name, args) -> f + "[" + name + "](..." + args + ")"),
+        mkpair2("cjx.JSObject.field", (a, name) -> a + "[" + name + "]"),
+        mkpair3("cjx.JSObject.setField", (a, name, value) -> "(" + a + "[" + name + "]=" + value + ")"),
+        mkpair2("cjx.JSObject.get", (arr, i) -> arr + "[" + i + "]"),
+        mkpair3("cjx.JSObject.set", (arr, i, value) -> "(" + arr + "[" + i + "]=" + value + ")"),
+        mkpair1("cjx.JSObject.typeOf", a -> "(typeof " + a + ")"),
+        mkpair1("cjx.JSObject.isArray", a -> "Array.isArray(" + a + ")"),
+        mkpair1("cjx.JSObject.stringify", a -> "JSON.stringify(" + a + ")"),
+        mkpair2("cjx.JSObject.__eq", (a, b) -> "(" + a + "===" + b + ")"),
+
         mkpair1("COMMA PLACEHOLDER", arg -> { throw XError.withMessage("FUBAR"); })
     );
 
-    public static final Map<String, Func2<Optional<String>, List<CJIRType>, List<String>>> OPS = Map.fromIterable(
-        List.<List<Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>>>of(
+    public static final Map<String, CJJSSpecialMethodHandler> OPS = Map.fromIterable(
+        List.<List<Pair<String, CJJSSpecialMethodHandler>>>of(
             FCALLS.map(key -> mkpair(key, (argts, args) -> {
                 return Optional.of("((" + args.get(0) + ")(" + Str.join(",", args.sliceFrom(1)) + "))");
             })),
@@ -178,49 +193,49 @@ final class CJJSSpecialMethods {
         ).flatMap(x -> x)
     );
 
-    private static Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>
+    private static Pair<String, CJJSSpecialMethodHandler>
     mkpair(String key, Func2<Optional<String>, List<CJIRType>, List<String>> f) {
-        return Pair.of(key, f);
+        return Pair.of(key, CJJSSpecialMethodHandler.from(f));
     }
 
-    private static Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>
+    private static Pair<String, CJJSSpecialMethodHandler>
     mkpair0(String key, String out) {
-        return mkpair(key, (argts, args) -> {
+        return mkpair(key, (exprs, args) -> {
             Assert.equals(args.size(), 0);
             return Optional.of(out);
         });
     }
 
-    private static Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>
+    private static Pair<String, CJJSSpecialMethodHandler>
     mkpair1(String key, Func1<String, String> f) {
-        return mkpair(key, (argts, args) -> {
+        return mkpair(key, (exprs, args) -> {
             Assert.equals(args.size(), 1);
             return Optional.of(f.apply(args.get(0)));
         });
     }
 
-    private static Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>
+    private static Pair<String, CJJSSpecialMethodHandler>
     mkpair2(String key, Func2<String, String, String> f) {
-        return mkpair(key, (argts, args) -> {
+        return mkpair(key, (exprs, args) -> {
             Assert.equals(args.size(), 2);
             return Optional.of(f.apply(args.get(0), args.get(1)));
         });
     }
 
-    private static Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>
+    private static Pair<String, CJJSSpecialMethodHandler>
     mkpair3(String key, Func3<String, String, String, String> f) {
-        return mkpair(key, (argts, args) -> {
+        return mkpair(key, (exprs, args) -> {
             Assert.equals(args.size(), 3);
             return Optional.of(f.apply(args.get(0), args.get(1), args.get(2)));
         });
     }
 
     @SafeVarargs
-    private static Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>
+    private static Pair<String, CJJSSpecialMethodHandler>
     mkpairx1(String key, Pair<String, Func1<String, String>>... pairs) {
-        return mkpair(key, (argts, args) -> {
+        return mkpair(key, (exprs, args) -> {
             Assert.equals(args.size(), 1);
-            var optArgT1 = argts.get(0).getClassTypeQualifiedName();
+            var optArgT1 = exprs.get(0).getClassTypeQualifiedName();
             if (optArgT1.isEmpty()) {
                 return Optional.empty();
             }
@@ -235,16 +250,16 @@ final class CJJSSpecialMethods {
     }
 
     @SafeVarargs
-    private static Pair<String, Func2<Optional<String>, List<CJIRType>, List<String>>>
+    private static Pair<String, CJJSSpecialMethodHandler>
     mkpairx2(String key, Tuple3<String, String, Func2<String, String, String>>... triples) {
-        return mkpair(key, (argts, args) -> {
+        return mkpair(key, (exprs, args) -> {
             Assert.equals(args.size(), 2);
-            var optArgT1 = argts.get(0).getClassTypeQualifiedName();
+            var optArgT1 = exprs.get(0).getClassTypeQualifiedName();
             if (optArgT1.isEmpty()) {
                 return Optional.empty();
             }
             var argt1 = optArgT1.get();
-            var optArgT2 = argts.get(1).getClassTypeQualifiedName();
+            var optArgT2 = exprs.get(1).getClassTypeQualifiedName();
             if (optArgT2.isEmpty()) {
                 return Optional.empty();
             }

@@ -58,6 +58,9 @@ native class JSObject: Eq, Repr {
     ## it into one
     def asInt(self: Self): Int
 
+    ## Call JSON.stringify()
+    def stringify(self: Self): String
+
     ## Use '===' compare two javascript objects
     def __eq(self: Self, other: Self): Bool
 

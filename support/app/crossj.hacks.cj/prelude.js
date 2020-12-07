@@ -2070,6 +2070,10 @@ class MC$cjx$JSObject {
         return obj|0;
     }
 
+    M$stringify(obj) {
+        return JSON.stringify(obj);
+    }
+
     M$__eq(a, b) {
         return a === b;
     }
@@ -2079,11 +2083,7 @@ class MC$cjx$JSObject {
     }
 
     M$toString(obj) {
-        return (
-            Object.prototype.hasOwnProperty.apply(obj, ['toString']) ?
-                '' + obj :
-                JSON.stringify(obj)
-        )
+        return 'toString' in obj ? '' + obj : JSON.stringify(obj);
     }
 }
 const MO$cjx$JSObject = new MC$cjx$JSObject();
