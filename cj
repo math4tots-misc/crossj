@@ -69,7 +69,7 @@ def main():
         id = cordova_config.pop('id')
         name = cordova_config.pop('name')
         platforms = cordova_config.pop('platforms')
-        plugins = cordova_config.pop('plugins')
+        plugins = cordova_config.pop('plugins', [])
         if config or cordova_config:
             err(f"Unrecognized config parameters (config {config}), (cordova {cordova_config})")
         emit_js(

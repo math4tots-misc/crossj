@@ -181,6 +181,14 @@ final class CJJSSpecialMethods {
         mkpair1("cjx.JSObject.stringify", a -> "JSON.stringify(" + a + ")"),
         mkpair2("cjx.JSObject.__eq", (a, b) -> "(" + a + "===" + b + ")"),
 
+        mkpair1("cjx.cordova.KeyboardEvent.altKey", a -> a + ".altKey"),
+        mkpair1("cjx.cordova.KeyboardEvent.code", a -> a + ".code"),
+        mkpair1("cjx.cordova.KeyboardEvent.ctrlKey", a -> a + ".ctrlKey"),
+        mkpair1("cjx.cordova.KeyboardEvent.key", a -> a + ".key"),
+        mkpair1("cjx.cordova.KeyboardEvent.metaKey", a -> a + ".metaKey"),
+        mkpair1("cjx.cordova.KeyboardEvent.repeat", a -> a + ".repeat"),
+        mkpair1("cjx.cordova.KeyboardEvent.shiftKey", a -> a + ".shiftKey"),
+
         mkpair1("COMMA PLACEHOLDER", arg -> { throw XError.withMessage("FUBAR"); })
     );
 

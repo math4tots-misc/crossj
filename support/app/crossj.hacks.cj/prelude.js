@@ -2109,5 +2109,27 @@ class MC$cjx$cordova$Cordova {
     M$onResume(f) {
         document.addEventListener("resume", f, false);
     }
+
+    /**
+     * @param {function(KeyboardEvent): void} f
+     */
+    M$onKeyDown(f) {
+        document.addEventListener("keydown", f);
+    }
+
+    /**
+     * @param {function(KeyboardEvent): void} f
+     */
+    M$onKeyUp(f) {
+        document.addEventListener("keyup", f);
+    }
 }
 const MO$cjx$cordova$Cordova = new MC$cjx$cordova$Cordova();
+
+/**
+ * All methods on KeyboardEvent should be intercepted by
+ * the special method translator.
+ */
+class MC$cjx$cordova$KeyboardEvent {
+}
+const MO$cjx$cordova$KeyboardEvent = new MC$cjx$cordova$KeyboardEvent();

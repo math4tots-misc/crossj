@@ -8,6 +8,11 @@ class Main : CordovaApp {
     def onDeviceReady() {
         IO.println("Hello cordova")
         IO.println("DEVICE READY")
+
+        Cordova.onKeyDown(event -> {
+            IO.println("keydown: " + event.key())
+        })
+
         val doc = Cordova.document()
 
         val canvas = doc.method("getElementById", [JSObject.from("canvas")])

@@ -6,9 +6,6 @@
         "main": "cjx.cordova.apps.sample.Main",
         "platforms": [
             "browser"
-        ],
-        "plugins": [
-            "cordova-plugin-file"
         ]
     }
 }
