@@ -35,6 +35,8 @@ public interface CJIRType {
         return getClassTypeQualifiedName().map(name -> name.equals(qualifiedName)).getOrElse(false);
     }
 
+    boolean isWrapperType();
+
     boolean isFunctionType(int argc);
 
     boolean isTupleType(int argc);

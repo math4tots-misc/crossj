@@ -26,6 +26,7 @@ public final class CJAstItemDefinition implements CJAstNode {
     private final Map<String, CJAstUnionCaseDefinition> unionCaseCache;
     private final Map<String, CJAstItemMemberDefinition> memberDefinitionByName;
     private final String qualifiedName;
+    private final boolean wrapperClass;
     List<CJIRTrait> allResolvedTraits;
     Map<String, CJIRTrait> traitsByQualifiedName;
     Map<String, CJIRIncompleteMethodDescriptor> methodMap;
@@ -45,6 +46,7 @@ public final class CJAstItemDefinition implements CJAstNode {
         this.conditionalTraits = conditionalTraits;
         this.members = members;
         this.qualifiedName = packageName + "." + shortName;
+        this.wrapperClass = isClass() && determineWrapperClass(members);
         memberDefinitionByName = Map.fromIterable(members.map(m -> Pair.of(m.getName(), m)));
 
         shortToQualifiedNameMap.put(shortName, getQualifiedName());
@@ -74,6 +76,12 @@ public final class CJAstItemDefinition implements CJAstNode {
         }
 
         Assert.withMessage(!(isTrait() && isUnion()), "An item cannot be both a trait and union");
+    }
+
+    private static boolean determineWrapperClass(List<CJAstItemMemberDefinition> members) {
+        var fields = members.filter(m -> !m.isStatic() && m instanceof CJAstFieldDefinition)
+                .map(f -> (CJAstFieldDefinition) f);
+        return fields.size() == 1 && !fields.get(0).isMutable();
     }
 
     @Override
@@ -108,6 +116,10 @@ public final class CJAstItemDefinition implements CJAstNode {
      */
     public boolean isClass() {
         return !isTrait();
+    }
+
+    public boolean isWrapperClass() {
+        return wrapperClass;
     }
 
     public boolean isNative() {

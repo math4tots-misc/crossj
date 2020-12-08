@@ -249,26 +249,32 @@ public final class CJJSTranslator {
         var constructorName = qualifiedNameToConstructorName(qualifiedItemName);
         var instanceFields = item.getMembers().filter(m -> m instanceof CJAstFieldDefinition)
                 .map(f -> (CJAstFieldDefinition) f).filter(f -> !f.isStatic());
-        sb.lineStart("function " + constructorName + "(");
-        if (instanceFields.size() > 0) {
-            sb.lineBody(nameToFieldName(instanceFields.get(0).getName()));
-            for (int i = 1; i < instanceFields.size(); i++) {
-                sb.lineBody(",");
-                sb.lineBody(nameToFieldName(instanceFields.get(i).getName()));
+
+        if (item.isWrapperClass()) {
+            Assert.equals(instanceFields.size(), 1);
+            sb.line("function " + constructorName + "(x) { return x; }");
+        } else {
+            sb.lineStart("function " + constructorName + "(");
+            if (instanceFields.size() > 0) {
+                sb.lineBody(nameToFieldName(instanceFields.get(0).getName()));
+                for (int i = 1; i < instanceFields.size(); i++) {
+                    sb.lineBody(",");
+                    sb.lineBody(nameToFieldName(instanceFields.get(i).getName()));
+                }
             }
+            sb.lineEnd(") {");
+            sb.indent();
+            sb.line("return {");
+            sb.indent();
+            for (var field : instanceFields) {
+                var fieldName = nameToFieldName(field.getName());
+                sb.line(fieldName + ": " + fieldName + ",");
+            }
+            sb.dedent();
+            sb.line("};");
+            sb.dedent();
+            sb.line("}");
         }
-        sb.lineEnd(") {");
-        sb.indent();
-        sb.line("return {");
-        sb.indent();
-        for (var field : instanceFields) {
-            var fieldName = nameToFieldName(field.getName());
-            sb.line(fieldName + ": " + fieldName + ",");
-        }
-        sb.dedent();
-        sb.line("};");
-        sb.dedent();
-        sb.line("}");
     }
 
     private void emitMetaClass(CJAstItemDefinition item) {

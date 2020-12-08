@@ -124,6 +124,11 @@ public final class CJIRVariableType implements CJIRType {
     }
 
     @Override
+    public boolean isWrapperType() {
+        return false;
+    }
+
+    @Override
     public boolean isFunctionType(int argc) {
         return false;
     }

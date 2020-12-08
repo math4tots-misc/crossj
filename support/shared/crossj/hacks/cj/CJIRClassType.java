@@ -135,6 +135,11 @@ public final class CJIRClassType implements CJIRType {
     }
 
     @Override
+    public boolean isWrapperType() {
+        return definition.isWrapperClass();
+    }
+
+    @Override
     public boolean isFunctionType(int argc) {
         return definition.getQualifiedName().equals("cj.Fn" + argc);
     }
