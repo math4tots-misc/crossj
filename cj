@@ -22,6 +22,10 @@ def run(cmd, *, cwd=None):
     subprocess.run(cmd, check=True, cwd=cwd)
 
 
+def err(message):
+    raise Exception(message)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('id')
@@ -40,12 +44,14 @@ def main():
     args = parser.parse_args()
 
     config = load_config(args.id)
-    type_ = config['type']
+    type_ = config.pop('type')
 
     if type_ == 'cli':
         jspath = join(REPO, 'out', 'cj.js')
-        cli_config = config['cli']
-        maincls = cli_config['main']
+        cli_config = config.pop('cli')
+        maincls = cli_config.pop('main')
+        if config or cli_config:
+            err(f"Unrecognized config parameers (config {config}), (cli {cli_config})")
         emit_js(
             maincls=maincls,
             build_transpiler=args.build,
@@ -58,11 +64,14 @@ def main():
     elif type_ == 'cordova':
         tmpjspath = join(REPO, 'out', 'cj.js')
         jspath = join(CORDOVA_ROOT, 'www', 'js', 'cj.js')
-        cordova_config = config['cordova']
-        maincls = cordova_config['main']
-        id = cordova_config['id']
-        name = cordova_config['name']
-        platforms = cordova_config['platforms']
+        cordova_config = config.pop('cordova')
+        maincls = cordova_config.pop('main')
+        id = cordova_config.pop('id')
+        name = cordova_config.pop('name')
+        platforms = cordova_config.pop('platforms')
+        plugins = cordova_config.pop('plugins')
+        if config or cordova_config:
+            err(f"Unrecognized config parameters (config {config}), (cordova {cordova_config})")
         emit_js(
             maincls=maincls,
             build_transpiler=args.build,
@@ -77,12 +86,13 @@ def main():
             verbose=args.verbose,
             app_root=get_app_path(args.id),
             platforms=platforms,
+            plugins=plugins,
         )
         shutil.move(tmpjspath, jspath)
         run(['cordova', 'run', 'browser'], cwd=CORDOVA_ROOT)
 
     else:
-        raise Exception(f'Unrecognized app type {repr(type_)}')
+        err(f'Unrecognized app type {repr(type_)}')
 
 
 def get_app_path(id):
@@ -142,7 +152,7 @@ def emit_js(maincls, build_transpiler, use_java, verbose, out_js_path):
     run(cmd)
 
 
-def emit_cordova_project(id, name, main_class, verbose, app_root, platforms):
+def emit_cordova_project(id, name, main_class, verbose, app_root, platforms, plugins):
     shutil.rmtree(CORDOVA_ROOT, ignore_errors=True)
     run(['cordova', 'create', CORDOVA_ROOT, id, name])
     for platform in platforms:
@@ -151,6 +161,9 @@ def emit_cordova_project(id, name, main_class, verbose, app_root, platforms):
 
     if join(app_root, 'index.html'):
         shutil.copyfile(join(app_root, 'index.html'), join(wwwroot, 'index.html'))
+
+    for plugin in plugins:
+        run(['cordova', 'plugin', 'add', plugin], cwd=CORDOVA_ROOT)
 
 
 if __name__ == '__main__':
