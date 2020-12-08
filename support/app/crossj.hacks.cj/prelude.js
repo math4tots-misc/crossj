@@ -1997,10 +1997,6 @@ class MC$cj$FS {
 const MO$cj$FS = new MC$cj$FS();
 
 class MC$cjx$JSObject {
-    M$document() {
-        return document;
-    }
-
     M$empty() {
         return {};
     }
@@ -2089,6 +2085,10 @@ class MC$cjx$JSObject {
 const MO$cjx$JSObject = new MC$cjx$JSObject();
 
 class MC$cjx$cordova$Cordova {
+    M$document() {
+        return document;
+    }
+
     /**
      * @param {function():void} f
      */

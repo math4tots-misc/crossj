@@ -56,12 +56,20 @@ def main():
         run(['node', jspath])
 
     elif type_ == 'cordova':
+        tmpjspath = join(REPO, 'out', 'cj.js')
         jspath = join(CORDOVA_ROOT, 'www', 'js', 'cj.js')
         cordova_config = config['cordova']
         maincls = cordova_config['main']
         id = cordova_config['id']
         name = cordova_config['name']
         platforms = cordova_config['platforms']
+        emit_js(
+            maincls=maincls,
+            build_transpiler=args.build,
+            use_java=args.use_java,
+            verbose=args.verbose,
+            out_js_path=tmpjspath,
+        )
         emit_cordova_project(
             id=id,
             name=name,
@@ -70,13 +78,7 @@ def main():
             app_root=get_app_path(args.id),
             platforms=platforms,
         )
-        emit_js(
-            maincls=maincls,
-            build_transpiler=args.build,
-            use_java=args.use_java,
-            verbose=args.verbose,
-            out_js_path=jspath,
-        )
+        shutil.move(tmpjspath, jspath)
         run(['cordova', 'run', 'browser'], cwd=CORDOVA_ROOT)
 
     else:

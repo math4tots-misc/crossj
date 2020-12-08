@@ -7,9 +7,6 @@ package cjx
 ##
 native class JSObject: Eq, Repr {
 
-    ## Retrieves the 'document' global variable in a browser context.
-    def document(): Self
-
     ## Creates a new javascript object as though it were created with
     ## an object literal (i.e. "{}").
     def empty(): Self
@@ -61,7 +58,7 @@ native class JSObject: Eq, Repr {
     ## Call JSON.stringify()
     def stringify(self: Self): String
 
-    ## Use '===' compare two javascript objects
+    ## Use '===' to compare two javascript objects
     def __eq(self: Self, other: Self): Bool
 
     ## JSObject(...) repr

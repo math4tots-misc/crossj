@@ -8,7 +8,7 @@ class Main : CordovaApp {
     def onDeviceReady() {
         IO.println("Hello cordova")
         IO.println("DEVICE READY")
-        val doc = JSObject.document()
+        val doc = Cordova.document()
 
         val canvas = doc.method("getElementById", [JSObject.from("canvas")])
         canvas.setField("width", canvas.field("clientWidth"))
