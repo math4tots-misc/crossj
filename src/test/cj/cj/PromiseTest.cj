@@ -15,7 +15,20 @@ class PromiseTest {
         })
 
         Promise.all([p1, p2]).finally(() -> {
-            Assert.equal(list, @[111, 222, 3])
+            Assert.equal(list, @[111, 222])
         })
+    }
+
+    def testError() {
+        {
+            var pr: Promise[String] = AIO.delay(0).map(_ -> {
+                IO.panic("some error msg")
+                return "hello"
+            })
+            pr = pr.recover(e -> e.getMessage())
+            pr.onResolve(s -> {
+                Assert.equal(s, "some error msg")
+            })
+        }
     }
 }

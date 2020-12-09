@@ -17,4 +17,7 @@ native class Promise[T] {
     def flatMap[R](self: Self, f: Fn[Promise[R], T]): Promise[R]
     def recover(self: Self, f: Fn[T, Error]): Self
     def finally(self: Self, f: Fn[Unit]): Promise[Unit]
+
+    def onResolve(self: Self, f: Fn[Unit, T]): Promise[Unit]
+    def onFail(self: Self, f: Fn[Unit, Error]): Promise[Unit]
 }

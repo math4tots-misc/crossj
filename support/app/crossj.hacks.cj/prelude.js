@@ -25,6 +25,20 @@ function newError(message) {
 }
 
 /**
+ * @param {*} e
+ * @returns {Err}
+ */
+function intoError(e) {
+    if (isError(e)) {
+        return e;
+    } else if (e instanceof Error) {
+        return newError(e.message);
+    } else {
+        return newError('' + e);
+    }
+}
+
+/**
  * Checks whether the given value is an 'Error' object.
  * @param {*} value
  */
@@ -1940,7 +1954,7 @@ class MC$cj$Promise {
      * @param {function(Err):T} f
      */
     M$recover(promise, f) {
-        return promise.catch(f);
+        return promise.catch(e => f(intoError(e)));
     }
 
     /**
@@ -1949,6 +1963,22 @@ class MC$cj$Promise {
      */
     M$finally(promise, f) {
         return promise.finally(f);
+    }
+
+    /**
+     * @param {Promise<T>} promise
+     * @param {function(T):void} f
+     */
+    M$onResolve(promise, f) {
+        return promise.then(f);
+    }
+
+    /**
+     * @param {Promise<T>} promise
+     * @param {function(Err):T} f
+     */
+    M$onFail(promise, f) {
+        return promise.catch(e => f(intoError(e)));
     }
 }
 
