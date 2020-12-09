@@ -17,6 +17,10 @@ class Main : CordovaApp {
             IO.println("resized: (" + Cordova.width() + ", " + Cordova.height() + ")")
         })
 
+        Cordova.onClick(event -> {
+            IO.println("click: " + event.x() + ", " + event.y())
+        })
+
         val doc = Cordova.document()
 
         val canvas = doc.method("getElementById", [JSObject.from("canvas")])

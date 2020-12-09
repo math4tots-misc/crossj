@@ -3,6 +3,7 @@ package cjx.cordova
 import cjx.JSObject
 import cjx.cordova.html.KeyboardEvent
 import cjx.cordova.html.UIEvent
+import cjx.cordova.html.MouseEvent
 
 native class Cordova {
 
@@ -19,8 +20,16 @@ native class Cordova {
     def onPause(f: Fn[Unit])
     def onResume(f: Fn[Unit])
 
-    def onResize(f: Fn[Unit, UIEvent])
+    ## Callback called when the window is resized.
+    ## You can use Cordova.width()/.height() to get the new dimensions
+    ## It accepts a dummy Unit argument which is an unspecialized UIEvent
+    ## that doesn't currently seem to contain any useful data.
+    def onResize(f: Fn[Unit, Unit])
 
     def onKeyDown(f: Fn[Unit, KeyboardEvent])
     def onKeyUp(f: Fn[Unit, KeyboardEvent])
+
+    def onClick(f: Fn[Unit, MouseEvent])
+    def onMouseDown(f: Fn[Unit, MouseEvent])
+    def onMouseUp(f: Fn[Unit, MouseEvent])
 }

@@ -2090,11 +2090,11 @@ class MC$cjx$cordova$Cordova {
     }
 
     M$width() {
-        return document.body.clientWidth;
+        return window.innerWidth;
     }
 
     M$height() {
-        return document.body.clientHeight;
+        return window.innerHeight;
     }
 
     /**
@@ -2138,12 +2138,29 @@ class MC$cjx$cordova$Cordova {
     M$onKeyUp(f) {
         window.onkeyup = f;
     }
+
+    /**
+     * @param {function(MouseEvent):void} f
+     */
+    M$onClick(f) {
+        window.onclick = f;
+    }
+
+    /**
+     * @param {function(MouseEvent):void} f
+     */
+    M$onMouseDown(f) {
+        window.onmousedown = f;
+    }
+
+    /**
+     * @param {function(MouseEvent):void} f
+     */
+    M$onMouseUp(f) {
+        window.onmouseup = f;
+    }
 }
 const MO$cjx$cordova$Cordova = new MC$cjx$cordova$Cordova();
-
-class MC$cjx$cordova$UIEvent {
-}
-const MO$cjx$cordova$UIEvent = new MC$cjx$cordova$UIEvent();
 
 /**
  * All methods on KeyboardEvent should be intercepted by
@@ -2152,3 +2169,11 @@ const MO$cjx$cordova$UIEvent = new MC$cjx$cordova$UIEvent();
 class MC$cjx$cordova$KeyboardEvent {
 }
 const MO$cjx$cordova$KeyboardEvent = new MC$cjx$cordova$KeyboardEvent();
+
+/**
+ * All methods on MouseEvent should be intercepted by
+ * the special method translator.
+ */
+class MC$cjx$cordova$MouseEvent {
+}
+const MO$cjx$cordova$MouseEvent = new MC$cjx$cordova$MouseEvent();

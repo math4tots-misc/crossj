@@ -1,5 +1,5 @@
 package cjx.cordova.html
 
 
-native class UIEvent {
+trait UIEvent {
 }
