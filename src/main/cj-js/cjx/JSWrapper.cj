@@ -10,4 +10,8 @@ trait JSWrapper {
     def getClass(): JSObject
 
     def obj(self: Self): JSObject
+
+    def from(obj: JSObject): Self {
+        return obj.castTo()
+    }
 }
