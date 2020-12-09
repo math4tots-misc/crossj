@@ -900,6 +900,14 @@ class MC$cj$List {
     }
 
     /**
+     * @template I
+     * @param {Array<Array<I>>} list
+     */
+    M$flatten(VT$I, list) {
+        return list.flat();
+    }
+
+    /**
      * @param {Array<T>} list
      * @param {function(T): boolean} f
      */

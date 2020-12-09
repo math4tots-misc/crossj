@@ -33,6 +33,7 @@ native class List[T] :
 
     def map[R](list: Self, f: Fn[R, T]) : List[R]
     def flatMap[R, C: Iterable[R]](list: Self, f: Fn[C, T]) : List[R]
+    def flatten[I](self: List[List[I]]): List[I]
     def filter(self: Self, f: Fn[Bool, T]): List[T]
 
     def toList(self: Self) : Self

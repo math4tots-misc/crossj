@@ -71,4 +71,9 @@ class ListTest {
         Assert.that(not (3 not in [1, 2, 3]))
         Assert.that(20 not in [1, 2, 3])
     }
+
+    def testFlatten() {
+        Assert.equal([[1, 2], [3, 4]].flatten(), [1, 2, 3, 4])
+        Assert.equal([[1, 2], [], [3, 4], [5, 6]].flatten(), [1, 2, 3, 4, 5, 6])
+    }
 }
