@@ -2082,7 +2082,7 @@ class MC$cjx$JSObject {
         return 'toString' in obj ? '' + obj : JSON.stringify(obj);
     }
 
-    M$castTo(VT$T, obj) {
+    M$cast(VT$T, obj) {
         const cls = VT$T.M$getClass();
         if (!(obj instanceof cls)) {
             panic("Expected " + cls.name + " but got " + obj.constructor.name);

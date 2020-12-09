@@ -159,8 +159,13 @@ def emit_cordova_project(id, name, main_class, verbose, app_root, platforms, plu
         run(['cordova', 'platform', 'add', platform], cwd=CORDOVA_ROOT)
     wwwroot = join(CORDOVA_ROOT, 'www')
 
-    if join(app_root, 'index.html'):
-        shutil.copyfile(join(app_root, 'index.html'), join(wwwroot, 'index.html'))
+    shutil.rmtree(wwwroot)
+
+    shutil.copytree(join(app_root, 'www'), wwwroot)
+
+    os.makedirs(join(wwwroot, 'js'), exist_ok=True)
+    os.makedirs(join(wwwroot, 'img'), exist_ok=True)
+    os.makedirs(join(wwwroot, 'css'), exist_ok=True)
 
     for plugin in plugins:
         run(['cordova', 'plugin', 'add', plugin], cwd=CORDOVA_ROOT)
