@@ -20,6 +20,6 @@ class Document : JSWrapper {
         return self._obj.method(
             "getElementById",
             [JSObject.from(id)],
-        ).castTo()
+        ).cast()
     }
 }

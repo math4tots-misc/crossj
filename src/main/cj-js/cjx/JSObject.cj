@@ -79,5 +79,6 @@ native class JSObject: Eq, Repr {
     ## Use javascript's 'toString()' to convert to a string
     def toString(self: Self): String
 
-    def castTo[T: JSWrapper](self: Self): T
+    ## Casts Self to a JSWrapper type
+    def cast[T: JSWrapper](self: Self): T
 }

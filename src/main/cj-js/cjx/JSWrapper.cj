@@ -11,7 +11,8 @@ trait JSWrapper {
 
     def obj(self: Self): JSObject
 
+    ## Casts a JSObject to Self
     def from(obj: JSObject): Self {
-        return obj.castTo()
+        return obj.cast()
     }
 }
