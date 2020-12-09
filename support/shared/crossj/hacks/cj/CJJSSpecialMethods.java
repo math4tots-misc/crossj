@@ -181,6 +181,14 @@ final class CJJSSpecialMethods {
         mkpair1("cjx.JSObject.stringify", a -> "JSON.stringify(" + a + ")"),
         mkpair2("cjx.JSObject.__eq", (a, b) -> "(" + a + "===" + b + ")"),
 
+        mkpair1("cjx.JSObject.asStringUnsafe", a -> a),
+        mkpair1("cjx.JSObject.asDoubleUnsafe", a -> a),
+        mkpair1("cjx.JSObject.asIntUnsafe", a -> a),
+
+        mkpair0("cjx.cordova.Cordova.document", "document"),
+        mkpair0("cjx.cordova.Cordova.window", "window"),
+        mkpair2("cjx.cordova.html.Window.field", (a, name) -> a + "[" + name + "]"),
+
         mkpair1("cjx.cordova.html.KeyboardEvent.altKey", a -> a + ".altKey"),
         mkpair1("cjx.cordova.html.KeyboardEvent.code", a -> a + ".code"),
         mkpair1("cjx.cordova.html.KeyboardEvent.ctrlKey", a -> a + ".ctrlKey"),

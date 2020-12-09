@@ -1,14 +1,19 @@
 package cjx.cordova
 
 import cjx.JSObject
+import cjx.cordova.html.Document
 import cjx.cordova.html.KeyboardEvent
-import cjx.cordova.html.UIEvent
 import cjx.cordova.html.MouseEvent
+import cjx.cordova.html.UIEvent
+import cjx.cordova.html.Window
 
 native class Cordova {
 
     ## Retrieves the 'document' global variable in a browser context.
-    def document(): JSObject
+    def document(): Document
+
+    ## Retrieves the 'window' global variable in a browser context.
+    def window(): Window
 
     ## Gets the width in pixels of the body element
     def width(): Int

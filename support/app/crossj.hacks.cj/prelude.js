@@ -2081,14 +2081,18 @@ class MC$cjx$JSObject {
     M$toString(obj) {
         return 'toString' in obj ? '' + obj : JSON.stringify(obj);
     }
+
+    M$castTo(VT$T, obj) {
+        const cls = VT$T.M$getClass();
+        if (!(obj instanceof cls)) {
+            panic("Expected " + cls.name + " but got " + obj.constructor.name);
+        }
+        return obj;
+    }
 }
 const MO$cjx$JSObject = new MC$cjx$JSObject();
 
 class MC$cjx$cordova$Cordova {
-    M$document() {
-        return document;
-    }
-
     M$width() {
         return window.innerWidth;
     }

@@ -1,5 +1,8 @@
 package cjx
 
+import cjx.JSWrapper
+
+
 ##
 ## API for interacting with JavaScript objects from cj
 ##
@@ -55,6 +58,15 @@ native class JSObject: Eq, Repr {
     ## it into one
     def asInt(self: Self): Int
 
+    ## Unsafe cast to a string
+    def asStringUnsafe(self: Self): String
+
+    ## Unsafe cast to a double
+    def asDoubleUnsafe(self: Self): Double
+
+    ## Unsafe cast to an int
+    def asIntUnsafe(self: Self): Int
+
     ## Call JSON.stringify()
     def stringify(self: Self): String
 
@@ -66,4 +78,6 @@ native class JSObject: Eq, Repr {
 
     ## Use javascript's 'toString()' to convert to a string
     def toString(self: Self): String
+
+    def castTo[T: JSWrapper](self: Self): T
 }
