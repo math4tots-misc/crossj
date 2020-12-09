@@ -1,7 +1,7 @@
 package cj
 
 
-class SetBuilder[T] {
+class SetBuilder[T: Hash] {
     var _map: MutableMap[T, Bool]
 
     def add(self: Self, t: T): Self {

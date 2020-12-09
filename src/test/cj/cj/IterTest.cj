@@ -38,4 +38,17 @@ class IterTest {
             Assert.equal(out, @[1, 2, 3])
         }
     }
+
+    def testToSetAndMap() {
+        {
+            val set = [8, 10, 9].iter().toSet()
+            Assert.equal(set.size(), 3)
+            Assert.equal(List.sorted(set), [8, 9, 10])
+        }
+        {
+            val map = [(3, 4), (1, 2)].iter().toMap()
+            Assert.equal(map.size(), 2)
+            Assert.equal(List.sorted(map.pairs()), [(1, 2), (3, 4)])
+        }
+    }
 }

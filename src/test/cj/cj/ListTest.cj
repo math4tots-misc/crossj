@@ -76,4 +76,9 @@ class ListTest {
         Assert.equal([[1, 2], [3, 4]].flatten(), [1, 2, 3, 4])
         Assert.equal([[1, 2], [], [3, 4], [5, 6]].flatten(), [1, 2, 3, 4, 5, 6])
     }
+
+    def testSorted() {
+        Assert.that([3, 2, 1] != [1, 2, 3])
+        Assert.equal([3, 2, 1].sorted(), [1, 2, 3])
+    }
 }

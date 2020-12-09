@@ -9,7 +9,7 @@ native class List[T] :
         Ord if T : Ord,
         Hash if T : Hash {
 
-    def ofSize(size: Int, f: Fn[T, Int]) : List[T]
+    def ofSize(size: Int, f: Fn[T, Int]) : Self
 
     if T : Eq {
         def __eq(a: Self, b: Self) : Bool
@@ -34,7 +34,11 @@ native class List[T] :
     def map[R](list: Self, f: Fn[R, T]) : List[R]
     def flatMap[R, C: Iterable[R]](list: Self, f: Fn[C, T]) : List[R]
     def flatten[I](self: List[List[I]]): List[I]
-    def filter(self: Self, f: Fn[Bool, T]): List[T]
+    def filter(self: Self, f: Fn[Bool, T]): Self
+
+    if T : Ord {
+        def sorted[C: Iterable[T]](self: C): Self
+    }
 
     def toList(self: Self) : Self
     def toBool(self: Self) : Bool

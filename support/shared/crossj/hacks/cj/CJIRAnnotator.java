@@ -967,6 +967,12 @@ public final class CJIRAnnotator
                                 var typeFromGiven = givenImplTrait.getArguments().get(i);
                                 stack.add(Pair.of(typeFromBound, typeFromGiven));
                             }
+                        } else {
+                            throw err0(
+                                given + " does not implement required bound " +
+                                bound.getDefinition().getQualifiedName(),
+                                mark
+                            );
                         }
                     }
                 }

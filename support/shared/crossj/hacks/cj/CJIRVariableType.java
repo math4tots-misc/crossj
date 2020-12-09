@@ -85,8 +85,9 @@ public final class CJIRVariableType implements CJIRType {
 
     @Override
     public Optional<CJIRTrait> getImplementingTraitByQualifiedName(String qualifiedName) {
-        // TOOD: Take into account indirectly implementing traits.
-        for (var implTrait : getBounds()) {
+        // TODO: getAllBounds() may be too permissive -- filter out based on
+        // actually satisfied bounds.
+        for (var implTrait : getAllBounds()) {
             var optTrait = implTrait.getImplementingTraitByQualifiedName(qualifiedName);
             if (optTrait.isPresent()) {
                 return optTrait;
@@ -95,8 +96,16 @@ public final class CJIRVariableType implements CJIRType {
         return Optional.empty();
     }
 
+    /**
+     * Gets the unconditional bounds on this type variable
+     * NOTE: this excludes the conditional ones. For all of them, use getAllBounds()
+     */
     public List<CJIRTrait> getBounds() {
         return definition.getBounds().map(t -> t.getAsIsTrait());
+    }
+
+    List<CJIRTrait> getAllBounds() {
+        return definition.getAllBounds().map(t -> t.getAsIsTrait());
     }
 
     @Override

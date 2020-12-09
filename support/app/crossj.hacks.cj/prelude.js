@@ -394,12 +394,12 @@ class MC$cj$String {
 
     /**
      * @template T
-     * @param {*} VT$I
-     * @param {*} VT$C
+     * @param {*} TV$I
+     * @param {*} TV$C
      * @param {string} sep
      * @param {Iterable<T>} parts
      */
-    M$join(VT$I, VT$C, sep, parts) {
+    M$join(TV$I, TV$C, sep, parts) {
         const arr = Array.isArray(parts) ? parts : Array.from(parts);
         return arr.join(sep);
     }
@@ -420,8 +420,8 @@ const MO$cj$String = new MC$cj$String();
  * but in some cases, cj Iterators may actually be any javascript iterable.
  */
 class MC$cj$Iterator {
-    constructor(VT$T) {
-        this.VT$T = VT$T;
+    constructor(TV$T) {
+        this.TV$T = TV$T;
     }
 
     /**
@@ -429,7 +429,7 @@ class MC$cj$Iterator {
      * @param {IterableIterator<T>} iterator
      * @param {function(T) : R} f
      */
-    *M$map(VT$R, iterator, f) {
+    *M$map(TV$R, iterator, f) {
         for (const t of iterator) {
             yield f(t);
         }
@@ -438,14 +438,14 @@ class MC$cj$Iterator {
     /**
      * @template I
      * @template C
-     * @param {*} VT$I
-     * @param {*} VT$C
+     * @param {*} TV$I
+     * @param {*} TV$C
      * @param {IterableIterator<T>} iterator
      * @param {function(T): C} f
      */
-    *M$flatMap(VT$I, VT$C, iterator, f) {
+    *M$flatMap(TV$I, TV$C, iterator, f) {
         for (const t of iterator) {
-            for (const i of VT$C.M$iter(f(t))) {
+            for (const i of TV$C.M$iter(f(t))) {
                 yield i;
             }
         }
@@ -465,12 +465,12 @@ class MC$cj$Iterator {
 
     /**
      * @template A
-     * @param {*} VT$A
+     * @param {*} TV$A
      * @param {IterableIterator<T>} iter
      * @param {A} acc
      * @param {function(A, T): A} f
      */
-    M$fold(VT$A, iter, acc, f) {
+    M$fold(TV$A, iter, acc, f) {
         for (const t of iter) {
             acc = f(acc, t);
         }
@@ -506,9 +506,9 @@ class MC$cj$Iterator {
  * @template A1
  */
 class MC$cj$Tuple2 {
-    constructor(VT$A0, VT$A1) {
-        this.VT$A0 = VT$A0;
-        this.VT$A1 = VT$A1;
+    constructor(TV$A0, TV$A1) {
+        this.TV$A0 = TV$A0;
+        this.TV$A1 = TV$A1;
     }
 
     /**
@@ -529,7 +529,7 @@ class MC$cj$Tuple2 {
      * @param {[A0, A1]} tuple
      */
     M$repr(tuple) {
-        return "(" + this.VT$A0.M$repr(tuple[0]) + ", " + this.VT$A1.M$repr(tuple[1]) + ")";
+        return "(" + this.TV$A0.M$repr(tuple[0]) + ", " + this.TV$A1.M$repr(tuple[1]) + ")";
     }
 
     /**
@@ -537,7 +537,7 @@ class MC$cj$Tuple2 {
      * @param {[A0, A1]} b
      */
     M$__eq(a, b) {
-        return !!(this.VT$A0.M$__eq(a[0], b[0]) && this.VT$A1.M$__eq(a[1], b[1]));
+        return !!(this.TV$A0.M$__eq(a[0], b[0]) && this.TV$A1.M$__eq(a[1], b[1]));
     }
 
     /**
@@ -546,8 +546,8 @@ class MC$cj$Tuple2 {
      */
     M$__lt(a, b) {
         return !!(
-            this.VT$A0.M$__lt(a[0], b[0]) ||
-            this.VT$A0.M$__eq(a[0], b[0]) && this.VT$A1.M$__lt(a[1], b[1])
+            this.TV$A0.M$__lt(a[0], b[0]) ||
+            this.TV$A0.M$__eq(a[0], b[0]) && this.TV$A1.M$__lt(a[1], b[1])
         );
     }
 
@@ -558,9 +558,9 @@ class MC$cj$Tuple2 {
         return combineHash(
             combineHash(
                 1,
-                this.VT$A0.M$hash(tuple[0]),
+                this.TV$A0.M$hash(tuple[0]),
             ),
-            this.VT$A1.M$hash(tuple[1]),
+            this.TV$A1.M$hash(tuple[1]),
         );
     }
 }
@@ -571,10 +571,10 @@ class MC$cj$Tuple2 {
  * @template A2
  */
 class MC$cj$Tuple3 {
-    constructor(VT$A0, VT$A1, VT$A2) {
-        this.VT$A0 = VT$A0;
-        this.VT$A1 = VT$A1;
-        this.VT$A2 = VT$A2;
+    constructor(TV$A0, TV$A1, TV$A2) {
+        this.TV$A0 = TV$A0;
+        this.TV$A1 = TV$A1;
+        this.TV$A2 = TV$A2;
     }
 
     /**
@@ -603,9 +603,9 @@ class MC$cj$Tuple3 {
      */
     M$repr(tuple) {
         return (
-            "(" + this.VT$A0.M$repr(tuple[0]) +
-            ", " + this.VT$A1.M$repr(tuple[1]) +
-            ", " + this.VT$A2.M$repr(tuple[2]) +
+            "(" + this.TV$A0.M$repr(tuple[0]) +
+            ", " + this.TV$A1.M$repr(tuple[1]) +
+            ", " + this.TV$A2.M$repr(tuple[2]) +
             ")"
         );
     }
@@ -616,9 +616,9 @@ class MC$cj$Tuple3 {
      */
     M$__eq(a, b) {
         return !!(
-            this.VT$A0.M$__eq(a[0], b[0]) &&
-            this.VT$A1.M$__eq(a[1], b[1]) &&
-            this.VT$A2.M$__eq(a[2], b[2])
+            this.TV$A0.M$__eq(a[0], b[0]) &&
+            this.TV$A1.M$__eq(a[1], b[1]) &&
+            this.TV$A2.M$__eq(a[2], b[2])
         );
     }
 
@@ -628,11 +628,11 @@ class MC$cj$Tuple3 {
      */
     M$__lt(a, b) {
         return !!(
-            this.VT$A0.M$__lt(a[0], b[0]) ||
-            this.VT$A0.M$__eq(a[0], b[0]) && (
-                this.VT$A1.M$__lt(a[1], b[1]) ||
-                this.VT$A1.M$__eq(a[1], b[1]) &&
-                this.VT$A2.M$__lt(a[2], b[2])
+            this.TV$A0.M$__lt(a[0], b[0]) ||
+            this.TV$A0.M$__eq(a[0], b[0]) && (
+                this.TV$A1.M$__lt(a[1], b[1]) ||
+                this.TV$A1.M$__eq(a[1], b[1]) &&
+                this.TV$A2.M$__lt(a[2], b[2])
             )
         );
     }
@@ -645,11 +645,11 @@ class MC$cj$Tuple3 {
             combineHash(
                 combineHash(
                     1,
-                    this.VT$A0.M$hash(tuple[0]),
+                    this.TV$A0.M$hash(tuple[0]),
                 ),
-                this.VT$A1.M$hash(tuple[1]),
+                this.TV$A1.M$hash(tuple[1]),
             ),
-            this.VT$A2.M$hash(tuple[2]),
+            this.TV$A2.M$hash(tuple[2]),
         );
     }
 }
@@ -661,11 +661,11 @@ class MC$cj$Tuple3 {
  * @template A3
  */
 class MC$cj$Tuple4 {
-    constructor(VT$A0, VT$A1, VT$A2, VT$A3) {
-        this.VT$A0 = VT$A0;
-        this.VT$A1 = VT$A1;
-        this.VT$A2 = VT$A2;
-        this.VT$A3 = VT$A3;
+    constructor(TV$A0, TV$A1, TV$A2, TV$A3) {
+        this.TV$A0 = TV$A0;
+        this.TV$A1 = TV$A1;
+        this.TV$A2 = TV$A2;
+        this.TV$A3 = TV$A3;
     }
 
     /**
@@ -701,10 +701,10 @@ class MC$cj$Tuple4 {
      */
     M$repr(tuple) {
         return (
-            "(" + this.VT$A0.M$repr(tuple[0]) +
-            ", " + this.VT$A1.M$repr(tuple[1]) +
-            ", " + this.VT$A2.M$repr(tuple[2]) +
-            ", " + this.VT$A3.M$repr(tuple[3]) +
+            "(" + this.TV$A0.M$repr(tuple[0]) +
+            ", " + this.TV$A1.M$repr(tuple[1]) +
+            ", " + this.TV$A2.M$repr(tuple[2]) +
+            ", " + this.TV$A3.M$repr(tuple[3]) +
             ")"
         );
     }
@@ -715,10 +715,10 @@ class MC$cj$Tuple4 {
      */
     M$__eq(a, b) {
         return !!(
-            this.VT$A0.M$__eq(a[0], b[0]) &&
-            this.VT$A1.M$__eq(a[1], b[1]) &&
-            this.VT$A2.M$__eq(a[2], b[2]) &&
-            this.VT$A3.M$__eq(a[3], b[3])
+            this.TV$A0.M$__eq(a[0], b[0]) &&
+            this.TV$A1.M$__eq(a[1], b[1]) &&
+            this.TV$A2.M$__eq(a[2], b[2]) &&
+            this.TV$A3.M$__eq(a[3], b[3])
         );
     }
 
@@ -728,9 +728,9 @@ class MC$cj$Tuple4 {
      */
     M$__lt(a, b) {
         return !!(
-            this.VT$A0.M$__lt(a[0], b[0]) || this.VT$A0.M$__eq(a[0], b[0]) && (
-                this.VT$A1.M$__lt(a[1], b[1]) || this.VT$A1.M$__eq(a[1], b[1]) && (
-                    this.VT$A2.M$__lt(a[2], b[2]) || this.VT$A2.M$__eq(a[2], b[2]) && this.VT$A3.M$__lt(a[3], b[3])
+            this.TV$A0.M$__lt(a[0], b[0]) || this.TV$A0.M$__eq(a[0], b[0]) && (
+                this.TV$A1.M$__lt(a[1], b[1]) || this.TV$A1.M$__eq(a[1], b[1]) && (
+                    this.TV$A2.M$__lt(a[2], b[2]) || this.TV$A2.M$__eq(a[2], b[2]) && this.TV$A3.M$__lt(a[3], b[3])
                 )
             )
         );
@@ -745,13 +745,13 @@ class MC$cj$Tuple4 {
                 combineHash(
                     combineHash(
                         1,
-                        this.VT$A0.M$hash(tuple[0]),
+                        this.TV$A0.M$hash(tuple[0]),
                     ),
-                    this.VT$A1.M$hash(tuple[1]),
+                    this.TV$A1.M$hash(tuple[1]),
                 ),
-                this.VT$A2.M$hash(tuple[2]),
+                this.TV$A2.M$hash(tuple[2]),
             ),
-            this.VT$A3.M$hash(tuple[3]),
+            this.TV$A3.M$hash(tuple[3]),
         );
     }
 }
@@ -760,8 +760,8 @@ class MC$cj$Tuple4 {
  * @template T
  */
 class MC$cj$List {
-    constructor(VT$T) {
-        this.VT$T = VT$T;
+    constructor(TV$T) {
+        this.TV$T = TV$T;
     }
 
     /**
@@ -778,12 +778,12 @@ class MC$cj$List {
 
     /**
      *
-     * @param {*} VT$I
+     * @param {*} TV$I
      * @param {*} iterable
      */
-    M$fromIterable(VT$I, iterable) {
+    M$fromIterable(TV$I, iterable) {
         const ret = [];
-        for (const t of VT$I.M$iter(iterable)) {
+        for (const t of TV$I.M$iter(iterable)) {
             ret.push(t);
         }
         return ret;
@@ -794,7 +794,7 @@ class MC$cj$List {
      * @param {Array<T>} b
      */
     M$__eq(a, b) {
-        const T = this.VT$T;
+        const T = this.TV$T;
         if (a.length !== b.length) {
             return false;
         }
@@ -810,7 +810,7 @@ class MC$cj$List {
      * @param {Array<T>} list
      */
     M$hash(list) {
-        const T = this.VT$T;
+        const T = this.TV$T;
         let hash = 1;
         for (const item of list) {
             hash = combineHash(hash, T.M$hash(item));
@@ -823,7 +823,7 @@ class MC$cj$List {
      * @param {Array<T>} b
      */
     M$__lt(a, b) {
-        const T = this.VT$T;
+        const T = this.TV$T;
         const len = a.length < b.length ? a.length : b.length;
         for (let i = 0; i < len; i++) {
             if (T.M$__lt(a[i], b[i])) {
@@ -839,7 +839,7 @@ class MC$cj$List {
      * @param {Array<T>} list
      */
     M$repr(list) {
-        return '[' + list.map(x => this.VT$T.M$repr(x)).join(', ') + ']';
+        return '[' + list.map(x => this.TV$T.M$repr(x)).join(', ') + ']';
     }
 
     /**
@@ -861,7 +861,7 @@ class MC$cj$List {
      * @param {T} t
      */
     M$__contains(list, t) {
-        const T = this.VT$T;
+        const T = this.TV$T;
         for (const x of list) {
             if (T.M$__eq(t, x)) {
                 return true;
@@ -903,7 +903,7 @@ class MC$cj$List {
      * @template I
      * @param {Array<Array<I>>} list
      */
-    M$flatten(VT$I, list) {
+    M$flatten(TV$I, list) {
         return list.flat();
     }
 
@@ -913,6 +913,19 @@ class MC$cj$List {
      */
     M$filter(list, f) {
         return list.filter(f);
+    }
+
+    /**
+     * @template C
+     * @param {*} TV$C
+     * @param {*} iterable
+     * @returns {Array<T>}
+     */
+    M$sorted(TV$C, iterable) {
+        const T = this.TV$T;
+        const arr = Array.from(TV$C.M$iter(iterable));
+        arr.sort((a, b) => T.M$__lt(a, b) ? -1 : T.M$__lt(b, a) ? 1 : 0);
+        return arr;
     }
 
     /**
@@ -941,8 +954,8 @@ class MC$cj$List {
  * @template T
  */
 class MC$cj$ListBuilder {
-    constructor(VT$T) {
-        this.VT$T = VT$T;
+    constructor(TV$T) {
+        this.TV$T = TV$T;
     }
 
     /**
@@ -968,8 +981,8 @@ class MC$cj$ListBuilder {
  * @template T
  */
 class MC$cj$MutableList {
-    constructor(VT$T) {
-        this.VT$T = VT$T;
+    constructor(TV$T) {
+        this.TV$T = TV$T;
     }
 
     /**
@@ -986,12 +999,12 @@ class MC$cj$MutableList {
 
     /**
      *
-     * @param {*} VT$I
+     * @param {*} TV$I
      * @param {*} iterable
      */
-    M$fromIterable(VT$I, iterable) {
+    M$fromIterable(TV$I, iterable) {
         const ret = [];
-        for (const t of VT$I.M$iter(iterable)) {
+        for (const t of TV$I.M$iter(iterable)) {
             ret.push(t);
         }
         return ret;
@@ -1001,7 +1014,7 @@ class MC$cj$MutableList {
      * @param {Array<T>} list
      */
     M$repr(list) {
-        return '@[' + list.map(x => this.VT$T.M$repr(x)).join(', ') + ']';
+        return '@[' + list.map(x => this.TV$T.M$repr(x)).join(', ') + ']';
     }
 
     /**
@@ -1048,7 +1061,7 @@ class MC$cj$MutableList {
      * @param {Array<T>} b
      */
     M$__eq(a, b) {
-        const T = this.VT$T;
+        const T = this.TV$T;
         if (a.length !== b.length) {
             return false;
         }
@@ -1118,8 +1131,8 @@ class MC$cj$MutableList {
  * @template R
  */
 class MC$cj$Fn0 {
-    constructor(VT$R) {
-        this.VT$R = VT$R;
+    constructor(TV$R) {
+        this.TV$R = TV$R;
     }
 
     /**
@@ -1135,9 +1148,9 @@ class MC$cj$Fn0 {
  * @template A1
  */
 class MC$cj$Fn1 {
-    constructor(VT$R, VT$A1) {
-        this.VT$R = VT$R;
-        this.VT$A1 = VT$A1;
+    constructor(TV$R, TV$A1) {
+        this.TV$R = TV$R;
+        this.TV$A1 = TV$A1;
     }
 
     /**
@@ -1155,10 +1168,10 @@ class MC$cj$Fn1 {
  * @template A2
  */
 class MC$cj$Fn2 {
-    constructor(VT$R, VT$A1, VT$A2) {
-        this.VT$R = VT$R;
-        this.VT$A1 = VT$A1;
-        this.VT$A2 = VT$A2;
+    constructor(TV$R, TV$A1, TV$A2) {
+        this.TV$R = TV$R;
+        this.TV$A1 = TV$A1;
+        this.TV$A2 = TV$A2;
     }
 
     /**
@@ -1178,11 +1191,11 @@ class MC$cj$Fn2 {
  * @template A3
  */
 class MC$cj$Fn3 {
-    constructor(VT$R, VT$A1, VT$A2, VT$A3) {
-        this.VT$R = VT$R;
-        this.VT$A1 = VT$A1;
-        this.VT$A2 = VT$A2;
-        this.VT$A3 = VT$A3;
+    constructor(TV$R, TV$A1, TV$A2, TV$A3) {
+        this.TV$R = TV$R;
+        this.TV$A1 = TV$A1;
+        this.TV$A2 = TV$A2;
+        this.TV$A3 = TV$A3;
     }
 
     /**
@@ -1204,12 +1217,12 @@ class MC$cj$Fn3 {
  * @template A4
  */
 class MC$cj$Fn4 {
-    constructor(VT$R, VT$A1, VT$A2, VT$A3, VT$A4) {
-        this.VT$R = VT$R;
-        this.VT$A1 = VT$A1;
-        this.VT$A2 = VT$A2;
-        this.VT$A3 = VT$A3;
-        this.VT$A4 = VT$A4;
+    constructor(TV$R, TV$A1, TV$A2, TV$A3, TV$A4) {
+        this.TV$R = TV$R;
+        this.TV$A1 = TV$A1;
+        this.TV$A2 = TV$A2;
+        this.TV$A3 = TV$A3;
+        this.TV$A4 = TV$A4;
     }
 
     /**
@@ -1273,14 +1286,14 @@ const MO$cj$Error = new MC$cj$Error();
  * @template T
  */
 class MC$cj$Try {
-    constructor(VT$T) {
-        this.VT$T = VT$T;
+    constructor(TV$T) {
+        this.TV$T = TV$T;
     }
 
     M$repr(x) {
         switch (x[0]) {
             case 0:
-                return 'Try.Ok(' + this.VT$T.M$repr(x[1]) + ')';
+                return 'Try.Ok(' + this.TV$T.M$repr(x[1]) + ')';
             case 1:
                 return 'Try.Fail(' + MO$cj$Error.M$repr(x[1]) + ')';
         }
@@ -1368,13 +1381,13 @@ class MC$cj$Assert {
     /**
      *
      * @template T
-     * @param {*} VT$T
+     * @param {*} TV$T
      * @param {T} a
      * @param {T} b
      */
-    M$equal(VT$T, a, b) {
-        if (!VT$T.M$__eq(a, b)) {
-            panic("Expected " + VT$T.M$repr(a) + " to equal " + VT$T.M$repr(b));
+    M$equal(TV$T, a, b) {
+        if (!TV$T.M$__eq(a, b)) {
+            panic("Expected " + TV$T.M$repr(a) + " to equal " + TV$T.M$repr(b));
         }
     }
 
@@ -1845,52 +1858,52 @@ class MC$cj$IO {
     /**
      * println[T](t: T) : Unit
      * @template T
-     * @param {*} VT$T
+     * @param {*} TV$T
      * @param {T} t
      */
-    M$println(VT$T, t) {
-        console.log(VT$T.M$toString(t));
+    M$println(TV$T, t) {
+        console.log(TV$T.M$toString(t));
     }
 
     /**
      * print[T](t: T) : Unit
      * @template T
-     * @param {*} VT$T
+     * @param {*} TV$T
      * @param {T} t
      */
-    M$print(VT$T, t) {
-        process.stdout.write(VT$T.M$toString(t));
+    M$print(TV$T, t) {
+        process.stdout.write(TV$T.M$toString(t));
     }
 
     /**
      * eprintln[T](t: T) : Unit
      * @template T
-     * @param {*} VT$T
+     * @param {*} TV$T
      * @param {T} t
      */
-    M$eprintln(VT$T, t) {
-        console.error(VT$T.M$toString(t));
+    M$eprintln(TV$T, t) {
+        console.error(TV$T.M$toString(t));
     }
 
     /**
      * eprint[T](t: T) : Unit
      * @template T
-     * @param {*} VT$T
+     * @param {*} TV$T
      * @param {T} t
      */
-    M$print(VT$T, t) {
-        process.stderr.write(VT$T.M$toString(t));
+    M$print(TV$T, t) {
+        process.stderr.write(TV$T.M$toString(t));
     }
 
     /**
      * panic[T](t: T) : NoReturn
      * @template T
-     * @param {*} VT$T
+     * @param {*} TV$T
      * @param {T} t
      * @returns {never}
      */
-    M$panic(VT$T, t) {
-        const message = VT$T.M$toString(t);
+    M$panic(TV$T, t) {
+        const message = TV$T.M$toString(t);
         panic(message);
     }
 }
@@ -2017,7 +2030,7 @@ class MC$cjx$JSObject {
         return Object.create(proto);
     }
 
-    M$from(VT$T, t) {
+    M$from(TV$T, t) {
         return t;
     }
 
@@ -2033,7 +2046,7 @@ class MC$cjx$JSObject {
         return obj[name];
     }
 
-    M$setField(VT$T, obj, name, value) {
+    M$setField(TV$T, obj, name, value) {
         obj[name] = value;
     }
 
@@ -2041,7 +2054,7 @@ class MC$cjx$JSObject {
         return obj[i];
     }
 
-    M$set(VT$T, obj, i, t) {
+    M$set(TV$T, obj, i, t) {
         obj[i] = t;
     }
 
@@ -2090,8 +2103,8 @@ class MC$cjx$JSObject {
         return 'toString' in obj ? '' + obj : JSON.stringify(obj);
     }
 
-    M$cast(VT$T, obj) {
-        const cls = VT$T.M$getClass();
+    M$cast(TV$T, obj) {
+        const cls = TV$T.M$getClass();
         if (!(obj instanceof cls)) {
             panic("Expected " + cls.name + " but got " + obj.constructor.name);
         }
