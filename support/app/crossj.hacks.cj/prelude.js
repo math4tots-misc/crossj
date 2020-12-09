@@ -2089,6 +2089,14 @@ class MC$cjx$cordova$Cordova {
         return document;
     }
 
+    M$width() {
+        return document.body.clientWidth;
+    }
+
+    M$height() {
+        return document.body.clientHeight;
+    }
+
     /**
      * @param {function():void} f
      */
@@ -2111,20 +2119,31 @@ class MC$cjx$cordova$Cordova {
     }
 
     /**
+     * @param {function(UIEvent):void} f
+     */
+    M$onResize(f) {
+        window.onresize = f;
+    }
+
+    /**
      * @param {function(KeyboardEvent): void} f
      */
     M$onKeyDown(f) {
-        document.addEventListener("keydown", f);
+        window.onkeydown = f;
     }
 
     /**
      * @param {function(KeyboardEvent): void} f
      */
     M$onKeyUp(f) {
-        document.addEventListener("keyup", f);
+        window.onkeyup = f;
     }
 }
 const MO$cjx$cordova$Cordova = new MC$cjx$cordova$Cordova();
+
+class MC$cjx$cordova$UIEvent {
+}
+const MO$cjx$cordova$UIEvent = new MC$cjx$cordova$UIEvent();
 
 /**
  * All methods on KeyboardEvent should be intercepted by

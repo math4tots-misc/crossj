@@ -13,6 +13,10 @@ class Main : CordovaApp {
             IO.println("keydown: " + event.key())
         })
 
+        Cordova.onResize(event -> {
+            IO.println("resized: (" + Cordova.width() + ", " + Cordova.height() + ")")
+        })
+
         val doc = Cordova.document()
 
         val canvas = doc.method("getElementById", [JSObject.from("canvas")])
@@ -29,6 +33,12 @@ class Main : CordovaApp {
             JSObject.from(width),
             JSObject.from(height),
         ])
-        IO.println("width = " + width + ", height = " + height)
+        IO.println("canvas.width = " + width + ", canvas.height = " + height)
+        IO.println(
+            "body.width = " +
+            Cordova.width() +
+            ", body.height = " +
+            Cordova.height()
+        )
     }
 }
