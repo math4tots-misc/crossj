@@ -25,6 +25,14 @@ function newError(message) {
 }
 
 /**
+ * Checks whether the given value is an 'Error' object.
+ * @param {*} value
+ */
+function isError(value) {
+    return Array.isArray(value) && value.length > 0 && typeof value[0] === 'string';
+}
+
+/**
  * @param {string} message
  * @returns {[1, Err]}
  */
@@ -1847,6 +1855,103 @@ class MC$cj$Buffer {
 }
 const MO$cj$Buffer = new MC$cj$Buffer();
 
+/**
+ * @template T
+ */
+class MC$cj$Promise {
+    /**
+     * @param {Array<Promise<T>>} promises
+     */
+    M$all(promises) {
+        return Promise.all(promises);
+    }
+
+    /**
+     * @template B
+     * @param {[Promise<T>, Promise<B>]} promises
+     */
+    M$all2(promises) {
+        return Promise.all(promises);
+    }
+
+    /**
+     * @template B
+     * @template C
+     * @param {[Promise<T>, Promise<B>, Promise<C>]} promises
+     */
+    M$all3(promises) {
+        return Promise.all(promises);
+    }
+
+    /**
+     * @template B
+     * @template C
+     * @template D
+     * @param {[Promise<T>, Promise<B>, Promise<C>, Promise<D>]} promises
+     */
+    M$all4(promises) {
+        return Promise.all(promises);
+    }
+
+    /**
+     * @param {T} t
+     */
+    M$resolve(t) {
+        return Promise.resolve(t);
+    }
+
+    /**
+     * @param {Err} error
+     * @returns {Promise<T>}
+     */
+    M$reject(error) {
+        return Promise.reject(error);
+    }
+
+    /**
+     * @param {string} message
+     */
+    M$err(message) {
+        return this.M$reject(newError(message));
+    }
+
+    /**
+     * @template R
+     * @param {*} TV$R
+     * @param {Promise<T>} promise
+     * @param {function(T):R} f
+     */
+    M$map(TV$R, promise, f) {
+        return promise.then(f);
+    }
+
+    /**
+     * @template R
+     * @param {*} TV$R
+     * @param {Promise<T>} promise
+     * @param {function(T):Promise<R>} f
+     */
+    M$flatMap(TV$R, promise, f) {
+        return promise.then(f);
+    }
+
+    /**
+     * @param {Promise<T>} promise
+     * @param {function(Err):T} f
+     */
+    M$recover(promise, f) {
+        return promise.catch(f);
+    }
+
+    /**
+     * @param {Promise<T>} promise
+     * @param {function():void} f
+     */
+    M$finally(promise, f) {
+        return promise.finally(f);
+    }
+}
+
 class MC$cj$Time {
     M$now() {
         return Date.now() / 1000;
@@ -1908,6 +2013,17 @@ class MC$cj$IO {
     }
 }
 const MO$cj$IO = new MC$cj$IO();
+
+class MC$cj$AIO {
+    /**
+     * @param {number} nsec
+     * @returns {Promise<void>}
+     */
+    M$delay(nsec) {
+        return new Promise(resolve => setTimeout(resolve, nsec * 1000));
+    }
+}
+const MO$cj$AIO = new MC$cj$AIO();
 
 class MC$cj$FS {
     /**

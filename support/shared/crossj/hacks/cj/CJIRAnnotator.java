@@ -1243,6 +1243,9 @@ public final class CJIRAnnotator
             throw err0("'new' cannot be used with variable types", e.getMark());
         }
         var classType = (CJIRClassType) rawType;
+        if (classType.getDefinition().isNative()) {
+            throw err0("'new' cannot be used with native classes", e.getMark());
+        }
         if (classType.getDefinition().isUnion()) {
             throw err0("'new' cannot be used with union types", e.getMark());
         }
