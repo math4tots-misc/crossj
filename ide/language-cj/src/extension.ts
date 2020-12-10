@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
             if (unixpath.endsWith(".cj")) {
                 const triple = model.parseUnixPath(unixpath);
                 if (triple !== null) {
-                    const [srcroot, pkg, clsname] = triple;
+                    const [, pkg, clsname] = triple;
                     fs.writeFile(file, Buffer.from(`package ${pkg}
 
 class ${clsname} {
