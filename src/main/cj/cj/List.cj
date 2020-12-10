@@ -31,8 +31,8 @@ native class List[T] :
     def iter(x: Self) : Iterator[T]
     def __contains(self: Self, t: T): Bool
 
-    def map[R](list: Self, f: Fn[R, T]) : List[R]
-    def flatMap[R, C: Iterable[R]](list: Self, f: Fn[C, T]) : List[R]
+    def map[R](self: Self, f: Fn[R, T]) : List[R]
+    def flatMap[R, C: Iterable[R]](self: Self, f: Fn[C, T]) : List[R]
     def flatten[I](self: List[List[I]]): List[I]
     def filter(self: Self, f: Fn[Bool, T]): Self
 

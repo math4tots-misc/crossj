@@ -14,3 +14,9 @@
 * `switch` statement and expression for matching raw values.
     At least for `Char`, `Int`, and `String`
 * Consider making `__appx` a magic method for an "approximately equal" operator
+
+* The `flatMap` on collection types generally don't match monad signatures.
+    (Kinda follows Scala style?)
+    E.g. `List.flatMap` permits the provided function to return any iterable
+    and not strictly require a `List[R]`.
+    Consider whether I want to keep things this way.
