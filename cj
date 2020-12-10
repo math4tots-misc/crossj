@@ -46,12 +46,12 @@ def main():
     config = load_config(args.id)
     type_ = config.pop('type')
 
-    if type_ == 'cli':
+    if type_ == 'node':
         jspath = join(REPO, 'out', 'cj.js')
-        cli_config = config.pop('cli')
+        cli_config = config.pop('node')
         maincls = cli_config.pop('main')
         if config or cli_config:
-            err(f"Unrecognized config parameers (config {config}), (cli {cli_config})")
+            err(f"Unrecognized config parameers (config {config}), (node {cli_config})")
         emit_js(
             maincls=maincls,
             build_transpiler=args.build,
@@ -108,8 +108,8 @@ def load_config(id):
             return json.loads(f.read())
 
     return {
-        'type': 'cli',
-        'cli': {
+        'type': 'node',
+        'node': {
             'main': id,
         }
     }
