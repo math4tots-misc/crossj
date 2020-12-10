@@ -1,0 +1,11 @@
+{
+    "type": "cordova",
+    "cordova": {
+        "id": "cjx.cordova.apps.sample2.Main",
+        "name": "Sample App",
+        "main": "cjx.cordova.apps.sample2.Main",
+        "platforms": [
+            "browser"
+        ]
+    }
+}
