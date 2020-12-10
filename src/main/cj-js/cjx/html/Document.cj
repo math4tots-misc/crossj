@@ -1,16 +1,22 @@
-package cjx.cordova.html
+package cjx.html
 
 import cjx.JSObject
 import cjx.JSWrapper
 import cjx.cordova.Cordova
-import cjx.cordova.html.HTMLElement
+import cjx.html.HTMLElement
+import cjx.html.Window
+import cjx.html.HTMLGlobals
 
 
 class Document : JSWrapper {
     val _obj: JSObject
 
+    def get(): Document {
+        return HTMLGlobals.document()
+    }
+
     def getClass(): JSObject {
-        return Cordova.window().field("Document")
+        return Window.get().field("Document")
     }
 
     def obj(self: Self): JSObject {

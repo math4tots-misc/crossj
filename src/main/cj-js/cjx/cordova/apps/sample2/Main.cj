@@ -3,11 +3,11 @@ package cjx.cordova.apps.sample2
 import cjx.JSObject
 import cjx.cordova.Cordova
 import cjx.cordova.CordovaApp
-import cjx.cordova.html.HTMLCanvasElement
-import cjx.cordova.html.HTMLImageElement
-import cjx.cordova.html.CanvasRenderingContext2D
-import cjx.cordova.html.Window
-import cjx.cordova.html.MouseEvent
+import cjx.html.HTMLCanvasElement
+import cjx.html.HTMLImageElement
+import cjx.html.CanvasRenderingContext2D
+import cjx.html.Window
+import cjx.html.MouseEvent
 
 class Main: CordovaApp {
 

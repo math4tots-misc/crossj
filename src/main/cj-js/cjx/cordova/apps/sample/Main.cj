@@ -3,9 +3,9 @@ package cjx.cordova.apps.sample
 import cjx.JSObject
 import cjx.cordova.Cordova
 import cjx.cordova.CordovaApp
-import cjx.cordova.html.HTMLCanvasElement
-import cjx.cordova.html.HTMLImageElement
-import cjx.cordova.html.CanvasRenderingContext2D
+import cjx.html.HTMLCanvasElement
+import cjx.html.HTMLImageElement
+import cjx.html.CanvasRenderingContext2D
 
 class Main: CordovaApp {
 

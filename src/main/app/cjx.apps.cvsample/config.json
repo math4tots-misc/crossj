@@ -1,0 +1,6 @@
+{
+    "type": "canvas",
+    "canvas": {
+        "main": "cjx.apps.cvsample.Main"
+    }
+}

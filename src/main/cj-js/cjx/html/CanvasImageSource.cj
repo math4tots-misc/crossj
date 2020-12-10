@@ -1,4 +1,4 @@
-package cjx.cordova.html
+package cjx.html
 
 
 ## Marker trait for types that can be used as a CanvasImageSource

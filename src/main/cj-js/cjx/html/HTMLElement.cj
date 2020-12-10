@@ -1,4 +1,4 @@
-package cjx.cordova.html
+package cjx.html
 
 import cjx.JSWrapper
 

@@ -1,10 +1,10 @@
-package cjx.cordova.html
+package cjx.html
 
 
 import cjx.JSObject
 import cjx.JSWrapper
 import cjx.cordova.Cordova
-import cjx.cordova.html.CanvasImageSource
+import cjx.html.CanvasImageSource
 
 class CanvasRenderingContext2D : JSWrapper {
     val _obj: JSObject

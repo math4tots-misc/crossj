@@ -1,4 +1,4 @@
-package cjx.cordova.html
+package cjx.html
 
 
 ## Native wrapper around the browser "KeyboardEvent"

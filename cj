@@ -12,6 +12,7 @@ REPO = os.path.dirname(os.path.realpath(__file__))
 HOME = os.environ.get('HOME')
 join = os.path.join
 CORDOVA_ROOT = join(REPO, 'out', 'cordova')
+CANVAS_ROOT = join(REPO, 'out', 'canvas')
 CJ_SRC_ROOT = join(REPO, 'src', 'main', 'cj')
 CJ_SRC_JS_ROOT = join(REPO, 'src', 'main', 'cj-js')
 CJ_TEST_ROOT = join(REPO, 'src', 'test', 'cj')
@@ -24,6 +25,34 @@ def run(cmd, *, cwd=None):
 
 def err(message):
     raise Exception(message)
+
+
+CANVAS_HTML = r"""
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Sample App</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            html, body {
+                height: 100%;
+            }
+            #canvas {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script src="cj.js"></script>
+    </body>
+</html>
+"""
 
 
 def main():
@@ -60,6 +89,32 @@ def main():
             out_js_path=jspath,
         )
         run(['node', jspath])
+
+    elif type_ == 'canvas':
+        canvas_config = config.pop('canvas')
+        maincls = canvas_config.pop('main')
+        app_path = get_app_path(args.id)
+        wwwroot = join(CANVAS_ROOT, 'www')
+        shutil.rmtree(wwwroot, ignore_errors=True)
+        if os.path.exists(join(app_path, 'www')):
+            shutil.copytree(join(app_path, 'www'), wwwroot)
+        else:
+            os.makedirs(wwwroot, exist_ok=True)
+
+        jspath = join(wwwroot, 'cj.js')
+
+        indexpath = join(wwwroot, 'index.html')
+        with open(indexpath, 'w') as f:
+            f.write(CANVAS_HTML)
+
+        emit_js(
+            maincls=maincls,
+            build_transpiler=args.build,
+            use_java=args.use_java,
+            out_js_path=jspath,
+            verbose=args.verbose,
+        )
+        run(['open', indexpath])
 
     elif type_ == 'cordova':
         tmpjspath = join(REPO, 'out', 'cj.js')

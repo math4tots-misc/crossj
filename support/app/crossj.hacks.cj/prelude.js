@@ -2267,6 +2267,16 @@ class MC$cjx$JSObject {
 }
 const MO$cjx$JSObject = new MC$cjx$JSObject();
 
+class MC$cjx$html$HTMLGlobals {
+    M$document() {
+        return document;
+    }
+    M$window() {
+        return window;
+    }
+}
+const MO$cjx$html$HTMLGlobals = new MC$cjx$html$HTMLGlobals();
+
 class MC$cjx$cordova$Cordova {
     M$width() {
         return window.innerWidth;

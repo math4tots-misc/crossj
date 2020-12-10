@@ -1,16 +1,17 @@
-package cjx.cordova.html
+package cjx.html
 
 
 import cjx.JSObject
 import cjx.cordova.Cordova
-import cjx.cordova.html.CanvasRenderingContext2D
-import cjx.cordova.html.HTMLElement
+import cjx.html.CanvasRenderingContext2D
+import cjx.html.HTMLElement
+import cjx.html.Window
 
 class HTMLCanvasElement : HTMLElement {
     val _obj: JSObject
 
     def getClass(): JSObject {
-        return Cordova.window().field("HTMLCanvasElement")
+        return Window.get().field("HTMLCanvasElement")
     }
 
     def obj(self: Self): JSObject {

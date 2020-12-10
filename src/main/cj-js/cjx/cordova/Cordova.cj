@@ -1,11 +1,11 @@
 package cjx.cordova
 
 import cjx.JSObject
-import cjx.cordova.html.Document
-import cjx.cordova.html.KeyboardEvent
-import cjx.cordova.html.MouseEvent
-import cjx.cordova.html.UIEvent
-import cjx.cordova.html.Window
+import cjx.html.Document
+import cjx.html.KeyboardEvent
+import cjx.html.MouseEvent
+import cjx.html.UIEvent
+import cjx.html.Window
 
 native class Cordova {
 

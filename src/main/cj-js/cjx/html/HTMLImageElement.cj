@@ -1,9 +1,9 @@
-package cjx.cordova.html
+package cjx.html
 
 import cjx.JSObject
 import cjx.cordova.Cordova
-import cjx.cordova.html.CanvasImageSource
-import cjx.cordova.html.HTMLElement
+import cjx.html.CanvasImageSource
+import cjx.html.HTMLElement
 
 class HTMLImageElement: HTMLElement, CanvasImageSource {
     val _obj: JSObject
