@@ -56,6 +56,15 @@ union Nullable[T] :
         return self.toBool()
     }
 
+    def ifPresent(self: Self, f: Fn[Unit, T]) {
+        union self {
+            case Some(t) {
+                f.call(t)
+            }
+            case None {}
+        }
+    }
+
     def isEmpty(self: Self) : Bool {
         return not self.isPresent()
     }

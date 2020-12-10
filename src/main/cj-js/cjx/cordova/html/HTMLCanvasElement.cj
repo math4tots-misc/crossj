@@ -2,11 +2,11 @@ package cjx.cordova.html
 
 
 import cjx.JSObject
-import cjx.JSWrapper
 import cjx.cordova.Cordova
 import cjx.cordova.html.CanvasRenderingContext2D
+import cjx.cordova.html.HTMLElement
 
-class HTMLCanvasElement : JSWrapper {
+class HTMLCanvasElement : HTMLElement {
     val _obj: JSObject
 
     def getClass(): JSObject {

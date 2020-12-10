@@ -4,6 +4,7 @@ package cjx.cordova.html
 import cjx.JSObject
 import cjx.JSWrapper
 import cjx.cordova.Cordova
+import cjx.cordova.html.CanvasImageSource
 
 class CanvasRenderingContext2D : JSWrapper {
     val _obj: JSObject
@@ -97,5 +98,13 @@ class CanvasRenderingContext2D : JSWrapper {
     ## fills the current path with the current fill style
     def fill(self: Self) {
         self._obj.method("fill", [])
+    }
+
+    def drawImage[I: CanvasImageSource](self: Self, image: I, dx: Int, dy: Int) {
+        self._obj.method("drawImage", [
+            JSObject.from(image),
+            JSObject.from(dx),
+            JSObject.from(dy),
+        ])
     }
 }

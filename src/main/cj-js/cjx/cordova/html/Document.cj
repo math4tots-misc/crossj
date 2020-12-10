@@ -3,6 +3,7 @@ package cjx.cordova.html
 import cjx.JSObject
 import cjx.JSWrapper
 import cjx.cordova.Cordova
+import cjx.cordova.html.HTMLElement
 
 
 class Document : JSWrapper {
@@ -16,10 +17,14 @@ class Document : JSWrapper {
         return self._obj
     }
 
-    def getElementById[E: JSWrapper](self: Self, id: String): E {
+    def getElementById(self: Self, id: String): JSObject {
         return self._obj.method(
             "getElementById",
             [JSObject.from(id)],
-        ).cast()
+        )
+    }
+
+    def createElement(self: Self, tagName: String): JSObject {
+        return self._obj.method("createElement", [JSObject.from(tagName)])
     }
 }

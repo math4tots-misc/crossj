@@ -2,6 +2,9 @@ package cj
 
 
 native class Promise[T] {
+
+    def create(executor: Fn[Unit, Fn[Unit, T], Fn[Unit, Error]]): Promise[T]
+
     def all(promises: List[Promise[T]]): Promise[List[T]]
     def all2[B](promises: Tuple[Promise[T], Promise[B]]): Promise[Tuple[T, B]]
     def all3[B, C](promises: Tuple[Promise[T], Promise[B], Promise[C]]): Promise[Tuple[T, B, C]]

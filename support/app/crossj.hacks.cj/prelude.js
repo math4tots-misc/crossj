@@ -1873,6 +1873,14 @@ const MO$cj$Buffer = new MC$cj$Buffer();
  * @template T
  */
 class MC$cj$Promise {
+
+    /**
+     * @param {function(function(T):void,function(Err):void):void} f
+     */
+    M$create(f) {
+        return new Promise(f);
+    }
+
     /**
      * @param {Array<Promise<T>>} promises
      */

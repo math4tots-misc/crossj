@@ -4,16 +4,20 @@ import cjx.JSObject
 import cjx.cordova.Cordova
 import cjx.cordova.CordovaApp
 import cjx.cordova.html.HTMLCanvasElement
+import cjx.cordova.html.HTMLImageElement
 import cjx.cordova.html.CanvasRenderingContext2D
 
-class Main : CordovaApp {
+class Main: CordovaApp {
+
+    static var img: Nullable[HTMLImageElement] = Nullable.None
+
     def onDeviceReady() {
         IO.println("Hello cordova")
         IO.println("DEVICE READY")
 
         val doc = Cordova.document()
 
-        val canvas: HTMLCanvasElement = doc.getElementById("canvas")
+        val canvas: HTMLCanvasElement = doc.getElementById("canvas").cast()
         canvas.setWidth(canvas.clientWidth())
         canvas.setHeight(canvas.clientHeight())
         val width = canvas.width()
@@ -56,6 +60,11 @@ class Main : CordovaApp {
         ctx.lineTo(250, 140)
         ctx.closePath()
         ctx.stroke()
+
+        HTMLImageElement.load("img/bmp_24.png").onResolve(img -> {
+            Self.img = Nullable.Some(img)
+            ctx.drawImage(img, 20, 20)
+        })
     }
 
     def redraw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, x: Int, y: Int) {
@@ -73,5 +82,9 @@ class Main : CordovaApp {
         ctx.lineTo(ux + 250, uy + 140)
         ctx.closePath()
         ctx.stroke()
+
+        Self.img.ifPresent(img -> {
+            ctx.drawImage(img, x, y + 150)
+        })
     }
 }
