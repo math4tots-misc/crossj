@@ -73,6 +73,10 @@ class Main: CordovaApp {
         val ux = x - 150
         val uy = y - 150
         ctx.setFillStyle("black")
+
+        ctx.setFont("24px monospace")
+        ctx.fillText("Hello World", 200, 200)
+
         ctx.setLineWidth(10)
         ctx.strokeRect(ux + 75, uy + 140, 150, 110)
         ctx.fillRect(ux + 130, uy + 190, 40, 60)
