@@ -54,9 +54,12 @@ CANVAS_HTML = r"""
 </html>
 """
 
+ACTIONS = ('run', 'build')
+
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('action', choices=ACTIONS)
     parser.add_argument('id')
     parser.add_argument('--verbose', '-v', default=False, action='store_true')
 
@@ -72,6 +75,7 @@ def main():
     # parser.add_argument('remainder', nargs=argparse.REMAINDER)
     args = parser.parse_args()
 
+    action = args.action
     config = load_config(args.id)
     type_ = config.pop('type')
 
@@ -88,7 +92,8 @@ def main():
             verbose=args.verbose,
             out_js_path=jspath,
         )
-        run(['node', jspath])
+        if action == 'run':
+            run(['node', jspath])
 
     elif type_ == 'canvas':
         canvas_config = config.pop('canvas')
@@ -114,7 +119,8 @@ def main():
             out_js_path=jspath,
             verbose=args.verbose,
         )
-        run(['open', indexpath])
+        if action == 'run':
+            run(['open', indexpath])
 
     elif type_ == 'cordova':
         tmpjspath = join(REPO, 'out', 'cj.js')
@@ -144,7 +150,8 @@ def main():
             plugins=plugins,
         )
         shutil.move(tmpjspath, jspath)
-        run(['cordova', 'run', 'browser'], cwd=CORDOVA_ROOT)
+        if action == 'run':
+            run(['cordova', 'run', 'browser'], cwd=CORDOVA_ROOT)
 
     else:
         err(f'Unrecognized app type {repr(type_)}')
