@@ -1,6 +1,6 @@
-import { count } from 'console';
 import * as vscode from 'vscode';
 import * as model from './model';
+import * as path from 'path';
 
 
 const COMMAND_AUTO_IMPORT = 'language-cj.autoimport';
@@ -11,18 +11,26 @@ export function activate(context: vscode.ExtensionContext) {
     const fs = vscode.workspace.fs;
     const world = new model.World(fs);
 
-    async function addSourceRoot(uri: vscode.Uri) {
+    async function addSourceRootAndSiblings(uri: vscode.Uri) {
+        console.log(`addSourceRootAndSiblings(${uri})`);
         const triple = model.parseSourceUri(uri);
         if (triple !== null) {
             const [srcroot,,] = triple;
             await world.addSourceRoot(srcroot);
+
+            const baseroot = path.dirname(srcroot);
+            for (const name of ['cj', 'cj-js']) {
+                const otherSrcRoot = path.join(baseroot, name);
+                console.log(`otherSrcRoot = ${otherSrcRoot}`);
+                await world.addSourceRoot(otherSrcRoot);
+            }
         }
     }
 
     function lazyInit(documentUri: vscode.Uri) {
-        addSourceRoot(documentUri);
+        addSourceRootAndSiblings(documentUri);
         for (const editor of vscode.window.visibleTextEditors) {
-            addSourceRoot(editor.document.uri);
+            addSourceRootAndSiblings(editor.document.uri);
         }
     }
 
@@ -130,7 +138,7 @@ class ${clsname} {
                 }
 
                 // completion based on class names
-                addSourceRoot(document.uri);
+                addSourceRootAndSiblings(document.uri);
                 const items = Array.from(world.shortNameToQualifiedNames.filterWithPrefix(prefix)).flatMap((pair) => {
                     const [shortName, qualifiedNames] = pair;
                     return Array.from(qualifiedNames).sort().map(qualifiedName => {

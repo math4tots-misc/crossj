@@ -91,6 +91,13 @@ export function parseUnixPath(unixpath: string): [string, string, string] | null
     return null;
 }
 
+function normalizePath(path: string): string {
+    while (path.endsWith('/')) {
+        path = path.substring(0, path.length - 1);
+    }
+    return path;
+}
+
 /**
  * Parses a file system path and returns the triple:
  *  - source root path (i.e. path ending in '/src/main/cj/' or '/src/main/cj-js/')
@@ -395,6 +402,8 @@ export class World {
     }
 
     async addSourceRoot(sourceRoot: string): Promise<void> {
+        sourceRoot = normalizePath(sourceRoot);
+        console.log(`addSourceRoot(${sourceRoot})`);
         if (!this.sourceRoots.has(sourceRoot)) {
             this.sourceRoots.add(sourceRoot);
             await this._processSourceRoot(sourceRoot);
@@ -402,6 +411,7 @@ export class World {
     }
 
     async _processSourceRoot(sourceRoot: string) {
+        console.log(`_processSourceRoot(${sourceRoot})`);
         this.sourceRoots.add(sourceRoot);
         const stack = [vscode.Uri.file(sourceRoot)];
         const otherPromises: Promise<Item>[] = [];
@@ -478,7 +488,7 @@ export class World {
     async _getItemUncached(qualifiedName: string): Promise<Item> {
         const uri = this.qualifiedNameToUri.get(qualifiedName);
         if (uri === undefined) {
-            console.log(`URI for ${qualifiedName} not found => ${Array.from(this.qualifiedNameToUri.keys())}`);
+            console.log(`URI for ${qualifiedName} not found => [${Array.from(this.qualifiedNameToUri.keys())}]`);
             return parseItem("");
         }
         const buffer = Buffer.from(await this.fs.readFile(uri));
