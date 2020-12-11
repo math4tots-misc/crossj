@@ -432,8 +432,35 @@ class MC$cj$String {
     M$toBool(s) {
         return s.length !== 0;
     }
+
+    /**
+     * @returns {[string]}
+     */
+    M$builder() {
+        return [];
+    }
 }
 const MO$cj$String = new MC$cj$String();
+
+class MC$cj$StringBuilder {
+    /**
+     * @template S
+     * @param {*} TV$S
+     * @param {[string]} builder
+     * @param {S} s
+     */
+    M$add(TV$S, builder, s) {
+        builder.push(TV$S.M$toString(s));
+    }
+
+    /**
+     * @param {[string]} builder
+     */
+    M$build(builder) {
+        return builder.join("");
+    }
+}
+const MO$cj$StringBuilder = new MC$cj$StringBuilder();
 
 /**
  * @template T

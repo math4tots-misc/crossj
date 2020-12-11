@@ -48,4 +48,13 @@ class StringTest {
         Assert.equal("asdf" + [1, 2, 3], "asdf[1, 2, 3]")
         Assert.equal("hello" + " " + "world", "hello world")
     }
+
+    def testBuilder() {
+        {
+            val sb = String.builder()
+            sb.add("hello ")
+            sb.add("world")
+            Assert.equal(sb.build(), "hello world")
+        }
+    }
 }

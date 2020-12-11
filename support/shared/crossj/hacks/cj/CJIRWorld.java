@@ -26,6 +26,7 @@ public final class CJIRWorld {
         "Double",
         "Char",
         "String",
+        "StringBuilder",
         "Buffer",
         "MutableList",
         "MutableMap",

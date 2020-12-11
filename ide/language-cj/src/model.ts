@@ -8,6 +8,7 @@ export const IMPORT_EXEMPT_CLASSES = new Set([
     "cj.Double",
     "cj.Char",
     "cj.String",
+    "cj.StringBuilder",
     "cj.Buffer",
     "cj.MutableList",
     "cj.MutableMap",
