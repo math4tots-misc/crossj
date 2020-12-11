@@ -81,4 +81,13 @@ class ListTest {
         Assert.that([3, 2, 1] != [1, 2, 3])
         Assert.equal([3, 2, 1].sorted(), [1, 2, 3])
     }
+
+    def testGet() {
+        {
+            val list = ["a", "bb", "ccc"]
+            Assert.equal(list.get(0), "a")
+            Assert.equal(list.get(1), "bb")
+            Assert.equal(list.get(2), "ccc")
+        }
+    }
 }

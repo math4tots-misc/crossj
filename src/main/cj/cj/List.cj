@@ -27,6 +27,8 @@ native class List[T] :
         def repr(list: Self) : String
     }
 
+    def get(self: Self, i: Int): T
+
     def size(x: Self) : Int
     def iter(x: Self) : Iterator[T]
     def __contains(self: Self, t: T): Bool

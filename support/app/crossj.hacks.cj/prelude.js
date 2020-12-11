@@ -893,6 +893,14 @@ class MC$cj$List {
 
     /**
      * @param {Array<T>} list
+     * @param {number} i
+     */
+    M$get(list, i) {
+        return list[i];
+    }
+
+    /**
+     * @param {Array<T>} list
      */
     M$size(list) {
         return list.length;
