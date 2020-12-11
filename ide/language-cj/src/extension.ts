@@ -3,6 +3,7 @@ import * as model from './model';
 import * as path from 'path';
 
 
+const COMMAND_DUMP_STATUS = 'language-cj.dumpstatus';
 const COMMAND_AUTO_IMPORT = 'language-cj.autoimport';
 
 
@@ -12,7 +13,6 @@ export function activate(context: vscode.ExtensionContext) {
     const world = new model.World(fs);
 
     async function addSourceRootAndSiblings(uri: vscode.Uri) {
-        console.log(`addSourceRootAndSiblings(${uri})`);
         const triple = model.parseSourceUri(uri);
         if (triple !== null) {
             const [srcroot,,] = triple;
@@ -21,18 +21,83 @@ export function activate(context: vscode.ExtensionContext) {
             const baseroot = path.dirname(srcroot);
             for (const name of ['cj', 'cj-js']) {
                 const otherSrcRoot = path.join(baseroot, name);
-                console.log(`otherSrcRoot = ${otherSrcRoot}`);
                 await world.addSourceRoot(otherSrcRoot);
             }
         }
     }
 
-    function lazyInit(documentUri: vscode.Uri) {
-        addSourceRootAndSiblings(documentUri);
+    async function lazyInit(documentUri: vscode.Uri) {
+        await addSourceRootAndSiblings(documentUri);
         for (const editor of vscode.window.visibleTextEditors) {
-            addSourceRootAndSiblings(editor.document.uri);
+            await addSourceRootAndSiblings(editor.document.uri);
         }
     }
+
+    context.subscriptions.push(vscode.commands.registerCommand(COMMAND_DUMP_STATUS, async () => {
+        const document = await vscode.workspace.openTextDocument()
+        console.log("COMMAND_DUMP_STATUS: " + document.uri);
+
+        const parts: string[] = [];
+
+        const sourceRoots = Array.from(world.sourceRoots).sort();
+        parts.push(`SourceRoots ${sourceRoots.length}\n`);
+        for (const sourceRoot of sourceRoots) {
+            parts.push(`  ${sourceRoot}\n`);
+        }
+        parts.push('\n');
+
+        const allMethodNames = Array.from(world.allMethodNames).sort();
+        parts.push(`Known method names ${allMethodNames.length}\n`);
+        for (const methodName of allMethodNames) {
+            parts.push(`  ${methodName}\n`);
+        }
+        parts.push('\n');
+
+        const allFieldNames = Array.from(world.allFieldNames).sort();
+        parts.push(`Known field names ${allFieldNames.length}\n`);
+        for (const fieldName of allFieldNames) {
+            parts.push(`  ${fieldName}\n`);
+        }
+        parts.push('\n');
+
+        const qualifiedNames = world.getAllQualifiedNames().sort();
+        parts.push(`Known classes ${qualifiedNames.length}\n`);
+        for (const qaulifiedName of qualifiedNames) {
+            parts.push(`  ${qaulifiedName}\n`);
+            const item = world.qualifiedNameToItem.get(qaulifiedName);
+            if (item === null) {
+                parts.push(`    (unprocessed)\n`);
+            } else {
+                const imports = Array.from(item.imports);
+                const fieldNames = Array.from(item.fieldNames);
+                const methodNames = Array.from(item.methodNames);
+                const localNames = Array.from(item.localNames);
+                parts.push(`    (${item.pkg}) (${item.shortName})\n`);
+                parts.push(`    Imports ${imports.length}\n`);
+                for (const imp of item.imports) {
+                    parts.push(`      ${imp}\n`);
+                }
+                parts.push(`    FieldNames ${fieldNames.length}\n`);
+                for (const fieldName of fieldNames) {
+                    parts.push(`      ${fieldName}\n`);
+                }
+                parts.push(`    MethodNames ${methodNames.length}\n`);
+                for (const methodName of methodNames) {
+                    parts.push(`      ${methodName}\n`);
+                }
+                parts.push(`    LocalNames ${localNames.length}\n`);
+                for (const localName of localNames) {
+                    parts.push(`      ${localName}\n`);
+                }
+            }
+        }
+
+        const edit = new vscode.WorkspaceEdit();
+        edit.insert(document.uri, document.lineAt(0).range.start, parts.join(''));
+        vscode.workspace.applyEdit(edit);
+
+        vscode.window.showTextDocument(document);
+    }));
 
     context.subscriptions.push(vscode.commands.registerCommand(COMMAND_AUTO_IMPORT, (qualifiedName: string) => {
         if (model.IMPORT_EXEMPT_CLASSES.has(qualifiedName)) {
@@ -116,9 +181,9 @@ class ${clsname} {
     }));
 
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider('cj', {
-        provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+        async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
             try {
-                lazyInit(document.uri);
+                await lazyInit(document.uri);
 
                 const range = document.getWordRangeAtPosition(position);
                 const prefix = document.getText(range);
@@ -172,9 +237,9 @@ class ${clsname} {
     }));
 
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider('cj', {
-        provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+        async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
             try {
-                lazyInit(document.uri);
+                await lazyInit(document.uri);
                 const range = document.getWordRangeAtPosition(position);
 
                 const items: vscode.CompletionItem[] = [];

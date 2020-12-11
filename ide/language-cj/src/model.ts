@@ -174,6 +174,7 @@ class TrieNode<T> {
     set(key: string, index: number, value: T): boolean {
         if (index === key.length) {
             if (this.value !== null) {
+                this.value = value;
                 return false;
             } else {
                 this.value = value;
@@ -284,7 +285,7 @@ class RCSet<T> {
 }
 
 function parseItem(s: string): Item {
-    const re = /\\{|\\}|\b(def|val|var|class|union|trait)\s+\w+|\b(import|package)\s+[\.\w]+|\w+(?:\s*:)?|"(?:[^"]|\")*"|#[^\n]*|[^\s\w"]+/g;
+    const re = /\\{|\\}|\b(def|val|var|class|union|trait)\s+\w+|\b(import|package)\s+[\.\w]+|\w+(?:\s*:)?|#[^\n]*|"(?:[^"]|\")*"|[^\s\w"]+/g;
     let depth = 0;
     let arr;
     let pkg = "";
@@ -401,9 +402,12 @@ export class World {
         this._allKnownItemsInitialized = false;
     }
 
+    getAllQualifiedNames(): string[] {
+        return Array.from(this.qualifiedNameToUri.keys());
+    }
+
     async addSourceRoot(sourceRoot: string): Promise<void> {
         sourceRoot = normalizePath(sourceRoot);
-        console.log(`addSourceRoot(${sourceRoot})`);
         if (!this.sourceRoots.has(sourceRoot)) {
             this.sourceRoots.add(sourceRoot);
             await this._processSourceRoot(sourceRoot);

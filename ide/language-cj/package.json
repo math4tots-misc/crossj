@@ -44,6 +44,12 @@
                 "scopeName": "source.cj",
                 "path": "./syntaxes/cj.tmLanguage.json"
             }
+        ],
+        "commands": [
+            {
+                "command": "language-cj.dumpstatus",
+                "title": "Dump CJ extension status"
+            }
         ]
     },
     "devDependencies": {
