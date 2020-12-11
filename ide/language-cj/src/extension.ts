@@ -167,6 +167,13 @@ class ${clsname} {
         }
     }));
 
+    context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(document => {
+        if (document.languageId !== 'cj') {
+            return undefined;
+        }
+        world.refreshItemWithUri(document.uri);
+    }))
+
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => {
         if (document.languageId !== 'cj') {
             return undefined;

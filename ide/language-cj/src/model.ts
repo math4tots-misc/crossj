@@ -471,6 +471,17 @@ export class World {
         }
     }
 
+    async refreshItemWithUri(uri: vscode.Uri) {
+        const triple = parseSourceUri(uri);
+        if (triple === null) {
+            return;
+        }
+        const [, pkg, clsname] = triple;
+        const qualifiedName = `${pkg}.${clsname}`;
+        this.qualifiedNameToUri.set(qualifiedName, uri);
+        this.refreshItem(qualifiedName);
+    }
+
     async refreshItem(qualifiedName: string): Promise<Item> {
         // If there's nothing there, put in a dummy value to prevent spurious refreshes.
         if (!this.qualifiedNameToItem.has(qualifiedName)) {
