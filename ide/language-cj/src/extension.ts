@@ -191,6 +191,8 @@ class ${clsname} {
                     return undefined;
                 }
 
+                const items: vscode.CompletionItem[] = [];
+
                 let pkg = "";
                 let clsname = "";
                 {
@@ -204,9 +206,9 @@ class ${clsname} {
 
                 // completion based on class names
                 addSourceRootAndSiblings(document.uri);
-                const items = Array.from(world.shortNameToQualifiedNames.filterWithPrefix(prefix)).flatMap((pair) => {
-                    const [shortName, qualifiedNames] = pair;
-                    return Array.from(qualifiedNames).sort().map(qualifiedName => {
+
+                for (const [shortName, qualifiedNames] of world.shortNameToQualifiedNames.filterWithPrefix(prefix)) {
+                    for (const qualifiedName of qualifiedNames) {
                         const item = new vscode.CompletionItem(shortName);
                         item.detail = qualifiedName;
                         item.command = {
@@ -214,9 +216,9 @@ class ${clsname} {
                             title: 'autoimport',
                             arguments: [qualifiedName],
                         };
-                        return item;
-                    });
-                });
+                        items.push(item);
+                    }
+                }
 
                 // completion based on local names
                 {
