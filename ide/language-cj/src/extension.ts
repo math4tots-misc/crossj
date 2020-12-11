@@ -61,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
         parts.push('\n');
 
         const qualifiedNames = world.getAllQualifiedNames().sort();
-        parts.push(`Known classes ${qualifiedNames.length}\n`);
+        parts.push(`Known items ${qualifiedNames.length}\n`);
         for (const qaulifiedName of qualifiedNames) {
             parts.push(`  ${qaulifiedName}\n`);
             const item = world.qualifiedNameToItem.get(qaulifiedName);
