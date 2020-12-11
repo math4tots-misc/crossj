@@ -416,8 +416,6 @@ export class World {
                     if (triple !== null) {
                         const [, pkg, shortName] = triple;
                         const qualifiedName = pkg + '.' + shortName;
-                        console.log(`FFF ${qualifiedName}`)
-
                         let pair = this.shortNameToQualifiedNames.get(shortName);
                         if (pair === null) {
                             pair = [shortName, new Set()];
