@@ -9,7 +9,7 @@ class SetBuilder[T: Hash] {
         return self
     }
 
-    def addAll[C: Iterable[T]](self: Self, ts: C): Self {
+    def addAll[C: Iterable[T] & Repr](self: Self, ts: C): Self {
         for t in ts {
             self.add(t)
         }

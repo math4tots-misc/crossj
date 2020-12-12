@@ -19,4 +19,8 @@ class Alphabet {
     ## This allows us to avoid using a 'nullable/option' type
     ## in the transition map
     static val epsilon: Int = 128
+
+    def normalize(letter: Int): Int {
+        return if (letter < 0 or letter >= Self.extendedCount) Self.catchall else letter
+    }
 }

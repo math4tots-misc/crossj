@@ -5,11 +5,13 @@ import crossj.base.StrBuilder;
 
 public final class CJAstParameter implements CJAstNode {
     private final CJMark mark;
+    private final boolean mutable;
     private final String name;
     private final CJAstTypeExpression type;
 
-    CJAstParameter(CJMark mark, String name, CJAstTypeExpression type) {
+    CJAstParameter(CJMark mark, boolean mutable, String name, CJAstTypeExpression type) {
         this.mark = mark;
+        this.mutable = mutable;
         this.name = name;
         this.type = type;
     }
@@ -17,6 +19,10 @@ public final class CJAstParameter implements CJAstNode {
     @Override
     public CJMark getMark() {
         return mark;
+    }
+
+    public boolean isMutable() {
+        return mutable;
     }
 
     public String getName() {

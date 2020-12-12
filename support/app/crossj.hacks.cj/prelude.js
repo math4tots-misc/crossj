@@ -365,6 +365,14 @@ class MC$cj$String {
     }
 
     /**
+     * @param {string} x
+     * @param {number} i
+     */
+    M$codeAt(x, i) {
+        return x.charCodeAt(i);
+    }
+
+    /**
      * @param {string} s
      */
     M$hash(s) {
@@ -422,7 +430,7 @@ class MC$cj$String {
      * @param {Iterable<T>} parts
      */
     M$join(TV$I, TV$C, sep, parts) {
-        const arr = Array.isArray(parts) ? parts : Array.from(parts);
+        const arr = Array.isArray(parts) ? parts : Array.from(TV$C.M$iter(parts));
         return arr.join(sep);
     }
 

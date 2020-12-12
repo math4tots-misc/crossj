@@ -16,6 +16,10 @@ class Map[K: Hash, V]:
         return Self.new(MutableMap[K, V].of(pairs))
     }
 
+    def fromIterable[C: Iterable[Tuple[K, V]]](pairs: C): Self {
+        return Self.of(pairs.toList())
+    }
+
     def size(self: Self): Int {
         return self._map.size()
     }

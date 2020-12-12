@@ -31,5 +31,13 @@ class SetTest {
             Assert.that('z' not in set)
             Assert.that('A' not in set)
         }
+        {
+            val builder = Set[Int].builder()
+            builder.addAll(@[24])
+            val set = builder.build()
+            Assert.equal(set.size(), 1)
+            Assert.equal(set.toString(), "Set.of([24])")
+            Assert.equal(set.toList(), [24])
+        }
     }
 }

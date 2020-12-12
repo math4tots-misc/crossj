@@ -210,7 +210,8 @@ public final class CJIRAnnotator
         }
         for (var parameter : method.getParameters()) {
             context.resolveTypeExpression(parameter.getType());
-            context.declareVariable(parameter.getMark(), false, parameter.getName(), parameter.getType().getAsIsType());
+            context.declareVariable(parameter.getMark(), parameter.isMutable(), parameter.getName(),
+                    parameter.getType().getAsIsType());
         }
     }
 
@@ -891,8 +892,9 @@ public final class CJIRAnnotator
             if (stack.size() == 0) {
                 // if the stack is empty, but we have more arguments we can look at, use it.
                 // if (args.size() != memberArgTypes.size()) {
-                //     throw XError.withMessage("nextArgIndex = " + nextArgIndex + ", memberArgTypes.size() = "
-                //             + memberArgTypes.size() + ", args.size() = " + args.size());
+                // throw XError.withMessage("nextArgIndex = " + nextArgIndex + ",
+                // memberArgTypes.size() = "
+                // + memberArgTypes.size() + ", args.size() = " + args.size());
                 // }
                 var arg = args.get(nextArgIndex);
                 var memberArgType = memberArgTypes.get(nextArgIndex);
@@ -968,11 +970,8 @@ public final class CJIRAnnotator
                                 stack.add(Pair.of(typeFromBound, typeFromGiven));
                             }
                         } else {
-                            throw err0(
-                                given + " does not implement required bound " +
-                                bound.getDefinition().getQualifiedName(),
-                                mark
-                            );
+                            throw err0(given + " does not implement required bound "
+                                    + bound.getDefinition().getQualifiedName(), mark);
                         }
                     }
                 }

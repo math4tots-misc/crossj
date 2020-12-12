@@ -47,7 +47,7 @@ class Set[T: Hash]:
 
     if T: Repr {
         def repr(self: Self): String {
-            return "Set.of([" + ", ".join(self) + "])"
+            return "Set.of([" + ", ".join(self.iter().map(t -> t.repr())) + "])"
         }
     }
 

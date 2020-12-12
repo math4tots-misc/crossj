@@ -1,5 +1,8 @@
 package cjx.re
 
+import cjx.re.NFABuilder
+import cjx.re.RegexNode
+import cjx.re.NFARun
 import cjx.re.Alphabet
 
 
@@ -7,6 +10,11 @@ import cjx.re.Alphabet
 ## NFA for matching semi-ASCII strings.
 ##
 class NFA {
+
+    def fromRegexNodes(nodes: List[RegexNode]): Self {
+        return NFABuilder.buildFromRegexNodeList(nodes)
+    }
+
     val _transitionMap: List[Map[Int, Set[Int]]]
     val _acceptState: Int
 
@@ -29,6 +37,7 @@ class NFA {
         val epsilon = Alphabet.epsilon
         val todo = states.toMutableList()
         val closure = Set[Int].builder()
+        closure.addAll(todo)
 
         while (todo.toBool()) {
             val state = todo.pop()
@@ -41,15 +50,16 @@ class NFA {
             }
         }
 
-        return closure.build()
+        val ret = closure.build()
+        return ret
     }
 
     ## Given a set of states and an input letter, returns a new set of states after
     ## the given letter is accepted.
     ##
     ## The returned set accounts for an epsilon closure after the transition.
-    def transitionOf[C: Iterable[Int]](self: Self, states: C, letter: Char): Set[Int] {
-        val och = letter.toInt()
+    def transitionOf[C: Iterable[Int]](self: Self, states: C, letter: Int): Set[Int] {
+        val och = letter
         val ch = if (och < 0 or och >= Alphabet.extendedCount) Alphabet.catchall else och
         return self.epsilonClosureOf(Set.fromIterable(
             states.iter().flatMap(
@@ -97,7 +107,7 @@ class NFA {
             val localMap = transitionMap.get(state)
 
             localMap.getOrNull(epsilon).ifPresent(newStates -> {
-                sb.add("    epsilon -> " + List.sorted(newStates))
+                sb.add("    epsilon -> " + List.sorted(newStates) + "\n")
             })
             for key = 0; key < Alphabet.count; key += 1 {
                 localMap.getOrNull(key).ifPresent(newStates -> {
@@ -113,10 +123,37 @@ class NFA {
                         sb.add("-" + (end - 1).toChar().repr())
                         key = end - 1
                     }
-                    sb.add(List.sorted(newStates).toString()).add("\n")
+                    sb.add(" -> ").add(List.sorted(newStates).toString()).add("\n")
                 })
             }
         }
         return sb.build()
+    }
+
+    def start(self: Self): NFARun {
+        return NFARun.from(self)
+    }
+
+    ## Tries to find the longest matching substring that starts from the beginning
+    ## of the given string.
+    ##
+    ## Returns the length of he match if found, or returns -1 if there is no match.
+    def match(self: Self, text: String): Int {
+        var lastMatch = -1
+        var pos = 0
+        val run = self.start()
+        if run.isMatching() {
+            # check for zero-length match
+            lastMatch = pos
+        }
+        while not run.isDead() and pos < text.size() {
+            val letter = text.codeAt(pos)
+            run.accept(letter)
+            pos += 1
+            if run.isMatching() {
+                lastMatch = pos
+            }
+        }
+        return lastMatch
     }
 }

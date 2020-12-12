@@ -753,6 +753,7 @@ public final class CJParserState {
                     }
                     var body = tryBody.get();
                     defaultBody = Optional.of(body);
+                    consumeDelimitersAndComments();
                 }
                 if (!consume('}')) {
                     return expectedType('}');
@@ -1007,6 +1008,7 @@ public final class CJParserState {
 
     private Try<CJAstParameter> parseParameter() {
         var mark = getMark();
+        var mutable = consume(CJToken.KW_VAR);
         if (!at(CJToken.ID)) {
             return expectedType(CJToken.ID);
         }
@@ -1018,7 +1020,7 @@ public final class CJParserState {
         if (tryTrait.isFail()) {
             return tryTrait.castFail();
         }
-        return Try.ok(new CJAstParameter(mark, name, tryTrait.get()));
+        return Try.ok(new CJAstParameter(mark, mutable, name, tryTrait.get()));
     }
 
     private Try<CJAstTypeExpression> parseTypeExpression() {
@@ -1577,6 +1579,7 @@ public final class CJParserState {
                     }
                     var body = tryBody.get();
                     defaultBody = Optional.of(body);
+                    consumeDelimitersAndComments();
                 }
                 if (!consume('}')) {
                     return expectedType('}');
