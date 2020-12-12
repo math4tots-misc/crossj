@@ -26,4 +26,12 @@ trait Iterable[T] : ToList[T] {
         }
         return builder.build()
     }
+
+    def toMutableList(self: Self): MutableList[T] {
+        val ret = @[T]
+        for t in self {
+            ret.add(t)
+        }
+        return ret
+    }
 }

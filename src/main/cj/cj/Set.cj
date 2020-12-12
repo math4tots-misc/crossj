@@ -9,8 +9,20 @@ class Set[T: Hash]:
 
     val _map: MutableMap[T, Bool]
 
+    def empty(): Self {
+        return Self.of([])
+    }
+
     def of(list: List[T]): Self {
         return Set[T].new(MutableMap.of(list.map(t -> (t, true))))
+    }
+
+    def fromIterable[C: Iterable[T]](iterable: C): Set[T] {
+        val builder = Self.builder()
+        for x in iterable {
+            builder.add(x)
+        }
+        return builder.build()
     }
 
     def iter(self: Self): Iterator[T] {

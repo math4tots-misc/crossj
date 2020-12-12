@@ -40,6 +40,14 @@ class Map[K: Hash, V]:
         return self._map.getOrNull(key)
     }
 
+    def getOrDefault(self: Self, key: K, d: V): V {
+        return self.getOrNull(key).getOrDefault(d)
+    }
+
+    def getOrElse(self: Self, key: K, f: Fn[V]): V {
+        return self.getOrNull(key).getOrElse(f)
+    }
+
     def __contains(self: Self, key: K): Bool {
         return key in self._map
     }

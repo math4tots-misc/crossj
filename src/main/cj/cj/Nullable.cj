@@ -45,6 +45,20 @@ union Nullable[T] :
         }
     }
 
+    def getOrElse(self: Self, f: Fn[T]): T {
+        return union self {
+            case Some(t) = t
+            case None = f.call()
+        }
+    }
+
+    def getOrDefault(self: Self, d: T): T {
+        return union self {
+            case Some(t) = t
+            case None = d
+        }
+    }
+
     def toBool(self: Self) : Bool {
         return union self {
             case Some(t) = true

@@ -16,6 +16,10 @@ class SetBuilder[T: Hash] {
         return self
     }
 
+    def __contains(self: Self, key: T): Bool {
+        return key in self._map
+    }
+
     def build(self: Self): Set[T] {
         val set = Set[T].new(self._map)
         self._map = @[:]
