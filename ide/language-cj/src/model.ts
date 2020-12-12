@@ -435,13 +435,7 @@ export class World {
                     if (triple !== null) {
                         const [, pkg, shortName] = triple;
                         const qualifiedName = pkg + '.' + shortName;
-                        let pair = this.shortNameToQualifiedNames.get(shortName);
-                        if (pair === null) {
-                            pair = [shortName, new Set()];
-                            this.shortNameToQualifiedNames.set(shortName, pair);
-                        }
-                        pair[1].add(qualifiedName);
-
+                        this._registerShortName(shortName, qualifiedName);
                         this.qualifiedNameToUri.set(qualifiedName, child);
                         otherPromises.push(this.refreshItem(qualifiedName));
                     }
@@ -452,6 +446,15 @@ export class World {
         for (const promise of otherPromises) {
             await promise;
         }
+    }
+
+    _registerShortName(shortName: string, qualifiedName: string) {
+        let pair = this.shortNameToQualifiedNames.get(shortName);
+        if (pair === null) {
+            pair = [shortName, new Set()];
+            this.shortNameToQualifiedNames.set(shortName, pair);
+        }
+        pair[1].add(qualifiedName);
     }
 
     getItemOrNull(qualifiedName: string): Item | null {
@@ -502,6 +505,8 @@ export class World {
         this.allFieldNames.addAll(newItem.fieldNames);
         this.allMethodNames.addAll(newItem.methodNames);
         this.qualifiedNameToItem.set(qualifiedName, newItem);
+        const shortName = qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
+        this._registerShortName(shortName, qualifiedName);
         return newItem;
     }
 
