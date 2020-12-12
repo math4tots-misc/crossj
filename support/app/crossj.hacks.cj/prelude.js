@@ -451,6 +451,7 @@ class MC$cj$StringBuilder {
      */
     M$add(TV$S, builder, s) {
         builder.push(TV$S.M$toString(s));
+        return builder;
     }
 
     /**
