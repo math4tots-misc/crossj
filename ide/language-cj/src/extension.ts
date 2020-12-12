@@ -198,6 +198,13 @@ class ${clsname} {
                     return undefined;
                 }
 
+                const line = document.lineAt(position).text;
+
+                // Don't provide completions in comments
+                if (line.trim().startsWith('#')) {
+                    return undefined;
+                }
+
                 const items: vscode.CompletionItem[] = [];
 
                 let pkg = "";
@@ -249,6 +256,14 @@ class ${clsname} {
         async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
             try {
                 await lazyInit(document.uri);
+
+                const line = document.lineAt(position).text;
+
+                // Don't provide completions in comments
+                if (line.trim().startsWith('#')) {
+                    return undefined;
+                }
+
                 const range = document.getWordRangeAtPosition(position);
 
                 const items: vscode.CompletionItem[] = [];

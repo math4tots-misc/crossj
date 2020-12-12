@@ -286,7 +286,7 @@ class RCSet<T> {
 }
 
 function parseItem(s: string): Item {
-    const re = /\\{|\\}|\b(def|val|var|class|union|trait)\s+\w+|\b(import|package)\s+[\.\w]+|\w+(?:\s*:)?|#[^\n]*|"(?:[^"]|\")*"|[^\s\w"]+/g;
+    const re = /#[^\n]*|\\{|\\}|\b(def|val|var|class|union|trait|case)\s+\w+|\b(import|package)\s+[\.\w]+|\w+\s*:?|"([^"]|\\\")*"|[^\s\w"]+/g;
     let depth = 0;
     let arr;
     let pkg = "";
@@ -297,6 +297,9 @@ function parseItem(s: string): Item {
     const localNames = new Trie<string>();
     while ((arr = re.exec(s)) !== null) {
         const x = arr[0];
+        if (x.startsWith('#') || x.startsWith('"') || x.startsWith("'")) {
+            continue;
+        }
         switch (x) {
             case '{':
                 depth++;
@@ -305,7 +308,7 @@ function parseItem(s: string): Item {
                 depth--;
                 break;
             default: {
-                const parts = /\b(def|val|var|class|union|trait|import|package|)\s+([\w\.]+)\s*:?/.exec(x);
+                const parts = /^\b(def|val|var|class|union|trait|case|import|package|)\b\s*([\w\.]+)\s*:?/.exec(x);
                 if (parts !== null) {
                     const [, kind, name] = parts;
                     switch (kind) {
@@ -322,6 +325,7 @@ function parseItem(s: string): Item {
                             break;
                         case 'val':
                         case 'var':
+                        case 'case':
                             if (depth === 1) {
                                 fieldNames.set(name, name);
                             } else {
