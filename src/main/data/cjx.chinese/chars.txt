@@ -1,0 +1,1500 @@
+1|我|I ; me|wǒ
+2|的|possessive p.|de
+3|你|you|nǐ
+4|是|to be; is|shì
+5|了|completed action p.|le
+6|不|no; not|bù
+7|们|plural p.|men
+8|这|this|zhè
+9|一|one; a|yī
+10|他|he; him|tā
+11|么|interrogative p.|me
+12|在|at|zài
+13|有|to have; there is|yǒu
+14|个|general measure word|gè
+15|好|good; well|hǎo
+16|来|to come|lái
+17|人|man; person|rén
+18|那|that|nà
+19|要|to want; important|yào
+20|会|can; will; to know|huì
+21|就|then; just (emp.)|jiù
+22|什|what|shén
+23|没|not|méi
+24|到|to arrive; until (time)|dào
+25|说|to speak|shuō
+26|吗|question p.|ma
+27|为|because of; for|wèi
+28|想|to think; to want|xiǎng
+29|能|to be able to|néng
+30|上|above; top|shàng
+31|去|to go|qù
+32|道|way; method|dào
+33|她|she|tā
+34|很|very|hěn
+35|看|to see; to look at|kàn
+36|可|can; able to|kě
+37|知|to know|zhī
+38|得|complement p. (V + 得 + Adverb)|de
+39|过|experienced action p.|guo
+40|吧|…right?|ba
+41|还|still; yet; to return|hái
+42|对|correct; opposite|duì
+43|里|inside|lǐ
+44|以|according to; by|yǐ
+45|都|all; both|dōu
+46|事|thing; item|shì
+47|子|child|zǐ
+48|生|life; raw|shēng
+49|时|time|shí
+50|样|manner|yàng
+51|也|also; too|yě
+52|和|and|hé
+53|下|below; down|xià
+54|真|really; truly|zhēn
+55|现|present|xiàn
+56|做|to do|zuò
+57|大|big|dà
+58|啊|ah!|a
+59|怎|how|zěn
+60|出|to go out|chū
+61|点|a dot; o'clock|diǎn
+62|起|to rise|qǐ
+63|天|day; heaven|tiān
+64|把|direct object p.; to hold|bǎ
+65|开|to open; to start|kāi
+66|让|to allow; passive p.|ràng
+67|给|to give; for; passive p.|gěi
+68|但|but; yet|dàn
+69|谢|to thank|xiè
+70|着|action in progress p.|zhe
+71|只|only|zhǐ
+72|些|some; few|xiē
+73|如|as; as if|rú
+74|家|home; family|jiā
+75|后|behind; after|hòu
+76|儿|son|ér
+77|多|many; much|duō
+78|意|idea; meaning|yì
+79|别|must not; other|bié
+80|所|actually; place|suǒ
+81|话|language; talk|huà
+82|小|small|xiǎo
+83|自|self|zì
+84|回|to answer; to return|huí
+85|然|correct|rán
+86|果|fruit|guǒ
+87|发|to send; to develop|fā
+88|见|to see; to meet|jiàn
+89|心|heart|xīn
+90|走|to walk; away|zǒu
+91|定|to set|dìng
+92|听|to listen|tīng
+93|觉|to feel|jué
+94|太|too (much)|tài
+95|该|should|gāi
+96|当|to be; just at|dāng
+97|经|pass through|jīng
+98|妈|mum|mā
+99|用|to use|yòng
+100|打|to hit|dǎ
+101|地|-ly structural p.|de
+102|再|again; then|zài
+103|因|reason|yīn
+104|呢|how about…?; continuing p.|ne
+105|女|female|nǚ
+106|告|to tell|gào
+107|最|most; -est|zuì
+108|手|hand|shǒu
+109|前|front|qián
+110|找|to look for|zhǎo
+111|行|to travel; OK!|xíng
+112|快|rapid; almost|kuài
+113|而|and; as well as|ér
+114|死|to die|sǐ
+115|先|first; former|xiān
+116|像|to be like; image|xiàng
+117|等|rank; to wait for|děng
+118|被|passive p.|bèi
+119|从|from; to follow|cóng
+120|明|bright|míng
+121|中|middle|zhōng
+122|哦|oh|ó
+123|情|emotion|qíng
+124|作|to do|zuò
+125|跟|with; to follow|gēn
+126|面|side; aspect|miàn
+127|诉|to tell; to complain|sù
+128|爱|to love|ài
+129|已|already|yǐ
+130|之|possessive p.|zhī
+131|问|to ask|wèn
+132|错|mistake; bad|cuò
+133|孩|child|hái
+134|斯|this|sī
+135|成|to become|chéng
+136|它|it|tā
+137|感|to feel; emotion|gǎn
+138|干|to do|gàn
+139|法|law|fǎ
+140|电|electric|diàn
+141|间|between; room|jiān
+142|哪|which|nǎ
+143|西|West|xī
+144|己|oneself|jǐ
+145|候|to wait; season|hòu
+146|次|mw. for time|cì
+147|信|letter; to trust|xìn
+148|欢|joyous|huān
+149|正|just (right); correct|zhèng
+150|实|real; honest|shí
+151|关|to shut|guān
+152|进|to enter|jìn
+153|车|vehicle|chē
+154|年|year|nián
+155|喜|to like|xǐ
+156|认|to recognize|rèn
+157|克|gram; to overcome|kè
+158|爸|father|bà
+159|谁|who|shuí
+160|方|place; square|fāng
+161|老|old prefix|lǎo
+162|应|should; ought to|yīng
+163|比|comparison p.|bǐ
+164|帮|to help|bāng
+165|无|not to have; -less|wú
+166|晚|evening; late|wǎn
+167|动|to move|dòng
+168|头|head|tóu
+169|机|machine|jī
+170|分|to divide; fraction|fēn
+171|特|special; unique|tè
+172|相|mutual; each other|xiāng
+173|全|all; whole|quán
+174|杀|to kill|shā
+175|需|to need; to want|xū
+176|放|to put|fàng
+177|常|always; general|cháng
+178|直|straight|zhí
+179|才|just now; ability|cái
+180|美|beautiful|měi
+181|于|in; at; on|yú
+182|带|to bring; belt|dài
+183|今|today; now|jīn
+184|力|power|lì
+185|工|work|gōng
+186|许|to permit|xǔ
+187|东|East|dōng
+188|名|name|míng
+189|同|same; similar|tóng
+190|长|long; length|cháng
+191|亲|parent; relative|qīn
+192|种|kind|zhǒng
+193|者|one who (is)|zhě
+194|嘿|hey|hēi
+195|白|white; pure|bái
+196|学|to learn|xué
+197|安|safe; calm|ān
+198|尔|thus; thou|ěr
+199|叫|to call|jiào
+200|理|essence; truth|lǐ
+201|本|mw. for books; origin|běn
+202|国|country|guó
+203|第|ordinal #|dì
+204|友|friend|yǒu
+205|高|high; tall|gāo
+206|两|two (used with mw.)|liǎng
+207|保|to defend|bǎo
+208|请|to invite|qǐng
+209|非|not|fēi
+210|重|heavy; serious|zhòng
+211|公|public|gōng
+212|记|to record|jì
+213|身|body|shēn
+214|受|to receive|shòu
+215|住|to live; to reside|zhù
+216|活|to live|huó
+217|加|to add; plus|jiā
+218|何|question word|hé
+219|伙|companion; buddy|huǒ
+220|题|topic; subject|tí
+221|完|to finish; complete|wán
+222|接|to receive; to join|jiē
+223|拿|to take|ná
+224|望|to gaze; to hope|wàng
+225|解|to divide; to explain|jiě
+226|其|his; hers; its|qí
+227|离|to leave; (distance) from|lí
+228|谈|to chat|tán
+229|又|again; also|yòu
+230|新|new|xīn
+231|更|more|gèng
+232|钱|money|qián
+233|马|horse|mǎ
+234|思|to think; to consider|sī
+235|部|section; part|bù
+236|场|open area|cháng
+237|嗯|approval interjection|en
+238|计|to plan|jì
+239|任|to appoint; office|rèn
+240|确|solid; real|què
+241|吃|to eat|chī
+242|始|to begin|shǐ
+243|结|to produce|jiē
+244|利|sharp; benefit|lì
+245|朋|friend|péng
+246|警|police; to warn|jǐng
+247|士|scholar; soldier|shì
+248|外|outside; foreign|wài
+249|件|mw. for items|jiàn
+250|难|difficult|nán
+251|位|mw. for people|wèi
+252|表|exterior surface|biǎo
+253|刚|just (now); hard|gāng
+254|希|rare: hope|xī
+255|查|to research|chá
+256|拉|to pull|lā
+257|边|side; edge|biān
+258|或|maybe; perhaps|huò
+259|将|will; shall|jiāng
+260|男|male|nán
+261|准|to allow|zhǔn
+262|变|to change|biàn
+263|证|proof|zhèng
+264|物|thing; object|wù
+265|员|employee; member|yuán
+266|总|always|zǒng
+267|噢|moan sound|ō
+268|系|system; to connect|xì
+269|几|how many|jǐ
+270|管|to control|guǎn
+271|玩|to play|wán
+272|处|place; location|chù
+273|办|to do; to manage|bàn
+274|主|master; main|zhǔ
+275|气|air|qì
+276|每|each; every|měi
+277|少|few; little|shǎo
+278|切|to cut; to slice|qiē
+279|失|to lose|shī
+280|算|to calculate|suàn
+281|性|nature; gender|xìng
+282|此|this; these|cǐ
+283|必|must; will|bì
+284|备|get ready|bèi
+285|合|to close; together|hé
+286|德|virtue; ethics|dé
+287|队|team; group|duì
+288|试|to test; to try|shì
+289|抱|to carry in arms|bào
+290|医|medical|yī
+291|通|to connect; open|tōng
+292|体|body; form|tǐ
+293|乐|happy|lè
+294|并|(not) at all|bìng
+295|三|three|sān
+296|早|early; morning|zǎo
+297|门|door; gate|mén
+298|害|harm|hài
+299|歉|to apologize|qiàn
+300|选|to choose|xuǎn
+301|嗨|an exclamation|hāi
+302|房|house; room|fáng
+303|命|life; fate|mìng
+304|且|moreover; both|qiě
+305|向|towards; direction|xiàng
+306|兴|to rise; to flourish|xīng
+307|球|ball; sphere|qiú
+308|服|clothes; to serve|fú
+309|入|to enter|rù
+310|照|according to; to shine|zhào
+311|提|to lift|tí
+312|掉|to fall; to lose|diào
+313|夫|husband|fū
+314|路|road|lù
+315|演|to act; to develop|yǎn
+316|够|to be enough|gòu
+317|日|sun; day|rì
+318|案|legal case; record|àn
+319|舞|to dance|wǔ
+320|决|to decide|jué
+321|求|to look for; to request|qiú
+322|约|appointment; to invite|yuē
+323|字|word; character|zì
+324|呃|belch; hiccup|è
+325|肯|to agree|kěn
+326|目|eye|mù
+327|笑|to laugh|xiào
+328|伤|wound|shāng
+329|神|deity; spirit|shén
+330|父|father|fù
+331|指|finger; refer to|zhǐ
+332|报|to announce|bào
+333|留|to stay; to remain|liú
+334|水|water; liquid|shuǐ
+335|教|to teach|jiào
+336|枪|gun|qiāng
+337|清|clear|qīng
+338|色|color|sè
+339|号|number|hào
+340|世|life; age; world|shì
+341|远|far; distant|yuǎn
+342|片|thin piece; slice|piàn
+343|官|official|guān
+344|口|mouth|kǒu
+345|师|teacher; master|shī
+346|原|original|yuán
+347|酒|wine|jiǔ
+348|周|circle; week|zhōu
+349|星|star|xīng
+350|识|to know|shí
+351|赛|competition|sài
+352|救|to save|jiù
+353|底|bottom; end|dǐ
+354|棒|wonderful; stick|bàng
+355|须|must; beard|xū
+356|收|to receive|shōu
+357|交|to deliver; to pay|jiāo
+358|坐|to sit|zuò
+359|停|to stop|tíng
+360|卡|card; to block|kǎ
+361|尼|Buddhist nun|ní
+362|婚|to marry|hūn
+363|格|grid; pattern|gé
+364|眼|eye|yǎn
+365|金|gold|jīn
+366|蛋|egg|dàn
+367|息|breath; to rest|xī
+368|室|room|shì
+369|内|inside; inner|nèi
+370|运|to move; fortune|yùn
+371|根|root; basis|gēn
+372|单|single; list|dān
+373|宝|jewel; treasure|bǎo
+374|哥|elder brother|gē
+375|张|mw. for flat obj.|zhāng
+376|搞|to make; to set up|gǎo
+377|战|to fight; war|zhàn
+378|火|fire|huǒ
+379|罗|gauze; to gather|luó
+380|至|to arrive|zhì
+381|万|ten thousand|wàn
+382|声|sound; voice|shēng
+383|布|cloth; to spread|bù
+384|音|sound; noise|yīn
+385|期|period of time|qī
+386|条|mw. long thing obj.|tiáo
+387|消|to vanish; need|xiāo
+388|买|to buy|mǎi
+389|病|illness; disease|bìng
+390|整|ordered|zhěng
+391|奇|strange|qí
+392|弟|young brother|dì
+393|犯|to violate; to offend|fàn
+394|装|clothing; to pretend|zhuāng
+395|贝|shell|bèi
+396|您|you (polite)|nín
+397|送|to give; to deliver|sòng
+398|怕|to fear|pà
+399|护|to protect|hù
+400|度|degree; measure|dù
+401|花|flower; to spend|huā
+402|节|festival|jié
+403|近|near|jìn
+404|怪|odd; monster|guài
+405|持|to maintain; to manage|chí
+406|光|bright; only|guāng
+407|与|and; with|yǔ
+408|穿|to wear|chuān
+409|愿|to hope; willing|yuàn
+410|象|elephant; form|xiàng
+411|影|image|yǐng
+412|击|to hit|jí
+413|使|to cause|shǐ
+414|二|two|èr
+415|喝|to drink|hē
+416|月|moon; month|yuè
+417|器|device; tool|qì
+418|察|to examine; to observe|chá
+419|制|to manufacture|zhì
+420|嘛|obvious p.; pause p.|ma
+421|哈|laughter|hā
+422|助|to help|zhù
+423|达|to reach|dá
+424|海|ocean; sea|hǎi
+425|待|to wait; about to|dài
+426|托|support; to entrust|tuō
+427|除|to remove|chú
+428|写|to write|xiě
+429|绝|sever; absolutely|jué
+430|界|boundary; scope|jiè
+431|帝|emperor|dì
+432|姐|older sister|jiě
+433|反|contrary; opposite|fǎn
+434|担|to undertake|dān
+435|司|to manage; department|sī
+436|强|strong; powerful|qiáng
+437|由|from; by|yóu
+438|论|opinion; theory|lùn
+439|飞|to fly|fēi
+440|亚|Asia|yà
+441|续|to continue|xù
+442|视|to look at|shì
+443|母|mother|mǔ
+444|空|empty; air|kōng
+445|军|army|jūn
+446|跑|to run|pǎo
+447|阿|prefix for names|ā
+448|尽|to greatest extent|jìn
+449|注|pay attention; to register|zhù
+450|弄|to do|nòng
+451|密|secret|mì
+452|线|thread|xiàn
+453|代|to substitute; era|dài
+454|忙|busy|máng
+455|坏|bad; broken|huài
+456|久|long (time)|jiǔ
+457|议|to discuss|yì
+458|衣|clothes|yī
+459|血|blood|xiě
+460|钟|clock; o'clock|zhōng
+461|继|to carry on|jì
+462|礼|gift; ceremony|lǐ
+463|数|number; figure|shù
+464|份|mw. for papers, sets|fèn
+465|疯|insane|fēng
+466|平|flat; equal|píng
+467|止|to prohibit|zhǐ
+468|十|ten|shí
+469|拜|to pay respect|bài
+470|鬼|ghost|guǐ
+471|睡|to sleep|shuì
+472|啦|exclamation p.|la
+473|调|to transfer; tone|diào
+474|巴|to stick to; close to|bā
+475|兄|elder brother|xiōng
+476|紧|strict; tight|jǐn
+477|站|to stop; station|zhàn
+478|品|goods; product|pǐn
+479|英|brave|yīng
+480|罪|guilt; crime|zuì
+481|文|language; culture|wén
+482|亮|bright; clear|liàng
+483|抓|to grab|zhuā
+484|跳|to jump|tiào
+485|联|to unite; to join|lián
+486|混|to mix|hùn
+487|便|ordinary; convenient|biàn
+488|狗|dog|gǒu
+489|脑|brain; mind|nǎo
+490|业|occupation|yè
+491|歌|song|gē
+492|精|essence; vitality|jīng
+493|包|to wrap; bag|bāo
+494|转|to revolve; to turn|zhuǎn
+495|却|but; however|què
+496|参|to participate|cān
+497|院|courtyard; institution|yuàn
+498|务|affair; business|wù
+499|基|base; foundation|jī
+500|台|platform|tái
+501|另|other; another|lìng
+502|恩|grace|ēn
+503|书|book|shū
+504|统|to unite|tǒng
+505|风|wind|fēng
+506|况|situation; moreover|kuàng
+507|四|four|sì
+508|黑|black|hēi
+509|否|to deny|fǒu
+510|险|danger|xiǎn
+511|言|words; speech|yán
+512|米|rice|mǐ
+513|杰|distinguished|jié
+514|校|school|xiào
+515|幸|fortunate|xìng
+516|传|to transfer; send|chuán
+517|复|to return; to repeat|fù
+518|量|quantity; amount|liàng
+519|首|head; chief|shǒu
+520|改|to change|gǎi
+521|忘|to forget|wàng
+522|术|method; technique|shù
+523|局|office; narrow|jú
+524|客|customer; guest|kè
+525|假|fake; to borrow|jiǎ
+526|永|forever|yǒng
+527|维|to maintain|wéi
+528|岁|years (of age)|suì
+529|据|according to; to seize|jù
+530|派|school of though|pài
+531|票|ticket|piào
+532|兰|orchid|lán
+533|恶|evil; ugly|è
+534|烦|to trouble|fán
+535|取|to take|qǔ
+536|游|to swim; to travel|yóu
+537|糟|dregs|zāo
+538|令|command; to order|lìng
+539|随|to follow; comply|suí
+540|五|five|wǔ
+541|圣|holy|shèng
+542|式|type; style|shì
+543|探|to explore|tàn
+544|嘴|mouth|zuǐ
+545|毒|poison|dú
+546|越|to climb over|yuè
+547|律|law|lǜ
+548|费|expense|fèi
+549|科|division|kē
+550|麻|hemp; rough|má
+551|简|simple|jiǎn
+552|易|easy|yì
+553|流|to flow|liú
+554|治|to govern; solve|zhì
+555|唱|to sing|chàng
+556|答|to reply; answer|dá
+557|倒|to invert; actually|dǎo
+558|划|to plan; row|huà
+559|控|to accuse; manage|kòng
+560|味|taste; smell|wèi
+561|区|area|qū
+562|漂|to float|piāo
+563|支|to support|zhī
+564|乎|in; at; from|hū
+565|录|diary; record|lù
+566|考|to test|kǎo
+567|超|to exceed; super-|chāo
+568|拍|to clap; to take (photo)|pāi
+569|轻|light; gentle|qīng
+570|连|to link; even…|lián
+571|往|towards|wǎng
+572|组|to organize; group|zǔ
+573|满|to fill; satisfied|mǎn
+574|造|to build; to make|zào
+575|弹|bullet|dàn
+576|静|still; calm|jìng
+577|故|old; happening|gù
+578|吸|to breathe; inhale|xī
+579|喂|call attention|wèi
+580|集|to gather; to collect|jí
+581|极|extremely|jí
+582|讲|to speak; lecture|jiǎng
+583|块|colloq. money; lump|kuài
+584|趣|interesting|qù
+585|类|kind; category|lèi
+586|呀|surprise p.|yā
+587|戏|drama; trick|xì
+588|曾|once; already|céng
+589|容|to contain; appearance|róng
+590|步|a step|bù
+591|投|to cast|tóu
+592|化|to change into|huà
+593|未|not; have not|wèi
+594|束|to bind; bundle|shù
+595|醒|to wake up|xǐng
+596|威|power|wēi
+597|班|team; class|bān
+598|终|end; finish|zhōng
+599|差|inferior; bad|chà
+600|梦|dream|mèng
+601|赢|to win|yíng
+602|药|medicine|yào
+603|迪|to enlighten|dí
+604|店|inn; shop|diàn
+605|丽|beautiful|lì
+606|卖|to sell|mài
+607|显|prominent; to show|xiǎn
+608|监|to supervise|jiān
+609|图|diagram; map|tú
+610|半|half|bàn
+611|语|language; speech|yǔ
+612|付|to pay; hand over|fù
+613|热|hot|rè
+614|排|a row; to arrange|pái
+615|楚|distinct; clear|chǔ
+616|偷|to steal|tōu
+617|敢|to dare|gǎn
+618|油|oil|yóu
+619|餐|meal|cān
+620|破|broken; to destroy|pò
+621|杯|cup|bēi
+622|市|market; city|shì
+623|城|city; town|chéng
+624|哇|child cry sound|wā
+625|权|authority; power|quán
+626|某|some; a certain|mǒu
+627|激|to excite; fierce|jī
+628|立|to stand|lì
+629|程|rule; order|chéng
+630|伊|he; she|yī
+631|讨|to invite; to discuss|tǎo
+632|责|duty|zé
+633|昨|yesterday|zuó
+634|闭|to close; to shut|bì
+635|庭|main hall; courtyard|tíng
+636|落|to set; to decline|luò
+637|饭|food; meal|fàn
+638|林|forest|lín
+639|换|to change|huàn
+640|及|to reach; up to|jí
+641|船|boat|chuán
+642|争|to strive for|zhēng
+643|猜|to guess|cāi
+644|级|level; rank|jí
+645|姆|matron|mǔ
+646|雷|thunder|léi
+647|刻|quarter (hour); to cut|kè
+648|建|to establish|jiàn
+649|团|round|tuán
+650|王|king|wáng
+651|惊|frightened|jīng
+652|迎|to welcome|yíng
+653|段|section|duàn
+654|标|sign; prize|biāo
+655|检|to check|jiǎn
+656|各|each; every|gè
+657|义|justice|yì
+658|百|hundred|bǎi
+659|民|the people|mín
+660|功|result; achievement|gōng
+661|唯|yes|wěi
+662|夜|night|yè
+663|示|to show|shì
+664|靠|to lean on|kào
+665|释|to explain|shì
+666|脸|face|liǎn
+667|引|to pull; to guide|yǐn
+668|择|to select|zé
+669|疑|to doubt|yí
+670|赶|to hurry|gǎn
+671|俩|two (coll. 两）|liǎ
+672|独|alone|dú
+673|冷|cold|lěng
+674|妹|younger sister|mèi
+675|楼|building; floor|lóu
+676|皮|leather; skin|pí
+677|存|to exist; to deposit|cún
+678|练|to practice|liàn
+679|娘|mother; young lady|niáng
+680|顿|to pause; mw. for meals|dùn
+681|断|to break; defiitely|duàn
+682|设|to set up|shè
+683|松|loose; to relax|sōng
+684|博|rich; extensive|bó
+685|置|to install|zhì
+686|逃|to escape|táo
+687|观|to watch|guān
+688|痛|ache; pain|tòng
+689|狂|mad; wild|kuáng
+690|足|foot|zú
+691|码|number; code|mǎ
+692|恐|afraid|kǒng
+693|吉|lucky|jí
+694|历|calendar; to experience|lì
+695|慢|slow|màn
+696|妻|wife|qī
+697|山|mountain|shān
+698|普|general; popular|pǔ
+699|价|price; value|jià
+700|元|unit of money|yuán
+701|角|angle; 0.1元|jiǎo
+702|怀|bosom; heart|huái
+703|床|bed|chuáng
+704|奥|obscure|ào
+705|模|to imitate|mó
+706|验|to examine|yàn
+707|索|to search; to ask|suǒ
+708|街|street|jiē
+709|呼|to call|hū
+710|祝|to wish; to pray|zhù
+711|料|material; stuff|liào
+712|休|to rest|xiū
+713|灵|quick; effective|líng
+714|狱|prison; lawsuit|yù
+715|剧|drama; play|jù
+716|乱|messy; disorder|luàn
+717|展|to spread out|zhǎn
+718|板|board; plank|bǎn
+719|承|to bear; to carry|chéng
+720|则|in contrast; norm|zé
+721|顾|to look after|gù
+722|深|deep; profound|shēn
+723|产|give birth; to produce|chǎn
+724|洗|to wash|xǐ
+725|政|political|zhèng
+726|迷|fan (of)|mí
+727|领|neck|lǐng
+728|午|noon|wǔ
+729|纳|to receive; to bring in|nà
+730|谎|lie|huǎng
+731|具|tool; ability|jù
+732|退|to retreat; to decline|tuì
+733|福|luck; fortune|fú
+734|习|to study; habit|xí
+735|秘|secret|mì
+736|奶|milk; breast|nǎi
+737|遇|to meet; to encounter|yù
+738|职|office; duty|zhí
+739|架|to support; framework|jià
+740|即|namely; at once|jí
+741|挺|to stand upright|tǐng
+742|史|history|shǐ
+743|负|to bear|fù
+744|千|thousand|qiān
+745|脱|to take off|tuō
+746|瑞|auspicious|ruì
+747|背|back of object|bèi
+748|仅|barely; merely|jǐn
+749|追|to chase|zhuī
+750|伦|relationship|lún
+751|炸|to fry in oil|zhá
+752|资|property; wealth|zī
+753|画|to draw; picture|huà
+754|踪|footprints; traces|zōng
+755|射|to shoot|shè
+756|弃|to abandon|qì
+757|傻|foolish|shǎ
+758|藏|to conceal; to store|cáng
+759|屁|fart; nonsense|pì
+760|瞧|to glance at|qiáo
+761|修|to repair|xiū
+762|尸|corpse|shī
+763|闻|to hear; news|wén
+764|共|common; general|gòng
+765|懂|to understand|dǒng
+766|蒂|stem of plant|dì
+767|危|danger|wēi
+768|专|specialized|zhuān
+769|呆|stupid|ái
+770|介|to introduce|jiè
+771|萨|Bodhissatva|sà
+772|魔|devil; magic|mó
+773|急|urgent; worried|jí
+774|碰|to bump|pèng
+775|甚|variant of 什|shén
+776|糕|cake|gāo
+777|苦|bitter; pain|kǔ
+778|念|to miss (sb); thought|niàn
+779|适|to fit; suitable|shì
+780|华|splendid|huá
+781|冲|to clash; to rinse|chōng
+782|骗|to cheat|piàn
+783|厌|to loathe|yàn
+784|型|model; type|xíng
+785|麦|wheat; oats|mài
+786|似|-like|sì
+787|红|red|hóng
+788|值|value|zhí
+789|脚|foot|jiǎo
+790|六|six|liù
+791|谋|plan; scheme|móu
+792|套|cover; mw. for sets|tào
+793|凯|triumphant|kǎi
+794|众|many; crowd|zhòng
+795|预|to advance; prepare|yù
+796|际|border; between|jì
+797|咱|we; us|zá/zán
+798|波|wave|bō
+799|卫|to guard|wèi
+800|聊|to chat|liáo
+801|养|to raise; to bring up|yǎng
+802|导|to guide|dǎo
+803|虑|to think over|lǜ
+804|私|private|sī
+805|戴|to put on|dài
+806|毁|to destroy|huǐ
+807|鱼|fish|yú
+808|滚|to boil|gǔn
+809|志|sign; ambition|zhì
+810|杂|mixed|zá
+811|居|to reside; residence|jū
+812|词|word|cí
+813|食|food|shí
+814|诺|promise|nuò
+815|读|to read|dú
+816|误|mistake|wù
+817|撒|to release|sā
+818|突|to dash; sudden|tū
+819|牛|cow|niú
+820|馆|building; shop|guǎn
+821|规|a rule; compass|guī
+822|陪|to accompany|péi
+823|州|a state|zhōu
+824|肉|flesh; meat|ròu
+825|形|form; appear|xíng
+826|凶|culprit; scary|xiōng
+827|森|forest|sēn
+828|商|commernce|shāng
+829|纪|order; to discipline|jì
+830|浪|wave|làng
+831|石|stone|shí
+832|顺|to obey; along|shùn
+833|举|to lift|jǔ
+834|按|to press; to restrain|àn
+835|旅|journey|lǚ
+836|努|to exert|nǔ
+837|坚|strong|jiān
+838|测|to measure|cè
+839|免|to exempt; to avoid|miǎn
+840|喔|I see; oh|ō
+841|丝|silk|sī
+842|辆|mw. for vehicles|liàng
+843|乔|tall; lofty|qiáo
+844|防|to protect|fáng
+845|句|sentence|jù
+846|印|to print; image|yìn
+847|恋|to feel attached to|liàn
+848|弗|not, negative|fú
+849|季|season|jì
+850|严|strict; tight|yán
+851|推|to push|tuī
+852|伯|eldest uncle|bó
+853|莉|white jasmine|lì
+854|武|martial|wǔ
+855|胜|victory; better|shèng
+856|毛|hair; coarse|máo
+857|压|to push down|yā
+858|败|to defeat|bài
+859|究|after all; to investigate|jiū
+860|评|to comment; criticize|píng
+861|屋|house; room|wū
+862|双|pair; double|shuāng
+863|牙|tooth|yá
+864|斗|to fight|dòu
+865|鸡|chicken|jī
+866|审|to examine|shěn
+867|南|South|nán
+868|速|fast; rapid|sù
+869|蠢|stupid|chǔn
+870|丈|husband|zhàng
+871|守|to guard|shǒu
+872|获|to capture; to reap|huò
+873|八|eight|bā
+874|致|fine; delicate|zhì
+875|细|thin; fine|xì
+876|勒|to rein in; to compel|lè
+877|称|to weigh; name|chēng
+878|塔|pagoda; tower|tǎ
+879|丢|to lose|diū
+880|冰|ice|bīng
+881|态|attitude|tài
+882|吓|to scare|xià
+883|古|ancient|gǔ
+884|亡|to die|wáng
+885|状|suit; strong|zhuàng
+886|鲁|foolish, Shandong|lǔ
+887|疗|to be healed|liáo
+888|操|to operate|cāo
+889|遗|to lose; to omit|yí
+890|判|to judge|pàn
+891|响|sound; noise|xiǎng
+892|网|net; network|wǎng
+893|箱|box; chest|xiāng
+894|货|goods|huò
+895|围|to encircle|wéi
+896|签|to sign; label|qiān
+897|牌|card; tablet|pái
+898|户|door; household|hù
+899|寻|to search|xún
+900|质|character; quality|zhì
+901|供|to supply|gōng
+902|奖|prize|jiǎng
+903|袋|pocket|dài
+904|胡|beard; mustache|hú
+905|脏|dirty|zāng
+906|堂|hall; mw. for furniture sets|táng
+907|曼|extended|màn
+908|效|effect|xiào
+909|露|dew; to reveal|lù
+910|替|on behalf|tì
+911|娜|elegant; delicate|nuó
+912|座|seat|zuò
+913|园|park|yuán
+914|拥|to embrace|yǒng
+915|睛|eye; eyeball|jīng
+916|冒|to emit|mào
+917|甜|sweet|tián
+918|股|portion; thigh|gǔ
+919|香|fragrant|xiāng
+920|笔|pen; brush|bǐ
+921|沙|sand|shā
+922|扰|to disturb|rǎo
+923|挑|to choose|tiāo
+924|姑|aunt|gū
+925|爆|to explode|bào
+926|镇|suppress; small town|zhèn
+927|暴|violent; cruel|bào
+928|困|sleepy; difficult|kùn
+929|项|item; back of neck|xiàng
+930|概|approximate|gài
+931|摩|to rub|mó
+932|虽|although|suī
+933|纽|knot; button; knob|niǔ
+934|享|to enjoy|xiǎng
+935|配|to join; to match|pèi
+936|迹|traces|jì
+937|登|to ascend|dēng
+938|诞|give birth|dàn
+939|竟|unexpectedly|jìng
+940|叔|father's younger brother|shū
+941|捕|to arrest|bǔ
+942|赌|to gamble|dǔ
+943|阻|to obstruct|zǔ
+944|彩|color; variety|cǎi
+945|搬|to move (house)|bān
+946|属|category; affiliation|shǔ
+947|招|to recruit|zhāo
+948|婆|grandmother|pó
+949|巧|opportunely; timely|qiǎo
+950|骨|bone|gǔ
+951|塞|to stop up|sāi
+952|剩|to remain|shèng
+953|酷|ruthless; cool|kù
+954|啡|coffee; morphine|fēi
+955|课|subject; lesson|kè
+956|烟|cigarette; to smoke|yān
+957|摄|to absorb|shè
+958|封|to grant; title|fēng
+959|咖|coffee (phonetic)|kā
+960|低|low; beneath|dī
+961|技|skill|jì
+962|迟|late; slow|chí
+963|纸|paper|zhǐ
+964|烧|to cook; roast/bake|shāo
+965|委|to entrust|wěi
+966|暗|dark; gloomy|àn
+967|左|left|zuǒ
+968|输|to lose|shū
+969|曲|song; tune|qǔ
+970|仍|still; yet|réng
+971|训|to tell; to teach|xùn
+972|借|to lend; to borrow|jiè
+973|扔|to throw|rēng
+974|善|virtuous; kind|shàn
+975|社|society|shè
+976|轮|wheel; by turns|lún
+977|顶|apex; to replace|dǐng
+978|聪|intelligent|cōng
+979|秀|handsome; elegant|xiù
+980|刀|knife|dāo
+981|莫|do not|mò
+982|腿|legs; thighs|tuǐ
+983|族|race; nationality|zú
+984|鞋|shoes|xié
+985|兵|soldiers|bīng
+986|锁|lock|suǒ
+987|妮|girl|nī
+988|异|different; other|yì
+989|誓|swear; oath|shì
+990|树|tree|shù
+991|木|tree; wood|mù
+992|抢|to plunder|qiǎng
+993|档|grade (of goods); shelves|dǎng
+994|雇|to employ|gù
+995|广|wide|guǎng
+996|丹|cinnabar|dān
+997|银|silver|yín
+998|镜|mirror|jìng
+999|群|group|qún
+1000|坦|flat; smooth|tǎn
+1001|汉|Han people|hàn
+1002|土|earth|tǔ
+1003|短|short; brief|duǎn
+1004|伴|partner|bàn
+1005|播|to scatter|bō
+1006|环|ring; to circle|huán
+1007|恨|to hate|hèn
+1008|移|to move; to alter|yí
+1009|编|to organize; to compile|biān
+1010|温|warm|wēn
+1011|刺|to stab; to pierce|cì
+1012|毫|fine hair|háo
+1013|右|right|yòu
+1014|野|field; wild|yě
+1015|哭|to cry|kū
+1016|遍|everywhere; all over|biàn
+1017|库|warehouse|kù
+1018|搭|to put up|dā
+1019|康|healthy|kāng
+1020|症|disease; illness|zhèng
+1021|荣|glory; honor|róng
+1022|充|to fill; to satisfy|chōng
+1023|创|a wound|chuāng
+1024|尝|taste; experience|cháng
+1025|列|to arrange; list|liè
+1026|毕|the whole of; to finish|bì
+1027|般|sort; kind|bān
+1028|聚|to assemble|jù
+1029|劳|to toil|láo
+1030|攻|to attack|gōng
+1031|忍|to endure|rěn
+1032|势|power; potential|shì
+1033|尊|senior; to honor|zūn
+1034|吻|kiss; lips|wěn
+1035|汤|soup; hot water|tāng
+1036|优|excellent|yōu
+1037|境|border; place|jìng
+1038|蒙|cover; ignorant|méng
+1039|偶|accidental|ǒu
+1040|熟|cooked; ripe; familiar|shú
+1041|营|camp; barracks|yíng
+1042|苏|to revive|sū
+1043|爷|father; grandfather|yé
+1044|微|tiny|wēi
+1045|埃|fine dust; dirt|āi
+1046|抽|to draw out|chōu
+1047|盖|lid; cover|gài
+1048|灯|light; lamp|dēng
+1049|莎|sedge grass|shā
+1050|府|seat of power|fǔ
+1051|透|to penetrate|tòu
+1052|魂|soul; spirit|hún
+1053|艺|skill; art|yì
+1054|掌|palm of hand|zhǎng
+1055|啥|what?|shà
+1056|升|to ascend; promote|shēng
+1057|裤|trousers|kù
+1058|临|to face|lín
+1059|智|wisdom|zhì
+1060|盘|plate|pán
+1061|研|study; research|yán
+1062|菲|fragrant; luxuriant|fēi
+1063|归|to return|guī
+1064|撞|to hit|zhuàng
+1065|隐|secret|yǐn
+1066|附|to be close to; to add|fù
+1067|搜|to seek|sōu
+1068|摆|to arrange|bǎi
+1069|散|to scatter|sàn
+1070|阳|male; sun|yáng
+1071|协|to cooperate|xié
+1072|租|to hire|zū
+1073|泰|safe; grand|tài
+1074|岛|island|dǎo
+1075|健|healthy|jiàn
+1076|饼|biscuits|bǐng
+1077|较|comparatively|jiào
+1078|避|to flee; to avoid|bì
+1079|猫|cat|māo
+1080|七|seven|qī
+1081|菜|dish; cuisine; vegetable|cài
+1082|糖|sugar; sweets|táng
+1083|痴|imbecile|chī
+1084|富|rich; abundant|fù
+1085|降|to drop; descend|jiàng
+1086|怜|to pity|lián
+1087|既|already; both…|jì
+1088|织|to weave|zhī
+1089|执|to execute; to grasp|zhí
+1090|戒|to warn|jiè
+1091|佛|Buddha|fó
+1092|抗|to resist; anti-|kàng
+1093|笨|stupid|bèn
+1094|航|boat; to sail|háng
+1095|妙|wonderful|miào
+1096|迈|to pass by|mài
+1097|耳|ear|ěr
+1098|匙|spoon|chí
+1099|宣|to announce|xuān
+1100|烂|soft; rotten|làn
+1101|秒|a second|miǎo
+1102|挂|to hang; to register|guà
+1103|旁|beside; side|páng
+1104|勇|brave|yǒng
+1105|钥|key; lock|yào/yuè
+1106|悲|sorrow|bēi
+1107|妇|married woman|fù
+1108|圈|ring; to circle|quān
+1109|敬|to respect|jìng
+1110|劲|strong; tough|jìn/jìng
+1111|帕|turban; veil|pà
+1112|草|grass|cǎo
+1113|醉|intoxicated|zuì
+1114|绑|to tie|bǎng
+1115|层|layer; floor (of building)|céng
+1116|吵|to quarrel|chǎo
+1117|龙|dragon|lóng
+1118|挥|to wave; to disperse|huī
+1119|奋|to strive|fèn
+1120|忆|to remember|yì
+1121|折|to break; to turn|zhé
+1122|彼|that; those|bǐ
+1123|末|tip; final|mò
+1124|北|North|běi
+1125|景|scenery|jǐng
+1126|沃|to irrigate|wò
+1127|废|to abolish|fèi
+1128|副|secondary; vice-|fù
+1129|默|silent|mò
+1130|铁|iron|tiě
+1131|初|at first|chū
+1132|雪|snow|xuě
+1133|瓦|tile; pottery|wǎ
+1134|素|raw silk; nature|sù
+1135|禁|to prohibit|jìn
+1136|诚|honest; sincere|chéng
+1137|黄|yellow|huáng
+1138|敌|enemy; to resist|dí
+1139|夏|Summer|xià
+1140|贵|expensive|guì
+1141|欧|Europe|ōu
+1142|旦|dawn|dàn
+1143|依|to depend on|yī
+1144|谅|to forgive|liàng
+1145|桌|table|zhuō
+1146|雄|male; grand|xióng
+1147|丁|male adult; robust|dīng
+1148|舒|leisurely; to stretch|shū
+1149|粉|powder|fěn
+1150|旧|old|jiù
+1151|朝|dynasty|cháo
+1152|厅|hall|tīng
+1153|恭|polite|gōng
+1154|汽|steam|qì
+1155|补|to make up for|bǔ
+1156|徒|apprentice|tú
+1157|稍|somewhat; a little|shāo
+1158|摇|to shake|yáo
+1159|躲|to hide|duǒ
+1160|窗|window|chuāng
+1161|源|source; origin|yuán
+1162|蓝|blue|lán
+1163|章|chapter|zhāng
+1164|灭|to extinguish|miè
+1165|疼|aches; pains|téng
+1166|孤|lonely|gū
+1167|滑|to slip; cunning|huá
+1168|碎|to break; broken|suì
+1169|弱|weak|ruò
+1170|仔|meticulous; young|zǐ
+1171|款|section|kuǎn
+1172|拒|to resist|jù
+1173|河|river|hé
+1174|伍|to associate with|wǔ
+1175|纹|line; streak|wén
+1176|臭|smell; stink|chòu
+1177|幻|fantasy|huàn
+1178|童|child|tóng
+1179|翰|writing brush|hàn
+1180|闪|to dodge; flash|shǎn
+1181|残|to injure; cruel|cán
+1182|鸟|bird|niǎo
+1183|骑|to ride|qí
+1184|翻|to translate; to flip|fān
+1185|洲|continent; island|zhōu
+1186|沉|to submerge; sink|chén
+1187|饿|hungry|è
+1188|砸|to smash|zá
+1189|互|mutual|hù
+1190|卷|roll; to roll up|juǎn
+1191|拖|to drag|tuō
+1192|瓜|melon|guā
+1193|例|example; case|lì
+1194|财|money; wealth|cái
+1195|瓶|bottle; vase|píng
+1196|墙|wall|qiáng
+1197|拳|fist; boxing|quán
+1198|牢|prison; stable|láo
+1199|典|dictionary; law|diǎn
+1200|垃|waste|lā
+1201|染|to dye; to acquire|rǎn
+1202|漫|free; to inundate|màn
+1203|触|to touch|chù
+1204|胁|ribs; to threaten|xié
+1205|圾|garbage|jī
+1206|施|to grant|shī
+1207|胸|breast; chest|xiōng
+1208|阴|cloudy; female|yīn
+1209|孕|be pregnant|yùn
+1210|惹|to irritate|rě
+1211|硬|hard|yìng
+1212|逮|to seize|dài
+1213|销|to melt|xiāo
+1214|邦|country; nation|bāng
+1215|劫|to take by force|jié
+1216|袭|to raid|xí
+1217|育|to bring up|yù
+1218|虫|insects|chóng
+1219|嫌|to hate|xián
+1220|累|tired|léi
+1221|怖|terror; fear|bù
+1222|握|to grasp|wò
+1223|雨|rain|yǔ
+1224|缺|lack|quē
+1225|琳|gem|lín
+1226|墨|black; corrupt|mò
+1227|迫|to force|pò
+1228|采|to select; looks|cǎi
+1229|辈|generation|bèi
+1230|陷|to submerge|xiàn
+1231|蹈|to stamp feet|dǎo
+1232|限|limit|xiàn
+1233|巨|huge|jù
+1234|鲍|dried fish|bào
+1235|针|needle|zhēn
+1236|雅|elegant|yǎ
+1237|兹|now; here; this|zī
+1238|尾|tail|wěi
+1239|青|green/blue; young|qīng
+1240|席|mat; banquet|xí
+1241|逼|to pressure|bī
+1242|犹|like; similar to|yóu
+1243|扮|to dress up|bàn
+1244|赞|to praise; to support|zàn
+1245|邀|to invite|yāo
+1246|净|clean|jìng
+1247|闹|noisy|nào
+1248|访|to call on; to inquire|fǎng
+1249|良|good; very much|liáng
+1250|叛|to rebel; rebellion|pàn
+1251|驾|to operate vehicle|jià
+1252|范|pattern; model|fàn
+1253|俄|sudden(ly), Russia|é
+1254|猪|pig|zhū
+1255|辛|hot taste; hard|xīn
+1256|杉|pine/fir tree|shān
+1257|淘|wash in sieve|táo
+1258|洞|cave; hole|dòng
+1259|冠|hat; crown|guān
+1260|伟|big; great|wěi
+1261|珍|precious|zhēn
+1262|梅|plum|méi
+1263|朗|clear; bright|lǎng
+1264|欠|owe; lack|qiàn
+1265|扯|rip up; haul|chě
+1266|丑|clown; ugly|chǒu
+1267|竞|to compete|jìng
+1268|剂|liquid solution|jì
+1269|烈|fierce; intense|liè
+1270|李|plum|lǐ
+1271|村|village|cūn
+1272|厉|strict|lì
+1273|厨|kitchen|chú
+1274|允|to grant|yǔn
+1275|授|to teach|shòu
+1276|堆|to pile up; heap|duī
+1277|庆|to celebrate|qìng
+1278|率|to lead; frank|shuài
+1279|怒|anger; rage|nù
+1280|寓|residence|yù
+1281|液|sap; juice|yè
+1282|谓|to speak; meaning|wèi
+1283|估|to estimate|gū
+1284|鲜|fresh|xiān
+1285|磨|grind; rub|mó/mò
+1286|帅|handsome|shuài
+1287|婊|prostitute|biǎo
+1288|尿|urine|niào
+1289|键|key(board)|jiàn
+1290|余|surplus|yú
+1291|绍|to continue|shào
+1292|娃|baby; doll|wá
+1293|刑|to punish|xíng
+1294|扫|to sweep|sǎo
+1295|核|seed|hé
+1296|损|to decrease; damage|sǔn
+1297|辩|to dispute|biàn
+1298|惯|accustomed to|guàn
+1299|傲|proud|ào
+1300|减|to lower|jiǎn
+1301|泡|bubble; to steep|pào
+1302|摸|feel with hand|mō
+1303|著|manifest|zhù
+1304|途|way; route|tú
+1305|矶|jetty|jī
+1306|鼓|drum|gǔ
+1307|堡|fortress|bǎo
+1308|愚|stupid|yú
+1309|敏|quick|mǐn
+1310|版|edition|bǎn
+1311|盒|small box|hé
+1312|订|to agree|dìng
+1313|寄|to mail|jì
+1314|赚|to earn|zhuàn
+1315|爵|feudal title|jué
+1316|材|material|cái
+1317|盛|to ladle|chéng
+1318|尤|especially|yóu
+1319|皇|emperor|huáng
+1320|夺|to take by force|duó
+1321|邮|post; mail|yóu
+1322|俱|all; together|jù
+1323|九|nine|jiǔ
+1324|盗|to steal|dào
+1325|尺|Chinese "foot"|chǐ
+1326|愉|pleasant|yú
+1327|序|order; sequence|xù
+1328|鼠|rat|shǔ
+1329|幕|curtain|mù
+1330|踢|kick|tī
+1331|憾|to regret|hàn
+1332|汰|excessive|tài
+1333|隔|to partition|gé
+1334|彻|to penetrate|chè
+1335|插|to insert; pierce|chā
+1336|猎|to hunt|liè
+1337|尚|still; yet; to value|shàng
+1338|潜|to hide; hidden|qián
+1339|构|to assign; faciton|gòu
+1340|烤|bake; roast|kǎo
+1341|霍|quickly|huò
+1342|悔|to regret|huǐ
+1343|暂|temporary|zàn
+1344|爽|bright; crisp|shuǎng
+1345|扎|to pierce|zhā
+1346|绪|beginnings; thread|xù
+1347|讯|to question|xùn
+1348|吐|to vomit|tù
+1349|吹|to blow|chuī
+1350|宾|guest; visitor|bīn
+1351|侦|spy|zhēn
+1352|颗|particle|kē
+1353|宁|peaceful|níng
+1354|罚|penalty|fá
+1355|欲|to wish for; desire|yù
+1356|乡|countryside|xiāng
+1357|帽|hat|mào
+1358|杜|to prevent|dù
+1359|豪|heroic|háo
+1360|征|to recruit|zhēng
+1361|括|to enclose; to include|kuò
+1362|盯|to keep eyes on|dīng
+1363|稳|steady; stable|wěn
+1364|胆|gall; bravery|dǎn
+1365|甲|first; shell|jiǎ
+1366|赖|to depend on; bad|lài
+1367|啤|beer|pí
+1368|佩|to respect; wear (belt)|pèi
+1369|启|to start; to open|qǐ
+1370|胎|embryo; fetus|tāi
+1371|帐|screen|zhàng
+1372|赏|to bestow|shǎng
+1373|抛|throw (away)|pāo
+1374|遭|meet by chance|zāo
+1375|若|seem like|ruò
+1376|梯|ladder|tī
+1377|震|to shake|zhèn
+1378|述|to tell|shù
+1379|阵|short time|zhèn
+1380|仪|ceremony|yí
+1381|乖|clever; shrewd|guāi
+1382|宫|palace|gōng
+1383|咬|bite; gnaw|yǎo
+1384|祷|to pray|dǎo
+1385|祖|ancestor|zǔ
+1386|蜜|honey|mì
+1387|耍|to frolic|shuǎ
+1388|拼|to join together|pīn
+1389|惜|to cherish|xī
+1390|忠|loyal|zhōng
+1391|策|policy|cè
+1392|鼻|nose|bí
+1393|钻|to drill|zuān
+1394|池|pond; reservoir|chí
+1395|虚|emptiness; modest|xū
+1396|桑|mulberry tree|sāng
+1397|拾|to collect|shí
+1398|泳|to dive; swim|yǒng
+1399|频|frequently|pín
+1400|尖|sharp; acute|jiān
+1401|申|to extend; to state|shēn
+1402|违|to disobey|wéi
+1403|零|zero|líng
+1404|诊|to diagnose|zhěn
+1405|嘘|to exhale|xū
+1406|惧|to fear|jù
+1407|拯|to help; to save|zhěng
+1408|痕|scar|hén
+1409|批|to criticize|pī
+1410|绿|green|lǖ
+1411|乘|to ride|chéng
+1412|佳|beautiful|jia
+1413|熊|bear|xióng
+1414|辣|hot; spicy|là
+1415|躺|to lie down|tǎng
+1416|祈|to pray|qí
+1417|肥|fat; plump|féi
+1418|址|location|zhǐ
+1419|占|to divine|zhān
+1420|络|net|luò
+1421|掩|to cover|yǎn
+1422|省|to save; province|shěng
+1423|羊|sheep|yáng
+1424|荒|wasteland|huāng
+1425|督|to supervise|dū
+1426|撤|to omit|chè
+1427|胖|fat|pàng
+1428|辞|words|cí
+1429|增|to increase; add|zēng
+1430|援|to help|yuán
+1431|郎|young man|láng
+1432|献|to offer|xiàn
+1433|擦|to wipe|cā
+1434|农|agriculture|nóng
+1435|邪|demonic; evil|xié
+1436|姻|marriage|yīn
+1437|恢|to restore|huī
+1438|描|to copy|miáo
+1439|匹|mw. for horses|pǐ
+1440|软|soft; flexible|ruǎn
+1441|埋|to bury|mái
+1442|惨|miserable|cǎn
+1443|洋|ocean|yáng
+1444|纯|pure|chún
+1445|浴|to bathe|yù
+1446|贴|to paste; to post|tiē
+1447|尉|officer|wèi
+1448|略|summary; strategy|lüè
+1449|符|symbol; charm|fú
+1450|侵|to invade|qīn
+1451|陆|shore; land|lù
+1452|载|to carry|zài
+1453|爬|to crawl|pá
+1454|挖|to dig|wā
+1455|骄|pride|jiāo
+1456|兽|beast|shòu
+1457|嫁|to marry|jià
+1458|洁|clean|jié
+1459|晨|early morning|chén
+1460|喊|to shout|hǎn
+1461|奏|to play music|zòu
+1462|灰|ashes|huī
+1463|摔|to stumble|shuāi
+1464|羞|disgrace; shy|xiū
+1465|邻|neighbour|lín
+1466|椅|chair|yǐ
+1467|颜|face|yán
+1468|欺|cheat|qī
+1469|端|to hold; end points|duān
+1470|贺|congratulate|hè
+1471|茶|tea|chá
+1472|障|to block|zhàng
+1473|慈|kind; charitable|cí
+1474|仇|enemy; hate|chóu
+1475|厂|factory|chǎng
+1476|怨|to blame|yuàn
+1477|逊|humble; worse|xùn
+1478|黎|dawn; black|lí
+1479|剪|scissors|jiǎn
+1480|春|Spring|chūn
+1481|额|forehead|é
+1482|豆|bean|dòu
+1483|罢|to stop; to suspend|bà
+1484|裂|crack|liè
+1485|挡|to obstruct|dǎng
+1486|偏|to lean; oblique|piān
+1487|糊|paste|hù
+1488|卧|to crouch|wò
+1489|敲|to strike|qiāo
+1490|丧|to lose|sàng
+1491|乌|crow|wū
+1492|购|to purchase|gòu
+1493|域|field; region|yù
+1494|闲|idle|xián
+1495|宇|universe|yǔ
+1496|姓|surname|xìng
+1497|葬|to bury (dead)|zàng
+1498|党|party; association|dǎng
+1499|售|to sell|shòu
+1500|涂|to apply (paint)|tú
