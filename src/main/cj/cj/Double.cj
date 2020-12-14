@@ -8,6 +8,9 @@ native class Double : Eq, Ord, Hash, Repr, ToInt, ToBool, Ring {
     def negativeOne(): Self
     def zero(): Self
 
+    def nan(): Self
+    def infinity(): Self
+
     def __eq(a : Self, b : Self) : Bool
     def __lt(a : Self, b : Self) : Bool
     def __gt(a : Self, b : Self) : Bool

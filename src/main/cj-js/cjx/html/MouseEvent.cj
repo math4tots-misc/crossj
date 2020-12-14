@@ -1,8 +1,14 @@
 package cjx.html
 
+import cjx.JSObject
+import cjx.html.UIEvent
+
 
 ## Native wrapper around the browser "MouseEvent"
-native class MouseEvent {
+native class MouseEvent: UIEvent {
+
+    def getClass(): JSObject
+    def obj(self: Self): JSObject
 
     ## true if the alt key was down when the mouse event was fired
     def altKey(self: Self): Bool

@@ -49,6 +49,15 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
     ## (CJJSSpecialMethods implementation only)
     def cutFrom(self: Self, start: Int): String
 
+    ## Tries to parse this string as an integer
+    def parseInt(self: Self): Nullable[Int]
+
+    ## Tries to parse this string as a hex integer
+    def parseHex(self: Self): Nullable[Int]
+
+    ## Tries to parse this string as a double
+    def parseDouble(self: Self): Nullable[Double]
+
     def toBool(self: Self) : Bool
 
     def builder(): StringBuilder

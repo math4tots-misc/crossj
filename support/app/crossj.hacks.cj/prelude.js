@@ -435,6 +435,33 @@ class MC$cj$String {
     }
 
     /**
+     * @param {string} string
+     * @returns {null|number}
+     */
+    M$parseInt(string) {
+        const value = parseInt(string);
+        return isNaN(value) ? null : value;
+    }
+
+    /**
+     * @param {string} string
+     * @returns {null|number}
+     */
+    M$parseHex(string) {
+        const value = parseInt(string, 16);
+        return isNaN(value) ? null : value;
+    }
+
+    /**
+     * @param {string} string
+     * @returns {null|number}
+     */
+    M$parseDouble(string) {
+        const value = Number(string);
+        return isNaN(value) ? null : value;
+    }
+
+    /**
      * @param {string} s
      */
     M$toBool(s) {
@@ -2396,17 +2423,29 @@ class MC$cjx$cordova$Cordova {
 const MO$cjx$cordova$Cordova = new MC$cjx$cordova$Cordova();
 
 /**
- * All methods on KeyboardEvent should be intercepted by
+ * Most methods on KeyboardEvent should be intercepted by
  * the special method translator.
  */
-class MC$cjx$cordova$KeyboardEvent {
+class MC$cjx$html$KeyboardEvent {
+    M$getClass() {
+        return KeyboardEvent;
+    }
+    M$obj(x) {
+        return x;
+    }
 }
-const MO$cjx$cordova$KeyboardEvent = new MC$cjx$cordova$KeyboardEvent();
+const MO$cjx$html$KeyboardEvent = new MC$cjx$html$KeyboardEvent();
 
 /**
- * All methods on MouseEvent should be intercepted by
+ * Most methods on MouseEvent should be intercepted by
  * the special method translator.
  */
-class MC$cjx$cordova$MouseEvent {
+class MC$cjx$html$MouseEvent {
+    M$getClass() {
+        return MouseEvent;
+    }
+    M$obj(x) {
+        return x;
+    }
 }
-const MO$cjx$cordova$MouseEvent = new MC$cjx$cordova$MouseEvent();
+const MO$cjx$html$MouseEvent = new MC$cjx$html$MouseEvent();

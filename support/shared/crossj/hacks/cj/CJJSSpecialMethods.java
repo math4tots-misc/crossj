@@ -56,6 +56,8 @@ final class CJJSSpecialMethods {
         mkpair0("cj.Double.one", "1"),
         mkpair0("cj.Double.negativeOne", "-1"),
         mkpair0("cj.Double.zero", "0"),
+        mkpair0("cj.Double.nan", "NaN"),
+        mkpair0("cj.Double.infinity", "Infinity"),
         mkpair2("cj.Double.__eq", (a, b) -> "(" + a + "===" + b + ")"),
         mkpair2("cj.Double.__lt", (a, b) -> "(" + a + "<" + b + ")"),
         mkpair2("cj.Double.__le", (a, b) -> "(" + a + "<=" + b + ")"),

@@ -1,5 +1,6 @@
 package cjx.html
 
+import cjx.html.Event
 
-trait UIEvent {
+trait UIEvent: Event {
 }
