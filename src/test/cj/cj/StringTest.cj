@@ -1,6 +1,27 @@
 package cj
 
 class StringTest {
+
+    def testMisc() {
+        {
+            val list = "Hello World asdf".split(" ")
+            Assert.equal(list, ["Hello", "World", "asdf"])
+        }
+        Assert.equal(
+            "Hello world  asdf  qwer".split("  "),
+            ["Hello world", "asdf", "qwer"],
+        )
+        Assert.withMessage("Hello".startsWith("Hell"), "Hello starts with Hell")
+        Assert.withMessage(not "Hello".startsWith("hello"), "Hello does not start with hello")
+        Assert.withMessage("Hello".endsWith("ello"), "Hello ends with ello")
+        Assert.withMessage(not "Hello".endsWith("ell"), "Hello does not end with ell")
+        Assert.withMessage("ell" in "Hello", "ell appears in Hello")
+        Assert.withMessage("hell" not in "Hello", "hell does not appear in Hello")
+        Assert.withMessage("Hell" in "Hello", "Hell appears in Hello")
+        Assert.equal("Hello world".cut(1, 7), "ello w")
+        Assert.equal("Hello world".cutFrom(1), "ello world")
+    }
+
     def testCharToInt() {
         Assert.equal('a'.toInt(), 97)
         Assert.equal('A'.toInt(), 65)

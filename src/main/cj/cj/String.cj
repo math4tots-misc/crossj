@@ -25,6 +25,30 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
 
     def join[I: ToString, C: Iterable[I]](self: Self, parts: C): String
 
+    ## Splits self with the given separator.
+    ## (CJJSSpecialMethods implementation only)
+    def split(self: Self, separator: String): List[String]
+
+    ## Checks whether a given string appears as a prefix of self.
+    ## (CJJSSpecialMethods implementation only)
+    def startsWith(self: Self, prefix: String): Bool
+
+    ## Checks whether a given string appears as a suffix of self.
+    ## (CJJSSpecialMethods implementation only)
+    def endsWith(self: Self, suffix: String): Bool
+
+    ## Checks whether a given string appears as a substring in self.
+    ## (CJJSSpecialMethods implementation only)
+    def __contains(self: Self, substring: String): Bool
+
+    ## Create a substring from self with the given start and end indices.
+    ## (CJJSSpecialMethods implementation only)
+    def cut(self: Self, start: Int, end: Int): String
+
+    ## Create a substring from self starting from the given index upto the end.
+    ## (CJJSSpecialMethods implementation only)
+    def cutFrom(self: Self, start: Int): String
+
     def toBool(self: Self) : Bool
 
     def builder(): StringBuilder
