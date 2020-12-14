@@ -17,5 +17,9 @@ public interface CJAstItemMemberDefinition extends CJAstNode {
         return (getModifiers() & CJAstItemMemberModifiers.PRIVATE) != 0;
     }
 
+    default boolean isAsync() {
+        return (getModifiers() & CJAstItemMemberModifiers.ASYNC) != 0;
+    }
+
     <R, A> R accept(CJAstItemMemberVisitor<R, A> visitor, A a);
 }

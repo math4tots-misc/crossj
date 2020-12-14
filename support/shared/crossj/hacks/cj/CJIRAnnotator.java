@@ -58,6 +58,7 @@ public final class CJIRAnnotator
     private final CJAstItemDefinition listDefinition;
     private final CJAstItemDefinition mutableListDefinition;
     private final CJAstItemDefinition iterableDefinition;
+    private final CJAstItemDefinition promiseDefinition;
     private final CJAstItemDefinition tryDefinition;
     private final CJAstItemDefinition fn0Definition;
     private final CJAstItemDefinition fn1Definition;
@@ -79,6 +80,7 @@ public final class CJIRAnnotator
         this.listDefinition = context.world.getItem("cj.List");
         this.mutableListDefinition = context.world.getItem("cj.MutableList");
         this.iterableDefinition = context.world.getItem("cj.Iterable");
+        this.promiseDefinition = context.world.getItem("cj.Promise");
         this.tryDefinition = context.world.getItem("cj.Try");
         this.fn0Definition = context.world.getItem("cj.Fn0");
         this.fn1Definition = context.world.getItem("cj.Fn1");
@@ -256,6 +258,11 @@ public final class CJIRAnnotator
                     annotateTypeExpression(arg.getType());
                 }
                 annotateTypeExpression(method.getReturnType());
+                if (method.isAsync() && !method.getReturnType().getAsIsType().isDerivedFrom(promiseDefinition)) {
+                    throw err0(
+                            "Async functions must return a cj.Promise but got " + method.getReturnType().getAsIsType(),
+                            method.getMark());
+                }
                 exitMethod();
             } else if (member instanceof CJAstFieldDefinition) {
                 if (item.isUnion() || item.isTrait()) {
@@ -427,7 +434,12 @@ public final class CJIRAnnotator
         if (!context.isInsideMethod()) {
             throw err0("Tried to return outside a method body", s.getMark());
         }
-        annotateExpressionWithType(s.getExpression(), context.getDeclaredReturnType());
+        var expectedReturnType = context.getDeclaredReturnType();
+        if (context.isInsideAsyncMethod()) {
+            Assert.that(expectedReturnType.isDerivedFrom(promiseDefinition));
+            expectedReturnType = ((CJIRClassType) expectedReturnType).getArguments().get(0);
+        }
+        annotateExpressionWithType(s.getExpression(), expectedReturnType);
         return null;
     }
 
@@ -1401,6 +1413,23 @@ public final class CJIRAnnotator
             a = Optional.of(e.getDefaultCase().get().getResolvedType());
         }
         e.resolvedType = a.get();
+        return null;
+    }
+
+    @Override
+    public Void visitAwait(CJAstAwaitExpression e, Optional<CJIRType> a) {
+        var mark = e.getMark();
+        if (!context.isInsideAsyncMethod()) {
+            throw err0("await can only be used directly inside an async method", mark);
+        }
+        a = a.map(itype -> {
+            if (!itype.isDerivedFrom(promiseDefinition)) {
+                throw err0("await expressions may only be applied to Promise values", mark);
+            }
+            return ((CJIRClassType) itype).getArguments().get(0);
+        });
+        annotateExpressionWithOptionalType(e.getInner(), a);
+        e.resolvedType = new CJIRClassType(promiseDefinition, List.of(e.getInner().getResolvedType()));
         return null;
     }
 }

@@ -77,6 +77,10 @@ final class CJIRContext {
         exitBlock();
     }
 
+    boolean isInsideAsyncMethod() {
+        return currentMethod != null && currentMethod.isAsync() && returnTypeStack.size() == 0;
+    }
+
     boolean isItemLevelTypeVariable(String name) {
         return itemLevelTypeMap != null && itemLevelTypeMap.containsKey(name);
     }

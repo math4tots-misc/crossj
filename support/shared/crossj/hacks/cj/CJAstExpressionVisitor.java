@@ -21,4 +21,5 @@ public interface CJAstExpressionVisitor<R, A> {
     R visitErrorPropagation(CJAstErrorPropagationExpression e, A a);
     R visitUnionMatch(CJAstUnionMatchExpression e, A a);
     R visitRawMatch(CJAstRawMatchExpression e, A a);
+    R visitAwait(CJAstAwaitExpression e, A a);
 }

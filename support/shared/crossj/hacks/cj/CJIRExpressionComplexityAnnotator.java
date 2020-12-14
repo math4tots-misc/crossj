@@ -162,4 +162,10 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
                 | SWITCH_MATCH;
         return null;
     }
+
+    @Override
+    public Void visitAwait(CJAstAwaitExpression e, Void a) {
+        e.complexityFlag = annotate(e.getInner());
+        return null;
+    }
 }

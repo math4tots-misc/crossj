@@ -356,6 +356,12 @@ public final class CJParserState {
                     modified = true;
                     break;
                 }
+                case CJToken.KW_ASYNC: {
+                    next();
+                    modifiers |= CJAstItemMemberModifiers.ASYNC;
+                    modified = true;
+                    break;
+                }
             }
             if (!modified) {
                 break;
@@ -1242,21 +1248,25 @@ public final class CJParserState {
                 }
                 case '.': {
                     next();
-                    if (!at(CJToken.ID)) {
-                        return expectedType(CJToken.ID);
-                    }
-                    var name = parseID();
-                    if (at('(')) {
-                        var tryArgs = parseArguments();
-                        if (tryArgs.isFail()) {
-                            return tryArgs.castFail();
-                        }
-                        var otherArgs = tryArgs.get();
-                        var arg = tryExpr.get();
-                        var args = List.of(List.of(arg), otherArgs).flatMap(x -> x);
-                        tryExpr = Try.ok(new CJAstInstanceMethodCallExpression(mark, name, args));
+                    if (consume(CJToken.KW_AWAIT)) {
+                        tryExpr = Try.ok(new CJAstAwaitExpression(mark, tryExpr.get()));
                     } else {
-                        tryExpr = Try.ok(new CJAstFieldAccessExpression(mark, tryExpr.get(), name));
+                        if (!at(CJToken.ID)) {
+                            return expectedType(CJToken.ID);
+                        }
+                        var name = parseID();
+                        if (at('(')) {
+                            var tryArgs = parseArguments();
+                            if (tryArgs.isFail()) {
+                                return tryArgs.castFail();
+                            }
+                            var otherArgs = tryArgs.get();
+                            var arg = tryExpr.get();
+                            var args = List.of(List.of(arg), otherArgs).flatMap(x -> x);
+                            tryExpr = Try.ok(new CJAstInstanceMethodCallExpression(mark, name, args));
+                        } else {
+                            tryExpr = Try.ok(new CJAstFieldAccessExpression(mark, tryExpr.get(), name));
+                        }
                     }
                     break;
                 }

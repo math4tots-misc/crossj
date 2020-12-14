@@ -702,4 +702,10 @@ public final class CJJSStatementAndExpressionTranslator
         sb.line("}");
         return outvar;
     }
+
+    @Override
+    public String visitAwait(CJAstAwaitExpression e, Void a) {
+        var inner = emitExpressionPartial(e.getInner());
+        return "(await " + inner + ")";
+    }
 }

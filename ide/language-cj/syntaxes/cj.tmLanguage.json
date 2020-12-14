@@ -54,11 +54,11 @@
 				},
 				{
 					"name": "storage.modifier.cj",
-					"match": "\\b(native|static|private|public)\\b"
+					"match": "\\b(native|static|private|public|async)\\b"
 				},
 				{
 					"name": "keyword.control.cj",
-					"match": "\\b(def|if|else|import|while|break|continue|new|package|return|and|or|is|not|in|then|switch|case|default|as|for|union)\\b"
+					"match": "\\b(def|if|else|import|while|break|continue|new|package|return|and|or|is|not|in|then|switch|case|default|as|for|union|await)\\b"
 				},
 				{
 					"name": "keyword.operator.cj",

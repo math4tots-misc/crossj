@@ -145,6 +145,11 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
     }
 
     @Override
+    public String visitAwait(CJAstAwaitExpression e, Void a) {
+        return "(await " + translateExpression(e.getInner()) + ")";
+    }
+
+    @Override
     public String visitLogicalNot(CJAstLogicalNotExpression e, Void a) {
         return "(!" + translateExpression(e.getInner()) + ")";
     }

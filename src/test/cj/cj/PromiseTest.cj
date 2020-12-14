@@ -1,5 +1,7 @@
 package cj
 
+import cj.Time
+
 
 class PromiseTest {
 
@@ -30,5 +32,17 @@ class PromiseTest {
                 Assert.equal(s, "some error msg")
             })
         }
+    }
+
+    def testAsync() {
+        Self.runAsync()
+    }
+
+    async def runAsync(): Promise[Tuple[Double, Double]] {
+        val a = Time.now()
+        AIO.delay(0.02).await
+        val b = Time.now()
+        Assert.withMessage(b - a > 0.02, "AIO.delay(0.02) causes a 0.02 delay")
+        return (a, b)
     }
 }

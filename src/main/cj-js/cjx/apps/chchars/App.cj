@@ -9,7 +9,7 @@ class App: CordovaApp {
     val question: HTMLAny
     val answers: List[HTMLAny]
 
-    def onDeviceReady(): Self {
+    def onDeviceReady() {
         val doc = Document.get()
         val question: HTMLAny = doc.getElementById("question").cast()
         val answers: List[HTMLAny] = [
@@ -29,8 +29,6 @@ class App: CordovaApp {
         for answer in answers {
             answer.onClick(event -> self.onClickChoice(event))
         }
-
-        return self
     }
 
     def onClickChoice(self: Self, event: MouseEvent) {

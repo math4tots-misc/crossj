@@ -23,6 +23,7 @@ public final class CJAstFieldDefinition implements CJAstItemMemberDefinition {
         this.type = type;
         this.expression = expression;
         Assert.that(isStatic() == (expression != null));
+        Assert.that(!isAsync());
     }
 
     @Override

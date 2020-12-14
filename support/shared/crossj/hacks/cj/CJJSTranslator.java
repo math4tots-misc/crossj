@@ -367,7 +367,8 @@ public final class CJJSTranslator {
         var methodName = nameToMethodName(method.getName());
         var typeParameters = method.getTypeParameters();
         var parameters = method.getParameters();
-        sb.lineStart(methodName + "(");
+        sb.lineStart(method.isAsync() ? "async " : "");
+        sb.lineBody(methodName + "(");
         {
             boolean first = true;
             for (var typeParameter : typeParameters) {
