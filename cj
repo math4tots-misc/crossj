@@ -13,6 +13,7 @@ HOME = os.environ.get('HOME')
 join = os.path.join
 CORDOVA_ROOT = join(REPO, 'out', 'cordova')
 CANVAS_ROOT = join(REPO, 'out', 'canvas')
+DATA_ROOT = join(REPO, 'src', 'main', 'data')
 CJ_SRC_ROOT = join(REPO, 'src', 'main', 'cj')
 CJ_SRC_JS_ROOT = join(REPO, 'src', 'main', 'cj-js')
 CJ_TEST_ROOT = join(REPO, 'src', 'test', 'cj')
@@ -131,6 +132,7 @@ def main():
         name = cordova_config.pop('name')
         platforms = cordova_config.pop('platforms')
         plugins = cordova_config.pop('plugins', [])
+        data_map = cordova_config.pop('data', {})
         if config or cordova_config:
             err(f"Unrecognized config parameters (config {config}), (cordova {cordova_config})")
         emit_js(
@@ -150,6 +152,14 @@ def main():
             plugins=plugins,
         )
         shutil.move(tmpjspath, jspath)
+        for relsrcpath, reldestpath in data_map.items():
+            srcpath = join(DATA_ROOT, relsrcpath)
+            destpath = join(CORDOVA_ROOT, reldestpath)
+            os.makedirs(os.path.dirname(destpath), exist_ok=True)
+            if os.path.isdir(srcpath):
+                shutil.copytree(srcpath, destpath)
+            else:
+                shutil.copyfile(srcpath, destpath)
         if action == 'run':
             run(['cordova', 'run', 'browser'], cwd=CORDOVA_ROOT)
 
@@ -221,9 +231,9 @@ def emit_cordova_project(id, name, main_class, verbose, app_root, platforms, plu
         run(['cordova', 'platform', 'add', platform], cwd=CORDOVA_ROOT)
     wwwroot = join(CORDOVA_ROOT, 'www')
 
-    shutil.rmtree(wwwroot)
-
-    shutil.copytree(join(app_root, 'www'), wwwroot)
+    if os.path.exists(join(app_root, 'www')):
+        shutil.rmtree(wwwroot)
+        shutil.copytree(join(app_root, 'www'), wwwroot)
 
     os.makedirs(join(wwwroot, 'js'), exist_ok=True)
     os.makedirs(join(wwwroot, 'img'), exist_ok=True)

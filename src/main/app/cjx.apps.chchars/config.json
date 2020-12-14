@@ -1,0 +1,14 @@
+{
+    "type": "cordova",
+    "cordova": {
+        "id": "cjx.apps.chchars",
+        "name": "Chinese Character Practice",
+        "main": "cjx.apps.chchars.App",
+        "data": {
+            "cjx.chinese/chars.txt": "www/data/chars.txt"
+        },
+        "platforms": [
+            "browser"
+        ]
+    }
+}

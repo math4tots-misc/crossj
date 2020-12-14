@@ -33,4 +33,16 @@ trait HTMLElement: JSWrapper {
     def onMouseMove(self: Self, f: Fn[Unit, MouseEvent]) {
         self.obj().setField("onmousemove", f)
     }
+
+    def id(self: Self): String {
+        return self.obj().field("id").asStringUnsafe()
+    }
+
+    def innerText(self: Self): String {
+        return self.obj().field("innerText").asStringUnsafe()
+    }
+
+    def setInnerText(self: Self, text: String) {
+        self.obj().setField("innerText", text)
+    }
 }
