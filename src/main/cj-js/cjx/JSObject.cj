@@ -67,6 +67,9 @@ native class JSObject: Eq, Repr {
     ## Unsafe cast to an int
     def asIntUnsafe(self: Self): Int
 
+    ## Unsafe cast to a bool
+    def asBoolUnsafe(self: Self): Bool
+
     ## Call JSON.stringify()
     def stringify(self: Self): String
 

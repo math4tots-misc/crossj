@@ -1,3 +1,13 @@
+
+/**
+ * Checks whether we're in a browser environment
+ *
+ * Otherwise, we assume we're in nodejs
+ */
+function isBrowser() {
+    return typeof document !== 'undefined';
+}
+
 /**
  * Combines the hash in a way that is consistent with
  * `java.util.List.hashCode` in the Java language.
@@ -1449,6 +1459,46 @@ class MC$cj$Try {
     }
 }
 
+class MC$cj$Range {
+    /**
+     * @param {number} end
+     * @returns {[number, number, number]}
+     */
+    M$upto(end) {
+        return [0, end, 1];
+    }
+
+    /**
+     * @param {number} start
+     * @param {number} end
+     * @returns {[number, number, number]}
+     */
+    M$of(start, end) {
+        return [start, end, start <= end ? 1 : -1];
+    }
+
+    /**
+     * @param {number} start
+     * @param {number} end
+     * @param {number} step
+     * @returns {[number, number, number]}
+     */
+    M$withStep(start, end, step) {
+        return [start, end, step];
+    }
+
+    /**
+     * @param {[number, number, number]} range
+     */
+    *M$iter(range) {
+        const [start, end, step] = range
+        for (let i = start; i < end; i += step) {
+            yield i;
+        }
+    }
+}
+const MO$cj$Range = new MC$cj$Range();
+
 class MC$cj$Assert {
 
     /**
@@ -2241,6 +2291,55 @@ class MC$cj$FS {
     }
 }
 const MO$cj$FS = new MC$cj$FS();
+
+class MC$cj$Http {
+    /**
+     * @param {string} url
+     */
+    M$read(url) {
+        if (isBrowser()) {
+            const request = new XMLHttpRequest();
+            const promise = new Promise((resolve, reject) => {
+                request.onreadystatechange = () => {
+                    if (request.readyState === XMLHttpRequest.DONE) {
+                        // local files, status is 0 upon success in Mozilla Firefox
+                        const status = request.status;
+                        if (status === 0 || (status >= 200 && status < 400)) {
+                            resolve(request.responseText);
+                        } else {
+                            reject(fail("XMLHttpRequest error: " + status));
+                        }
+                    }
+                };
+            });
+            request.open("GET", url);
+            request.send();
+            return promise;
+        } else {
+            // nodejs
+            const http = require('http');
+            const promise = new Promise((resolve, reject) => {
+                const request = http.request(url, response => {
+                    let data = '';
+                    response.on('data', chunk => {
+                        data += chunk;
+                    });
+                    response.on('end', () => {
+                        const status = response.statusCode
+                        if (response.complete && status && status >= 200 && status < 400) {
+                            resolve(data);
+                        } else {
+                            reject("http.request error: " + status);
+                        }
+                    });
+                });
+            });
+            request.end();
+            return promise;
+        }
+    }
+}
+const MO$cj$Http = new MC$cj$Http();
 
 class MC$cjx$JSObject {
     M$empty() {

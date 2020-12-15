@@ -31,6 +31,8 @@
             .question {
                 text-align: center;
                 height: 30%;
+                font-size: 200%;
+                pointer-events: none;
             }
             .answer-item {
                 text-align: center;
@@ -40,16 +42,32 @@
                 height: 10%;
                 text-align: center;
             }
+            #limit {
+                width: 15%;
+            }
             #reset {
-                width: 50%;
+                width: 20%;
                 height: 100%;
+            }
+            #mode {
+                width: 20%;
+                height: 100%;
+            }
+            .correct {
+                background-color: skyblue;
+            }
+            .incorrect {
+                background-color: crimson;
+            }
+            #limit {
+                width: 15%;
             }
         </style>
     </head>
     <body>
         <div class="page">
             <div class="wrapper">
-                <p class="label question" id="question">X</p>
+                <button class="label question" id="question">X</p>
             </div>
             <div class="wrapper">
                 <button class="label answer-item" id="choice0">0</button>
@@ -58,6 +76,8 @@
                 <button class="label answer-item" id="choice3">3</button>
             </div>
             <div class="footer">
+                <input type="text" id="limit" value="30">
+                <button id="mode">definition</button>
                 score <span id="correct">0</span>/<span id="total">0</span>
                 <button id="reset">reset</button>
             </div>

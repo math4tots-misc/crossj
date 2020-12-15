@@ -61,6 +61,15 @@ class Math {
         return MathImpl.random()
     }
 
+    ## Returns a pseudorandom integer in range [low, high)
+    def randrange(low: Int, high: Int): Int {
+        return low + (Self.random() * (high - low).toDouble()).toInt()
+    }
+
+    def randint(n: Int): Int {
+        return Self.randrange(0, n)
+    }
+
     def ceil(x: Double): Int {
         return MathImpl.ceil(x)
     }

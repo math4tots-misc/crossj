@@ -1429,7 +1429,7 @@ public final class CJIRAnnotator
             return ((CJIRClassType) itype).getArguments().get(0);
         });
         annotateExpressionWithOptionalType(e.getInner(), a);
-        e.resolvedType = new CJIRClassType(promiseDefinition, List.of(e.getInner().getResolvedType()));
+        e.resolvedType = ((CJIRClassType) e.getInner().getResolvedType()).getArguments().get(0);
         return null;
     }
 }

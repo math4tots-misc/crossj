@@ -1,5 +1,6 @@
 package cjx.html
 
+import cjx.html.DOMTokenList
 import cjx.JSWrapper
 import cjx.html.MouseEvent
 import cjx.html.KeyboardEvent
@@ -44,5 +45,9 @@ trait HTMLElement: JSWrapper {
 
     def setInnerText(self: Self, text: String) {
         self.obj().setField("innerText", text)
+    }
+
+    def classList(self: Self): DOMTokenList {
+        return self.obj().field("classList").cast()
     }
 }

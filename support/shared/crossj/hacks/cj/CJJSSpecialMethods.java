@@ -112,6 +112,7 @@ final class CJJSSpecialMethods {
         mkpair2("cj.List.get", (a, b) -> "(" + a + "[" + b + "])"),
         mkpair1("cj.List.size", a -> "(" + a + ".length)"),
         mkpair1("cj.List.iter", a -> a + "[Symbol.iterator]()"),
+        mkpair2("cj.List.__add", (a, b) -> "" + a + ".concat(" + b + ")"),
         mkpair2("cj.List.map", (a, b) -> "" + a + ".map(" + b + ")"),
         mkpair2("cj.List.filter", (a, b) -> "" + a + ".filter(" + b + ")"),
         mkpair1("cj.List.toList", a -> a),
@@ -192,6 +193,7 @@ final class CJJSSpecialMethods {
         mkpair1("cjx.JSObject.asStringUnsafe", a -> a),
         mkpair1("cjx.JSObject.asDoubleUnsafe", a -> a),
         mkpair1("cjx.JSObject.asIntUnsafe", a -> a),
+        mkpair1("cjx.JSObject.asBoolUnsafe", a -> a),
 
         mkpair0("cjx.cordova.Cordova.document", "document"),
         mkpair0("cjx.cordova.Cordova.window", "window"),
