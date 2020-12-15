@@ -16,6 +16,11 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
     ## For UTF-16 targets, this returns a number between 0 and 65535
     def codeAt(self: Self, i: Int): Int
 
+    ## Gets the codepoint at the given position in the string.
+    ## If the index is not at the start of a codepoint, the result is
+    ## undefined.
+    def codePointAt(self: Self, i: Int): Char
+
     def hash(x: Self) : Int
 
     def repr(x: Self) : String
@@ -33,9 +38,17 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
     ## (CJJSSpecialMethods implementation only)
     def startsWith(self: Self, prefix: String): Bool
 
+    ## Checks whether a given string starts with the given prefix at the given position
+    ## (CJJSSpecialMethods implementation only)
+    def startsWithAt(self: Self, prefix: String, start: Int): Bool
+
     ## Checks whether a given string appears as a suffix of self.
     ## (CJJSSpecialMethods implementation only)
     def endsWith(self: Self, suffix: String): Bool
+
+    ## Checks whether a given string ends with the given prefix at the given end position
+    ## (CJJSSpecialMethods implementation only)
+    def endsWithAt(self: Self, prefix: String, end: Int): Bool
 
     ## Checks whether a given string appears as a substring in self.
     ## (CJJSSpecialMethods implementation only)
@@ -61,4 +74,7 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
     def toBool(self: Self) : Bool
 
     def builder(): StringBuilder
+
+    ## Checks if the substring matches another substring
+    def regionMatches(self: Self, start0: Int, other: Self, start1: Int, len: Int): Bool
 }

@@ -78,4 +78,28 @@ class StringTest {
             Assert.equal(sb.build(), "hello world")
         }
     }
+
+    def testEndAndStart() {
+        Assert.withMessage("asdf".startsWith("as"), "starts with as")
+        Assert.withMessage("asdf".startsWith("asdf"), "starts with asdf")
+        Assert.withMessage(not "asdf".startsWith("asdfx"), "starts with asdfx")
+        Assert.withMessage(not "asdf".startsWith("qwer"), "starts with qwer")
+
+        Assert.withMessage("qwerasdf".startsWithAt("as", 4), "starts with at as")
+        Assert.withMessage("qwerasdf".startsWithAt("asdf", 4), "starts with at asdf")
+        Assert.withMessage(not "qwerasdf".startsWithAt("asdfx", 4), "starts with at asdfx")
+        Assert.withMessage(not "qwerasdf".startsWithAt("qwer", 4), "starts with at qwer")
+
+        Assert.withMessage("asdf".endsWith("df"), "ends with df")
+        Assert.withMessage("asdf".endsWith("asdf"), "ends with asdf")
+        Assert.withMessage(not "asdf".endsWith("xasdf"), "ends with xasdf")
+        Assert.withMessage(not "asdf".endsWith("asdfx"), "ends with asdfx")
+        Assert.withMessage(not "asdf".endsWith("qwer"), "ends with qwer")
+
+        Assert.withMessage(not "qwerasdf".endsWithAt("df", 4), "ends with at df")
+        Assert.withMessage(not "qwerasdf".endsWithAt("asdf", 4), "ends with at asdf")
+        Assert.withMessage(not "qwerasdf".endsWithAt("asdfx", 4), "ends with at asdfx")
+        Assert.withMessage("qwerasdf".endsWithAt("qwer", 4), "ends with at qwer")
+        Assert.withMessage("qwerasdf".endsWithAt("er", 4), "ends with at er")
+    }
 }

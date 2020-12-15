@@ -375,14 +375,6 @@ class MC$cj$String {
     }
 
     /**
-     * @param {string} x
-     * @param {number} i
-     */
-    M$codeAt(x, i) {
-        return x.charCodeAt(i);
-    }
-
-    /**
      * @param {string} s
      */
     M$hash(s) {
@@ -483,6 +475,17 @@ class MC$cj$String {
      */
     M$builder() {
         return [];
+    }
+
+    /**
+     * @param {string} str1
+     * @param {number} i1
+     * @param {string} str2
+     * @param {number} i2
+     * @param {number} len
+     */
+    M$regionMatches(str1, i1, str2, i2, len) {
+        return i1 >= 0 && i2 >= 0 && str1.substr(i1, len) === str2.substr(i2, len);
     }
 }
 const MO$cj$String = new MC$cj$String();
