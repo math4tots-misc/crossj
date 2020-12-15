@@ -16,13 +16,13 @@ class StringWalker {
     }
 
     ## Gets the current position of the walker
-    def pos(self: Self): Int {
+    def tell(self: Self): Int {
         return self._i
     }
 
     ## Sets the current position of the walker.
     ## To ensure validity, the argument passed here should
-    ## always be a value returned before by the 'pos()' argument
+    ## always be a value returned before by the 'tell()' argument
     ## of the same `StringWalker`.
     def seek(self: Self, i: Int) {
         self._i = i
