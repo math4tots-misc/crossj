@@ -61,6 +61,9 @@ native class JSObject: Eq, Repr {
     ## Unsafe cast to a string
     def asStringUnsafe(self: Self): String
 
+    ## Unsafe cast to a nullable string
+    def asNullableStringUnsafe(self: Self): Nullable[String]
+
     ## Unsafe cast to a double
     def asDoubleUnsafe(self: Self): Double
 

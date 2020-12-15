@@ -1,5 +1,7 @@
 package cjx.apps.chchars
 
+import cjx.html.HTMLInputElement
+import cjx.html.Window
 import cjx.JSObject
 import cj.Range
 import cjx.apps.chchars.CharEntry
@@ -14,7 +16,6 @@ class App: CordovaApp {
     val _htmlAnswers: List[HTMLAny]
     val _htmlTotalCorrect: HTMLAny
     val _htmlTotal: HTMLAny
-    val _htmlLimit: JSObject
     val _htmlMode: HTMLAny
     val _data: List[CharEntry]
 
@@ -34,15 +35,14 @@ class App: CordovaApp {
             doc.getElementById("choice2").cast(),
             doc.getElementById("choice3").cast(),
         ]
-        question.setInnerText("\n\n\nQUESTION")
-        answers.get(0).setInnerText("\n\nCHOICE0")
-        answers.get(1).setInnerText("\n\nCHOICE1")
-        answers.get(2).setInnerText("\n\nCHOICE2")
-        answers.get(3).setInnerText("\n\nCHOICE3")
+        question.setInnerText("QUESTION")
+        answers.get(0).setInnerText("CHOICE0")
+        answers.get(1).setInnerText("CHOICE1")
+        answers.get(2).setInnerText("CHOICE2")
+        answers.get(3).setInnerText("CHOICE3")
 
         Self.loadCharList().onResolve(data -> {
-            IO.println("data = " + data)
-
+            val htmlLimit: HTMLInputElement = doc.getElementById("limit").cast()
             val modeButton: HTMLAny = doc.getElementById("mode").cast()
 
             val self = App.new(
@@ -50,12 +50,32 @@ class App: CordovaApp {
                 answers,
                 doc.getElementById("correct").cast(),
                 doc.getElementById("total").cast(),
-                doc.getElementById("limit"),
                 modeButton,
                 data,
                 [],
                 Nullable.None,
             )
+
+            val localStorage = Window.get().localStorage()
+            if (localStorage.getItem("LIMIT").isEmpty()) {
+                localStorage.setItem("LIMIT", "30")
+            }
+            htmlLimit.setValue(localStorage.getItem("LIMIT").get())
+            htmlLimit.onInput(event -> {
+                union htmlLimit.value().parseInt() {
+                    case Some(i) {
+                        localStorage.setItem("LIMIT", i.toString())
+                    }
+                    case None {
+                        IO.eprintln("Could not parse limit value: " + htmlLimit.value())
+                    }
+                }
+            })
+
+            question.onClick(event -> {
+                val ch = self._data.get(self._config.get(4)).char()
+                Window.get().open("https://www.google.com/search?q=translate+" + ch)
+            })
 
             modeButton.onClick(event -> self.toggleMode())
 
@@ -119,7 +139,7 @@ class App: CordovaApp {
     }
 
     def limit(self: Self): Int {
-        return self._htmlLimit.field("value").asStringUnsafe().parseInt().getOrDefault(10)
+        return Window.get().localStorage().getItem("LIMIT").get().parseInt().get()
     }
 
     def pickNewChoices(self: Self) {

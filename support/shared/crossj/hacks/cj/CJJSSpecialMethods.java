@@ -191,6 +191,7 @@ final class CJJSSpecialMethods {
         mkpair2("cjx.JSObject.__eq", (a, b) -> "(" + a + "===" + b + ")"),
 
         mkpair1("cjx.JSObject.asStringUnsafe", a -> a),
+        mkpair1("cjx.JSObject.asNullableStringUnsafe", a -> a),
         mkpair1("cjx.JSObject.asDoubleUnsafe", a -> a),
         mkpair1("cjx.JSObject.asIntUnsafe", a -> a),
         mkpair1("cjx.JSObject.asBoolUnsafe", a -> a),

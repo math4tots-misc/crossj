@@ -1,5 +1,6 @@
 package cjx.html
 
+import cjx.html.InputEvent
 import cjx.html.DOMTokenList
 import cjx.JSWrapper
 import cjx.html.MouseEvent
@@ -33,6 +34,10 @@ trait HTMLElement: JSWrapper {
 
     def onMouseMove(self: Self, f: Fn[Unit, MouseEvent]) {
         self.obj().setField("onmousemove", f)
+    }
+
+    def onInput(self: Self, f: Fn[Unit, InputEvent]) {
+        self.obj().setField("oninput", f)
     }
 
     def id(self: Self): String {

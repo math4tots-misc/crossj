@@ -1,5 +1,6 @@
 package cjx.html
 
+import cjx.html.Storage
 import cjx.JSObject
 import cjx.JSWrapper
 import cjx.cordova.Cordova
@@ -23,6 +24,18 @@ class Window : JSWrapper {
 
     def field(self: Self, name: String): JSObject {
         return self._obj.field(name)
+    }
+
+    def open(self: Self, url: String) {
+        self._obj.method("open", [JSObject.from(url)])
+    }
+
+    def redirect(self: Self, url: String) {
+        self.field("location").setField("href", url)
+    }
+
+    def localStorage(self: Self): Storage {
+        return self._obj.field("localStorage").cast()
     }
 
     ##
