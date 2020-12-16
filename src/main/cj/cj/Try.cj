@@ -17,4 +17,6 @@ native union Try[T] :
     def get(self: Self) : T
     def getError(self: Self) : Error
     def getErrorMessage(self: Self) : String
+
+    def addContext(self: Self, message: String): Self
 }

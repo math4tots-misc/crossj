@@ -83,7 +83,12 @@ final class CJJSSimpleExpressionTranslator implements CJAstExpressionVisitor<Str
         if (e.getType().equals(CJAstLiteralExpression.STRING)) {
             return e.getRawText();
         } else if (e.getType().equals(CJAstLiteralExpression.CHAR)) {
-            return e.getRawText() + ".codePointAt(0)";
+            var text = e.getRawText();
+            if (text.length() == 3 && text.charAt(0) == '\'' && text.charAt(2) == '\'') {
+                return "" + ((int) text.charAt(1));
+            } else {
+                return e.getRawText() + ".codePointAt(0)";
+            }
         } else if (e.getType().equals(CJAstLiteralExpression.INT)) {
             return e.getRawText();
         } else if (e.getType().equals(CJAstLiteralExpression.DOUBLE)) {

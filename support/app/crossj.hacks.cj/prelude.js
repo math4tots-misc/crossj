@@ -338,6 +338,48 @@ class MC$cj$Char {
     M$hash(c) {
         return c;
     }
+
+    /**
+     * @param {number} c
+     */
+    M$isUpper(c) {
+        return c >= 65 && c <= 90;
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$isLower(c) {
+        return c >= 97 && c <= 122;
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$isLetter(c) {
+        return this.M$isUpper(c) || this.M$isLower(c);
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$isDigit(c) {
+        return c >= 48 && c <= 57;
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$isLetterOrDigit(c) {
+        return this.M$isLetter(c) || this.M$isDigit(c);
+    }
+
+    /**
+     * @param {number} c
+     */
+    M$isWord(c) {
+        return c === 95 || this.M$isLetterOrDigit(c);
+    }
 }
 const MO$cj$Char = new MC$cj$Char();
 
@@ -1344,7 +1386,7 @@ class MC$cj$Fn4 {
 }
 
 /**
- * @typedef {[string]} Err
+ * @typedef {string[]} Err
  */
 
 /**
@@ -1379,6 +1421,25 @@ class MC$cj$Error {
      */
     M$__eq(a, b) {
         return a[0] === b[0];
+    }
+
+    /**
+     * @param {Err} e
+     * @param {string} message
+     */
+    M$addContext(e, message) {
+        e.push(message);
+    }
+
+    /**
+     * @param {Err} e
+     */
+    M$format(e) {
+        const parts = [e[0]];
+        for (let i = 1; i < e.length; i++) {
+            parts.push("  " + e[i] + "\n");
+        }
+        return parts.join("");
     }
 }
 const MO$cj$Error = new MC$cj$Error();
@@ -1457,8 +1518,22 @@ class MC$cj$Try {
         }
     }
 
+    /**
+     * @param {Err} t
+     */
     M$getErrorMessage(t) {
         return this.M$getError(t)[0];
+    }
+
+    /**
+     * @param {Try<T>} t
+     * @param {string} context
+     */
+    M$addContext(t, context) {
+        if (t[0] === 1) {
+            t[1].push(context);
+        }
+        return t;
     }
 }
 

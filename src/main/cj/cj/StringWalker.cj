@@ -11,8 +11,9 @@ class StringWalker {
         return Self.new(string, 0)
     }
 
-    def hasNext(self: Self): Bool {
-        return self._i < self._s.size()
+    ## Gets the string that self is walking over
+    def string(self: Self): String {
+        return self._s
     }
 
     ## Gets the current position of the walker
@@ -29,15 +30,22 @@ class StringWalker {
     }
 
     ## Returns the codepoint at the current position in the string.
-    ## You should call 'hasNext()' to check that a peekable value exists.
-    def peek(self: Self): Char {
-        return self._s.codePointAt(self._i)
+    def peek(self: Self): Nullable[Char] {
+        return (
+            if (self._i < self._s.size())
+                Nullable.Some(self._s.codePointAt(self._i)) else
+                Nullable.None
+        )
     }
 
-    def next(self: Self): Char {
-        val ch = self.peek()
-        self._i += ch.codeUnitCount()
-        return ch
+    def next(self: Self): Nullable[Char] {
+        return union self.peek() {
+            case Some(c) = {
+                self._i += c.codeUnitCount()
+                Nullable.Some(c)
+            }
+            case None = Nullable.None
+        }
     }
 
     def seekToStart(self: Self) {
@@ -51,5 +59,9 @@ class StringWalker {
     def endsWith(self: Self, suffix: String): Bool {
         val len = suffix.size()
         return self._s.regionMatches(self._i - len, suffix, 0, len)
+    }
+
+    def cutFrom(self: Self, i: Int): String {
+        return self._s.cut(i, self._i)
     }
 }
