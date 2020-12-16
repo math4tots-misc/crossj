@@ -18,8 +18,8 @@ export function activate(context: vscode.ExtensionContext) {
             const [srcroot,,] = triple;
             await world.addSourceRoot(srcroot);
 
-            const baseroot = path.dirname(srcroot);
-            for (const name of ['cj', 'cj-js']) {
+            const baseroot = path.dirname(path.dirname(srcroot));
+            for (const name of ['main/cj', 'main/cj-js', 'test/cj', 'test/cj-js']) {
                 const otherSrcRoot = path.join(baseroot, name);
                 await world.addSourceRoot(otherSrcRoot);
             }

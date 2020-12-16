@@ -76,7 +76,11 @@ export function parseUnixPath(unixpath: string): [string, string, string] | null
 
     unixpath = unixpath.substring(0, unixpath.length - '.cj'.length);
 
-    for (const component of ['/src/main/cj/', '/src/main/cj-js/']) {
+    for (const component of [
+            '/src/main/cj/',
+            '/src/main/cj-js/',
+            '/src/test/cj/',
+            '/src/test/cj-js/']) {
         const i = unixpath.lastIndexOf(component);
         if (i === -1) {
             continue;
