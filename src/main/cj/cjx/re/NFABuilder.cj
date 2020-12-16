@@ -90,6 +90,12 @@ class NFABuilder {
             case Star(inner) {
                 self._buildIntervalBlock(startState, acceptState, inner, 0, -1)
             }
+            case Plus(inner) {
+                self._buildIntervalBlock(startState, acceptState, inner, 1, -1)
+            }
+            case Optional(inner) {
+                self._buildIntervalBlock(startState, acceptState, inner, 0, 1)
+            }
             case Interval(inner, min, max) {
                 self._buildIntervalBlock(startState, acceptState, inner, min, max)
             }

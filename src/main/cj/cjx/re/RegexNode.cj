@@ -13,6 +13,7 @@ union RegexNode: Repr {
     case Or(RegexNode, RegexNode)
     case Star(RegexNode)
     case Plus(RegexNode)
+    case Optional(RegexNode)
     case Interval(RegexNode, Int, Int)
 
     def fromPattern(pattern: String): Try[Self] {
@@ -31,6 +32,7 @@ union RegexNode: Repr {
             case Or(a, b) = "Or(" + a.repr() + ", " + b.repr() + ")"
             case Star(x) = "Star(" + x.repr() + ")"
             case Plus(x) = "Plus(" + x.repr() + ")"
+            case Optional(x) = "Optional(" + x.repr() + ")"
             case Interval(x, a, b) = "Interval(" + x.repr() + ", " + a + ", " + b + ")"
         }
     }
@@ -55,6 +57,10 @@ union RegexNode: Repr {
 
     def _plus(x: Self): Self {
         return Self.Plus(x)
+    }
+
+    def _opt(x: Self): Self {
+        return Self.Optional(x)
     }
 
     def _interval(x: Self, a: Int, b: Int): Self {

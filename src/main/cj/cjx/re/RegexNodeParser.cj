@@ -104,6 +104,10 @@ class RegexNodeParser {
                         node = node._star()
                         self._next()
                     }
+                    case '?' {
+                        node = node._opt()
+                        self._next()
+                    }
                 }
             }
         }
