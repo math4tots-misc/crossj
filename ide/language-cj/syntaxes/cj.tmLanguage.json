@@ -29,7 +29,8 @@
 			"include": "#strings"
 		},
 		{
-			"name": "constant.character.cj",
+			"comment": "Even though I prefer the coloring with 'constant.character.cj', bracket matching requires I use string",
+			"name": "string.quoted.single.cj",
 			"match": "'\\\\.'|'[^'\\\\]'"
 		},
 		{
