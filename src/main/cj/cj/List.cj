@@ -35,6 +35,9 @@ native class List[T] :
 
     def __add(self: Self, other: Self): Self
 
+    def cut(self: Self, start: Int, end: Int): Self
+    def cutFrom(self: Self, start: Int): Self
+
     def map[R](self: Self, f: Fn[R, T]) : List[R]
     def flatMap[R, C: Iterable[R]](self: Self, f: Fn[C, T]) : List[R]
     def flatten[I](self: List[List[I]]): List[I]

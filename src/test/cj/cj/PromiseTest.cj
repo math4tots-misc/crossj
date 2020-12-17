@@ -42,7 +42,7 @@ class PromiseTest {
         val a = Time.now()
         AIO.delay(0.02).await
         val b = Time.now()
-        Assert.withMessage(b - a > 0.02, "AIO.delay(0.02) causes a 0.02 delay")
+        Assert.withMessage(b - a >= 0.015, "AIO.delay(0.02) causes a 0.02 delay")
         return (a, b)
     }
 }

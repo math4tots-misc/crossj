@@ -133,6 +133,7 @@ final class CJJSSpecialMethods {
         mkpair2("cj.MutableList.map", (a, b) -> "" + a + ".map(" + b + ")"),
         mkpair2("cj.MutableList.filter", (a, b) -> "" + a + ".filter(" + b + ")"),
         mkpair1("cj.MutableList.toList", a -> "Array.from(" + a + ")"),
+        mkpair1("cj.MutableList.toListUnsafe", a -> a),
 
         mkpair1("cj.Iterator.toList", a -> "Array.from(" + a + ")"),
         mkpair1("cj.Iterator.iter", a -> a),

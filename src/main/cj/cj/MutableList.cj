@@ -36,4 +36,13 @@ native class MutableList[T] :
     def filter(self: Self, f: Fn[Bool, T]): MutableList[T]
 
     def removeIndex(self: Self, i: Int): T
+    def swap(self: Self, i: Int, j: Int)
+
+    def cut(self: Self, start: Int, end: Int): Self
+    def cutFrom(self: Self, start: Int): Self
+
+    ## Treats the data in this list as the data for a 'List[T]'.
+    ## This is fast, but unsafe if there are multiple references to this
+    ## MutableList.
+    def toListUnsafe(self: Self): List[T]
 }

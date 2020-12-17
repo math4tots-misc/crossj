@@ -325,6 +325,11 @@ public final class CJParserState {
                     modifiers |= CJAstItemModifiers.NATIVE;
                     modified = true;
                     break;
+                case CJToken.KW_PRIVATE:
+                    next();
+                    modifiers |= CJAstItemModifiers.PRIVATE;
+                    modified = true;
+                    break;
             }
             if (!modified) {
                 break;

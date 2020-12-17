@@ -618,6 +618,29 @@ class MC$cj$Iterator {
     }
 
     /**
+     * @template R
+     * @param {*} TV$R
+     * @param {IterableIterator<T>} iter
+     * @param {function(number, T): R} f
+     */
+    M$enumerate(TV$R, iter, f) {
+        return this.M$enumerateFrom(TV$R, iter, 0, f);
+    }
+
+    /**
+     * @template R
+     * @param {*} TV$R
+     * @param {IterableIterator<T>} iter
+     * @param {function(number, T): R} f
+     */
+    *M$enumerateFrom(TV$R, iter, i, f) {
+        for (const t of iter) {
+            yield f(i, t);
+            i++;
+        }
+    }
+
+    /**
      * @param {IterableIterator<T>} iterator
      */
     M$toList(iterator) {
@@ -1027,6 +1050,23 @@ class MC$cj$List {
     }
 
     /**
+     * @param {Array<T>} list
+     * @param {number} start
+     * @param {number} end
+     */
+    M$cut(list, start, end) {
+        return list.slice(start, end);
+    }
+
+    /**
+     * @param {Array<T>} list
+     * @param {number} start
+     */
+    M$cutFrom(list, start) {
+        return list.slice(start);
+    }
+
+    /**
      * @template R
      * @param {*} TV$R
      * @param {Array<T>} list
@@ -1222,6 +1262,23 @@ class MC$cj$MutableList {
     }
 
     /**
+     * @param {Array<T>} a
+     * @param {Array<T>} b
+     */
+    M$__lt(a, b) {
+        const T = this.TV$T;
+        const len = a.length < b.length ? a.length : b.length;
+        for (let i = 0; i < len; i++) {
+            if (T.M$__lt(a[i], b[i])) {
+                return true;
+            } else if (T.M$__lt(b[i], a[i])) {
+                return false;
+            }
+        }
+        return a.length < b.length;
+    }
+
+    /**
      * @param {Array<T>} list
      */
     M$iter(list) {
@@ -1272,6 +1329,32 @@ class MC$cj$MutableList {
         let value = list[index];
         list.splice(index, 1);
         return value;
+    }
+
+    /**
+     * @param {Array<T>} list
+     * @param {number} i
+     * @param {number} j
+     */
+    M$swap(list, i, j) {
+        [list[i], list[j]] = [list[j], list[i]];
+    }
+
+    /**
+     * @param {Array<T>} list
+     * @param {number} start
+     * @param {number} end
+     */
+    M$cut(list, start, end) {
+        return list.slice(start, end);
+    }
+
+    /**
+     * @param {Array<T>} list
+     * @param {number} start
+     */
+    M$cutFrom(list, start) {
+        return list.slice(start);
     }
 }
 
