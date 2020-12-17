@@ -178,4 +178,22 @@ private class DFAIR {
             newTransitionMap.toListUnsafe(),
             newAcceptMap.toListUnsafe())
     }
+
+    ## Used every now and then for debugging purposes.
+    ##
+    ## Converts this DFAIR directly into a DFA without minimizing state count.
+    def toDFA(self: Self): DFA {
+        # compute newTransitionMap
+        val newTransitionMap = MutableList.ofSize(self._nStates * Alphabet.count, i -> -1)
+        for (state1, localTransitionMap) in self._transitionMap.pairs() {
+            for (letter, state2) in localTransitionMap.pairs() {
+                newTransitionMap.set(state1 * Alphabet.count + letter, state2)
+            }
+        }
+
+        # compute acceptMap
+        val newAcceptMap = List.ofSize(self._nStates, i -> self._acceptMap.getOrDefault(i, -1))
+
+        return DFA._new(self._startState, newTransitionMap.toListUnsafe(), newAcceptMap)
+    }
 }

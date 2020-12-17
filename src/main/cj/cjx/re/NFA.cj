@@ -75,7 +75,7 @@ class NFA {
         for state in states {
             for transition in self._transitionMap.get(state).keys() {
                 if (transition != epsilon) {
-                    builder.add(state)
+                    builder.add(transition)
                 }
             }
         }
