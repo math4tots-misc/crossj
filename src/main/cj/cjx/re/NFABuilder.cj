@@ -99,8 +99,13 @@ class NFABuilder {
             case Interval(inner, min, max) {
                 self._buildIntervalBlock(startState, acceptState, inner, min, max)
             }
+            case CharSet(name, chars) {
+                for letter in chars {
+                    self.connect(startState, letter, acceptState)
+                }
+            }
             default {
-                IO.panic("TODO: buildBlock")
+                IO.panic("TODO: buildBlock: " + node)
             }
         }
         return NFABlock.new(startState, acceptState)

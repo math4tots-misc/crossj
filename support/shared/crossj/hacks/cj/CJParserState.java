@@ -1327,6 +1327,7 @@ public final class CJParserState {
             case '@': { // mutable collection literals
                 next();
                 if (consume('[')) {
+                    consumeDelimitersAndComments();
                     if (consume(':')) {
                         if (!consume(']')) {
                             return expectedType(']');
@@ -1361,6 +1362,7 @@ public final class CJParserState {
                             }
                             elements.add(new CJAstTupleDisplayExpression(mark, List.of(first, trySecond.get())));
                             if (consume(',')) {
+                                consumeDelimitersAndComments();
                                 while (!at(']')) {
                                     var tryElement = parseExpression();
                                     if (tryElement.isFail()) {
@@ -1379,6 +1381,7 @@ public final class CJParserState {
                                     if (!consume(',') && !at(']')) {
                                         return expectedType(']');
                                     }
+                                    consumeDelimitersAndComments();
                                 }
                             }
                             if (!consume(']')) {
@@ -1416,6 +1419,7 @@ public final class CJParserState {
             }
             case '[': { // list and map displays
                 next();
+                consumeDelimitersAndComments();
                 if (consume(':')) {
                     if (!consume(']')) {
                         return expectedType(']');
@@ -1439,6 +1443,7 @@ public final class CJParserState {
                         }
                         elements.add(new CJAstTupleDisplayExpression(mark, List.of(first, trySecond.get())));
                         if (consume(',')) {
+                            consumeDelimitersAndComments();
                             while (!at(']')) {
                                 var tryElement = parseExpression();
                                 if (tryElement.isFail()) {
@@ -1457,6 +1462,7 @@ public final class CJParserState {
                                 if (!consume(',') && !at(']')) {
                                     return expectedType(']');
                                 }
+                                consumeDelimitersAndComments();
                             }
                         }
                         if (!consume(']')) {
@@ -1468,6 +1474,7 @@ public final class CJParserState {
                     } else {
                         elements.add(first);
                         if (consume(',')) {
+                            consumeDelimitersAndComments();
                             while (!at(']')) {
                                 var tryElement = parseExpression();
                                 if (tryElement.isFail()) {
@@ -1477,6 +1484,7 @@ public final class CJParserState {
                                 if (!consume(',') && !at(']')) {
                                     return expectedType(']');
                                 }
+                                consumeDelimitersAndComments();
                             }
                         }
                         if (!consume(']')) {

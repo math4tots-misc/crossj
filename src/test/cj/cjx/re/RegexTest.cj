@@ -178,157 +178,157 @@ class RegexTest {
         }
     }
 
-    # def testCharacterClasses() {
-    #     {
-    #         var re = Regex.fromPatterns(["a\\d+"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("a"))
-    #         Assert.that(not re.matches("55"))
-    #         Assert.that(not re.matches("b09876123445"))
-    #         Assert.that(not re.matches("bb"))
-    #         Assert.that(re.matches("a1"))
-    #         Assert.that(re.matches("a23"))
-    #         Assert.that(re.matches("a09876123445"))
-    #     }
-    #     {
-    #         var re = Regex.fromPatterns(["\\w\\d+"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("a"))
-    #         Assert.that(not re.matches("bb"))
-    #         Assert.that(re.matches("b09876123445"))
-    #         Assert.that(re.matches("55"))
-    #         Assert.that(re.matches("a1"))
-    #         Assert.that(re.matches("a23"))
-    #         Assert.that(re.matches("a09876123445"))
-    #         Assert.that(re.matches("_09876123445"))
-    #     }
-    #     {
-    #         var re = Regex.fromPatterns(["[adf]+"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("b"))
-    #         Assert.that(not re.matches("c"))
-    #         Assert.that(not re.matches("xx"))
-    #         Assert.that(re.matches("d"))
-    #         Assert.that(re.matches("fdaa"))
-    #         Assert.that(re.matches("ddafd"))
-    #     }
-    #     {
-    #         var re = Regex.fromPatterns(["[d-z]+"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("b"))
-    #         Assert.that(not re.matches("c"))
-    #         Assert.that(re.matches("dd"))
-    #         Assert.that(re.matches("d"))
-    #         Assert.that(not re.matches("fdaa"))
-    #         Assert.that(re.matches("fd"))
-    #         Assert.that(re.matches("ddxfd"))
-    #         Assert.that(not re.matches("-"))
-    #     }
-    #     {
-    #         var re = Regex.fromPatterns(["[d-z\\s]+"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("b"))
-    #         Assert.that(not re.matches("c"))
-    #         Assert.that(re.matches("dd"))
-    #         Assert.that(re.matches("d"))
-    #         Assert.that(not re.matches("fdaa"))
-    #         Assert.that(re.matches("fdxx  qwer"))
-    #         Assert.that(re.matches("fd"))
-    #         Assert.that(re.matches("ddxfd"))
-    #         Assert.that(not re.matches("-"))
-    #     }
-    #     {
-    #         var re = Regex.fromPatterns(["[d-z\\s-]+"]).get()
-    #         Assert.that(re.matches("ddxfd"))
-    #         Assert.that(re.matches("-"))
-    #         Assert.that(re.matches("d-d"))
-    #     }
-    #     {
-    #         # should match any one character
-    #         var re = Regex.fromPatterns(["."]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(re.matches("x"))
-    #         Assert.that(re.matches("."))
-    #         Assert.that(not re.matches("xx"))
-    #     }
-    #     {
-    #         var re = Regex.fromPatterns(["..\\d+"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("a"))
-    #         Assert.that(re.matches("^&3"))
-    #         Assert.that(re.matches("a 8484"))
-    #         Assert.that(re.matches("  8484"))
-    #         Assert.that(re.matches("12345"))
-    #         Assert.that(re.matches(" y1235"))
-    #     }
-    # }
+    def testCharacterClasses() {
+        {
+            var re = Regex.fromPatterns(["a\\d+"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("a"))
+            Assert.that(not re.matches("55"))
+            Assert.that(not re.matches("b09876123445"))
+            Assert.that(not re.matches("bb"))
+            Assert.that(re.matches("a1"))
+            Assert.that(re.matches("a23"))
+            Assert.that(re.matches("a09876123445"))
+        }
+        {
+            var re = Regex.fromPatterns(["\\w\\d+"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("a"))
+            Assert.that(not re.matches("bb"))
+            Assert.that(re.matches("b09876123445"))
+            Assert.that(re.matches("55"))
+            Assert.that(re.matches("a1"))
+            Assert.that(re.matches("a23"))
+            Assert.that(re.matches("a09876123445"))
+            Assert.that(re.matches("_09876123445"))
+        }
+        {
+            var re = Regex.fromPatterns(["[adf]+"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("b"))
+            Assert.that(not re.matches("c"))
+            Assert.that(not re.matches("xx"))
+            Assert.that(re.matches("d"))
+            Assert.that(re.matches("fdaa"))
+            Assert.that(re.matches("ddafd"))
+        }
+        {
+            var re = Regex.fromPatterns(["[d-z]+"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("b"))
+            Assert.that(not re.matches("c"))
+            Assert.that(re.matches("dd"))
+            Assert.that(re.matches("d"))
+            Assert.that(not re.matches("fdaa"))
+            Assert.that(re.matches("fd"))
+            Assert.that(re.matches("ddxfd"))
+            Assert.that(not re.matches("-"))
+        }
+        {
+            var re = Regex.fromPatterns(["[d-z\\s]+"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("b"))
+            Assert.that(not re.matches("c"))
+            Assert.that(re.matches("dd"))
+            Assert.that(re.matches("d"))
+            Assert.that(not re.matches("fdaa"))
+            Assert.that(re.matches("fdxx  qwer"))
+            Assert.that(re.matches("fd"))
+            Assert.that(re.matches("ddxfd"))
+            Assert.that(not re.matches("-"))
+        }
+        {
+            var re = Regex.fromPatterns(["[d-z\\s-]+"]).get()
+            Assert.that(re.matches("ddxfd"))
+            Assert.that(re.matches("-"))
+            Assert.that(re.matches("d-d"))
+        }
+        {
+            # should match any one character
+            var re = Regex.fromPatterns(["."]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(re.matches("x"))
+            Assert.that(re.matches("."))
+            Assert.that(not re.matches("xx"))
+        }
+        {
+            var re = Regex.fromPatterns(["..\\d+"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("a"))
+            Assert.that(re.matches("^&3"))
+            Assert.that(re.matches("a 8484"))
+            Assert.that(re.matches("  8484"))
+            Assert.that(re.matches("12345"))
+            Assert.that(re.matches(" y1235"))
+        }
+    }
 
-    # def testIntervals() {
-    #     {
-    #         # basic
-    #         var re = Regex.fromPatterns(["x{3}"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("x"))
-    #         Assert.that(not re.matches("xx"))
-    #         Assert.that(re.matches("xxx"))
-    #         Assert.that(not re.matches("yyy"))
-    #         Assert.that(not re.matches("xxxx"))
-    #         Assert.that(not re.matches("xxxxx"))
-    #     }
-    #     {
-    #         # mixed patterns
-    #         var re = Regex.fromPatterns(["(x|y){3}"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("x"))
-    #         Assert.that(not re.matches("xx"))
-    #         Assert.that(re.matches("xxx"))
-    #         Assert.that(re.matches("yyy"))
-    #         Assert.that(re.matches("yxy"))
-    #         Assert.that(re.matches("yxx"))
-    #         Assert.that(not re.matches("xxxx"))
-    #         Assert.that(not re.matches("yyyy"))
-    #         Assert.that(not re.matches("xxxxx"))
-    #     }
-    #     {
-    #         # min count, no upper limit
-    #         var re = Regex.fromPatterns(["(x|y){3,}"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("x"))
-    #         Assert.that(not re.matches("xx"))
-    #         Assert.that(not re.matches("xy"))
-    #         Assert.that(not re.matches("yy"))
-    #         Assert.that(re.matches("xxx"))
-    #         Assert.that(re.matches("yyy"))
-    #         Assert.that(re.matches("yxy"))
-    #         Assert.that(re.matches("yxx"))
-    #         Assert.that(re.matches("xxxx"))
-    #         Assert.that(re.matches("yyyy"))
-    #         Assert.that(re.matches("xxxxx"))
-    #     }
-    #     {
-    #         # 0 count
-    #         var re = Regex.fromPatterns(["(x|y){0}"]).get()
-    #         Assert.that(re.matches(""))
-    #         Assert.that(not re.matches("x"))
-    #         Assert.that(not re.matches("xy"))
-    #         Assert.that(not re.matches("yy"))
-    #         Assert.that(not re.matches("xxx"))
-    #         Assert.that(not re.matches("yyyy"))
-    #         Assert.that(not re.matches("xxxxx"))
-    #     }
-    #     {
-    #         # non-zero lower and finite upper
-    #         var re = Regex.fromPatterns(["(x|y){2,3}"]).get()
-    #         Assert.that(not re.matches(""))
-    #         Assert.that(not re.matches("x"))
-    #         Assert.that(re.matches("xx"))
-    #         Assert.that(re.matches("xxx"))
-    #         Assert.that(re.matches("yyy"))
-    #         Assert.that(re.matches("yxy"))
-    #         Assert.that(re.matches("yxx"))
-    #         Assert.that(not re.matches("xxxx"))
-    #         Assert.that(not re.matches("yyyy"))
-    #         Assert.that(not re.matches("xxxxx"))
-    #     }
-    # }
+    def testIntervals() {
+        {
+            # basic
+            var re = Regex.fromPatterns(["x{3}"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("x"))
+            Assert.that(not re.matches("xx"))
+            Assert.that(re.matches("xxx"))
+            Assert.that(not re.matches("yyy"))
+            Assert.that(not re.matches("xxxx"))
+            Assert.that(not re.matches("xxxxx"))
+        }
+        {
+            # mixed patterns
+            var re = Regex.fromPatterns(["(x|y){3}"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("x"))
+            Assert.that(not re.matches("xx"))
+            Assert.that(re.matches("xxx"))
+            Assert.that(re.matches("yyy"))
+            Assert.that(re.matches("yxy"))
+            Assert.that(re.matches("yxx"))
+            Assert.that(not re.matches("xxxx"))
+            Assert.that(not re.matches("yyyy"))
+            Assert.that(not re.matches("xxxxx"))
+        }
+        {
+            # min count, no upper limit
+            var re = Regex.fromPatterns(["(x|y){3,}"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("x"))
+            Assert.that(not re.matches("xx"))
+            Assert.that(not re.matches("xy"))
+            Assert.that(not re.matches("yy"))
+            Assert.that(re.matches("xxx"))
+            Assert.that(re.matches("yyy"))
+            Assert.that(re.matches("yxy"))
+            Assert.that(re.matches("yxx"))
+            Assert.that(re.matches("xxxx"))
+            Assert.that(re.matches("yyyy"))
+            Assert.that(re.matches("xxxxx"))
+        }
+        {
+            # 0 count
+            var re = Regex.fromPatterns(["(x|y){0}"]).get()
+            Assert.that(re.matches(""))
+            Assert.that(not re.matches("x"))
+            Assert.that(not re.matches("xy"))
+            Assert.that(not re.matches("yy"))
+            Assert.that(not re.matches("xxx"))
+            Assert.that(not re.matches("yyyy"))
+            Assert.that(not re.matches("xxxxx"))
+        }
+        {
+            # non-zero lower and finite upper
+            var re = Regex.fromPatterns(["(x|y){2,3}"]).get()
+            Assert.that(not re.matches(""))
+            Assert.that(not re.matches("x"))
+            Assert.that(re.matches("xx"))
+            Assert.that(re.matches("xxx"))
+            Assert.that(re.matches("yyy"))
+            Assert.that(re.matches("yxy"))
+            Assert.that(re.matches("yxx"))
+            Assert.that(not re.matches("xxxx"))
+            Assert.that(not re.matches("yyyy"))
+            Assert.that(not re.matches("xxxxx"))
+        }
+    }
 }

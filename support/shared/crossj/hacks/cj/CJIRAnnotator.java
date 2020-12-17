@@ -265,7 +265,7 @@ public final class CJIRAnnotator
                 }
                 exitMethod();
             } else if (member instanceof CJAstFieldDefinition) {
-                if (item.isUnion() || item.isTrait()) {
+                if (!member.isStatic() && (item.isUnion() || item.isTrait())) {
                     throw err0("Only non-union classes may have fields", member.getMark());
                 }
                 var field = (CJAstFieldDefinition) member;
