@@ -18,12 +18,12 @@ class RegexMatcher {
         return Self.new(
             dfa,
             StringWalker.of(string),
-            -1,
-            -1,
-            -1,
-            -1,
-            -1,
-            -1,
+            -1, # _matchIndex
+            -1, # _matchStartPosition
+            -1, # _matchLineNumber
+            -1, # _matchColumnNumber
+            1, # _currentLineNumber
+            1, # _currentColumnNumber
         )
     }
 

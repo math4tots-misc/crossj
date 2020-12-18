@@ -1839,6 +1839,7 @@ public final class CJParserState {
         if (!consume('(')) {
             return expectedType('(');
         }
+        consumeDelimitersAndComments();
         var list = List.<CJAstExpression>of();
         while (!consume(')')) {
             var tryExpr = parseExpression();
@@ -1849,6 +1850,7 @@ public final class CJParserState {
             if (!consume(',') && !at(')')) {
                 return expectedType(')');
             }
+            consumeDelimitersAndComments();
         }
         return Try.ok(list);
     }

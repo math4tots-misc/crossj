@@ -114,6 +114,7 @@ final class CJJSSpecialMethods {
             Tuple3.of("", "", (a, b) -> "")
         ),
 
+        mkpair0("cj.List.empty", "[]"),
         mkpair2("cj.List.get", (a, b) -> "(" + a + "[" + b + "])"),
         mkpair1("cj.List.size", a -> "(" + a + ".length)"),
         mkpair1("cj.List.iter", a -> a + "[Symbol.iterator]()"),

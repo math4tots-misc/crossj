@@ -9,6 +9,8 @@ native class List[T] :
         Ord if T : Ord,
         Hash if T : Hash {
 
+    def empty(): Self
+
     def ofSize(size: Int, f: Fn[T, Int]) : Self
 
     if T : Eq {

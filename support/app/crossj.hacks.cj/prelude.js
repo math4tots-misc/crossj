@@ -1156,6 +1156,19 @@ class MC$cj$ListBuilder {
     }
 
     /**
+     * @template C
+     * @param {*} TV$C
+     * @param {Array<Array<T>>} builder
+     * @param {C} ts
+     */
+    M$addAll(TV$C, builder, ts) {
+        for (const t of TV$C.M$iter(ts)) {
+            builder[0].push(t);
+        }
+        return builder;
+    }
+
+    /**
      * @param {Array<Array<T>>} builder
      */
     M$build(builder) {
