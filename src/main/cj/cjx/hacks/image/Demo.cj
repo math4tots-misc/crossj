@@ -1,8 +1,8 @@
-package hacks.image
+package cjx.hacks.image
 
 
-import hacks.image.Bitmap
-import hacks.image.Color
+import cjx.hacks.image.Bitmap
+import cjx.hacks.image.Color
 
 
 class Demo {

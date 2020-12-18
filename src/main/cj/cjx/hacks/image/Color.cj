@@ -1,4 +1,4 @@
-package hacks.image
+package cjx.hacks.image
 
 
 class Color {
