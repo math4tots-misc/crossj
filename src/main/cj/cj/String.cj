@@ -62,6 +62,12 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
     ## (CJJSSpecialMethods implementation only)
     def cutFrom(self: Self, start: Int): String
 
+    ## Returns a string with all letters converted to lowercase
+    def lower(self: Self): String
+
+    ## Returns a string with all letters converted to uppercase
+    def upper(self: Self): String
+
     ## Tries to parse this string as an integer
     def parseInt(self: Self): Nullable[Int]
 

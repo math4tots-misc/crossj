@@ -107,6 +107,8 @@ final class CJJSSpecialMethods {
         mkpair3("cj.String.cut", (a, b, c) -> a + ".substring(" + b + "," + c + ")"),
         mkpair2("cj.String.cutFrom", (a, b) -> a + ".substring(" + b + ")"),
         mkpair1("cj.String.toBool", a -> "(!!" + a + ")"),
+        mkpair1("cj.String.lower", a -> a + ".toLowerCase()"),
+        mkpair1("cj.String.upper", a -> a + ".toUpperCase()"),
         mkpairx2("cj.String.__add",
             Tuple3.of("cj.String", "cj.String", (a, b) -> "(" + a + "+" + b + ")"),
             Tuple3.of("cj.String", "cj.Int", (a, b) -> "(" + a + "+" + b + ")"),
