@@ -134,16 +134,24 @@ final class NFA {
                 while (end < Alphabet.COUNT && localMap.getOptional(Optional.of(end)).equals(Optional.of(newStates))) {
                     end++;
                 }
-                sb.s("    ").s(Repr.reprchar(key));
+                sb.s("    ").s(reprchar(key));
                 if (key + 1 < end) {
                     // there are consecutive runs of keys that lead to the same states
-                    sb.s("-").s(Repr.reprchar(end - 1));
+                    sb.s("-").s(reprchar(end - 1));
                     key = end - 1;
                 }
-                sb.obj(List.sorted(newStates)).s("\n");
+                sb.s(" -> ").obj(List.sorted(newStates)).s("\n");
             }
         }
         return sb.build();
+    }
+
+    private String reprchar(int c) {
+        switch (c) {
+            case '\'': return "'\\''";
+            case '"': return "'\"'";
+            default: return Repr.reprchar(c).replace("\"", "'");
+        }
     }
 
     /**

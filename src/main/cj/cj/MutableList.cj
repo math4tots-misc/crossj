@@ -27,6 +27,7 @@ native class MutableList[T] :
     def size(list: Self) : Int
     def get(list: Self, i: Int) : T
     def set(list: Self, i: Int, t: T) : Unit
+    def last(list: Self): T
     def add(list: Self, t: T) : Unit
     def pop(list: Self) : T
     def toBool(self: Self) : Bool

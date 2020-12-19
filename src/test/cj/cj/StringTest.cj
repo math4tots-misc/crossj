@@ -102,4 +102,11 @@ class StringTest {
         Assert.withMessage("qwerasdf".endsWithAt("qwer", 4), "ends with at qwer")
         Assert.withMessage("qwerasdf".endsWithAt("er", 4), "ends with at er")
     }
+
+    def testCharRepr() {
+        {
+            val r = 0x0B.toChar().repr()
+            Assert.equal(r, "'\\x0B'")
+        }
+    }
 }

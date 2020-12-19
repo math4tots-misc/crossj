@@ -306,20 +306,22 @@ class MC$cj$Char {
      * @param {number} c
      */
     M$repr(c) {
-        return "'" + String.fromCodePoint(c).replace(/\n|\r|[\x01-\x1E]/g, m => {
+        return "'" + String.fromCodePoint(c).replace(/\n|\r|[\x00-\x1E\x7F]|\\|'/g, m => {
             switch (m) {
+                case '\0': return "\\0";
                 case '\n': return "\\n";
                 case '\r': return "\\r";
                 case '\t': return "\\t";
                 case '\'': return "\\\'";
+                case '\\': return "\\\\";
                 default:
                     const ch = m.codePointAt(0);
-                    if (ch < 32) {
-                        const rawStr = ch.toString(16);
-                        return "\\x" + rawStr.length < 2 ? '0'.repeat(2 - rawStr.length) + rawStr : rawStr;
+                    if (ch < 32 || ch === 127) {
+                        const rawStr = ch.toString(16).toUpperCase();
+                        return "\\x" + (rawStr.length < 2 ? '0'.repeat(2 - rawStr.length) + rawStr : rawStr);
                     } else {
-                        const rawStr = ch.toString(16);
-                        return "\\u" + rawStr.length < 4 ? '0'.repeat(4 - rawStr.length) + rawStr : rawStr;
+                        const rawStr = ch.toString(16).toUpperCase();
+                        return "\\u" + (rawStr.length < 4 ? '0'.repeat(4 - rawStr.length) + rawStr : rawStr);
                     }
             }
         }) + "'";
@@ -1016,6 +1018,13 @@ class MC$cj$List {
     /**
      * @param {Array<T>} list
      */
+    M$last(list) {
+        return list[list.length - 1];
+    }
+
+    /**
+     * @param {Array<T>} list
+     */
     M$size(list) {
         return list.length;
     }
@@ -1240,6 +1249,13 @@ class MC$cj$MutableList {
      */
     M$set(list, i, t) {
         list[i] = t;
+    }
+
+    /**
+     * @param {Array<T>} list
+     */
+    M$last(list) {
+        return list[list.length - 1];
     }
 
     /**

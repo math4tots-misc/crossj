@@ -30,6 +30,7 @@ native class List[T] :
     }
 
     def get(self: Self, i: Int): T
+    def last(self: Self): T
 
     def size(x: Self) : Int
     def iter(x: Self) : Iterator[T]

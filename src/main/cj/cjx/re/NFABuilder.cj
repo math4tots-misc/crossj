@@ -101,7 +101,7 @@ class NFABuilder {
             }
             case CharSet(name, chars) {
                 for letter in chars {
-                    self.connect(startState, letter, acceptState)
+                    self.connect(startState, Alphabet.normalize(letter), acceptState)
                 }
             }
             default {

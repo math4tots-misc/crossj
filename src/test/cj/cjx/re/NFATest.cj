@@ -10,7 +10,6 @@ class NFATest {
         {
             val re = RegexNode.ofChar('a')
             val nfa = NFA.fromRegexNodes([re])
-            # IO.println(nfa.inspect())
             Assert.equal(nfa.match("ab"), 1)
             Assert.equal(nfa.match("ba"), -1)
         }
@@ -22,7 +21,6 @@ class NFATest {
                 RegexNode.ofChar('y'),
             )
             val nfa = NFA.fromRegexNodes([re])
-            # IO.println(nfa.inspect())
             Assert.equal(nfa.match("xy"), 2)
             Assert.equal(nfa.match("xx"), -1)
         }

@@ -226,7 +226,7 @@ class CJToken: Repr, Eq {
 
     def keywordTypeToString(type: Int): String {
         val name = Self.typeToString(type)
-        Assert.withMessage(name.startsWith("CJToken.KW_"), name)
-        return name.cutFrom("CJToken.KW_".size()).lower()
+        Assert.withMessage(name.startsWith("CJToken.kw"), name)
+        return name.cutFrom("CJToken.kw".size()).lower()
     }
 }

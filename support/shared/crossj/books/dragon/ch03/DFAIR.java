@@ -2,6 +2,7 @@ package crossj.books.dragon.ch03;
 
 import crossj.base.Assert;
 import crossj.base.FrozenSet;
+import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.M;
 import crossj.base.Map;
@@ -23,6 +24,11 @@ final class DFAIR {
     static DFAIR fromFrozenSetDescription(List<FrozenSet<Integer>> allStates, FrozenSet<Integer> startState,
             Map<FrozenSet<Integer>, Map<Integer, FrozenSet<Integer>>> transitionMap,
             Map<FrozenSet<Integer>, Integer> acceptMap) {
+
+        // IO.println("allStates = " + allStates);
+        // IO.println("startState = " + List.sorted(startState));
+        // IO.println("transitionMap = " + transitionMap);
+        // IO.println("acceptMap = " + acceptMap);
 
         // ensure that startState is always zero.
         for (int i = 0; i < allStates.size(); i++) {
@@ -101,6 +107,7 @@ final class DFAIR {
         // initially, partition every state by their accept status.
         // groups 0..<nAlternatives are the various accept states.
         // the group indexed 'nAlternatives' are all the unaccepted states.
+        // IO.println("acceptMap = " + acceptMap);
         var partition = List.ofSize(nAlternatives + 1, () -> List.<Integer>of());
         var stateToGroupId = List.ofSize(nStates, () -> 0);
         for (int state = 0; state < nStates; state++) {

@@ -76,8 +76,8 @@ class Map[K: Hash, V]:
             } else {
                 return (
                     "[" +
-                    ",".join(
-                        self.pairs().map(kv -> kv.get0().repr() + ": " + kv.get1().repr())) +
+                    ", ".join(
+                        self.pairs().map(kv -> kv.get0().repr() + ":" + kv.get1().repr())) +
                     "]"
                 )
             }
