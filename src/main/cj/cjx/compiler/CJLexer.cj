@@ -52,8 +52,6 @@ class CJLexer {
         # whitespace
         b.add("[^\\S\n]+", m -> Self.none())
 
-        IO.println("patterns = " + b._patterns)
-
         val lexer = b.build().get()
         return lexer
     }
