@@ -433,8 +433,9 @@ class MC$cj$String {
      * @param {string} x
      */
     M$repr(x) {
-        return '"' + x.replace(/\n|\r|[\x01-\x1E]/g, m => {
+        return '"' + x.replace(/\n|\r|\t|[\x00-\x1E]|"/g, m => {
             switch (m) {
+                case '\0': return "\\0";
                 case '\n': return "\\n";
                 case '\r': return "\\r";
                 case '\t': return "\\t";
