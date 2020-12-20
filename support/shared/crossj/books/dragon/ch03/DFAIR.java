@@ -2,7 +2,6 @@ package crossj.books.dragon.ch03;
 
 import crossj.base.Assert;
 import crossj.base.FrozenSet;
-import crossj.base.IO;
 import crossj.base.List;
 import crossj.base.M;
 import crossj.base.Map;
