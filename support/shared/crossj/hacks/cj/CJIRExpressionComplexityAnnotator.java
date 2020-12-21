@@ -56,7 +56,7 @@ public final class CJIRExpressionComplexityAnnotator implements CJAstExpressionV
 
     @Override
     public Void visitFieldAccess(CJAstFieldAccessExpression e, Void a) {
-        e.complexityFlags = NONE;
+        e.complexityFlags = annotate(e.getOwner());
         return null;
     }
 
