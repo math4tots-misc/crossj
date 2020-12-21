@@ -84,6 +84,10 @@ class CJLexerTest {
 
     def testDeadStates() {
         {
+            # If the dfa has non-negative dead states, it's possible for the
+            # lexer to require backtracking a large number of input characters
+            # when lexing a document.
+            # We check to ensure that that's not the case here.
             val dfa = CJLexer.dfa()
             Assert.withMessage(
                 dfa.findDeadState().isEmpty(),
