@@ -160,4 +160,23 @@ private class DFA {
             allStates, startState, transitionMap, acceptMap)
         return dfair.withMinimumNumberOfStates()
     }
+
+    ## Find a (non-negative) dead state in the DFA, if any exist
+    def findDeadState(self: Self): Nullable[Int] {
+        for state = 0; state < self.numberOfStates(); state += 1 {
+            if self.getMatchIndex(state) == -1 {
+                var transitionFound = false
+                for letter = 0; not transitionFound and letter < Alphabet.count; letter += 1 {
+                    val newState = self.transition(state, letter)
+                    if not self.isDeadState(newState) and newState != state {
+                        transitionFound = true
+                    }
+                }
+                if not transitionFound {
+                    return Nullable.Some(state)
+                }
+            }
+        }
+        return Nullable.None
+    }
 }

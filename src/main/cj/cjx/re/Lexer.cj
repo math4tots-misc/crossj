@@ -1,5 +1,6 @@
 package cjx.re
 
+import cjx.re.DFA
 import cjx.re.LexerBuilder
 import cjx.re.RegexMatcher
 import cjx.re.Regex
@@ -30,5 +31,9 @@ class Lexer[Token] {
                 matcher.currentColumnNumber())
         }
         return Try.Ok(tokens.build())
+    }
+
+    def dfa(self: Self): DFA {
+        return self._regex._dfa
     }
 }

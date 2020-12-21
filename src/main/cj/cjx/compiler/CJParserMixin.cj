@@ -49,13 +49,13 @@ trait CJParserMixin {
     def skipBlob(self: Self) {
         union self.next() {
             case Some(token) {
-                switch token.type {
+                switch token.type.toChar() {
                     case '['
                     case '{'
                     case '(' {
                         var depth = 1
                         while depth > 0 and self.peek().isPresent() {
-                            switch self.next().get().type {
+                            switch self.next().get().type.toChar() {
                                 case '['
                                 case '{'
                                 case '(' {

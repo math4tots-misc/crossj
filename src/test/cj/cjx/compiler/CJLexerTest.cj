@@ -81,4 +81,20 @@ class CJLexerTest {
             )
         }
     }
+
+    def testDeadStates() {
+        {
+            val dfa = CJLexer.dfa()
+            Assert.withMessage(
+                dfa.findDeadState().isEmpty(),
+                "CJLexer.dfa() should have no non-negative dead states")
+            val run = dfa.start()
+            run.accept('a'.toInt())
+            Assert.withMessage(not run.isDead(), "dead after a")
+            run.accept('b'.toInt())
+            Assert.withMessage(not run.isDead(), "dead after b")
+            run.accept('%'.toInt())
+            Assert.withMessage(run.isDead(), "dead after %")
+        }
+    }
 }

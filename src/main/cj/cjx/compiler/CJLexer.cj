@@ -1,11 +1,17 @@
 package cjx.compiler
 
+import cjx.re.DFA
 import cjx.re.RegexMatcher
 import cjx.compiler.CJToken
 import cjx.re.Lexer
 
 class CJLexer {
     private static val lexer: Lexer[CJToken] = Self.buildLexer()
+
+    ## Visible for testing
+    def dfa(): DFA {
+        return Self.lexer.dfa()
+    }
 
     private def buildLexer(): Lexer[CJToken] {
         val b = Lexer[CJToken].builder()
