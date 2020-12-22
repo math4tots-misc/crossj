@@ -36,6 +36,10 @@ class CJIRItemInfo {
         )
     }
 
+    def path(self: Self): String {
+        return self.mark().filename
+    }
+
     def mark(self: Self): CJMark {
         return self._mark
     }

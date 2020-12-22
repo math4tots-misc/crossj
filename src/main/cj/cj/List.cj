@@ -49,6 +49,7 @@ native class List[T] :
     if T : Ord {
         def sorted[C: Iterable[T]](self: C): Self
     }
+    def reversed[C: Iterable[T]](self: C): Self
 
     def toList(self: Self) : Self
     def toBool(self: Self) : Bool

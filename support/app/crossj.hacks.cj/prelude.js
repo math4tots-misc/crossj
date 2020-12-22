@@ -1127,6 +1127,18 @@ class MC$cj$List {
     }
 
     /**
+     * @template C
+     * @param {*} TV$C
+     * @param {*} iterable
+     * @returns {Array<T>}
+     */
+    M$reversed(TV$C, iterable) {
+        const arr = Array.from(TV$C.M$iter(iterable));
+        arr.reverse();
+        return arr;
+    }
+
+    /**
      * @param {Array<T>} list
      */
     M$toList(list) {
@@ -1265,6 +1277,17 @@ class MC$cj$MutableList {
      */
     M$add(list, x) {
         list.push(x);
+    }
+
+    /**
+     * @param {*} TV$C
+     * @param {Array<T>} list
+     * @param {*} ts
+     */
+    M$addAll(TV$C, list, ts) {
+        for (const t of TV$C.M$iter(ts)) {
+            list.push(t);
+        }
     }
 
     /**
@@ -2308,6 +2331,13 @@ class MC$cj$Time {
     }
 }
 const MO$cj$Time = new MC$cj$Time();
+
+class MC$cj$Process {
+    M$argv() {
+        return process.argv.slice(2);
+    }
+}
+const MO$cj$Process = new MC$cj$Process();
 
 class MC$cj$IO {
     /**

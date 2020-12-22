@@ -73,12 +73,14 @@ def main():
     parser.add_argument('--use-java', '-j', default=True, action='store_true')
     parser.add_argument('--use-javascript', '--use-js', '-js', dest='use_java', action='store_false')
 
-    # parser.add_argument('remainder', nargs=argparse.REMAINDER)
+    parser.add_argument('rest', nargs=argparse.REMAINDER)
+
     args = parser.parse_args()
 
     action = args.action
     config = load_config(args.id)
     type_ = config.pop('type')
+    rest = args.rest
 
     if type_ == 'node':
         jspath = join(REPO, 'out', 'cj.js')
@@ -94,7 +96,7 @@ def main():
             out_js_path=jspath,
         )
         if action == 'run':
-            run(['node', jspath])
+            run(['node', jspath] + list(rest))
 
     elif type_ == 'canvas':
         canvas_config = config.pop('canvas')
