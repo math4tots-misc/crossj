@@ -105,6 +105,8 @@ trait CJParserMixin {
                 b.add(CJIRModifier.Native)
             } else if self.consume(CJToken.kwAsync) {
                 b.add(CJIRModifier.Async)
+            } else if self.consume(CJToken.kwStatic) {
+                b.add(CJIRModifier.Static)
             } else {
                 repeat = false
             }
