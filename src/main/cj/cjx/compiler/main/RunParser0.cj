@@ -14,7 +14,9 @@ class RunParser0 {
     def _main(start: String): Try[Unit] {
         val infos = Self.list(start)?
         for info in infos {
-            IO.println(info.path() + " -> " + info.fullName())
+            val tps = info.typeParameters()
+            val tp = if (tps.isEmpty()) "" else "[" + ", ".join(tps.map(t -> t.name())) + "]"
+            IO.println(info.path() + " -> " + info.fullName() + tp)
             for imp in info.imports() {
                 IO.println("  import " + imp)
             }
