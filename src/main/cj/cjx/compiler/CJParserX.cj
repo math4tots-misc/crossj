@@ -367,7 +367,57 @@ class CJParserX: CJParserMixin {
     }
 
     def expectExpression(self: Self): Try[CJAstExpression] {
-        return self.expectAtom()
+        return self.expectExpressionWithPrecedence(0)
+    }
+
+    def tokenPrecedence(type: Int): Int {
+        # Mostly follows Python, except uses Rust style '?'
+        return switch type {
+            case CJToken.kwOr = 40
+            case CJToken.kwAnd = 50
+            case '<'.toInt()
+            case '>'.toInt()
+            case CJToken.tEq
+            case CJToken.tNe
+            case CJToken.tGe
+            case CJToken.tLe
+            case CJToken.kwIs
+            case CJToken.kwIn
+            case CJToken.kwNot = 60
+            case '|'.toInt() = 70
+            case '^'.toInt() = 80
+            case '&'.toInt() = 90
+            case CJToken.tLshift
+            case CJToken.tRshift
+            case CJToken.tRshiftu = 100
+            case '+'.toInt()
+            case '-'.toInt() = 110
+            case '*'.toInt()
+            case '/'.toInt()
+            case '%'.toInt()
+            case CJToken.tTruncdiv = 120
+            case CJToken.tPower = 130
+            case '.'.toInt()
+            case '?'.toInt() = 140
+            default = -1
+        }
+    }
+
+    def expectExpressionWithPrecedence(self: Self, precedence: Int): Try[CJAstExpression] {
+        var expr = self.expectAtom()?
+        var tokenPrecedence = self.peek().map(t -> Self.tokenPrecedence(t.type)).getOrDefault(-1)
+        while tokenPrecedence >= precedence {
+            val mark = self.mark()
+            switch self.peek().map(t -> t.type).getOrDefault(0) {
+                default {
+                    IO.panic(
+                        "TODO: Expression operator " +
+                        CJToken.typeToString(self.peek().get().type))
+                }
+            }
+            tokenPrecedence = self.peek().map(t -> Self.tokenPrecedence(t.type)).getOrDefault(-1)
+        }
+        return Try.Ok(expr)
     }
 
     def expectAtom(self: Self): Try[CJAstExpression] {
