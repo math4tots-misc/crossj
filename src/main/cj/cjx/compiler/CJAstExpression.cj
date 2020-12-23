@@ -12,6 +12,7 @@ union CJAstExpression: CJAstNode {
     case Double(CJMark, String)
     case Name(CJMark, String)
     case Lambda(CJMark, List[String], CJAstStatement)
+    case If(CJMark, CJAstExpression, CJAstExpression, CJAstExpression)
 
     def mark(self: Self): CJMark {
         return union self {
@@ -22,6 +23,7 @@ union CJAstExpression: CJAstNode {
             case Double(mark, s) = mark
             case Name(mark, name) = mark
             case Lambda(mark, args, body) = mark
+            case If(mark, cond, body, other) = mark
         }
     }
 }

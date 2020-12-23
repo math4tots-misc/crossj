@@ -58,7 +58,10 @@ trait CJParserMixin {
     }
 
     def fail[R](self: Self, message: String): Try[R] {
-        val mark = self.mark()
+        return self.failWithMark(message, self.mark())
+    }
+
+    def failWithMark[R](self: Self, message: String, mark: CJMark): Try[R] {
         return Try[R].fail(message).addContext(
             "on " + mark.line + ":" + mark.column + " in " + mark.filename)
     }
@@ -85,9 +88,14 @@ trait CJParserMixin {
     }
 
     def failExpected[R](self: Self, kind: String): Try[R] {
-        return self.fail(
+        return self.failExpectedWithMark(kind, self.mark())
+    }
+
+    def failExpectedWithMark[R](self: Self, kind: String, mark: CJMark): Try[R] {
+        return self.failWithMark(
             "Expected " + kind + " but got " +
-            self.peek().map(t -> CJToken.typeToString(t.type)).getOrDefault("EOF"))
+            self.peek().map(t -> CJToken.typeToString(t.type)).getOrDefault("EOF"),
+            mark)
     }
 
     def expectChar(self: Self, type: Char): Try[CJToken] {

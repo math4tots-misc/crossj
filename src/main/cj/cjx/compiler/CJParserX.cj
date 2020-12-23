@@ -1,5 +1,6 @@
 package cjx.compiler
 
+import cjx.compiler.CJAstAssignmentTarget
 import cjx.compiler.CJAstStatement
 import cjx.compiler.CJAstExpression
 import cjx.compiler.CJAstFieldDefinition
@@ -275,6 +276,43 @@ class CJParserX: CJParserMixin {
         return Try.Ok(CJAstParameter.new(mark, mutable, name, type))
     }
 
+    def expectAssignmentTarget(self: Self): Try[CJAstAssignmentTarget] {
+        val target = self.expectExtendedAssignmentTarget()?
+        return union target {
+            case Field(mark, owner, name) = self.failExpectedWithMark("assignment target", mark)
+            default = Try.Ok(target)
+        }
+    }
+
+    def expectExtendedAssignmentTarget(self: Self): Try[CJAstAssignmentTarget] {
+        val mark = self.mark()
+        switch self.peek().map(t -> t.type).getOrDefault(0) {
+            case CJToken.tId {
+                val name = self.expectId()?
+                return Try.Ok(CJAstAssignmentTarget.Name(mark, name))
+            }
+            case '('.toInt() {
+                self.next()
+                val subtargets = List[CJAstAssignmentTarget].builder()
+                while not self.consumeChar(')') {
+                    subtargets.add(self.expectExtendedAssignmentTarget()?)
+                    if not self.consumeChar(',') and not self.atChar(')') {
+                        self.expectChar(')')?
+                    }
+                }
+                return Try.Ok(CJAstAssignmentTarget.Tuple(mark, subtargets.build()))
+            }
+            default {
+                val expr = self.expectExpression()?
+                union expr {
+                    default {
+                        return self.failExpectedWithMark("assignment target", expr.mark())
+                    }
+                }
+            }
+        }
+    }
+
     def expectStatement(self: Self): Try[CJAstStatement] {
         val mark = self.mark()
         switch self.peek().map(t -> t.type).getOrDefault(0) {
@@ -295,6 +333,7 @@ class CJParserX: CJParserMixin {
                 val expr = self.expectExpression()?
                 return Try.Ok(CJAstStatement.Return(mark, expr))
             }
+
             default {
                 val expr = self.expectExpression()?
                 return Try.Ok(CJAstStatement.Expression(mark, expr))
@@ -373,6 +412,9 @@ class CJParserX: CJParserMixin {
                 self.next()
                 return Try.Ok(CJAstExpression.Bool(mark, "false"))
             }
+            case CJToken.kwIf {
+                return self.expectIfExpression()
+            }
             default {
                 return self.failExpected("expression")
             }
@@ -415,5 +457,17 @@ class CJParserX: CJParserMixin {
             if (self.atChar('{')) self.expectStatement()?
             else CJAstStatement.Return(mark, self.expectExpression()?))
         return Try.Ok(CJAstExpression.Lambda(mark, parameterNames, body))
+    }
+
+    def expectIfExpression(self: Self): Try[CJAstExpression] {
+        val mark = self.mark()
+        self.expect(CJToken.kwIf)?
+        self.expectChar('(')?
+        val cond = self.expectExpression()?
+        self.expectChar(')')?
+        val body = self.expectExpression()?
+        self.expect(CJToken.kwElse)?
+        val other = self.expectExpression()?
+        return Try.Ok(CJAstExpression.If(mark, cond, body, other))
     }
 }
