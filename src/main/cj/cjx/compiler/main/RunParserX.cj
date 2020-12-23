@@ -21,6 +21,9 @@ class RunParserX {
         for member in staticMembers {
             member.field().ifPresent(field -> {
                 IO.println("  static field " + field.name() + ": " + field.type())
+                field.comment().ifPresent(comment -> {
+                    Self._emitMemberComment(comment)
+                })
             })
         }
         for member in staticMembers {
@@ -28,11 +31,17 @@ class RunParserX {
                 val paramtypes = "(" + ", ".join(method.parameters().map(p -> p.type())) + ")"
                 val rtype = method.returnType().map(t -> ": " + t.repr()).getOrDefault("")
                 IO.println("  static method " + method.name() + paramtypes + rtype)
+                method.comment().ifPresent(comment -> {
+                    Self._emitMemberComment(comment)
+                })
             })
         }
         for member in instanceMembers {
             member.field().ifPresent(field -> {
                 IO.println("  field " + field.name() + ": " + field.type())
+                field.comment().ifPresent(comment -> {
+                    Self._emitMemberComment(comment)
+                })
             })
         }
         for member in instanceMembers {
@@ -40,8 +49,15 @@ class RunParserX {
                 val paramtypes = "(" + ", ".join(method.parameters().map(p -> p.type())) + ")"
                 val rtype = method.returnType().map(t -> ": " + t.repr()).getOrDefault("")
                 IO.println("  method " + method.name() + paramtypes + rtype)
+                method.comment().ifPresent(comment -> {
+                    Self._emitMemberComment(comment)
+                })
             })
         }
         return Try.Ok(())
+    }
+
+    def _emitMemberComment(comment: String) {
+        IO.println("    " + comment)
     }
 }
