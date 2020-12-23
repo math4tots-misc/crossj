@@ -216,7 +216,7 @@ class CJParserX: CJParserMixin {
         val expression = (
             if (self.consumeChar('=')) Nullable.Some(self.expectExpression()?)
             else Nullable.None)
-        if expression.isPresent() != CJIRModifier.Static in modifiers {
+        if expression.isPresent() != (CJIRModifier.Static in modifiers) {
             return self.fail("A field should have an initializer iff it is static")
         }
         return Try.Ok(CJAstFieldDefinition.new(
@@ -276,7 +276,114 @@ class CJParserX: CJParserMixin {
         return Try.Ok(CJAstParameter.new(mark, mutable, name, type))
     }
 
+    def expectStatement(self: Self): Try[CJAstStatement] {
+        val mark = self.mark()
+        switch self.peek().map(t -> t.type).getOrDefault(0) {
+            case '{'.toInt() {
+                return self.expectBlockStatement()
+            }
+            case CJToken.kwReturn {
+                self.next()
+                val expr = self.expectExpression()?
+                return Try.Ok(CJAstStatement.Return(mark, expr))
+            }
+            default {
+                val expr = self.expectExpression()?
+                return Try.Ok(CJAstStatement.Expression(mark, expr))
+            }
+        }
+    }
+
+    def expectBlockStatement(self: Self): Try[CJAstStatement] {
+        val mark = self.mark()
+        self.expectChar('{')?
+        self.skipDelimiters()
+        val stmts = List[CJAstStatement].builder()
+        while not self.consumeChar('}') {
+            stmts.add(self.expectStatement()?)
+            self.skipDelimiters()
+        }
+        return Try.Ok(CJAstStatement.Block(mark, stmts.build()))
+    }
+
     def expectExpression(self: Self): Try[CJAstExpression] {
-        return self.fail("TODO: expectExpression")
+        return self.expectAtom()
+    }
+
+    def expectAtom(self: Self): Try[CJAstExpression] {
+        val mark = self.mark()
+
+        switch self.peek().map(t -> t.type).getOrDefault(0) {
+            case CJToken.tId {
+                # local variable name or lambda expression
+                if self.atLambda() {
+                    return self.expectLambdaExpression()
+                } else {
+                    val name = self.expectId()?
+                    return Try.Ok(CJAstExpression.Name(mark, name))
+                }
+            }
+            case CJToken.tInt {
+                val rawText = self.next().get().text
+                return Try.Ok(CJAstExpression.Int(mark, rawText))
+            }
+            case CJToken.tDouble {
+                val rawText = self.next().get().text
+                return Try.Ok(CJAstExpression.Double(mark, rawText))
+            }
+            case CJToken.tChar {
+                val rawText = self.next().get().text
+                return Try.Ok(CJAstExpression.Char(mark, rawText))
+            }
+            case CJToken.kwTrue {
+                self.next()
+                return Try.Ok(CJAstExpression.Bool(mark, "true"))
+            }
+            case CJToken.kwFalse {
+                self.next()
+                return Try.Ok(CJAstExpression.Bool(mark, "false"))
+            }
+            default {
+                return self.failExpected("expression")
+            }
+        }
+    }
+
+    ## Look ahead a few tokens to see if we're currently at a lambda expression
+    def atLambda(self: Self): Bool {
+        if self.at(CJToken.tId) and self.atOffset(CJToken.tRightArrow, 1) {
+            return true
+        }
+        if not self.atChar('(') {
+            return false
+        }
+
+        val saved = self.tell()
+        self.next()  # skip the first '('
+        while self.consume(CJToken.tId) or self.consumeChar(',') {}
+        val matched = self.consumeChar(')') and self.consume(CJToken.tRightArrow)
+        self.seek(saved)
+        return matched
+    }
+
+    def expectLambdaExpression(self: Self): Try[CJAstExpression] {
+        val mark = self.mark()
+        val parameterNames = List[String].builder()
+        if self.at(CJToken.tId) {
+            parameterNames.add(self.expectId()?)
+        } else {
+            self.expectChar('(')?
+            while not self.consumeChar(')') {
+                parameterNames.add(self.expectId()?)
+                if not self.consumeChar(',') and not self.atChar(')') {
+                    self.expectChar(')')?
+                }
+            }
+        }
+        self.expect(CJToken.tRightArrow)?
+        val body = (
+            if (self.atChar('{')) self.expectStatement()?
+            else CJAstStatement.Return(mark, self.expectExpression()?))
+        return Try.Ok(CJAstExpression.Lambda(mark, parameterNames, body))
     }
 }

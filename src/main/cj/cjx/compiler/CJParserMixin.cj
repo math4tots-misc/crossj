@@ -80,12 +80,14 @@ trait CJParserMixin {
         if self.at(type) {
             return Try.Ok(self.next().get())
         } else {
-            return self.fail(
-                "Expected " + CJToken.typeToString(type) +
-                " but got " +
-                self.peek().map(t -> CJToken.typeToString(t.type)).getOrDefault("EOF")
-            )
+            return self.failExpected(CJToken.typeToString(type))
         }
+    }
+
+    def failExpected[R](self: Self, kind: String): Try[R] {
+        return self.fail(
+            "Expected " + kind + " but got " +
+            self.peek().map(t -> CJToken.typeToString(t.type)).getOrDefault("EOF"))
     }
 
     def expectChar(self: Self, type: Char): Try[CJToken] {
