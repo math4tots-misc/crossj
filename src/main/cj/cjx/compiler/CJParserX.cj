@@ -238,11 +238,9 @@ class CJParserX: CJParserMixin {
             if (self.consumeChar(':')) Nullable.Some(self.expectTypeExpression()?)
             else Nullable.None)
 
-        # TODO: actually parse the body
-        val body: Nullable[CJAstStatement] = Nullable.None
-        if self.atChar('{') {
-            self.skipBlob()
-        }
+        val body: Nullable[CJAstStatement] = (
+            if (self.atChar('{')) Nullable.Some(self.expectBlockStatement()?)
+            else Nullable.None)
         return Try.Ok(CJAstMethodDefinition.new(
             mark,
             conditions,
@@ -283,6 +281,15 @@ class CJParserX: CJParserMixin {
             case '{'.toInt() {
                 return self.expectBlockStatement()
             }
+            case CJToken.kwIf {
+                return self.expectIfStatement()
+            }
+            case CJToken.kwWhile {
+                self.next()
+                val cond = self.expectExpression()?
+                val body = self.expectBlockStatement()?
+                return Try.Ok(CJAstStatement.While(mark, cond, body))
+            }
             case CJToken.kwReturn {
                 self.next()
                 val expr = self.expectExpression()?
@@ -293,6 +300,19 @@ class CJParserX: CJParserMixin {
                 return Try.Ok(CJAstStatement.Expression(mark, expr))
             }
         }
+    }
+
+    def expectIfStatement(self: Self): Try[CJAstStatement] {
+        val mark = self.mark()
+        self.expect(CJToken.kwIf)?
+        val cond = self.expectExpression()?
+        val body = self.expectBlockStatement()?
+        val other = (
+            if (self.consume(CJToken.kwElse)) Nullable.Some(
+                if (self.at(CJToken.kwIf)) self.expectIfStatement()?
+                else self.expectBlockStatement()?)
+            else Nullable.None)
+        return Try.Ok(CJAstStatement.If(mark, cond, body, other))
     }
 
     def expectBlockStatement(self: Self): Try[CJAstStatement] {
