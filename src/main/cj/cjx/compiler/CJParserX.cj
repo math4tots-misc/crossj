@@ -216,7 +216,7 @@ class CJParserX: CJParserMixin {
         val expression = (
             if (self.consumeChar('=')) Nullable.Some(self.expectExpression()?)
             else Nullable.None)
-        if CJIRModifier.Static in modifiers {
+        if expression.isPresent() != CJIRModifier.Static in modifiers {
             return self.fail("A field should have an initializer iff it is static")
         }
         return Try.Ok(CJAstFieldDefinition.new(
