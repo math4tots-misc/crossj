@@ -323,6 +323,15 @@ class CJParserX: CJParserMixin {
                     return Try.Ok(CJAstExpression.Name(mark, name))
                 }
             }
+            case '('.toInt() {
+                if self.atLambda() {
+                    return self.expectLambdaExpression()
+                } else {
+                    val expr = self.expectExpression()?
+                    self.expectChar(')')?
+                    return Try.Ok(expr)
+                }
+            }
             case CJToken.tInt {
                 val rawText = self.next().get().text
                 return Try.Ok(CJAstExpression.Int(mark, rawText))
