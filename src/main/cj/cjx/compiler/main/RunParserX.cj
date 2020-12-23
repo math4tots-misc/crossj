@@ -13,6 +13,9 @@ class RunParserX {
         val data = FS.read(path)?
         val defn = CJParserX.parseString(path, data)?
         IO.println(defn.fullName())
+        defn.comment().ifPresent(comment -> {
+            IO.println(comment)
+        })
         val staticMembers = defn.members().filter(m -> m.isStatic())
         val instanceMembers = defn.members().filter(m -> not m.isStatic())
         for member in staticMembers {

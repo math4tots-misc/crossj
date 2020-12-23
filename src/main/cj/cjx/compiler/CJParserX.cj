@@ -69,6 +69,7 @@ class CJParserX: CJParserMixin {
             if (self.at(CJToken.tComment))
                 Nullable.Some(self.expect(CJToken.tComment).get().text) else
                 Nullable.None)
+        self.skipDelimiters()
         return self.expectItemDefinition(pkg, imports.build(), comment)
     }
 

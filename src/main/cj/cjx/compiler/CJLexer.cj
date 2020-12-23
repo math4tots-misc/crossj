@@ -52,7 +52,7 @@ class CJLexer {
         b.add("\n\\s*", m -> Self.chartok(m))
 
         # comments
-        # b.add("##[^\n]*(\n\\s*##[^\n]*)*", m -> Self.tok(CJToken.tComment, m))
+        b.add("##[^\n]*(\n\\s*##[^\n]*)*", m -> Self.tok(CJToken.tComment, m))
         b.add("#[^\n]*(\n\\s*#[^\n]*)*", m -> Self.none())
 
         # whitespace
