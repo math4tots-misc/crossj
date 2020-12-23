@@ -44,24 +44,24 @@ union CJAstItemMemberDefinition: CJAstNode {
         return CJIRModifier.Static in self.modifiers()
     }
 
-    def field(self: Self): CJAstFieldDefinition {
+    def field(self: Self): Nullable[CJAstFieldDefinition] {
         union self {
             case Field(defn) {
-                return defn
+                return Nullable.Some(defn)
             }
             case Method(defn) {
-                IO.panic("CJAstItemMemberDefinition.field() on method")
+                return Nullable.None
             }
         }
     }
 
-    def method(self: Self): CJAstMethodDefinition {
+    def method(self: Self): Nullable[CJAstMethodDefinition] {
         union self {
             case Field(defn) {
-                IO.panic("CJAstItemMemberDefinition.method() on field")
+                return Nullable.None
             }
             case Method(defn) {
-                return defn
+                return Nullable.Some(defn)
             }
         }
     }

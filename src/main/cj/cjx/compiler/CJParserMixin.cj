@@ -1,5 +1,7 @@
 package cjx.compiler
 
+import cjx.compiler.CJAstTraitExpression
+import cjx.compiler.CJAstTypeExpression
 import cjx.compiler.CJIRModifier
 import cjx.compiler.CJIRItemKind
 import cjx.compiler.CJMark
@@ -45,6 +47,22 @@ trait CJParserMixin {
         return self.peek().map(t -> t.type == type).getOrDefault(false)
     }
 
+    def atChar(self: Self, ch: Char): Bool {
+        return self.at(ch.toInt())
+    }
+
+    def atOffset(self: Self, type: Int, offset: Int): Bool {
+        val j = self.tell() + offset
+        val toks = self.tokens()
+        return j < toks.size() and toks.get(j).type == type
+    }
+
+    def fail[R](self: Self, message: String): Try[R] {
+        val mark = self.mark()
+        return Try[R].fail(message).addContext(
+            "on " + mark.line + ":" + mark.column + " in " + mark.filename)
+    }
+
     def consume(self: Self, type: Int): Bool {
         if self.at(type) {
             self.next()
@@ -54,16 +72,30 @@ trait CJParserMixin {
         }
     }
 
+    def consumeChar(self: Self, ch: Char): Bool {
+        return self.consume(ch.toInt())
+    }
+
     def expect(self: Self, type: Int): Try[CJToken] {
         if self.at(type) {
             return Try.Ok(self.next().get())
         } else {
-            return Try.fail(
+            return self.fail(
                 "Expected " + CJToken.typeToString(type) +
                 " but got " +
                 self.peek().map(t -> CJToken.typeToString(t.type)).getOrDefault("EOF")
             )
         }
+    }
+
+    def expectChar(self: Self, type: Char): Try[CJToken] {
+        return self.expect(type.toInt())
+    }
+
+    def maybeComment(self: Self): Nullable[String] {
+        return (
+            if (self.at(CJToken.tComment)) Nullable.Some(self.next().get().text)
+            else Nullable.None)
     }
 
     def expectId(self: Self): Try[String] {
@@ -91,6 +123,53 @@ trait CJParserMixin {
             self.expect(CJToken.kwClass)?
             return Try.Ok(CJIRItemKind.Class)
         }
+    }
+
+    def expectTypeExpression(self: Self): Try[CJAstTypeExpression] {
+        val mark = self.mark()
+        val name = self.expectTypeId()?
+        val args = self.expectTypeArgs()?
+        return Try.Ok(CJAstTypeExpression.new(mark, name, args))
+    }
+
+    def expectTraitExpression(self: Self): Try[CJAstTraitExpression] {
+        val mark = self.mark()
+        val name = self.expectTypeId()?
+        val args = self.expectTypeArgs()?
+        return Try.Ok(CJAstTraitExpression.new(mark, name, args))
+    }
+
+    def expectTypeArgs(self: Self): Try[List[CJAstTypeExpression]] {
+        val args = List[CJAstTypeExpression].builder()
+        if self.consume('['.toInt()) {
+            var repeat = true
+            while repeat and not self.consume(']'.toInt()) {
+                args.add(self.expectTypeExpression()?)
+                if not self.consume(','.toInt()) {
+                    self.expect(']'.toInt())?
+                    repeat = false
+                }
+            }
+        }
+        return Try.Ok(args.build())
+    }
+
+    def expectPackageName(self: Self): Try[String] {
+        val parts = @[self.expectId()?]
+        while self.consume('.'.toInt()) {
+            parts.add(self.expectId()?)
+        }
+        return Try.Ok(".".join(parts))
+    }
+
+    def expectQualifiedName(self: Self): Try[String] {
+        val parts = @[self.expectId()?]
+        while self.atOffset(CJToken.tId, 1) and self.consume('.'.toInt()) {
+            parts.add(self.expectId()?)
+        }
+        self.expect('.'.toInt())?
+        parts.add(self.expectTypeId()?)
+        return Try.Ok(".".join(parts))
     }
 
     def parseModifiers(self: Self): List[CJIRModifier] {

@@ -18,7 +18,7 @@ class CJAstItemDefinition: CJAstNode {
     val _modifiers: List[CJIRModifier]
     val _shortName: String
     val _typeParameters: List[CJAstTypeParameter]
-    val _traits: List[Tuple[CJAstTraitExpression, CJAstTypeCondition]]
+    val _traits: List[Tuple[CJAstTraitExpression, List[CJAstTypeCondition]]]
     val _members: List[CJAstItemMemberDefinition]
 
     def mark(self: Self): CJMark {
@@ -45,11 +45,15 @@ class CJAstItemDefinition: CJAstNode {
         return self._shortName
     }
 
+    def fullName(self: Self): String {
+        return self._packageName + "." + self._shortName
+    }
+
     def typeParameters(self: Self): List[CJAstTypeParameter] {
         return self._typeParameters
     }
 
-    def traits(self: Self): List[Tuple[CJAstTraitExpression, CJAstTypeCondition]] {
+    def traits(self: Self): List[Tuple[CJAstTraitExpression, List[CJAstTypeCondition]]] {
         return self._traits
     }
 

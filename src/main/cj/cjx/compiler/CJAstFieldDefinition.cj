@@ -13,7 +13,7 @@ class CJAstFieldDefinition: CJAstNode {
     val _mutable: Bool
     val _name: String
     val _type: CJAstTypeExpression
-    val _expression: CJAstExpression
+    val _expression: Nullable[CJAstExpression]
 
     def mark(self: Self): CJMark {
         return self._mark
@@ -39,7 +39,7 @@ class CJAstFieldDefinition: CJAstNode {
         return self._type
     }
 
-    def expression(self: Self): CJAstExpression {
+    def expression(self: Self): Nullable[CJAstExpression] {
         return self._expression
     }
 }

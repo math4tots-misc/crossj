@@ -470,15 +470,15 @@ class MC$cj$String {
     }
 
     /**
-     * @template T
+     * @template I
      * @param {*} TV$I
      * @param {*} TV$C
      * @param {string} sep
-     * @param {Iterable<T>} parts
+     * @param {Iterable<I>} parts
      */
     M$join(TV$I, TV$C, sep, parts) {
         const arr = Array.isArray(parts) ? parts : Array.from(TV$C.M$iter(parts));
-        return arr.join(sep);
+        return arr.map(t => TV$I.M$toString(t)).join(sep);
     }
 
     /**
@@ -1639,7 +1639,7 @@ class MC$cj$Try {
         if (t[0] === 0) {
             return t[1];
         } else {
-            panic("get from a failed Try");
+            panic("get from a failed Try:\n" + t[1].join("\n"));
         }
     }
 

@@ -7,7 +7,6 @@ import cj.Process
 class RunParser0 {
     def main() {
         val args = Process.argv()
-        val rec = Self.rec(args.get(0))
         Self._main(args.get(0)).get()
     }
 
