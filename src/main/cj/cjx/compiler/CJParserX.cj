@@ -598,6 +598,10 @@ class CJParserX: CJParserMixin {
                         }
                     }
                 }
+                case '?'.toInt() {
+                    self.next()
+                    expr = CJAstExpression.Propagate(mark, expr)
+                }
                 default {
                     IO.panic(
                         "TODO: Expression operator " +
@@ -653,6 +657,9 @@ class CJParserX: CJParserMixin {
             case '['.toInt() {
                 return self.expectDisplay()
             }
+            case '{'.toInt() {
+                return self.expectBlockExpression()
+            }
             case CJToken.kwNot {
                 self.next()
                 val inner = self.expectExpressionWithPrecedence(Self.logicalNotBindingPower)?
@@ -697,6 +704,10 @@ class CJParserX: CJParserMixin {
             case '('.toInt() {
                 if self.atLambda() {
                     return self.expectLambdaExpression()
+                } else if self.atOffset(')'.toInt(), 1) {
+                    self.next()
+                    self.next()
+                    return Try.Ok(CJAstExpression.Unit(mark))
                 } else {
                     self.next()
                     val expr = self.expectExpression()?
@@ -709,7 +720,7 @@ class CJParserX: CJParserMixin {
                                 self.expectChar(')')?
                             }
                         }
-                        return Try.Ok(CJAstExpression.Tuple(exprs.build()))
+                        return Try.Ok(CJAstExpression.Tuple(mark, exprs.build()))
                     } else {
                         self.expectChar(')')?
                         return Try.Ok(expr)
@@ -784,7 +795,7 @@ class CJParserX: CJParserMixin {
     }
 
     def expectArgs(self: Self): Try[List[CJAstExpression]] {
-        self.expectChar('(')
+        self.expectChar('(')?
         val list = List[CJAstExpression].builder()
         while not self.consumeChar(')') {
             list.add(self.expectExpression()?)
@@ -793,6 +804,24 @@ class CJParserX: CJParserMixin {
             }
         }
         return Try.Ok(list.build())
+    }
+
+    def expectBlockExpression(self: Self): Try[CJAstExpression] {
+        val mark = self.mark()
+        self.expectChar('{')?
+        val list = @[CJAstStatement]
+        self.skipDelimiters()
+        while not self.consumeChar('}') {
+            list.add(self.expectStatement()?)
+            self.expectDelimiter()?
+        }
+        val expr = (
+            if (list.size() > 0) union list.pop() {
+                case Expression(smark, inner) = Nullable.Some(inner)
+                default = Nullable.None
+            }
+            else Nullable.None)
+        return Try.Ok(CJAstExpression.Block(mark, list.toListUnsafe(), expr))
     }
 
     ## Look ahead a few tokens to see if we're currently at a lambda expression
