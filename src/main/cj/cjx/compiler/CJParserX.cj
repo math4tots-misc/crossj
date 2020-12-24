@@ -332,6 +332,70 @@ class CJParserX: CJParserMixin {
                 val body = self.expectBlockStatement()?
                 return Try.Ok(CJAstStatement.While(mark, cond, body))
             }
+            case CJToken.kwFor {
+                self.next()
+                if self.atChar(';') or self.at(CJToken.tId) and self.atOffset('='.toInt(), 1) {
+                    # classic for loop
+                    var name = Nullable[String].None
+                    var startexpr = Nullable[CJAstExpression].None
+                    if self.at(CJToken.tId) {
+                        name = Nullable.Some(self.expectId()?)
+                        self.expectChar('=')?
+                        startexpr = Nullable.Some(self.expectExpression()?)
+                    }
+                    self.expectChar(';')?
+                    val condexpr = (
+                        if (self.atChar(';')) CJAstExpression.Bool(mark, "true")
+                        else self.expectExpression()?)
+                    self.expectChar(';')?
+                    val incr = (
+                        if (self.atChar('{')) Nullable[CJAstStatement].None
+                        else {
+                            val stmt = self.expectStatement()?
+                            union stmt {
+                                case Expression(imark, expr) {}
+                                case Assignment(imark, target, expr) {}
+                                case AugmentedAssignment(imark, target, kind, expr) {}
+                                default {
+                                    return self.failWithMark(
+                                        "Only assignment, augmented assignment or " +
+                                        "expression statements are allowed here",
+                                        mark)
+                                }
+                            }
+                            Nullable.Some(stmt)
+                        })
+                    val body = self.expectBlockStatement()?
+                    val stmts = List[CJAstStatement].builder()
+                    name.ifPresent(n -> {
+                        stmts.add(CJAstStatement.VariableDeclaration(
+                            mark,
+                            true,
+                            CJAstAssignmentTarget.Name(mark, n),
+                            Nullable[CJAstTypeExpression].None,
+                            startexpr.get()))
+                    })
+                    {
+                        val whileBody = List[CJAstStatement].builder()
+                        union body {
+                            case Block(bmark, bstmts) {
+                                whileBody.addAll(bstmts)
+                            }
+                        }
+                        incr.ifPresent(inc -> {
+                            whileBody.add(inc)
+                        })
+                        stmts.add(CJAstStatement.While(mark, condexpr, whileBody.build()))
+                    }
+                    return Try.Ok(CJAstStatement.Block(mark, stmts.build()))
+                } else {
+                    val target = self.expectAssignmentTarget()?
+                    self.expect(CJToken.kwIn)?
+                    val container = self.expectExpression()?
+                    val body = self.expectBlockStatement()?
+                    return Try.Ok(CJAstStatement.For(mark, target, container, body))
+                }
+            }
             case CJToken.kwReturn {
                 self.next()
                 val expr = self.expectExpression()?
