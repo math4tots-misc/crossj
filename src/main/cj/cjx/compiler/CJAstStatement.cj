@@ -1,6 +1,5 @@
 package cjx.compiler
 
-import cjx.compiler.CJAstTraitExpression
 import cjx.compiler.CJAstTypeExpression
 import cjx.compiler.CJAstAssignmentTarget
 import cjx.compiler.CJAstExpression
@@ -13,7 +12,17 @@ union CJAstStatement: CJAstNode {
     case Block(CJMark, List[CJAstStatement])
     case If(CJMark, CJAstExpression, CJAstStatement, Nullable[CJAstStatement])
     case While(CJMark, CJAstExpression, CJAstStatement)
-    case For(CJMark, CJAstTraitExpression, CJAstExpression, CJAstStatement)
+    case For(CJMark, CJAstAssignmentTarget, CJAstExpression, CJAstStatement)
+    case Union(
+        CJMark,
+        CJAstExpression,
+        List[Tuple[String, List[String], CJAstStatement]],
+        Nullable[CJAstStatement])
+    case Switch(
+        CJMark,
+        CJAstExpression,
+        List[Tuple[List[CJAstExpression], CJAstStatement]],
+        Nullable[CJAstStatement])
     case VariableDeclaration(
         CJMark, Bool, CJAstAssignmentTarget, Nullable[CJAstTypeExpression], CJAstExpression)
     case Assignment(CJMark, CJAstAssignmentTarget, CJAstExpression)
@@ -27,6 +36,8 @@ union CJAstStatement: CJAstNode {
             case If(mark, cond, body, other) = mark
             case While(mark, cond, body) = mark
             case For(mark, target, container, body) = mark
+            case Union(mark, target, cases, alt) = mark
+            case Switch(mark, target, cases, alt) = mark
             case VariableDeclaration(mark, mutable, target, type, expr) = mark
             case Assignment(mark, target, expr) = mark
             case AugmentedAssignment(mark, target, kind, expr) = mark
