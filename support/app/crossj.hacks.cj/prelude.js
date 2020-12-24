@@ -1671,6 +1671,24 @@ class MC$cj$Try {
         }
         return t;
     }
+
+    /**
+     * @template C
+     * @param {*} TV$C
+     * @param {*} trys
+     * @returns {Try<Array<T>>}
+     */
+    M$list(TV$C, trys) {
+        const arr = [];
+        for (const t of TV$C.M$iter(trys)) {
+            if (t[0] === 1) {
+                return t
+            } else {
+                arr.push(t[1]);
+            }
+        }
+        return [0, arr];
+    }
 }
 
 class MC$cj$Range {

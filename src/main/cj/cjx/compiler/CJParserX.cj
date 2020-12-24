@@ -1,5 +1,6 @@
 package cjx.compiler
 
+import cjx.compiler.CJAstTypeExpression
 import cjx.compiler.CJAstAssignmentTarget
 import cjx.compiler.CJAstStatement
 import cjx.compiler.CJAstExpression
@@ -19,6 +20,9 @@ import cjx.compiler.CJToken
 import cjx.compiler.CJParserMixin
 
 class CJParserX: CJParserMixin {
+
+    private static val logicalNotBindingPower: Int = Self.tokenPrecedence(CJToken.tEq) + 5
+    private static val defaultUnaryOpBindingPower: Int = Self.tokenPrecedence('*'.toInt()) + 5
 
     def parseString(filename: String, data: String): Try[CJAstItemDefinition] {
         val tokens = CJLexer.lex(data).addContext(filename)?
@@ -277,14 +281,6 @@ class CJParserX: CJParserMixin {
     }
 
     def expectAssignmentTarget(self: Self): Try[CJAstAssignmentTarget] {
-        val target = self.expectExtendedAssignmentTarget()?
-        return union target {
-            case Field(mark, owner, name) = self.failExpectedWithMark("assignment target", mark)
-            default = Try.Ok(target)
-        }
-    }
-
-    def expectExtendedAssignmentTarget(self: Self): Try[CJAstAssignmentTarget] {
         val mark = self.mark()
         switch self.peek().map(t -> t.type).getOrDefault(0) {
             case CJToken.tId {
@@ -295,7 +291,7 @@ class CJParserX: CJParserMixin {
                 self.next()
                 val subtargets = List[CJAstAssignmentTarget].builder()
                 while not self.consumeChar(')') {
-                    subtargets.add(self.expectExtendedAssignmentTarget()?)
+                    subtargets.add(self.expectAssignmentTarget()?)
                     if not self.consumeChar(',') and not self.atChar(')') {
                         self.expectChar(')')?
                     }
@@ -303,13 +299,21 @@ class CJParserX: CJParserMixin {
                 return Try.Ok(CJAstAssignmentTarget.Tuple(mark, subtargets.build()))
             }
             default {
-                val expr = self.expectExpression()?
-                union expr {
-                    default {
-                        return self.failExpectedWithMark("assignment target", expr.mark())
-                    }
-                }
+                return self.failExpectedWithMark("assignment target", mark)
             }
+        }
+    }
+
+    def expressionToAssignmentTarget(self: Self, expr: CJAstExpression): Try[CJAstAssignmentTarget] {
+        return union expr {
+            case Name(mark, name) = Try.Ok(CJAstAssignmentTarget.Name(mark, name))
+            case Tuple(mark, exprs) = Try.Ok(CJAstAssignmentTarget.Tuple(
+                mark, Try.list(exprs.iter().map(e -> self.expressionToAssignmentTarget(e)))?))
+            case Field(mark, owner, name) = Try.Ok(CJAstAssignmentTarget.Field(
+                mark, owner, name))
+            case StaticField(mark, owner, name) = Try.Ok(CJAstAssignmentTarget.StaticField(
+                mark, owner, name))
+            default = self.failExpectedWithMark("extended assignment target", expr.mark())
         }
     }
 
@@ -331,12 +335,31 @@ class CJParserX: CJParserMixin {
             case CJToken.kwReturn {
                 self.next()
                 val expr = self.expectExpression()?
+                self.expectDelimiter()?
                 return Try.Ok(CJAstStatement.Return(mark, expr))
             }
-
+            case CJToken.kwVal
+            case CJToken.kwVar {
+                val mutable = self.next().get().type == CJToken.kwVar
+                val target = self.expectAssignmentTarget()?
+                val type = (
+                    if (self.consumeChar(':')) Nullable.Some(self.expectTypeExpression()?)
+                    else Nullable.None)
+                self.expectChar('=')?
+                val valexpr = self.expectExpression()?
+                return Try.Ok(CJAstStatement.VariableDeclaration(
+                    mark, mutable, target, type, valexpr))
+            }
             default {
                 val expr = self.expectExpression()?
-                return Try.Ok(CJAstStatement.Expression(mark, expr))
+                val imark = self.mark()
+                if self.consumeChar('=') {
+                    val target = self.expressionToAssignmentTarget(expr)?
+                    val valexpr = self.expectExpression()?
+                    return Try.Ok(CJAstStatement.Assignment(imark, target, valexpr))
+                } else {
+                    return Try.Ok(CJAstStatement.Expression(mark, expr))
+                }
             }
         }
     }
@@ -361,7 +384,7 @@ class CJParserX: CJParserMixin {
         val stmts = List[CJAstStatement].builder()
         while not self.consumeChar('}') {
             stmts.add(self.expectStatement()?)
-            self.skipDelimiters()
+            self.expectDelimiter()
         }
         return Try.Ok(CJAstStatement.Block(mark, stmts.build()))
     }
@@ -409,6 +432,91 @@ class CJParserX: CJParserMixin {
         while tokenPrecedence >= precedence {
             val mark = self.mark()
             switch self.peek().map(t -> t.type).getOrDefault(0) {
+                case CJToken.kwOr {
+                    self.next()
+                    val right = self.expectExpressionWithPrecedence(tokenPrecedence + 1)?
+                    expr = CJAstExpression.LogicalOr(mark, expr, right)
+                }
+                case CJToken.kwAnd {
+                    self.next()
+                    val right = self.expectExpressionWithPrecedence(tokenPrecedence + 1)?
+                    expr = CJAstExpression.LogicalAnd(mark, expr, right)
+                }
+                case '+'.toInt()
+                case '-'.toInt()
+                case '*'.toInt()
+                case '/'.toInt()
+                case '%'.toInt()
+                case '<'.toInt()
+                case '>'.toInt()
+                case '|'.toInt()
+                case '^'.toInt()
+                case '&'.toInt()
+                case CJToken.tLshift
+                case CJToken.tRshift
+                case CJToken.tRshiftu
+                case CJToken.tPower
+                case CJToken.tTruncdiv
+                case CJToken.tEq
+                case CJToken.tNe
+                case CJToken.tLe
+                case CJToken.tGe
+                case CJToken.kwIn
+                case CJToken.kwNot {
+                    var logicalNot = false
+                    var rightAssociative = false
+                    var swap = false
+                    val methodName = switch self.next().get().type {
+                            case '+'.toInt() = "__add"
+                            case '-'.toInt() = "__sub"
+                            case '*'.toInt() = "__mul"
+                            case '/'.toInt() = "__div"
+                            case '%'.toInt() = "__rem"
+                            case '<'.toInt() = "__lt"
+                            case '>'.toInt() = "__gt"
+                            case '|'.toInt() = "__or"
+                            case '^'.toInt() = "__xor"
+                            case '&'.toInt() = "__and"
+                            case CJToken.tLshift = "__lshift"
+                            case CJToken.tRshift = "__rshift"
+                            case CJToken.tRshiftu = "__rshiftu"
+                            case CJToken.tPower = "__pow"
+                            case CJToken.tTruncdiv = "__truncdiv"
+                            case CJToken.tEq = "__eq"
+                            case CJToken.tNe = "__eq"
+                            case CJToken.tLe = "__le"
+                            case CJToken.tGe = "__ge"
+                            case CJToken.kwIn = {
+                                swap = true
+                                "__contains"
+                            }
+                            case CJToken.kwNot = {
+                                self.expect(CJToken.kwIn)?
+                                swap = true
+                                logicalNot = true
+                                "__contains"
+                            }
+                    }
+                    val rhs = self.expectExpressionWithPrecedence(
+                        if (rightAssociative) tokenPrecedence else tokenPrecedence + 1)?
+                    expr = CJAstExpression.Method(mark, expr, methodName, [rhs])
+                }
+                case '.'.toInt() {
+                    self.next()
+                    val methodMark = self.mark()
+                    if self.consume(CJToken.kwAwait) {
+                        expr = CJAstExpression.Await(methodMark, expr)
+                    } else {
+                        val name = self.expectId()?
+                        if self.atChar('[') or self.atChar('(') {
+                            val targs = self.expectTypeArgs()?
+                            val args = self.expectArgs()?
+                            expr = CJAstExpression.Method(mark, name, targs, args)
+                        } else {
+                            expr = CJAstExpression.Field(mark, expr, name)
+                        }
+                    }
+                }
                 default {
                     IO.panic(
                         "TODO: Expression operator " +
@@ -431,15 +539,6 @@ class CJParserX: CJParserMixin {
                 } else {
                     val name = self.expectId()?
                     return Try.Ok(CJAstExpression.Name(mark, name))
-                }
-            }
-            case '('.toInt() {
-                if self.atLambda() {
-                    return self.expectLambdaExpression()
-                } else {
-                    val expr = self.expectExpression()?
-                    self.expectChar(')')?
-                    return Try.Ok(expr)
                 }
             }
             case CJToken.tInt {
@@ -465,10 +564,98 @@ class CJParserX: CJParserMixin {
             case CJToken.kwIf {
                 return self.expectIfExpression()
             }
+            case CJToken.kwNot {
+                self.next()
+                val inner = self.expectExpressionWithPrecedence(Self.logicalNotBindingPower)?
+                return Try.Ok(CJAstExpression.LogicalNot(mark, inner))
+            }
+            case CJToken.tTypeId {
+                val type = self.expectTypeExpression()?
+                self.expectChar('.')?
+                var memberMark = self.mark()
+                if self.consume(CJToken.kwNew) {
+                    val args = self.expectArgs()?
+                    return Try.Ok(CJAstExpression.New(memberMark, type, args))
+                } else if self.at(CJToken.tTypeId) {
+                    val name = self.expectTypeId()?
+                    val args = (
+                        if (self.atChar('(')) self.expectArgs()?
+                        else [])
+                    return Try.Ok(CJAstExpression.NewUnion(memberMark, type, name, args))
+                } else {
+                    val name = self.expectId()?
+                    if self.atChar('[') or self.atChar('(') {
+                        val targs = self.expectTypeArgs()?
+                        val args = self.expectArgs()?
+                        return Try.Ok(CJAstExpression.StaticMethod(
+                            memberMark, type, name, targs, args))
+                    } else {
+                        return Try.Ok(CJAstExpression.StaticField(memberMark, type, name))
+                    }
+                }
+            }
+            case '+'.toInt()
+            case '-'.toInt()
+            case '~'.toInt() {
+                val methodName = switch self.next().get().type {
+                    case '+'.toInt() = "__pos"
+                    case '-'.toInt() = "__neg"
+                    case '~'.toInt() = "__invert"
+                }
+                val inner = self.expectExpressionWithPrecedence(Self.defaultUnaryOpBindingPower)?
+                return Try.Ok(CJAstExpression.Method(mark, methodName, inner))
+            }
+            case '('.toInt() {
+                if self.atLambda() {
+                    return self.expectLambdaExpression()
+                } else {
+                    self.next()
+                    val expr = self.expectExpression()?
+                    if self.consumeChar(',') {
+                        val exprs = List[CJAstExpression].builder()
+                        exprs.add(expr)
+                        while not self.consumeChar(')') {
+                            exprs.add(self.expectExpression()?)
+                            if not self.consumeChar(',') and not self.atChar(')') {
+                                self.expectChar(')')?
+                            }
+                        }
+                        return Try.Ok(CJAstExpression.Tuple(exprs.build()))
+                    } else {
+                        self.expectChar(')')?
+                        return Try.Ok(expr)
+                    }
+                }
+            }
             default {
                 return self.failExpected("expression")
             }
         }
+    }
+
+    def expectTypeArgs(self: Self): Try[List[CJAstTypeExpression]] {
+        val list = List[CJAstTypeExpression].builder()
+        if self.consumeChar('[') {
+            while not self.consumeChar(']') {
+                list.add(self.expectTypeExpression()?)
+                if not self.consumeChar(',') and not self.atChar(']') {
+                    self.expectChar(']')
+                }
+            }
+        }
+        return Try.Ok(list.build())
+    }
+
+    def expectArgs(self: Self): Try[List[CJAstExpression]] {
+        self.expectChar('(')
+        val list = List[CJAstExpression].builder()
+        while not self.consumeChar(')') {
+            list.add(self.expectExpression()?)
+            if not self.consumeChar(',') and not self.atChar(')') {
+                self.expectChar(')')
+            }
+        }
+        return Try.Ok(list.build())
     }
 
     ## Look ahead a few tokens to see if we're currently at a lambda expression
@@ -504,7 +691,7 @@ class CJParserX: CJParserMixin {
         }
         self.expect(CJToken.tRightArrow)?
         val body = (
-            if (self.atChar('{')) self.expectStatement()?
+            if (self.atChar('{')) self.expectBlockStatement()?
             else CJAstStatement.Return(mark, self.expectExpression()?))
         return Try.Ok(CJAstExpression.Lambda(mark, parameterNames, body))
     }

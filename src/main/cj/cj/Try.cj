@@ -19,4 +19,6 @@ native union Try[T] :
     def getErrorMessage(self: Self) : String
 
     def addContext(self: Self, message: String): Self
+
+    def list[C: Iterable[Try[T]]](trys: C): Try[List[T]]
 }

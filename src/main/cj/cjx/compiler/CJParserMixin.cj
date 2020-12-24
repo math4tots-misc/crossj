@@ -62,8 +62,9 @@ trait CJParserMixin {
     }
 
     def failWithMark[R](self: Self, message: String, mark: CJMark): Try[R] {
-        return Try[R].fail(message).addContext(
-            "on " + mark.line + ":" + mark.column + " in " + mark.filename)
+        IO.panic(message + " on " + mark.line + ":" + mark.column + " in " + mark.filename)
+        # return Try[R].fail(message).addContext(
+        #     "on " + mark.line + ":" + mark.column + " in " + mark.filename)
     }
 
     def consume(self: Self, type: Int): Bool {
@@ -207,6 +208,14 @@ trait CJParserMixin {
         while self.at(CJToken.tComment) {
             self.next()
         }
+    }
+
+    def expectDelimiter(self: Self): Try[Unit] {
+        if not self.atChar(';') and not self.atChar('\n') and not self.atChar('}') {
+            return self.failExpected("delimiter")
+        }
+        self.skipDelimiters()
+        return Try.Ok(())
     }
 
     def skipDelimiters(self: Self) {
