@@ -97,6 +97,7 @@ class CJParserX: CJParserMixin {
         val traits = List[Tuple[CJAstTraitExpression, List[CJAstTypeCondition]]].builder()
         self.skipDelimiters()
         if self.consumeChar(':') {
+            self.skipDelimiters()
             var repeat = true
             while repeat {
                 val trait_ = self.expectTraitExpression()?
@@ -104,6 +105,8 @@ class CJParserX: CJParserMixin {
                     if (self.at(CJToken.kwIf)) self.expectTypeConditions()?
                     else [])
                 traits.add((trait_, cond))
+                self.skipDelimiters()
+                repeat = self.consumeChar(',')
                 self.skipDelimiters()
             }
         }
