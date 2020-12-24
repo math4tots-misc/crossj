@@ -15,6 +15,7 @@ union CJAstStatement: CJAstNode {
     case VariableDeclaration(
         CJMark, Bool, CJAstAssignmentTarget, Nullable[CJAstTypeExpression], CJAstExpression)
     case Assignment(CJMark, CJAstAssignmentTarget, CJAstExpression)
+    case AugmentedAssignment(CJMark, CJAstAssignmentTarget, String, CJAstExpression)
 
     def mark(self: Self): CJMark {
         return union self {
@@ -25,6 +26,7 @@ union CJAstStatement: CJAstNode {
             case While(mark, cond, body) = mark
             case VariableDeclaration(mark, mutable, target, type, expr) = mark
             case Assignment(mark, target, expr) = mark
+            case AugmentedAssignment(mark, target, kind, expr) = mark
         }
     }
 }
