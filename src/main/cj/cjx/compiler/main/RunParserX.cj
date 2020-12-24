@@ -9,7 +9,28 @@ class RunParserX {
         Self._main(args.get(0)).get()
     }
 
-    def _main(path: String): Try[Unit] {
+    def _main(root: String): Try[Unit] {
+        for path in Self.rec(root)? {
+            if path.endsWith(".cj") {
+                IO.println(path + " ...")
+                Self._dump(path)
+            }
+        }
+    }
+
+    def rec(path: String): Try[List[String]] {
+        val out = List[String].builder()
+        val stack = @[path]
+        while stack.toBool() {
+            val p = stack.pop()
+            val children = FS.list(p)?.sorted().map(base -> FS.join([p, base]))
+            out.addAll(children.filter(c -> FS.isfile(c)))
+            stack.addAll(children.filter(c -> FS.isdir(c)).reversed())
+        }
+        return Try.Ok(out.build())
+    }
+
+    def _dump(path: String): Try[Unit] {
         val data = FS.read(path)?
         val defn = CJParserX.parseString(path, data)?
         IO.println(defn.fullName())
