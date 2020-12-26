@@ -1,5 +1,6 @@
 package cjx.compiler
 
+import cjx.compiler.CJAstCaseDefinition
 import cjx.compiler.CJAstTypeExpression
 import cjx.compiler.CJAstAssignmentTarget
 import cjx.compiler.CJAstStatement
@@ -201,13 +202,43 @@ class CJParserX: CJParserMixin {
 
     def expectClassMember(self: Self, comment: Nullable[String]): Try[CJAstItemMemberDefinition] {
         val modifiers = self.parseModifiers()
-        if self.at(CJToken.kwDef) {
-            return Try.Ok(CJAstItemMemberDefinition.Method(
-                self.expectMethodDefinition([], comment, modifiers)?))
-        } else {
-            return Try.Ok(CJAstItemMemberDefinition.Field(
-                self.expectFieldDefinition(comment, modifiers)?))
+        switch self.peek().map(t -> t.type).getOrDefault(0) {
+            case CJToken.kwCase {
+                return Try.Ok(CJAstItemMemberDefinition.Case(
+                    self.expectCaseDefinition(comment, modifiers)?))
+            }
+            case CJToken.kwVal
+            case CJToken.kwVar {
+                return Try.Ok(CJAstItemMemberDefinition.Field(
+                    self.expectFieldDefinition(comment, modifiers)?))
+            }
+            case CJToken.kwDef {
+                return Try.Ok(CJAstItemMemberDefinition.Method(
+                    self.expectMethodDefinition([], comment, modifiers)?))
+            }
+            default {
+                return self.failExpected("case, field or method definition")
+            }
         }
+    }
+
+    def expectCaseDefinition(
+            self: Self,
+            comment: Nullable[String],
+            modifiers: List[CJIRModifier]): Try[CJAstCaseDefinition] {
+        self.expect(CJToken.kwCase)?
+        val mark = self.mark()
+        val name = self.expectTypeId()?
+        val types = List[CJAstTypeExpression].builder()
+        if self.consumeChar('(') {
+            while not self.consumeChar(')') {
+                types.add(self.expectTypeExpression()?)
+                if not self.consumeChar(',') and not self.atChar(')') {
+                    self.expectChar(')')?
+                }
+            }
+        }
+        return Try.Ok(CJAstCaseDefinition.new(mark, comment, modifiers, name, types.build()))
     }
 
     def expectFieldDefinition(

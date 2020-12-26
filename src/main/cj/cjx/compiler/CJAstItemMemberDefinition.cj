@@ -1,5 +1,6 @@
 package cjx.compiler
 
+import cjx.compiler.CJAstCaseDefinition
 import cjx.compiler.CJAstMethodDefinition
 import cjx.compiler.CJAstFieldDefinition
 import cjx.compiler.CJAstExpression
@@ -11,11 +12,13 @@ import cjx.compiler.CJAstNode
 union CJAstItemMemberDefinition: CJAstNode {
     case Field(CJAstFieldDefinition)
     case Method(CJAstMethodDefinition)
+    case Case(CJAstCaseDefinition)
 
     def mark(self: Self): CJMark {
         return union self {
             case Field(defn) = defn.mark()
             case Method(defn) = defn.mark()
+            case Case(defn) = defn.mark()
         }
     }
 
@@ -23,6 +26,7 @@ union CJAstItemMemberDefinition: CJAstNode {
         return union self {
             case Field(defn) = defn.comment()
             case Method(defn) = defn.comment()
+            case Case(defn) = defn.comment()
         }
     }
 
@@ -30,6 +34,7 @@ union CJAstItemMemberDefinition: CJAstNode {
         return union self {
             case Field(defn) = defn.modifiers()
             case Method(defn) = defn.modifiers()
+            case Case(defn) = defn.modifiers()
         }
     }
 
@@ -37,6 +42,7 @@ union CJAstItemMemberDefinition: CJAstNode {
         return union self {
             case Field(defn) = defn.name()
             case Method(defn) = defn.name()
+            case Case(defn) = defn.name()
         }
     }
 
@@ -45,24 +51,26 @@ union CJAstItemMemberDefinition: CJAstNode {
     }
 
     def field(self: Self): Nullable[CJAstFieldDefinition] {
-        union self {
-            case Field(defn) {
-                return Nullable.Some(defn)
-            }
-            case Method(defn) {
-                return Nullable.None
-            }
+        return union self {
+            case Field(defn) = Nullable.Some(defn)
+            case Method(defn) = Nullable.None
+            case Case(defn) = Nullable.None
         }
     }
 
     def method(self: Self): Nullable[CJAstMethodDefinition] {
-        union self {
-            case Field(defn) {
-                return Nullable.None
-            }
-            case Method(defn) {
-                return Nullable.Some(defn)
-            }
+        return union self {
+            case Field(defn) = Nullable.None
+            case Method(defn) = Nullable.Some(defn)
+            case Case(defn) = Nullable.None
+        }
+    }
+
+    def case_(self: Self): Nullable[CJAstCaseDefinition] {
+        return union self {
+            case Field(defn) = Nullable.None
+            case Method(defn) = Nullable.None
+            case Case(defn) = Nullable.Some(defn)
         }
     }
 }
