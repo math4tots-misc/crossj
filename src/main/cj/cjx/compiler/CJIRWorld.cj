@@ -1,8 +1,5 @@
 package cjx.compiler
 
-import cjx.compiler.CJToken
-import cjx.compiler.CJIRItemInfo
-
 class CJIRWorld {
     ## Classes that are automatically imported from cj.*
     static val autoImportedItemShortNames: List[String] = [
@@ -56,11 +53,4 @@ class CJIRWorld {
         "Hash",
         "Assert"
     ]
-
-    val _tokensMap: MutableMap[String, List[CJToken]]
-    val _itemMap: MutableMap[String, CJIRItemInfo]
-
-    def init(): Self {
-        return Self.new(@[:], @[:])
-    }
 }
