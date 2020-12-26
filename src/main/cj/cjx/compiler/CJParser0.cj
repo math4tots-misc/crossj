@@ -37,10 +37,6 @@ class CJParser0: CJParserMixin {
         self._i = i
     }
 
-    def skipsComments(self: Self): Bool {
-        return false
-    }
-
     def parseAll(self: Self): Try[CJIRItemInfo] {
         self.expect(CJToken.kwPackage)?
         val pkgParts = @[self.expectId()?]

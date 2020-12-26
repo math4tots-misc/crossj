@@ -12,7 +12,6 @@ trait CJParserMixin {
     def tokens(self: Self): List[CJToken]
     def tell(self: Self): Int
     def seek(self: Self, i: Int)
-    def skipsComments(self: Self): Bool
 
     def mark(self: Self): CJMark {
         val token = self.peek().get()
@@ -21,16 +20,6 @@ trait CJParserMixin {
 
     def peek(self: Self): Nullable[CJToken] {
         val tokens = self.tokens()
-        if self.skipsComments() {
-            val start = self.tell()
-            var j = start
-            while j < tokens.size() and tokens.get(j).type == CJToken.tComment {
-                j += 1
-            }
-            if j > start {
-                self.seek(j)
-            }
-        }
         val i = self.tell()
         return if (i < tokens.size()) Nullable.Some(tokens.get(i)) else Nullable.None
     }

@@ -54,10 +54,6 @@ class CJParserX: CJParserMixin {
         self._i = i
     }
 
-    def skipsComments(self: Self): Bool {
-        return false
-    }
-
     private def parseAll(self: Self): Try[CJAstItemDefinition] {
         self.skipDelimiters()
         self.expect(CJToken.kwPackage)?
