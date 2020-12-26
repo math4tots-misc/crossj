@@ -16,6 +16,16 @@ union CJAstExpression: CJAstNode {
     case Lambda(CJMark, List[String], CJAstStatement)
     case If(CJMark, CJAstExpression, CJAstExpression, CJAstExpression)
     case Block(CJMark, List[CJAstStatement], Nullable[CJAstExpression])
+    case Union(
+        CJMark,
+        CJAstExpression,
+        List[Tuple[String, List[String], CJAstExpression]],
+        Nullable[CJAstExpression])
+    case Switch(
+        CJMark,
+        CJAstExpression,
+        List[Tuple[List[CJAstExpression], CJAstExpression]],
+        Nullable[CJAstExpression])
     case Tuple(CJMark, List[CJAstExpression])
     case List(CJMark, List[CJAstExpression])
     case EmptyList(CJMark, CJAstTypeExpression)
@@ -48,6 +58,8 @@ union CJAstExpression: CJAstNode {
             case Lambda(mark, args, body) = mark
             case If(mark, cond, body, other) = mark
             case Block(mark, stmts, inner) = mark
+            case Union(mark, target, cases, alt) = mark
+            case Switch(mark, target, cases, alt) = mark
             case Tuple(mark, exprs) = mark
             case List(mark, exprs) = mark
             case EmptyList(mark, type) = mark

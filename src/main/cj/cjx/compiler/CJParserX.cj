@@ -113,6 +113,7 @@ class CJParserX: CJParserMixin {
         }
         self.skipDelimiters()
         self.expectChar('{')?
+        self.skipDelimiters()
         val members = List[CJAstItemMemberDefinition].builder()
         while not self.consumeChar('}') {
             if self.at(CJToken.kwIf) {
@@ -748,6 +749,67 @@ class CJParserX: CJParserMixin {
             }
             case '{'.toInt() {
                 return self.expectBlockExpression()
+            }
+            case CJToken.kwUnion {
+                self.next()
+                val target = self.expectExpression()?
+                self.skipDelimiters()
+                self.expectChar('{')?
+                self.skipDelimiters()
+                val cases = List[Tuple[String, List[String], CJAstExpression]].builder()
+                while self.consume(CJToken.kwCase) {
+                    val name = self.expectTypeId()?
+                    val valueNames = List[String].builder()
+                    if self.consumeChar('(') {
+                        while not self.consumeChar(')') {
+                            valueNames.add(self.expectId()?)
+                            if not self.consumeChar(',') and not self.atChar(')') {
+                                self.expectChar(')')?
+                            }
+                        }
+                    }
+                    self.expectChar('=')?
+                    val body = self.expectExpression()?
+                    self.skipDelimiters()
+                    cases.add((name, valueNames.build(), body))
+                }
+                val alt = (
+                    if (self.consume(CJToken.kwDefault)) {
+                        self.expectChar('=')?
+                        Nullable.Some(self.expectExpression()?)
+                    }
+                    else Nullable.None)
+                self.skipDelimiters()
+                self.expectChar('}')?
+                return Try.Ok(CJAstExpression.Union(mark, target, cases.build(), alt))
+            }
+            case CJToken.kwSwitch {
+                self.next()
+                val target = self.expectExpression()?
+                self.skipDelimiters()
+                self.expectChar('{')?
+                self.skipDelimiters()
+                val cases = List[Tuple[List[CJAstExpression], CJAstExpression]].builder()
+                while self.at(CJToken.kwCase) {
+                    val valexprs = List[CJAstExpression].builder()
+                    while self.consume(CJToken.kwCase) {
+                        valexprs.add(self.expectExpression()?)
+                        self.skipDelimiters()
+                    }
+                    self.expectChar('=')?
+                    val body = self.expectExpression()?
+                    self.skipDelimiters()
+                    cases.add((valexprs.build(), body))
+                }
+                val alt = (
+                    if (self.consume(CJToken.kwDefault)) {
+                        self.expectChar('=')?
+                        Nullable.Some(self.expectExpression()?)
+                    }
+                    else Nullable.None)
+                self.skipDelimiters()
+                self.expectChar('}')?
+                return Try.Ok(CJAstExpression.Switch(mark, target, cases.build(), alt))
             }
             case CJToken.kwNot {
                 self.next()

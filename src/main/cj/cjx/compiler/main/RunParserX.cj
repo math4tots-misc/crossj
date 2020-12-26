@@ -16,6 +16,7 @@ class RunParserX {
                 Self._dump(path)
             }
         }
+        return Try.Ok(())
     }
 
     def rec(path: String): Try[List[String]] {
@@ -37,6 +38,14 @@ class RunParserX {
         defn.comment().ifPresent(comment -> {
             IO.println(comment)
         })
+        for member in defn.members() {
+            member.case_().ifPresent(case_ -> {
+                IO.println("  case " + case_.name() + "(" + ", ".join(case_.types()) + ")")
+                case_.comment().ifPresent(comment -> {
+                    Self._emitMemberComment(comment)
+                })
+            })
+        }
         val staticMembers = defn.members().filter(m -> m.isStatic())
         val instanceMembers = defn.members().filter(m -> not m.isStatic())
         for member in staticMembers {
