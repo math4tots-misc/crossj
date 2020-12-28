@@ -1020,6 +1020,9 @@ class MC$cj$List {
      * @param {Array<T>} list
      */
     M$last(list) {
+        if (list.length === 0) {
+            panic("last() on empty List")
+        }
         return list[list.length - 1];
     }
 
@@ -1268,6 +1271,9 @@ class MC$cj$MutableList {
      * @param {Array<T>} list
      */
     M$last(list) {
+        if (list.length === 0) {
+            panic("last() on empty MutableList")
+        }
         return list[list.length - 1];
     }
 
@@ -1294,6 +1300,9 @@ class MC$cj$MutableList {
      * @param {Array<T>} list
      */
     M$pop(list) {
+        if (list.length === 0) {
+            panic("pop() from empty MutableList")
+        }
         return list.pop();
     }
 

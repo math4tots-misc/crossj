@@ -14,4 +14,9 @@ class CJAstImport: CJAstNode {
     def qualifiedName(self: Self): String {
         return self._qualifiedName
     }
+
+    def alias(self: Self): String {
+        # For now, alias is always just the last component in the qualified name
+        return self._qualifiedName.split(".").last()
+    }
 }

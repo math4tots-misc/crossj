@@ -668,7 +668,7 @@ public final class CJIRAnnotator
         if (optionalType.isPresent()) {
             var expected = optionalType.get();
             var actual = expression.getResolvedType();
-            if (!expected.equals(actual)) {
+            if (!actual.isNoReturnType() && !expected.equals(actual)) {
                 throw err0("Expected expression with type " + expected + " but got " + actual, expression.getMark());
             }
         }
