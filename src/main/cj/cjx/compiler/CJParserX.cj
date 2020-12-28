@@ -141,6 +141,7 @@ class CJParserX: CJParserMixin {
             imports,
             comment,
             modifiers,
+            kind,
             shortName,
             typeParameters,
             traits.build(),

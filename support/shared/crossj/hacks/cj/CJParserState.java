@@ -83,12 +83,12 @@ public final class CJParserState {
     }
 
     private boolean atDelimiter() {
-        return at('\n') || at(';');
+        return at('\n') || at(';') || at('}');
     }
 
     private boolean consumeDelimiters() {
         boolean found = false;
-        while (atDelimiter()) {
+        while (at('\n') || at(';')) {
             next();
             found = true;
         }

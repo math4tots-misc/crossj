@@ -1,5 +1,6 @@
 package cjx.compiler
 
+import cjx.compiler.CJIRItemKind
 import cjx.compiler.CJAstItemMemberDefinition
 import cjx.compiler.CJAstTypeCondition
 import cjx.compiler.CJAstTraitExpression
@@ -16,6 +17,7 @@ class CJAstItemDefinition: CJAstNode {
     val _imports: List[CJAstImport]
     val _comment: Nullable[String]
     val _modifiers: List[CJIRModifier]
+    val _kind: CJIRItemKind
     val _shortName: String
     val _typeParameters: List[CJAstTypeParameter]
     val _traits: List[Tuple[CJAstTraitExpression, List[CJAstTypeCondition]]]
@@ -39,6 +41,14 @@ class CJAstItemDefinition: CJAstNode {
 
     def modifiers(self: Self): List[CJIRModifier] {
         return self._modifiers
+    }
+
+    def isNative(self: Self): Bool {
+        return CJIRModifier.Native in self._modifiers
+    }
+
+    def kind(self: Self): CJIRItemKind {
+        return self._kind
     }
 
     def shortName(self: Self): String {
