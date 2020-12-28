@@ -20,3 +20,8 @@
     E.g. `List.flatMap` permits the provided function to return any iterable
     and not strictly require a `List[R]`.
     Consider whether I want to keep things this way.
+
+* `interface` and `impl` item types.
+    Interface would be like a `class` in that it can be a type,
+    and an `impl` would be an instance of an interface.
+    The system would be a bit like an "open" union
