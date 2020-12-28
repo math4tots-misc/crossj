@@ -56,6 +56,10 @@ class Map[K: Hash, V]:
         return key in self._map
     }
 
+    def __add(self: Self, other: Self): Self {
+        return Self.new(self._map + other._map)
+    }
+
     if V: Hash {
         def hash(self: Self): Int {
             return self._map.pairs().fold(

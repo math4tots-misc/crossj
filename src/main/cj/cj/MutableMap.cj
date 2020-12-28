@@ -114,6 +114,17 @@ class MutableMap[K : Hash, V]:
         return self._getTriple(key).get().get2()
     }
 
+    def __add(self: Self, other: Self): Self {
+        val ret = Self.empty()
+        for (k, v) in self.pairs() {
+            ret.put(k, v)
+        }
+        for (k, v) in other.pairs() {
+            ret.put(k, v)
+        }
+        return ret
+    }
+
     def _removeTriple(self: Self, key: K) : Nullable[Tuple[Int, K, V]] {
         if (self._list.size() == 0) {
             return Nullable.None

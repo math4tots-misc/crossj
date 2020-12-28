@@ -1355,6 +1355,14 @@ class MC$cj$MutableList {
     }
 
     /**
+     * @param {Array<T>} a
+     * @param {Array<T>} b
+     */
+    M$__add(a, b) {
+        return a.concat(...b);
+    }
+
+    /**
      * @template R
      * @param {*} TV$R
      * @param {Array<T>} list
@@ -1388,8 +1396,8 @@ class MC$cj$MutableList {
      * @param {number} i
      */
     M$removeIndex(list, i) {
-        let value = list[index];
-        list.splice(index, 1);
+        let value = list[i];
+        list.splice(i, 1);
         return value;
     }
 

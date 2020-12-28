@@ -25,3 +25,11 @@
     Interface would be like a `class` in that it can be a type,
     and an `impl` would be an instance of an interface.
     The system would be a bit like an "open" union
+
+* `for` expressions.
+    These would be like `for` statements, except it would return
+    a `List`.
+    I thought about having it return an `Iterator`, but I think
+    that might be trickier to nail down.
+    This is useful in cases e.g. where you want to use `?` from within
+    a `map` or `flatMap`.

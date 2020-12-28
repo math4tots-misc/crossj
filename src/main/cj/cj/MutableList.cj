@@ -33,6 +33,8 @@ native class MutableList[T] :
     def pop(list: Self) : T
     def toBool(self: Self) : Bool
 
+    def __add(self: Self, other: Self): Self
+
     def map[R](self: Self, f: Fn[R, T]): MutableList[R]
     def flatMap[R, C: Iterable[R]](self: Self, f: Fn[C, T]): MutableList[R]
     def filter(self: Self, f: Fn[Bool, T]): MutableList[T]

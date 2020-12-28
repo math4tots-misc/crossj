@@ -5,13 +5,14 @@ import cjx.compiler.CJContext
 
 class CJJSTranslator {
     val _ctx: CJContext
+    val _out: StringBuilder
 
     def init(): Self {
         return Self.initWithContext(CJContext.init())
     }
 
     def initWithContext(ctx: CJContext): Self {
-        return Self.new(ctx)
+        return Self.new(ctx, String.builder())
     }
 
     def ctx(self: Self): CJContext {
@@ -77,10 +78,10 @@ class CJJSTranslator {
             ctx.addSourceRoot(sourceRoot)
         }
         ctx.loadAutoImportedItems()?
-        ctx.loadItemDeps(maincls)?
+        val items = ctx.loadItemDeps(maincls)?
 
-        for name in List.sorted(ctx._itemDefns.keys()) {
-            IO.println(name)
+        for item in items {
+            IO.println(item.fullName())
         }
 
         val translator = Self.initWithContext(ctx)

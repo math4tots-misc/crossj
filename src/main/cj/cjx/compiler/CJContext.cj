@@ -105,19 +105,58 @@ class CJContext {
         return Try.Ok(())
     }
 
-    def loadItemDeps(self: Self, itemName: String): Try[Unit] {
-        val seen = MutableSet.of([itemName])
-        val stack = @[self.loadItem(itemName)?]
-        while stack.toBool() {
-            for imp in stack.pop().imports() {
-                val name = imp.qualifiedName()
-                if name not in seen {
-                    seen.add(name)
-                    stack.add(self.loadItem(name)?)
+    def loadItemDeps(self: Self, itemName: String): Try[List[CJAstItemDefinition]] {
+        val out = List[CJAstItemDefinition].builder()
+        {
+            # Load all items regardless of cycles
+            val stack = @[self.loadItem(itemName)?]
+            for shortName in Self.autoImportedItemShortNames {
+                stack.add(self.loadItem("cj." + shortName)?)
+            }
+            val seen = MutableSet.of(stack.map(defn -> defn.fullName()).toList())
+            while stack.toBool() {
+                val defn = stack.pop()
+                out.add(defn)
+                for imp in defn.imports() {
+                    val name = imp.qualifiedName()
+                    if name not in seen {
+                        seen.add(name)
+                        stack.add(self.loadItem(name)?)
+                    }
                 }
             }
         }
-        return Try.Ok(())
+        return Try.Ok(out.build())
+    }
+
+    ## Given an item definition, get a list of item (trait?) names that the given
+    ## item implements. This is used to determinine the topological order of
+    def _listBaseItems(self: Self, defn: CJAstItemDefinition): Try[List[String]] {
+        val map = self._computeLocalItemMap(defn)
+        val traitExprs = defn.traits().map(pair -> pair.get0())
+        val out = List[String].builder()
+        for traitExpr in traitExprs {
+            val shortName = traitExpr.name()
+            union map.getOrNull(shortName) {
+                case Some(fullName) {
+                    out.add(fullName)
+                }
+                case None {
+                    return (Try[List[String]].fail("Trait alias " + shortName + " not found")
+                        .addContext(traitExpr.mark().toString()))
+                }
+            }
+        }
+        return Try.Ok(out.build())
+    }
+
+    ## Maps short names to their corresponding full item names within an item definition.
+    ## This is basically all the mappings implied by the imports.
+    def _computeLocalItemMap(self: Self, defn: CJAstItemDefinition): Map[String, String] {
+        return (
+            Self.autoImportedItemShortNames.map(
+                shortName -> (shortName, "cj." + shortName)).toMap() +
+            defn.imports().map(imp -> (imp.alias(), imp.qualifiedName())).toMap())
     }
 
     def _itemNameToRelativePathName(self: Self, itemName: String): String {

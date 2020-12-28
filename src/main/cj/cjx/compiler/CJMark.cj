@@ -18,4 +18,8 @@ class CJMark: Repr {
     def repr(self: Self): String {
         return "CJMark.of(" + self.filename.repr() + ", " + self.line + ", " + self.column + ")"
     }
+
+    def toString(self: Self): String {
+        return "in " + self.filename + " on " + self.line + ":" + self.column
+    }
 }
