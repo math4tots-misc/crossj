@@ -1,8 +1,10 @@
 package cjx.compiler
 
+import cjx.compiler.CJAstItemDefinition
 import cjx.compiler.CJContext
 
 class CJJSTranslator {
+    static val _preludePath: String = "support/app/crossj.hacks.cj/prelude.js"
     val _ctx: CJContext
     val _out: StringBuilder
 
@@ -16,5 +18,13 @@ class CJJSTranslator {
 
     def ctx(self: Self): CJContext {
         return self._ctx
+    }
+
+    def _emitPrelude(self: Self): Try[Unit] {
+    }
+
+    def _translateItemPass1(self: Self, fullName: String): Try[Unit] {
+        val defn = self._ctx.loadItem(fullName)?
+        return Try.Ok(())
     }
 }
