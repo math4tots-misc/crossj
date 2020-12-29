@@ -72,6 +72,10 @@ class CJContext {
         self._itemDefns.put(itemName, defn)
     }
 
+    def loadedItemNames(self: Self): Iterator[String] {
+        return self._itemDefns.keys()
+    }
+
     def _forceLoadItem(self: Self, itemName: String): Try[CJAstItemDefinition] {
         val relpath = self._itemNameToRelativePathName(itemName)
         for sourceRoot in self._sourceRoots {

@@ -21,6 +21,7 @@ class CJJSTranslator {
     }
 
     def _emitPrelude(self: Self): Try[Unit] {
+        self._out.add(FS.read(Self._preludePath)?)
     }
 
     def _translateItemPass1(self: Self, fullName: String): Try[Unit] {
