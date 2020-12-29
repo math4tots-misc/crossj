@@ -42,4 +42,12 @@ class CJAstFieldDefinition: CJAstNode {
     def expression(self: Self): Nullable[CJAstExpression] {
         return self._expression
     }
+
+    def isInstance(self: Self): Bool {
+        return not self.isStatic()
+    }
+
+    def isStatic(self: Self): Bool {
+        return CJIRModifier.Static in self.modifiers()
+    }
 }

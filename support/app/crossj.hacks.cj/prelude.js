@@ -483,6 +483,16 @@ class MC$cj$String {
 
     /**
      * @param {string} string
+     * @param {string} substring
+     * @param {string} newSubstring
+     */
+    M$replace(string, substring, newSubstring) {
+        // TODO: use replaceAll instead when more widely available
+        return string.split(substring).join(newSubstring);
+    }
+
+    /**
+     * @param {string} string
      * @returns {null|number}
      */
     M$parseInt(string) {
@@ -543,7 +553,10 @@ class MC$cj$StringBuilder {
      * @param {S} s
      */
     M$add(TV$S, builder, s) {
-        builder.push(TV$S.M$toString(s));
+        const str = TV$S.M$toString(s);
+        if (str.length > 0) {
+            builder.push(str);
+        }
         return builder;
     }
 
@@ -1037,7 +1050,7 @@ class MC$cj$List {
      * @param {Array<T>} list
      */
     M$iter(list) {
-        return list[Symbol.iterator]()
+        return list[Symbol.iterator]();
     }
 
     /**
@@ -1097,7 +1110,7 @@ class MC$cj$List {
      * @param {function(T): C} f
      */
     M$flatMap(TV$R, TV$C, list, f) {
-        return list.flatMap(t => TV$C.M$iter(f(t)));
+        return list.flatMap(t => Array.from(TV$C.M$iter(f(t))));
     }
 
     /**
@@ -1380,7 +1393,7 @@ class MC$cj$MutableList {
      * @param {function(T): C} f
      */
     M$flatMap(TV$R, TV$C, list, f) {
-        return list.flatMap(t => TV$C.M$iter(f(t)));
+        return list.flatMap(t => Array.from(TV$C.M$iter(f(t))));
     }
 
     /**

@@ -30,6 +30,9 @@ native class String: Eq, Ord, Hash, Repr, ToString, Iterable[Char], ToBool {
 
     def join[I: ToString, C: Iterable[I]](self: Self, parts: C): String
 
+    ## Replace every occurance of the given substring with the new substring.
+    def replace(self: Self, substring: String, newSubstring: String): String
+
     ## Splits self with the given separator.
     ## (CJJSSpecialMethods implementation only)
     def split(self: Self, separator: String): List[String]

@@ -73,6 +73,8 @@ class RunJSTranslator {
 
         val translator = CJJSTranslator.initWithContext(ctx)
 
+        val src = translator.translateWithMainClass(maincls)?
+        FS.write(out, src)
         return Try.Ok(())
     }
 }

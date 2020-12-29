@@ -1,9 +1,10 @@
 package cjx.compiler
 
+import cjx.compiler.CJContextMixin
 import cjx.compiler.CJParserX
 import cjx.compiler.CJAstItemDefinition
 
-class CJContext {
+class CJContext: CJContextMixin {
     ## Classes that are automatically imported from cj.*
     static val autoImportedItemShortNames: List[String] = [
         "Unit",
@@ -62,6 +63,10 @@ class CJContext {
 
     def init(): Self {
         return Self.new(@[], @[:])
+    }
+
+    def global(self: Self): CJContext {
+        return self
     }
 
     def addSourceRoot(self: Self, sourceRoot: String) {
