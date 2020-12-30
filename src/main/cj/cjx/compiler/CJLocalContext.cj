@@ -1,5 +1,8 @@
 package cjx.compiler
 
+import cjx.compiler.CJIRResolver
+import cjx.compiler.CJIRType
+import cjx.compiler.CJAstTypeExpression
 import cjx.compiler.CJContextMixin
 import cjx.compiler.CJAstMethodDefinition
 import cjx.compiler.CJAstItemDefinition
@@ -74,5 +77,9 @@ class CJLocalContext: CJContextMixin {
                 IO.panic("Tried to exit from method but not in method")
             }
         }
+    }
+
+    def resolveType(self: Self, typeExpression: CJAstTypeExpression): Try[CJIRType] {
+        return CJIRResolver.init(self).resolveType(typeExpression)
     }
 }

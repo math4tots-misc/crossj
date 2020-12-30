@@ -35,6 +35,9 @@ class CJIRResolver {
         # check for imported classes
         for imp in itemDefn.imports() {
             if imp.alias() == name {
+                val defn = self._lctx.loadItem(imp.qualifiedName())?
+                val args = Try.list(typeExpr.args().iter().map(e -> self.resolveType(e)))?
+                return Try.Ok(CJIRType.Class(defn, args))
             }
         }
 

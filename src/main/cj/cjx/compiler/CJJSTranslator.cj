@@ -20,11 +20,12 @@ class CJJSTranslator {
     }
 
     def initWithContext(ctx: CJContext): Self {
+        val lctx = CJLocalContext.initWithContext(ctx)
         val out = CJJSStringBuilder.init()
-        val typeTranslator = CJJSTypeTranslator.init(ctx)
+        val typeTranslator = CJJSTypeTranslator.init(lctx)
         val seTranslator = CJJSSETranslator.init(out, typeTranslator)
         return Self.new(
-            CJLocalContext.initWithContext(ctx),
+            lctx,
             out,
             typeTranslator,
             seTranslator)
@@ -39,11 +40,11 @@ class CJJSTranslator {
     }
 
     private def _field(self: Self, fieldName: String): String {
-        return "F$" + fieldName
+        return self._seTransaltor.translateFieldName(fieldName)
     }
 
     private def _method(self: Self, methodName: String): String {
-        return "M$" + methodName
+        return self._seTransaltor.translateMethodName(methodName)
     }
 
     private def _typevar(self: Self, typeVariableName: String): String {
@@ -51,7 +52,7 @@ class CJJSTranslator {
     }
 
     private def _local(self: Self, name: String): String {
-        return "L$" + name
+        return self._seTransaltor.translateLocalVariableName(name)
     }
 
     private def line(self: Self, s: String) {
