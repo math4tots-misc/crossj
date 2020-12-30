@@ -71,6 +71,8 @@ class CJToken: Repr, Eq {
     static val kwFor: Int = 234
     static val kwAsync: Int = 235
     static val kwAwait: Int = 236
+    static val kwInterface: Int = 237
+    static val kwImpl: Int = 238
 
     static val keywordTypes: List[Int] = [
         Self.kwDef,
@@ -109,6 +111,8 @@ class CJToken: Repr, Eq {
         Self.kwFor,
         Self.kwAsync,
         Self.kwAwait,
+        Self.kwInterface,
+        Self.kwImpl,
     ]
 
     val type: Int
@@ -215,6 +219,8 @@ class CJToken: Repr, Eq {
             case Self.kwFor = "CJToken.kwFor"
             case Self.kwAsync = "CJToken.kwAsync"
             case Self.kwAwait = "CJToken.kwAwait"
+            case Self.kwInterface = "CJToken.kwInterface"
+            case Self.kwImpl = "CJToken.kwImpl"
             case '\n'.toInt() = "'\\n'"
             default = (
                 if (type >= 32 or type <= 127)
