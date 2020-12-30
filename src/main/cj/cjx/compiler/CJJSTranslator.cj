@@ -174,12 +174,17 @@ class CJJSTranslator {
         self._lctx.enterMethod(defn)
         val cjName = defn.name()
         val jsName = self._method(cjName)
+        val typeParameters = defn.typeParameters()
+        val parameters = defn.parameters()
+        val allJSParameterNames = (
+            typeParameters.map(tp -> self._typevar(tp.name())) +
+            parameters.map(p -> self._local(p.name())))
         self.lineStart(jsName + "(")
-        for i = 0; i < defn.parameters().size(); i += 1 {
+        for i = 0; i < allJSParameterNames.size(); i += 1 {
             if i > 0 {
                 self.lineBody(",")
             }
-            self.lineBody(self._local(defn.parameters().get(i).name()))
+            self.lineBody(allJSParameterNames.get(i))
         }
         self.lineEnd(") {")
         self.line("}")

@@ -43,4 +43,20 @@ union CJAstStatement: CJAstNode {
             case AugmentedAssignment(mark, target, kind, expr) = mark
         }
     }
+
+    def kind(self: Self): String {
+        return union self {
+            case Expression(mark, expr) = "Expression"
+            case Return(mark, expr) = "Return"
+            case Block(mark, stmts) = "Block"
+            case If(mark, cond, body, other) = "If"
+            case While(mark, cond, body) = "While"
+            case For(mark, target, container, body) = "For"
+            case Union(mark, target, cases, alt) = "Union"
+            case Switch(mark, target, cases, alt) = "Switch"
+            case VariableDeclaration(mark, mutable, target, type, expr) = "VariableDeclaration"
+            case Assignment(mark, target, expr) = "Assignment"
+            case AugmentedAssignment(mark, target, kind, expr) = "AugmentedAssignment"
+        }
+    }
 }

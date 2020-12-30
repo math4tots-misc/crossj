@@ -78,4 +78,37 @@ union CJAstExpression: CJAstNode {
             case NewUnion(mark, owner, name, args) = mark
         }
     }
+
+    def kind(self: Self): String {
+        return union self {
+            case Unit(mark) = "Unit"
+            case Bool(mark, s) = "Bool"
+            case Char(mark, s) = "Char"
+            case Int(mark, s) = "Int"
+            case Double(mark, s) = "Double"
+            case String(mark, s) = "String"
+            case Name(mark, name) = "Name"
+            case Lambda(mark, args, body) = "Lambda"
+            case If(mark, cond, body, other) = "If"
+            case Block(mark, stmts, inner) = "Block"
+            case Union(mark, target, cases, alt) = "Union"
+            case Switch(mark, target, cases, alt) = "Switch"
+            case Tuple(mark, exprs) = "Tuple"
+            case List(mark, exprs) = "List"
+            case EmptyList(mark, type) = "EmptyList"
+            case Map(mark, pairs) = "Map"
+            case Propagate(mark, inner) = "Propagate"
+            case LogicalNot(mark, inner) = "LogicalNot"
+            case LogicalAnd(mark, left, right) = "LogicalAnd"
+            case LogicalOr(mark, left, right) = "LogicalOr"
+            case Is(mark, left, right) = "Is"
+            case Await(mark, inner) = "Await"
+            case StaticField(mark, owner, name) = "StaticField"
+            case Field(mark, owner, name) = "Field"
+            case StaticMethod(mark, owner, name, targs, args) = "StaticMethod"
+            case Method(mark, owner, name, targs, args) = "Method"
+            case New(mark, owner, args) = "New"
+            case NewUnion(mark, owner, name, args) = "NewUnion"
+        }
+    }
 }
