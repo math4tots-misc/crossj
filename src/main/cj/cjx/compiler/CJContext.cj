@@ -138,8 +138,6 @@ class CJContext: CJContextMixin {
         return Try.Ok(out.build())
     }
 
-    ## Given an item definition, get a list of item (trait?) names that the given
-    ## item implements. This is used to determinine the topological order of
     def _listBaseItems(self: Self, defn: CJAstItemDefinition): Try[List[String]] {
         val map = self._computeLocalItemMap(defn)
         val traitExprs = defn.traits().map(pair -> pair.get0())
