@@ -1,5 +1,7 @@
 package cjx.compiler
 
+import cjx.compiler.CJJSSETranslator
+import cjx.compiler.CJJSTypeTranslator
 import cjx.compiler.CJLocalContext
 import cjx.compiler.CJAstMethodDefinition
 import cjx.compiler.CJJSStringBuilder
@@ -10,17 +12,26 @@ class CJJSTranslator {
     static val _preludePath: String = "support/app/crossj.hacks.cj/prelude.js"
     val _lctx: CJLocalContext
     val _out: CJJSStringBuilder
+    val _typeTranslator: CJJSTypeTranslator
+    val _seTransaltor: CJJSSETranslator
 
     def init(): Self {
         return Self.initWithContext(CJContext.init())
     }
 
     def initWithContext(ctx: CJContext): Self {
-        return Self.new(CJLocalContext.initWithContext(ctx), CJJSStringBuilder.init())
+        val out = CJJSStringBuilder.init()
+        val typeTranslator = CJJSTypeTranslator.init(ctx)
+        val seTranslator = CJJSSETranslator.init(out, typeTranslator)
+        return Self.new(
+            CJLocalContext.initWithContext(ctx),
+            out,
+            typeTranslator,
+            seTranslator)
     }
 
     private def _itemMetaName(self: Self, itemName: String): String {
-        return "MC$" + itemName.replace(".", "$")
+        return self._typeTranslator.itemNameToJSMetaClassName(itemName)
     }
 
     private def _ctor(self: Self, itemName: String): String {
@@ -36,7 +47,7 @@ class CJJSTranslator {
     }
 
     private def _typevar(self: Self, typeVariableName: String): String {
-        return "TV$" + typeVariableName
+        return self._typeTranslator.typeVariableNameToJS(typeVariableName)
     }
 
     private def _local(self: Self, name: String): String {
@@ -131,6 +142,14 @@ class CJJSTranslator {
         }
         self.dedent()
         self.line("}")
+        if typeParameters.isEmpty() {
+            self.line(
+                "const " +
+                self._typeTranslator.itemNameToJSMetaObjectName(cjName) +
+                " = new " +
+                metaName +
+                "();")
+        }
         self._lctx.exitItem()
         return Try.Ok(())
     }
