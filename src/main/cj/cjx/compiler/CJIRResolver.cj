@@ -1,5 +1,7 @@
 package cjx.compiler
 
+import cjx.compiler.CJIRExpression
+import cjx.compiler.CJIRStatement
 import cjx.compiler.CJIRItemKind
 import cjx.compiler.CJIRType
 import cjx.compiler.CJAstTypeExpression
@@ -71,13 +73,48 @@ class CJIRResolver {
         return Try[CJIRType].fail("Type constructor " + name + " not found")
     }
 
-    def resolveStatement(self: Self, stmt: CJAstStatement): Try[CJAstStatement] {
+    def resolveStatement(self: Self, stmt: CJAstStatement): Try[CJIRStatement] {
         return union stmt {
+            case Expression(mark, expr) = Try.Ok(CJIRStatement.Expression(
+                mark, self.resolveExpression(expr)?))
             default = IO.panic("TODO unhandled resolveStatement: " + stmt.kind())
         }
     }
 
-    def resolveExpression(self: Self, expr: CJAstExpression): Try[CJAstExpression] {
+    def resolveExpression(self: Self, expr: CJAstExpression): Try[CJIRExpression] {
+        return self.resolveExpressionWithNullableType(expr, Nullable.None)
+    }
+
+    def resolveExpressionWithType(
+            self: Self, expr: CJAstExpression, type: CJIRType): Try[CJIRExpression] {
+        return self.resolveExpressionWithNullableType(expr, Nullable.Some(type))
+    }
+
+    def resolveExpressionWithNullableType(
+            self: Self,
+            expr: CJAstExpression,
+            type: Nullable[CJIRType]): Try[CJIRExpression] {
+        val rexpr = self._resolveExpressionWithNullableType(expr, type)?
+        union type {
+            case Some(t) {
+                val expected = t.repr()
+                val actual = rexpr.type().repr()
+                if expected != actual {
+                    return (
+                        Try[CJIRExpression].fail(
+                            "Expected " + expected + " but got " + actual)
+                        .addContext(expr.mark().toString()))
+                }
+            }
+            case None {}
+        }
+        return Try.Ok(rexpr)
+    }
+
+    def _resolveExpressionWithNullableType(
+            self: Self,
+            expr: CJAstExpression,
+            type: Nullable[CJIRType]): Try[CJIRExpression] {
         return union expr {
             default = IO.panic("TODO unhandled resolveExpression: " + expr.kind())
         }

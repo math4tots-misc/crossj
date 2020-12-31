@@ -10,49 +10,44 @@ import cjx.compiler.CJContext
 
 class CJJSTranslator {
     static val _preludePath: String = "support/app/crossj.hacks.cj/prelude.js"
-    val _lctx: CJLocalContext
+    val _ctx: CJContext
     val _out: CJJSStringBuilder
-    val _typeTranslator: CJJSTypeTranslator
-    val _seTransaltor: CJJSSETranslator
 
     def init(): Self {
         return Self.initWithContext(CJContext.init())
     }
 
     def initWithContext(ctx: CJContext): Self {
-        val lctx = CJLocalContext.initWithContext(ctx)
         val out = CJJSStringBuilder.init()
-        val typeTranslator = CJJSTypeTranslator.init(lctx)
-        val seTranslator = CJJSSETranslator.init(out, typeTranslator)
-        return Self.new(
-            lctx,
-            out,
-            typeTranslator,
-            seTranslator)
+        return Self.new(ctx, out)
     }
 
-    private def _itemMetaName(self: Self, itemName: String): String {
-        return self._typeTranslator.itemNameToJSMetaClassName(itemName)
+    def _itemMetaName(itemName: String): String {
+        return "MC$" + itemName.replace(".", "$")
     }
 
-    private def _ctor(self: Self, itemName: String): String {
+    def _itemMetaObjectName(itemName: String): String {
+        return "MO$" + itemName.replace(".", "$")
+    }
+
+    def _ctor(itemName: String): String {
         return "CT$" + itemName.replace(".", "$")
     }
 
-    private def _field(self: Self, fieldName: String): String {
-        return self._seTransaltor.translateFieldName(fieldName)
+    def _field(fieldName: String): String {
+        return "F$" + fieldName
     }
 
-    private def _method(self: Self, methodName: String): String {
-        return self._seTransaltor.translateMethodName(methodName)
+    def _method(methodName: String): String {
+        return "M$" + methodName
     }
 
-    private def _typevar(self: Self, typeVariableName: String): String {
-        return self._typeTranslator.typeVariableNameToJS(typeVariableName)
+    def _typevar(typeVariableName: String): String {
+        return "TV$" + typeVariableName
     }
 
-    private def _local(self: Self, name: String): String {
-        return self._seTransaltor.translateLocalVariableName(name)
+    def _local(name: String): String {
+        return "L$" + name
     }
 
     private def line(self: Self, s: String) {
@@ -83,7 +78,7 @@ class CJJSTranslator {
         self.line("(function(){")
         self.line("\"strict\";")
         self._emitPrelude()
-        val itemNames = self._lctx.loadedItemNames().toList()
+        val itemNames = self._ctx.loadedItemNames().toList()
         for itemName in itemNames {
             self._emitItemPass1(itemName)?
         }
@@ -100,7 +95,7 @@ class CJJSTranslator {
 
     def _emitItemPass1(self: Self, fullName: String): Try[Unit] {
         # Translate constructors and methods
-        val defn = self._lctx.loadItem(fullName)?
+        val defn = self._ctx.loadItem(fullName)?
         if not defn.isNative() {
             self._emitNonNativeItemPass1(defn)?
         }
@@ -108,9 +103,8 @@ class CJJSTranslator {
     }
 
     def _emitNonNativeItemPass1(self: Self, defn: CJAstItemDefinition): Try[Unit] {
-        self._lctx.enterItem(defn)
         val cjName = defn.fullName()
-        val metaName = self._itemMetaName(cjName)
+        val metaName = Self._itemMetaName(cjName)
         union defn.kind() {
             case Class {
                 self._emitClassConstructor(defn)?
@@ -120,7 +114,7 @@ class CJJSTranslator {
         self.indent()
         val typeParameters = defn.typeParameters()
         if typeParameters.toBool() {
-            val tnames = typeParameters.map(tp -> self._typevar(tp.name()))
+            val tnames = typeParameters.map(tp -> Self._typevar(tp.name()))
             self.lineStart("constructor(")
             self.lineBody(tnames.get(0))
             for i = 1; i < tnames.size(); i += 1 {
@@ -146,17 +140,16 @@ class CJJSTranslator {
         if typeParameters.isEmpty() {
             self.line(
                 "const " +
-                self._typeTranslator.itemNameToJSMetaObjectName(cjName) +
+                Self._itemMetaObjectName(cjName) +
                 " = new " +
                 metaName +
                 "();")
         }
-        self._lctx.exitItem()
         return Try.Ok(())
     }
 
     def _emitClassConstructor(self: Self, defn: CJAstItemDefinition): Try[Unit] {
-        val ctorName = self._ctor(defn.fullName())
+        val ctorName = Self._ctor(defn.fullName())
         val fields = defn.members().flatMap(mem -> union mem {
             case Field(field) = if (field.isInstance()) { [field] } else { [] }
             default = []
@@ -169,7 +162,7 @@ class CJJSTranslator {
                 self.line("function " + ctorName + "(x) { return x; }")
             }
             default {
-                val fieldNames = fields.map(f -> self._field(f.name()))
+                val fieldNames = fields.map(f -> Self._field(f.name()))
                 self.line("function " + ctorName + "(")
                 for i = 0; i < fieldNames.size(); i += 1 {
                     self.lineStart(if (i > 0) { "," } else { "" })
@@ -191,14 +184,13 @@ class CJJSTranslator {
 
     def _emitNonNativeMethod(
             self: Self, itemDefn: CJAstItemDefinition, defn: CJAstMethodDefinition): Try[Unit] {
-        self._lctx.enterMethod(defn)
         val cjName = defn.name()
-        val jsName = self._method(cjName)
+        val jsName = Self._method(cjName)
         val typeParameters = defn.typeParameters()
         val parameters = defn.parameters()
         val allJSParameterNames = (
-            typeParameters.map(tp -> self._typevar(tp.name())) +
-            parameters.map(p -> self._local(p.name())))
+            typeParameters.map(tp -> Self._typevar(tp.name())) +
+            parameters.map(p -> Self._local(p.name())))
         self.lineStart(jsName + "(")
         for i = 0; i < allJSParameterNames.size(); i += 1 {
             if i > 0 {
@@ -208,7 +200,6 @@ class CJJSTranslator {
         }
         self.lineEnd(") {")
         self.line("}")
-        self._lctx.exitMethod()
         return Try.Ok(())
     }
 
