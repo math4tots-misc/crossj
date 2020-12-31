@@ -34,26 +34,4 @@ class CJLocalContext: CJContextMixin {
     def method(self: Self): CJAstMethodDefinition {
         return self._method.get()
     }
-
-    def enterMethod(self: Self, defn: CJAstMethodDefinition) {
-        union self._method {
-            case Some(method) {
-                IO.panic("Enter " + defn.name() + " before exiting " + method.name())
-            }
-            case None {
-                self._method = Nullable.Some(defn)
-            }
-        }
-    }
-
-    def exitMethod(self: Self) {
-        union self._method {
-            case Some(method) {
-                self._method = Nullable.None
-            }
-            case None {
-                IO.panic("Tried to exit from method but not in method")
-            }
-        }
-    }
 }
