@@ -18,8 +18,9 @@
 			"match": "[A-Z]\\w*"
 		},
 		{
+			"comment": "Not perfect, but checks for up to 3 levels of nested '[...]' type args",
 			"name": "entity.name.function.cj",
-			"match": "[a-z_]\\w*(?=\\(|\\[)"
+			"match": "[a-z_]\\w*(?=(\\[([A-Z]\\w*|\\.|,|\\[([A-Z]\\w*|\\.|,|\\[([A-Z]\\w*|\\.|,|\\[\\])*\\])*\\])*\\])?\\()"
 		},
 		{
 			"name": "variable.cj",
