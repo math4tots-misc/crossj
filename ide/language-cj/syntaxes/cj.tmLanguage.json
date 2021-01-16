@@ -3,6 +3,17 @@
 	"name": "cj",
 	"patterns": [
 		{
+			"match": "(def\\s+)([a-z_]\\w*)",
+			"captures": {
+				"1": {
+					"name": "keyword.control.cj"
+				},
+				"2": {
+					"name": "entity.name.function.cj"
+				}
+			}
+		},
+		{
 			"include": "#keywords"
 		},
 		{
@@ -20,7 +31,7 @@
 		{
 			"comment": "Not perfect, but checks for up to 3 levels of nested '[...]' type args",
 			"name": "entity.name.function.cj",
-			"match": "[a-z_]\\w*(?=(\\[([A-Z]\\w*|\\.|,|\\[([A-Z]\\w*|\\.|,|\\[([A-Z]\\w*|\\.|,|\\[\\])*\\])*\\])*\\])?\\()"
+			"match": "[a-z_]\\w*(?=(\\[([A-Z]\\w*|\\.|,|\\?|\\[([A-Z]\\w*|\\.|,|\\?|\\[([A-Z]\\w*|\\.|,|\\?|\\[\\])*\\])*\\])*\\])?\\()"
 		},
 		{
 			"name": "variable.cj",
@@ -60,7 +71,7 @@
 				},
 				{
 					"name": "keyword.control.cj",
-					"match": "\\b(def|if|else|import|while|break|continue|new|package|return|and|or|is|not|in|then|switch|case|default|as|for|union|await)\\b"
+					"match": "\\b(if|else|import|while|break|continue|new|package|return|and|or|is|not|in|then|switch|case|default|as|for|union|await)\\b"
 				},
 				{
 					"name": "keyword.operator.cj",
