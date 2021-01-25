@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 
 export const IMPORT_EXEMPT_CLASSES = new Set([
+    "cj.Any",
     "cj.Assert",
     "cj.Bool",
     "cj.Char",
+    "cj.Default",
     "cj.Double",
     "cj.Eq",
     "cj.Fn0",
