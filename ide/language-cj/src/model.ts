@@ -283,6 +283,7 @@ function parseItem(s: string): Item {
     let shortName = "";
     const imports = new Trie<string>();
     const methodNames = new Trie<string>();
+    const propertyNames = new Trie<string>();
     const fieldNames = new Trie<string>();
     const localNames = new Trie<string>();
     while ((arr = re.exec(s)) !== null) {
@@ -312,6 +313,10 @@ function parseItem(s: string): Item {
                             break;
                         case 'def':
                             methodNames.set(name, name);
+                            if (name.startsWith("__get_")) {
+                                const propertyName = name.substring("__get_".length);
+                                propertyNames.set(propertyName, propertyName);
+                            }
                             break;
                         case 'val':
                         case 'var':
@@ -340,7 +345,7 @@ function parseItem(s: string): Item {
             }
         }
     }
-    return new Item(pkg, shortName, imports, methodNames, fieldNames, localNames);
+    return new Item(pkg, shortName, imports, methodNames, propertyNames, fieldNames, localNames);
 }
 
 export class Item {
@@ -348,6 +353,7 @@ export class Item {
     readonly shortName: string
     readonly imports: Trie<string>
     readonly methodNames: Trie<string>
+    readonly propertyNames: Trie<string>
     readonly fieldNames: Trie<string>
     readonly localNames: Trie<string>
 
@@ -356,12 +362,14 @@ export class Item {
             shortName: string,
             imports: Trie<string>,
             methodNames: Trie<string>,
+            propertyNames: Trie<string>,
             fieldNames: Trie<string>,
             localNames: Trie<string>) {
         this.pkg = pkg;
         this.shortName = shortName;
         this.imports = imports;
         this.methodNames = methodNames;
+        this.propertyNames = propertyNames;
         this.fieldNames = fieldNames;
         this.localNames = localNames;
     }
@@ -383,6 +391,7 @@ export class World {
     readonly qualifiedNameToUri: Map<string, vscode.Uri>
     readonly qualifiedNameToItem: Trie<Item>
     readonly allMethodNames: RCSet<string>
+    readonly allPropertyNames: RCSet<string>
     readonly allFieldNames: RCSet<string>
     _allKnownItemsInitialized: boolean
 
@@ -393,6 +402,7 @@ export class World {
         this.qualifiedNameToUri = new Map();
         this.qualifiedNameToItem = new Trie();
         this.allMethodNames = new RCSet();
+        this.allPropertyNames = new RCSet();
         this.allFieldNames = new RCSet();
         this._allKnownItemsInitialized = false;
     }
@@ -490,10 +500,12 @@ export class World {
             // "release" item members
             this.allFieldNames.removeAll(oldItem.fieldNames);
             this.allMethodNames.removeAll(oldItem.methodNames);
+            this.allPropertyNames.removeAll(oldItem.propertyNames);
         }
         // "retain" item members
         this.allFieldNames.addAll(newItem.fieldNames);
         this.allMethodNames.addAll(newItem.methodNames);
+        this.allPropertyNames.addAll(newItem.propertyNames);
         this.qualifiedNameToItem.set(qualifiedName, newItem);
         const shortName = qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
         this._registerShortName(shortName, qualifiedName);

@@ -53,6 +53,13 @@ export function activate(context: vscode.ExtensionContext) {
         }
         parts.push('\n');
 
+        const allPropertyNames = Array.from(world.allPropertyNames).sort();
+        parts.push(`Known property names ${allPropertyNames.length}\n`);
+        for (const propertyName of allPropertyNames) {
+            parts.push(`  ${propertyName}\n`);
+        }
+        parts.push('\n');
+
         const allFieldNames = Array.from(world.allFieldNames).sort();
         parts.push(`Known field names ${allFieldNames.length}\n`);
         for (const fieldName of allFieldNames) {
@@ -71,6 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
                 const imports = Array.from(item.imports);
                 const fieldNames = Array.from(item.fieldNames);
                 const methodNames = Array.from(item.methodNames);
+                const propertyNames = Array.from(item.propertyNames);
                 const localNames = Array.from(item.localNames);
                 parts.push(`    (${item.pkg}) (${item.shortName})\n`);
                 parts.push(`    Imports ${imports.length}\n`);
@@ -84,6 +92,10 @@ export function activate(context: vscode.ExtensionContext) {
                 parts.push(`    MethodNames ${methodNames.length}\n`);
                 for (const methodName of methodNames) {
                     parts.push(`      ${methodName}\n`);
+                }
+                parts.push(`    PropertyNames ${propertyNames.length}\n`);
+                for (const propertyName of propertyNames) {
+                    parts.push(`      ${propertyName}\n`);
                 }
                 parts.push(`    LocalNames ${localNames.length}\n`);
                 for (const localName of localNames) {
@@ -280,6 +292,11 @@ class ${clsname} {
                     for (const methodName of world.allMethodNames) {
                         if (methodName.startsWith(prefix)) {
                             items.push(new vscode.CompletionItem(methodName + '('));
+                        }
+                    }
+                    for (const propertyName of world.allPropertyNames) {
+                        if (propertyName.startsWith(prefix)) {
+                            items.push(new vscode.CompletionItem(propertyName));
                         }
                     }
                 }
