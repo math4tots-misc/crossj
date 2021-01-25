@@ -2,7 +2,7 @@
     "name": "language-cj",
     "displayName": "language-cj",
     "description": "cj language support",
-    "version": "0.0.20",
+    "version": "0.0.21",
     "publisher": "mtots",
     "repository": {
         "type": "git",
