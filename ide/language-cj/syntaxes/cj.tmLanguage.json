@@ -3,7 +3,7 @@
 	"name": "cj",
 	"patterns": [
 		{
-			"match": "(def\\s+)([a-z_]\\w*)",
+			"match": "\\b(def\\b)(\\s+[a-z_]\\w*)?",
 			"captures": {
 				"1": {
 					"name": "keyword.control.cj"
