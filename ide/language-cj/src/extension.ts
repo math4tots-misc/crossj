@@ -250,8 +250,24 @@ class ${clsname} {
                 {
                     const item = world.getItemOrNull(pkg + '.' + clsname);
                     if (item !== null) {
+                        var seen = new Set<string>();
+                        const addName = (name: string) => {
+                            if (!seen.has(name)) {
+                                items.push(new vscode.CompletionItem(name));
+                                seen.add(name);
+                            }
+                        };
                         for (const name of item.localNames) {
-                            items.push(new vscode.CompletionItem(name));
+                            addName(name);
+                        }
+                        for (const name of item.fieldNames) {
+                            addName(name);
+                        }
+                        for (const name of item.methodNames) {
+                            addName(name);
+                        }
+                        for (const name of item.nestedItemNames) {
+                            addName(name);
                         }
                     }
                 }
@@ -283,26 +299,25 @@ class ${clsname} {
                 // completion based on method and field names
                 const prefix = range === undefined ? "" : document.getText(range);
                 const linePrefix = document.lineAt(position).text.substr(0, position.character);
+                var seen = new Set<string>();
+                const addName = (name: string) => {
+                    if (name.startsWith(prefix) && !seen.has(name)) {
+                        items.push(new vscode.CompletionItem(name));
+                        seen.add(name);
+                    }
+                };
                 if (linePrefix.endsWith('.' + prefix)) {
                     for (const fieldName of world.allFieldNames) {
-                        if (fieldName.startsWith(prefix)) {
-                            items.push(new vscode.CompletionItem(fieldName));
-                        }
+                        addName(fieldName);
                     }
                     for (const nestedItemName of world.allNestedItemNames) {
-                        if (nestedItemName.startsWith(prefix)) {
-                            items.push(new vscode.CompletionItem(nestedItemName));
-                        }
+                        addName(nestedItemName);
                     }
                     for (const methodName of world.allMethodNames) {
-                        if (methodName.startsWith(prefix)) {
-                            items.push(new vscode.CompletionItem(methodName + '('));
-                        }
+                        addName(methodName);
                     }
                     for (const propertyName of world.allPropertyNames) {
-                        if (propertyName.startsWith(prefix)) {
-                            items.push(new vscode.CompletionItem(propertyName));
-                        }
+                        addName(propertyName);
                     }
                 }
                 return items;
