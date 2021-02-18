@@ -289,6 +289,11 @@ class ${clsname} {
                             items.push(new vscode.CompletionItem(fieldName));
                         }
                     }
+                    for (const nestedItemName of world.allNestedItemNames) {
+                        if (nestedItemName.startsWith(prefix)) {
+                            items.push(new vscode.CompletionItem(nestedItemName));
+                        }
+                    }
                     for (const methodName of world.allMethodNames) {
                         if (methodName.startsWith(prefix)) {
                             items.push(new vscode.CompletionItem(methodName + '('));

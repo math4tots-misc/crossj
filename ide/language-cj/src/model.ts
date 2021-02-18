@@ -288,6 +288,7 @@ function parseItem(s: string): Item {
     const propertyNames = new Trie<string>();
     const fieldNames = new Trie<string>();
     const localNames = new Trie<string>();
+    const nestedItemNames = new Trie<string>();
     while ((arr = re.exec(s)) !== null) {
         const x = arr[0];
         if (x.startsWith('#') || x.startsWith('"') || x.startsWith("'")) {
@@ -334,6 +335,8 @@ function parseItem(s: string): Item {
                         case 'trait':
                             if (shortName === "") {
                                 shortName = name;
+                            } else {
+                                nestedItemNames.set(name, name);
                             }
                             break;
                         default:
@@ -347,7 +350,8 @@ function parseItem(s: string): Item {
             }
         }
     }
-    return new Item(pkg, shortName, imports, methodNames, propertyNames, fieldNames, localNames);
+    return new Item(
+        pkg, shortName, imports, methodNames, propertyNames, fieldNames, localNames, nestedItemNames);
 }
 
 export class Item {
@@ -358,6 +362,7 @@ export class Item {
     readonly propertyNames: Trie<string>
     readonly fieldNames: Trie<string>
     readonly localNames: Trie<string>
+    readonly nestedItemNames: Trie<string>
 
     constructor(
             pkg: string,
@@ -366,7 +371,8 @@ export class Item {
             methodNames: Trie<string>,
             propertyNames: Trie<string>,
             fieldNames: Trie<string>,
-            localNames: Trie<string>) {
+            localNames: Trie<string>,
+            nestedItemNames: Trie<string>) {
         this.pkg = pkg;
         this.shortName = shortName;
         this.imports = imports;
@@ -374,6 +380,7 @@ export class Item {
         this.propertyNames = propertyNames;
         this.fieldNames = fieldNames;
         this.localNames = localNames;
+        this.nestedItemNames = nestedItemNames;
     }
 
     toString() {
@@ -395,6 +402,7 @@ export class World {
     readonly allMethodNames: RCSet<string>
     readonly allPropertyNames: RCSet<string>
     readonly allFieldNames: RCSet<string>
+    readonly allNestedItemNames: RCSet<string>
     _allKnownItemsInitialized: boolean
 
     constructor(fs: vscode.FileSystem) {
@@ -406,6 +414,7 @@ export class World {
         this.allMethodNames = new RCSet();
         this.allPropertyNames = new RCSet();
         this.allFieldNames = new RCSet();
+        this.allNestedItemNames = new RCSet();
         this._allKnownItemsInitialized = false;
     }
 
@@ -501,11 +510,13 @@ export class World {
         if (oldItem) {
             // "release" item members
             this.allFieldNames.removeAll(oldItem.fieldNames);
+            this.allNestedItemNames.removeAll(oldItem.nestedItemNames);
             this.allMethodNames.removeAll(oldItem.methodNames);
             this.allPropertyNames.removeAll(oldItem.propertyNames);
         }
         // "retain" item members
         this.allFieldNames.addAll(newItem.fieldNames);
+        this.allNestedItemNames.addAll(newItem.nestedItemNames);
         this.allMethodNames.addAll(newItem.methodNames);
         this.allPropertyNames.addAll(newItem.propertyNames);
         this.qualifiedNameToItem.set(qualifiedName, newItem);
